@@ -5,7 +5,7 @@
         <div class="inline">{{$trial->date}}</div>
         <div>{{$trial->club}}</div>
         <div>{{$trial->name}}</div>
-        <div><a href="entries.create/{{$trial->id}}"><span>+</span></a></div>
+        <div><a href="entries/create/{{$trial->id}}"><span>+</span></a></div>
     </div>
 @endforeach
 </x-guest-layout>

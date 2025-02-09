@@ -13,7 +13,10 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/entries.create/{{id}}', [EntryController::class, 'create']);
+Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->middleware('auth', 'verified')->name('entries.create');
+
+
+Route::get('/entries/{entry}/edit', [EntryController::class, 'edit'])->middleware('auth', 'verified')->name('entries.edit');
 
 Route::get('/trial_list', [TrialController::class, 'showTrialList'])->middleware(['auth', 'verified'])->name('triallist');
 
