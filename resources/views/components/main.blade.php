@@ -13,10 +13,10 @@
             padding: 0;
         }
 
-        #map {
-            height: 600px;
-            width: 100%;
-        }
+        /*#map {*/
+        /*    height: 600px;*/
+        /*    width: 100%;*/
+        /*}*/
 
         /* Hide display on large screens */
         .topnav {
@@ -68,8 +68,8 @@
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php if (env('APP_NAME') != ''){
-            echo env('APP_NAME');
+    <title><?php if (config('APP_NAME') != ''){
+            echo config('APP_NAME');
         } ?></title>
 
 
