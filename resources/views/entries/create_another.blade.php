@@ -1,24 +1,37 @@
 <x-app-layout>
     @php
 
-
         $classes = explode(',',$trial->classlist);
         $courses = explode(',',$trial->courselist);
 
     @endphp
+    <div>Entries for {{$trial->name}} - from {{$email}}</div>
+    <table>
+        <tr>
+        <th>Rider</th>
+        <th>Course</th>
+            <th>Class</th>
+            <th>Bike</th>
+            <th>Edit</th>
+            <th>Remove</th>
+        </tr>
+    @foreach($entries as $entry)
+        <tr>
+            <td>{{$entry->name}}</td>
+            <td>{{$entry->course}}</td>
+            <td>{{$entry->class}}</td>
+            <td>{{$entry->make}} {{$entry->size}}</td>
+            <td>Edit</td>
+            <td>Remove</td>
+        </tr>
+    @endforeach
+    </table>
     <form action="/entries/store" method="POST">
         @csrf
         <input type="hidden" id="trial_id" name="trial_id" value="{{$trial->id}}"/>
+        <input type="hidden" id="email" name="email" value="{{$email}}"/>
         <div class="font-bold  font-size-sm text-violet-600">Entry form for {{$trial->name}}</div>
 
-
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" id="email" required />
-            @error('email')
-            <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
 
         <div class="mb-3">
             <label for="name" class="form-label">Name</label>
@@ -40,22 +53,6 @@
             <label for="phone" class="form-label">Contact number</label>
             <input type="text" name="phone" id="phone" required />
             @error('phone')
-            <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="isYouth" class="form-label">Under-18</label>
-            <input type="checkbox" name="isYouth" id="isYouth"  />
-            @error('isYouth')
-            <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="dob" class="form-label">Date of Birth</label>
-            <input type="date" name="dob" id="dob"  />
-            @error('dob')
             <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
@@ -85,30 +82,17 @@
         </div>
 
         <div class="mb-3">
-            <label for="make" class="form-label">Make</label>
-            <input type="text" name="make" id="make" required />
-            @error('make')
+            <label for="isYouth" class="form-label">Under-18</label>
+            <input type="checkbox" name="isYouth" id="isYouth"  />
+            @error('isYouth')
             <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
 
         <div class="mb-3">
-            <label for="size" class="form-label">Capacity(cc)</label>
-            <input type="text" name="size" id="size" />
-            @error('size')
-            <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-
-        <div class="mb-3">
-            <label for="type" class="form-label">Type</label>
-            <select class="form-select" id="class" name="type">
-                <option value="2T" {{ old('type') == '2T' ? 'selected' : '' }}>2T</option>
-                <option value="4T" {{ old('type') == '4T' ? 'selected' : '' }}>4T</option>
-                <option value="E-bike" {{ old('type') == 'E-bike' ? 'selected' : '' }}>E-bike</option>
-            </select>
-            @error('type')
+            <label for="dob" class="form-label">Date of Birth</label>
+            <input type="date" name="dob" id="dob"  />
+            @error('dob')
             <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
@@ -116,6 +100,7 @@
 
         <div id="buttons">
             <x-secondary-button>Cancel</x-secondary-button>
-            <x-primary-button>Save</x-primary-button>
+            <x-secondary-button>Save</x-secondary-button>
+            <x-primary-button>Checkout</x-primary-button>
         </div>
     </form></x-app-layout>

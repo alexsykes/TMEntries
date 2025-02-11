@@ -11,7 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+                Schema::table('entries', function (Blueprint $table) {
+            $table->string('licence')->nullable();
+//            $table->string('contact_email')->nullable();
+        });
     }
 
     /**

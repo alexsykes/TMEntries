@@ -24,6 +24,7 @@ Artisan::command('getTrialList', function () {
                 'courselist' => $trial["courselist"],
                 'date' => $trial["date"],
                 'club' => $trial["club"],
+                'authority' => $trial["authority"],
                 'updated_at' => NOW(),
             ];
             $trialToUpdate->update($attrs);
@@ -36,6 +37,7 @@ Artisan::command('getTrialList', function () {
                 'courselist' => $trial["courselist"],
                 'date' => $trial["date"],
                 'club' => $trial["club"],
+                'authority' => $trial["authority"],
             ]);
         }
 
