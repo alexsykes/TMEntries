@@ -1,10 +1,8 @@
-<x-app-layout>
+<x-main>
     @php
-
-
+//    $trial from request
         $classes = explode(',',$trial->classlist);
         $courses = explode(',',$trial->courselist);
-
     @endphp
     <form action="/entries/store" method="POST">
         @csrf
@@ -118,4 +116,5 @@
             <x-secondary-button>Cancel</x-secondary-button>
             <x-primary-button>Save</x-primary-button>
         </div>
-    </form></x-app-layout>
+    </form>
+</x-main>

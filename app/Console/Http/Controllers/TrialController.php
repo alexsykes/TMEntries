@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Console\Http\Controllers;
 
 use App\Models\Trial;
-use Illuminate\Http\Request;
 
 class TrialController extends Controller
 {

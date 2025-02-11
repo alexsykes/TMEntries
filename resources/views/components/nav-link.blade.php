@@ -1,11 +1,16 @@
-@props(['active'])
+@props(['active' => false, 'type'=>'a'])
 
-@php
-$classes = ($active ?? false)
-            ? 'inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 text-sm font-medium leading-5 text-gray-900 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out'
-            : 'inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out';
-@endphp
+@if($type = 'a')
+	<a class="{{ $active ? 'bg-violet-300 border border-white font-light  text-violet-500': 'bg-violet-500 border border-white  text-white hover:bg-violet-2 hover:text-violet-300'}} rounded-md px-3 py-1 text-sm font-light"
+	aria-current="{{ $active ? 'page': 'false' }}"
+	{{ $attributes }}
 
-<a {{ $attributes->merge(['class' => $classes]) }}>
-    {{ $slot }}
-</a>
+>{{ $slot }}</a>
+@else
+	<button class="{{ $active ? '  bg-violet-300 border border-white font-light text-white': 'text-violet-500 border-white  text-white hover:bg-violet-200 hover:text-violet-300'}} rounded-md px-3 py-1 text-sm font-light"
+	aria-current="{{ $active ? 'page': 'false' }}"
+	{{ $attributes }}
+
+>{{ $slot }}</button>
+
+@endif

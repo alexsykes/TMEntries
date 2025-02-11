@@ -1,19 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Console\Http\Controllers;
 
-use App\Models\Trial;
 use App\Models\Entry;
+use App\Models\Trial;
 use Illuminate\Http\Request;
 
 class EntryController extends Controller
 {
     //
     public function create($id) {
-        if(session()->has('trial_id')) {
-            $id = session('trial_id');
-    }
-
+//        Not sure if this is necessary
         $trial = Trial::findOrFail($id);
         return view('entries.create', ['trial' => $trial]);
     }
@@ -23,10 +20,10 @@ class EntryController extends Controller
         $IPaddress = request()->ip();
         $id = session('trial_id');
         $trial = Trial::findOrFail($id);
-        $entries = Entry::all()->where('IPaddress', $IPaddress)->where('trial_id', session('trial_id'));
-
-        return view('entries.create_another', ['entries' => $entries, 'trial' => $trial]);
+        return view('entries.create_another', ['trial' => $trial]);
     }
+
+//    Store first record then pass email and trial_id to create_another view
     public function store(Request $request) {
         $IPaddress = $request->ip();
         $request->session()->put('trial_id', $request->trial_id);
@@ -49,9 +46,12 @@ class EntryController extends Controller
             $attributes['isYouth'] = 1;
             $attributes['dob'] = $request->dob;
         }
-//        dd($attributes);
+
+        $trial = Trial::findOrFail($attributes['trial_id']);
         Entry::create($attributes);
-        return view('/entries/create_another', ['email' => $request->email, 'trial_id' => $request->trial_id]);
+        $entries = Entry::all()->where('IPaddress', $IPaddress)->where('trial_id', session('trial_id'))->where('email', $attributes['email']);
+//        dd($entries);
+        return view('.entries.create_another', ['email' => $request->email, 'trial' => $trial, 'entries' => $entries]);
     }
 
 

@@ -1,10 +1,18 @@
 <x-app-layout>
+    dd(request());
     @php
-
+// $entries and $trial passed in from controller
         $classes = explode(',',$trial->classlist);
         $courses = explode(',',$trial->courselist);
 
     @endphp
+
+    <form action="entries.checkout">
+        @csrf
+    <div id="checkout_button">
+        <x-secondary-button>Checkout</x-secondary-button>
+    </div>
+    </form>
     <div>Entries for {{$trial->name}} - from {{$email}}</div>
     <table>
         <tr>
@@ -100,7 +108,6 @@
 
         <div id="buttons">
             <x-secondary-button>Cancel</x-secondary-button>
-            <x-secondary-button>Save</x-secondary-button>
-            <x-primary-button>Checkout</x-primary-button>
+            <x-primary-button>Save</x-primary-button>
         </div>
     </form></x-app-layout>
