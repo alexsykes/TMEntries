@@ -14,7 +14,8 @@ Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->nam
 
 Route::get('/entries/create_another', [EntryController::class, 'create_another'])->name('entries.create_another');
 
-Route::post('entries/store', [EntryController::class, 'store']);
+Route::post('/entries/store', [EntryController::class, 'store']);
+Route::post('/entry/store', [EntryController::class, 'store']);
 
 Route::get('/entries/{entry}/edit', [EntryController::class, 'edit'])->name('entries.edit');
 

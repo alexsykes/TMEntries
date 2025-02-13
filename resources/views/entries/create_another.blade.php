@@ -1,113 +1,159 @@
 <x-main>
-    dd(request());
     @php
-// $entries and $trial passed in from controller
-        $classes = explode(',',$trial->classlist);
-        $courses = explode(',',$trial->courselist);
+        // $entries and $trial passed in from controller
+                $classes = explode(',',$trial->classlist);
+                $courses = explode(',',$trial->courselist);
+                $auth = array("ACU", "AMCA");
+
+//                        dump($entries);
+//        dump($attributes['email']);
+//        dump($attributes['trial_id']);
 
     @endphp
 
     <form action="entries.checkout">
         @csrf
-    <div id="checkout_button">
-        <x-secondary-button>Checkout</x-secondary-button>
-    </div>
+        <div id="checkout_button">
+            <x-secondary-button>Checkout</x-secondary-button>
+        </div>
     </form>
     <div>Entries for {{$trial->name}} - from {{$email}}</div>
     <table>
         <tr>
-        <th>Rider</th>
-        <th>Course</th>
+            <th>Rider</th>
+            <th>Course</th>
             <th>Class</th>
             <th>Bike</th>
             <th>Edit</th>
             <th>Remove</th>
         </tr>
-    @foreach($entries as $entry)
-        <tr>
-            <td>{{$entry->name}}</td>
-            <td>{{$entry->course}}</td>
-            <td>{{$entry->class}}</td>
-            <td>{{$entry->make}} {{$entry->size}}</td>
-            <td>Edit</td>
-            <td>Remove</td>
-        </tr>
-    @endforeach
+        @foreach($entries as $entry)
+            <tr>
+                <td>{{$entry->name}}</td>
+                <td>{{$entry->course}}</td>
+                <td>{{$entry->class}}</td>
+                <td>{{$entry->make}} {{$entry->size}}</td>
+                <td>Edit</td>
+                <td>Remove</td>
+            </tr>
+        @endforeach
     </table>
     <form action="/entries/store" method="POST">
         @csrf
         <input type="hidden" id="trial_id" name="trial_id" value="{{$trial->id}}"/>
         <input type="hidden" id="email" name="email" value="{{$email}}"/>
+        <input type="hidden" id="phone" name="email" value="{{$phone}}"/>
         <div class="font-bold  font-size-sm text-violet-600">Entry form for {{$trial->name}}</div>
 
 
-        <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" name="name" id="name" required />
-            @error('name')
-            <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
+        <div class="space-y-12">
+            <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 
-        <div class="mb-3">
-            <label for="licence" class="form-label">{{$trial->auth}} Licence</label>
-            <input type="text" name="licence" id="licence" />
-            @error('licence')
-            <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="phone" class="form-label">Contact number</label>
-            <input type="text" name="phone" id="phone" required />
-            @error('phone')
-            <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="course" class="form-label">Course</label>
-            <select class="form-select" id="class" name="course">
-                @foreach($courses as $course)
-                    <option value="{{ $course }}" {{ old('class') == $course ? 'selected' : '' }}>{{ $course }}</option>
-                @endforeach
-            </select>
-            @error('course')
-            <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="class" class="form-label">Class</label>
-            <select class="form-select" id="class" name="class">
-                @foreach($classes as $class)
-                    <option value="{{ $class }}" {{ old('class') == $class ? 'selected' : '' }}>{{ $class }}</option>
-                @endforeach
-            </select>
-            @error('class')
-            <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="isYouth" class="form-label">Under-18</label>
-            <input type="checkbox" name="isYouth" id="isYouth"  />
-            @error('isYouth')
-            <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="mb-3">
-            <label for="dob" class="form-label">Date of Birth</label>
-            <input type="date" name="dob" id="dob"  />
-            @error('dob')
-            <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
+                <x-form-field>
+                    <x-form-label for="name">Name</x-form-label>
+                    <div class="mt-2">
+                        <x-form-input name="name" type="text" id="name" :value="old('name')" placeholder="Rider's name" required />
+                        <x-form-error name="name" />
+                    </div>
+                </x-form-field>
 
 
-        <div id="buttons">
-            <x-secondary-button>Cancel</x-secondary-button>
-            <x-primary-button>Save</x-primary-button>
+                <x-form-field>
+                    <x-form-label for="licence">{{$auth[$trial->authority]}} Licence</x-form-label>
+                    <div class="mt-2">
+                        <x-form-input name="licence" type="text" id="licence" :value="old('licence')" placeholder="Licence number - leave blank if no licence"   />
+                        <x-form-error name="licence" />
+                    </div>
+                </x-form-field>
+
+                <x-form-field>
+                    <x-form-label for="isYouth">Under-18</x-form-label>
+                    <div class="mt-2">
+                        <input type="checkbox" name="isYouth" id="isYouth" :value="1"   />
+                        <x-form-error name="isYouth" />
+                    </div>
+                </x-form-field>
+
+                <x-form-field>
+                    <x-form-label for="isYouth">Date of Birth</x-form-label>
+                    <div class="mt-2">
+                        <x-form-input type="date" name="dob" id="dob" :value="old('dob')"   />
+                        <x-form-error name="dob" />
+                    </div>
+                </x-form-field>
+
+                <x-form-field>
+                    <x-form-label for="make">Make</x-form-label>
+                    <div class="mt-2">
+                        <x-form-input name="make" type="text" id="make" :value="old('make')" placeholder="Bike make/model" required />
+                        <x-form-error name="make" />
+                    </div>
+                </x-form-field>
+
+                <x-form-field>
+                    <x-form-label for="size">Capacity</x-form-label>
+                    <div class="mt-2">
+                        <x-form-input name="size" type="text" id="size" :value="old('size')" placeholder="Bike engine size - leave empty for e-Bike"  />
+                        <x-form-error name="size" />
+                    </div>
+                </x-form-field>
+
+                <x-form-field>
+                    <fieldset>
+                        <legend class="text-m font-semibold text-gray-900">Engine Type</legend>
+                        <div class="mt-2 space-y-6">
+                            <div class="flex ">
+                                <input id="type" name="type" type="radio"  class="block text-sm/6  ml-4  checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                <x-form-label for="type" class="ml-2 mr-2 text-sm/6">2 Stroke</x-form-label>
+
+                                <input id="type" name="type" type="radio"  class="block text-sm/6  ml-4 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                <x-form-label for="type" class="ml-2 mr-2 text-sm/6">4 Stroke</x-form-label>
+
+                                <input id="type" name="type" type="radio"  class="block text-sm/6  ml-4 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                <x-form-label for="type" class=" block text-sm/6  ml-2 mr-2 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">e-Bike</x-form-label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </x-form-field>
+
+
+
+                <x-form-field>
+                    <fieldset>
+                        <legend class="text-m font-semibold text-gray-900">Course</legend>
+                        <div>
+                            <div class="mt-2 space-y-6">
+                                <div class="flex ">
+                                    @foreach($courses as $course)
+                                        <input id="2T" name="course" type="radio"  class="ml-4 mr-2 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                        <label for="2T" class=" block text-sm/6  font-medium text-gray-900">{{$course}}</label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset></x-form-field>
+
+
+                <x-form-field>
+                    <fieldset>
+                        <legend class="text-m font-semibold text-gray-900">Class</legend>
+                        <div>
+                            <div class="mt-2 space-y-6">
+                                <div class="flex ">
+                                    @foreach($classes as $class)
+                                        <input id="class" name="class" type="radio"   class="ml-4 mr-2 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                        <label for="class" class=" block text-sm/6 font-medium text-gray-900">{{$class}}</label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset></x-form-field>
+
+            </div>
+
+            <div class="mt-4" id="buttons">
+                <a href="/"  class="rounded-md  bg-violet-100 px-3 py-1 text-sm font-light border border-violet-800 text-violet-800 drop-shadow-lg hover:bg-violet-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Cancel</a>
+                <button type="submit" class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Register</button>
+            </div>
         </div>
     </form></x-main>

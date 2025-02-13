@@ -19,6 +19,10 @@
                         <x-form-input name="email" type="email" id="email" :value="old('email')" placeholder="Contact email" required />
                         <x-form-error name="email" />
                     </div>
+                    @error('email')
+                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
+
                 </x-form-field>
 
                 <x-form-field>
@@ -27,6 +31,9 @@
                         <x-form-input name="phone" type="text" id="phone" :value="old('phone')" placeholder="Contact phone" required />
                         <x-form-error name="phone" />
                     </div>
+                    @error('phone')
+                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </x-form-field>
 
                 <x-form-field>
@@ -35,6 +42,9 @@
                         <x-form-input name="name" type="text" id="name" :value="old('name')" placeholder="Rider's name" required />
                         <x-form-error name="name" />
                     </div>
+                    @error('name')
+                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </x-form-field>
 
 
@@ -68,6 +78,9 @@
                         <x-form-input name="make" type="text" id="make" :value="old('make')" placeholder="Bike make/model" required />
                         <x-form-error name="make" />
                     </div>
+                    @error('make')
+                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
                 </x-form-field>
 
                 <x-form-field>
@@ -83,20 +96,18 @@
                         <legend class="text-m font-semibold text-gray-900">Engine Type</legend>
                         <div class="mt-2 space-y-6">
                             <div class="flex ">
-                                <input id="type" name="type" type="radio"  class="block text-sm/6  ml-4  checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                <input id="type" name="type" type="radio" value="2T" {{ old('type', $entry->type) == '2T' ? 'checked' : '' }} class="block text-sm/6  ml-4  checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                                 <x-form-label for="type" class="ml-2 mr-2 text-sm/6">2 Stroke</x-form-label>
 
-                                <input id="type" name="type" type="radio"  class="block text-sm/6  ml-4 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                <input id="type" name="type" type="radio" value="4T" {{ old('type', $entry->type) == '4T' ? 'checked' : '' }} class="block text-sm/6  ml-4 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                                 <x-form-label for="type" class="ml-2 mr-2 text-sm/6">4 Stroke</x-form-label>
 
-                                <input id="type" name="type" type="radio"  class="block text-sm/6  ml-4 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                <input id="type" name="type" type="radio" value="e-bike" {{ old('type', $entry->type) == 'e-bike' ? 'checked' : '' }} class="block text-sm/6  ml-4 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                                 <x-form-label for="type" class=" block text-sm/6  ml-2 mr-2 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">e-Bike</x-form-label>
                             </div>
                         </div>
                     </fieldset>
                 </x-form-field>
-
-
 
                 <x-form-field>
                     <fieldset>
@@ -105,7 +116,7 @@
                             <div class="mt-2 space-y-6">
                                 <div class="flex ">
                                     @foreach($courses as $course)
-                                        <input id="2T" name="course" type="radio"  class="ml-4 mr-2 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                        <input id="2T" name="course" type="radio" value="{{$course}}" class="ml-4 mr-2 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                                         <label for="2T" class=" block text-sm/6  font-medium text-gray-900">{{$course}}</label>
                                     @endforeach
                                 </div>
@@ -121,7 +132,7 @@
                             <div class="mt-2 space-y-6">
                                 <div class="flex ">
                                     @foreach($classes as $class)
-                                        <input id="class" name="class" type="radio"   class="ml-4 mr-2 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                        <input id="class" name="class" type="radio"  value="{{$class}}" class="ml-4 mr-2 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                                         <label for="class" class=" block text-sm/6 font-medium text-gray-900">{{$class}}</label>
                                     @endforeach
                                 </div>
