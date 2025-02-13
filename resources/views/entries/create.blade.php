@@ -11,7 +11,7 @@
         <input type="hidden" id="trial_id" name="trial_id" value="{{$trial->id}}"/>
         <div class="font-bold  font-size-sm text-violet-600">Entry form for {{$trial->name}}</div>
         <div class="space-y-12">
-            <x class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 
                 <x-form-field>
                     <x-form-label for="email">Email</x-form-label>
