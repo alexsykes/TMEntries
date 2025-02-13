@@ -14,7 +14,7 @@ class EntryController extends Controller
     public function create($id) {
 //        Not sure if this is necessary
         $trial = Trial::findOrFail($id);
-        return view('entries.create', ['trial' => $trial]);
+        return view('entries.create', ['trial' => $trial, 'entry' => new Entry()]);
     }
 
 
@@ -61,8 +61,7 @@ class EntryController extends Controller
 
         $trial = Trial::findOrFail($attributes['trial_id']);
         $entries = Entry::all()->where('IPaddress', $IPaddress)->where('trial_id', session('trial_id'))->where('email', $attributes['email']);
-    return view('entries/user_entryList', ['trial' => $trial, 'email' => $attributes['email'], 'phone' => $attributes['phone']]  );
-
+    return view('entries/user_entryList', ['entries' => $entries, 'trial' => $trial]  );
     }
 
 

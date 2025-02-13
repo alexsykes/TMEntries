@@ -1,4 +1,7 @@
 <x-main>
+    <x-slot:heading>
+        Register a club
+    </x-slot:heading>
     @php
         //    $trial from request
                 $classes = explode(',',$trial->classlist);

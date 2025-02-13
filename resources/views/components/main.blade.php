@@ -69,11 +69,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php if (config('APP_NAME') != ''){
-            echo config('APP_NAME');
+            echo env('APP_NAME');
         } ?></title>
-
-
-
 </head>
 <body class="h-full bg-violet-800 text-white">
 
