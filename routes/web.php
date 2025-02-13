@@ -1,13 +1,10 @@
 <?php
 
-use App\Console\Http\Controllers\EntryController;
-use App\Console\Http\Controllers\ProfileController;
-use App\Console\Http\Controllers\TrialController;
+use App\Http\Controllers\EntryController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TrialController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -21,7 +18,7 @@ Route::post('entries/store', [EntryController::class, 'store']);
 
 Route::get('/entries/{entry}/edit', [EntryController::class, 'edit'])->name('entries.edit');
 
-Route::get('/trial_list', [TrialController::class, 'showTrialList'])->name('triallist');
+Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

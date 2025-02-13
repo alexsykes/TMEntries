@@ -27,12 +27,14 @@ return new class extends Migration
             $table->string('size')->nullable();
             $table->string('type');
 
+
             $table->date('dob')->nullable();
             $table->boolean('isYouth')->default(false);
 
             $table->string('stripe_product_id')->nullable();
             $table->string('stripe_price_id')->nullable();
             $table->integer('status')->default(0);
+            $table->string('token')->nullable();
         });
     }
 

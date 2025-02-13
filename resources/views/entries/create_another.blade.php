@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-main>
     dd(request());
     @php
 // $entries and $trial passed in from controller
@@ -110,4 +110,4 @@
             <x-secondary-button>Cancel</x-secondary-button>
             <x-primary-button>Save</x-primary-button>
         </div>
-    </form></x-app-layout>
+    </form></x-main>
