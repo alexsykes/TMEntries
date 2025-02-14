@@ -75,48 +75,10 @@
 <body class="h-full bg-violet-800 text-white">
 
 <header class="bg-violet-800 drop-shadow-md">
-    @php $heading = "Welcome" @endphp
+{{--    @php $heading = "Welcome" @endphp--}}
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8  sm:flex sm:justify-between">
         <h1 class="text-m sm:text-2xl  font-bold tracking-tight text-white">{{ $heading }}</h1>
 
-
-        {{--        Hidden for small screens --}}
-{{--        <div class="hidden sm:block">--}}
-{{--            <div class="ml-4 flex space-x-4 items-center m-auto px md:ml-6" >--}}
-{{--                <x-nav-link href="/" :active="request()->is('/')">Home</x-nav-link>--}}
-{{--                @guest--}}
-{{--                    <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>--}}
-{{--                    <x-nav-link href="/register" :active="request()->is('register')">Register</x-nav-link>--}}
-{{--                @endguest--}}
-
-{{--                @auth--}}
-{{--                    --}}{{--                Logout via form --}}
-{{--                    <form method="POST" action="/logout">--}}
-{{--                        @csrf--}}
-{{--                        <x-form-button>Log Out</x-form-button>--}}
-{{--                    </form>--}}
-{{--                    <x-nav-link href="/auth/profile" :active="request()->is('auth/profile')">Profile</x-nav-link>--}}
-{{--                @endauth--}}
-{{--            </div>--}}
-{{--        </div>--}}
-
-
-
-        {{--        So - for small screens --}}
-{{--        <div class="topnav " id="myTopnav">--}}
-{{--            @guest--}}
-{{--                <a href="/register"  class="text-white" ><i class="text-xl fa-solid fa-user-plus"></i></a>--}}
-{{--                <a href="/login"  class="text-white " ><i class="text-xl fa-solid fa-right-to-bracket"></i></a>--}}
-{{--            @endguest--}}
-{{--            @auth--}}
-{{--                <a href="/auth/profile"  class="text-white" ><i class="text-xl fa-solid fa-user"></i></a>--}}
-{{--                <form method="POST" action="/logout">--}}
-{{--                    @csrf--}}
-{{--                    <button class="topnav"><i class="text-xl fa-solid fa-right-from-bracket"></i></button>--}}
-{{--                </form>--}}
-{{--            @endauth--}}
-{{--            <a href="/" class="text-white"><i class="text-xl  fa-solid fa-house"></i></a>--}}
-{{--        </div>--}}
     </div>
 </header>
 <main class="bg-gray-50 text-black">
@@ -134,7 +96,7 @@
                 <a href="/contact"  class="inline-block mt-1 mx-3 hover:underline">Contact</a>
             </div>
         </x-footer-link>
-        <div class="text-sm mt-1 text-center bg-violet-800 text-white">©{{date("Y")}} - SlopeFinder UK</div></div>
+        <div class="text-sm mt-1 text-center bg-violet-800 text-white">©{{date("Y")}} - TrialMonster UK</div></div>
 </main>
 </body>
 </html>

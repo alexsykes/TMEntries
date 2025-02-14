@@ -17,7 +17,12 @@ Route::get('/entries/create_another', [EntryController::class, 'create_another']
 Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
 
+
+Route::post('checkout', [EntryController::class, 'checkout']);
+
 Route::get('/entries/{entry}/edit', [EntryController::class, 'edit'])->name('entries.edit');
+
+Route::get('/entries/user_entryList', [EntryController::class, 'list']);
 
 Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
 

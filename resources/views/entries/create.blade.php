@@ -1,6 +1,6 @@
 <x-main>
     <x-slot:heading>
-        Register a club
+        New Entry for {{$trial->name}}
     </x-slot:heading>
     @php
         //    $trial from request
@@ -12,8 +12,8 @@
     <form action="/entries/store" method="POST">
         @csrf
         <input type="hidden" id="trial_id" name="trial_id" value="{{$trial->id}}"/>
-        <div class="font-bold  font-size-sm text-violet-600">Entry form for {{$trial->name}}</div>
         <div class="space-y-12">
+            <div class="border-b border-gray-900/10 pb-12">
             <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 
                 <x-form-field>
@@ -94,60 +94,60 @@
                     </div>
                 </x-form-field>
 
+
                 <x-form-field>
-                    <fieldset>
-                        <legend class="text-m font-semibold text-gray-900">Engine Type</legend>
-                        <div class="mt-2 space-y-6">
-                            <div class="flex ">
-                                <input id="type" name="type" type="radio" value="2T" {{ old('type', $entry->type) == '2T' ? 'checked' : '' }} class="block text-sm/6  ml-4  checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                <x-form-label for="type" class="ml-2 mr-2 text-sm/6">2 Stroke</x-form-label>
+                    <x-form-label class="pb-2" for="course" >Type</x-form-label>
 
-                                <input id="type" name="type" type="radio" value="4T" {{ old('type', $entry->type) == '4T' ? 'checked' : '' }} class="block text-sm/6  ml-4 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                <x-form-label for="type" class="ml-2 mr-2 text-sm/6">4 Stroke</x-form-label>
-
-                                <input id="type" name="type" type="radio" value="e-bike" {{ old('type', $entry->type) == 'e-bike' ? 'checked' : '' }} class="block text-sm/6  ml-4 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                <x-form-label for="type" class=" block text-sm/6  ml-2 mr-2 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">e-Bike</x-form-label>
-                            </div>
+                    <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-violet-600">
+                        <div class="pb-2 pt-2    sm:col-span-2">
+                            <select class="ml-2 bg-white  space-x-4 border-none" name="type" id="type" required>
+                                <option value="">Select your engine type</option>
+                                <option value="two-stroke" selected>Two stroke</option>
+                                <option value="four-stroke">Four stroke</option>
+                                <option value="e-bike">e-Bike</option>
+                            </select>
                         </div>
-                    </fieldset>
+                    </div>
+                </x-form-field>
+
+
+                <x-form-field>
+                    <x-form-label class="pb-2" for="course" >Course</x-form-label>
+
+                    <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-violet-600">
+                        <div class="pb-2 pt-2    sm:col-span-2">
+                            <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course" required>
+                                <option value="">Select your course</option>
+                                @foreach($courses as $course)
+                                    <option value="{{$course}}">{{$course}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                 </x-form-field>
 
                 <x-form-field>
-                    <fieldset>
-                        <legend class="text-m font-semibold text-gray-900">Course</legend>
-                        <div>
-                            <div class="mt-2 space-y-6">
-                                <div class="flex ">
-                                    @foreach($courses as $course)
-                                        <input id="2T" name="course" type="radio" value="{{$course}}" class="ml-4 mr-2 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                        <label for="2T" class=" block text-sm/6  font-medium text-gray-900">{{$course}}</label>
-                                    @endforeach
-                                </div>
-                            </div>
+                    <x-form-label class="pb-2" for="class" >Class</x-form-label>
+
+                    <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-violet-600">
+                        <div class="pb-2 pt-2 bg-white sm:col-span-2">
+                            <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class" required>
+                                <option value="">Select your class</option>
+                                @foreach($classes as $class)
+                                    <option value="{{$class}}">{{$class}}</option>
+                                @endforeach
+                            </select>
                         </div>
-                    </fieldset></x-form-field>
-
-
-                <x-form-field>
-                    <fieldset>
-                        <legend class="text-m font-semibold text-gray-900">Class</legend>
-                        <div>
-                            <div class="mt-2 space-y-6">
-                                <div class="flex ">
-                                    @foreach($classes as $class)
-                                        <input id="class" name="class" type="radio"  value="{{$class}}" class="ml-4 mr-2 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                        <label for="class" class=" block text-sm/6 font-medium text-gray-900">{{$class}}</label>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset></x-form-field>
-
+                    </div>
+                </x-form-field>
         </div>
+
+
 
         <div class="mt-4" id="buttons">
             <a href="/"  class="rounded-md  bg-violet-100 px-3 py-1 text-sm font-light border border-violet-800 text-violet-800 drop-shadow-lg hover:bg-violet-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Cancel</a>
             <button type="submit" class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Register</button>
+        </div>
         </div>
         </div>
     </form>
