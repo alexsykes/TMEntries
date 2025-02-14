@@ -19,8 +19,10 @@ Route::post('/entry/store', [EntryController::class, 'store']);
 
 
 Route::post('checkout', [EntryController::class, 'checkout']);
+Route::post('entries/userdata', [EntryController::class, 'userdata']);
+Route::get('entries/delete/{id}', [EntryController::class, 'delete']);
 
-Route::get('/entries/{entry}/edit', [EntryController::class, 'edit'])->name('entries.edit');
+Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->name('entries.edit');
 
 Route::get('/entries/user_entryList', [EntryController::class, 'list']);
 

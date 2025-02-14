@@ -23,6 +23,11 @@ class EntryController extends Controller
         return view('entries.create_another', ['trial' => $trial]);
     }
 
+    public function userdata(Request $request) {
+//
+        return redirect('entries/user_entryList');
+    }
+
 //    Store first record then pass email and trial_id to create_another view
     public function store(Request $request)
     {
@@ -36,7 +41,7 @@ class EntryController extends Controller
             'name' => ['required', 'min:5', 'max:255'],
             'trial_id' => 'required',
             'phone' => ['required', 'regex:/^([0-9\s\-\+\(\)]*)$/'],
-            'email' => ['required', 'email', 'max:254', 'confirmed'],
+            'email' => ['required', 'email', 'max:254',],
             'class' => 'required',
             'course' => 'required',
             'make' => 'required',
@@ -46,9 +51,9 @@ class EntryController extends Controller
         $attributes['IPaddress'] = $IPaddress;
         $attributes['size'] = $request->size;
         $attributes['token'] = $token;
-        $attributes['course'] = request()->course;
-        $attributes['class'] = request()->class;
-        $attributes['type'] = request()->type;
+//        $attributes['course'] = request()->course;
+//        $attributes['class'] = request()->class;
+//        $attributes['type'] = request()->type;
 
         if (isset($request->isYouth)) {
             $attributes['isYouth'] = 1;
@@ -69,6 +74,11 @@ class EntryController extends Controller
         return redirect('entries/user_entryList');
     }
 
+
+    public function delete(Request $request) {
+        Entry::destroy($request->id);
+        return redirect('entries/user_entryList');
+    }
     public function list(Request $request) {
 
         $email = session('email');
@@ -82,6 +92,9 @@ class EntryController extends Controller
     }
 
     public function edit(Request $request) {
-        return view('entries.edit');
+        $entry = Entry::findorfail($request->entry);
+        $trialid = session('trial_id');
+        $trial = Trial::findorfail($trialid);
+        return view('entries.edit', ['entry' => $entry, 'trial' => $trial]);
     }
 }
