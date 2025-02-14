@@ -36,7 +36,7 @@ class EntryController extends Controller
             'name' => ['required', 'min:5', 'max:255'],
             'trial_id' => 'required',
             'phone' => ['required', 'regex:/^([0-9\s\-\+\(\)]*)$/'],
-            'email' => ['required', 'email', 'max:254'],
+            'email' => ['required', 'email', 'max:254', 'confirmed'],
             'class' => 'required',
             'course' => 'required',
             'make' => 'required',

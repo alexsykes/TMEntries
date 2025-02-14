@@ -1,4 +1,14 @@
 <x-main>
+    <script>
+        function toggle(checked) {
+            var x = document.getElementById("dateInput");
+            if (checked) {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        }
+    </script>
     @php
         //dd($entries);
                         $classes = explode(',',$trial->classlist);
@@ -15,13 +25,13 @@
         <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
         <table class="w-[calc(80%_+_8rem)]">
             <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Course</th>
-                <th>Class</th>
-                <th>Bike</th>
-                <th>Edit</th>
-                <th>Remove</th>
+                <th class="max-w-1">ID</th>
+                <th class="max-w-6">Name</th>
+                <th class="hidden sm:visible">Course</th>
+                <th class="hidden sm:visible">Class</th>
+                <th class="hidden sm:visible">Bike</th>
+                <th class="max-w-1"></th>
+                <th class="max-w-1"></th>
             </tr>
             @foreach($entries as $entry)
                 @php
@@ -29,13 +39,13 @@
                     array_push($entryIDs, $entryID);
                 @endphp
                 <tr>
-                    <td>{{$entryID}}</td>
-                    <td>{{$entry->name}}</td>
-                    <td>{{$entry->class}}</td>
-                    <td>{{$entry->course}}</td>
-                    <td>{{$entry->make}} {{$entry->size}}</td>
-                    <th><a href="edit/{{$entryID}}"><i class="fa-solid fa-pen-to-square"></i></a></th>
-                    <th><a href="delete/{{$entryID}}"><i class="fa-solid fa-ban"></i></a></th>
+                    <td class="max-w-1">{{$entryID}}</td>
+                    <td class="max-w-2">{{$entry->name}}</td>
+                    <td class="hidden sm:visible">{{$entry->course}}</td>
+                    <td class="hidden sm:visible">{{$entry->class}}</td>
+                    <td class="hidden sm:visible">{{$entry->make}} {{$entry->size}}</td>
+                    <td class="max-w-1"><a href="edit/{{$entryID}}"><i class="fa-solid fa-pen-to-square"></i></a></td>
+                    <td class="max-w-2"><a href="delete/{{$entryID}}"><i class="fa-solid fa-ban"></i></a></td>
                 </tr>
             @endforeach
             @php
@@ -63,12 +73,11 @@
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
                 <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-
+                <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
                     <x-form-field>
                         <x-form-label for="name">Name</x-form-label>
-                        <div class="mt-2">
+                        <div class="mt-2 col-span-2">
                             <x-form-input name="name" type="text" id="name" :value="old('name')" placeholder="Rider's name" required />
                             <x-form-error name="name" />
                         </div>
@@ -89,18 +98,19 @@
                     <x-form-field>
                         <x-form-label for="isYouth">Under-18</x-form-label>
                         <div class="mt-2">
-                            <input type="checkbox" name="isYouth" id="isYouth" :value="1"   />
+                            <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth" onchange="toggle(checked)" />
                             <x-form-error name="isYouth" />
                         </div>
                     </x-form-field>
 
-                    <x-form-field>
-                        <x-form-label for="isYouth">Date of Birth</x-form-label>
-                        <div class="mt-  max-w-40">
+                    <div id="dateInput" class="hidden">
+                    <x-form-field >
+                        <x-form-label for="dob">Date of Birth</x-form-label>
+                        <div class="mt-2  max-w-40 ">
                             <x-form-input type="date" name="dob" id="dob" :value="old('dob')"   />
-                            <x-form-error name="dob" />
                         </div>
                     </x-form-field>
+                    </div>
 
                     <x-form-field>
                         <x-form-label for="make">Make</x-form-label>
@@ -137,8 +147,8 @@
                     </x-form-field>
 
                     <x-form-field>
-                        <x-form-label class="pb-2" for="course" >Course</x-form-label>
 
+                        <x-form-label class="pb-2" for="course" >Course</x-form-label>
                         <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-violet-600">
                             <div class="pb-2 pt-2    sm:col-span-2">
                                 <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course" required>

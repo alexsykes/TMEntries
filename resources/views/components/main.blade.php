@@ -81,7 +81,7 @@
 
     </div>
 </header>
-<main class="bg-gray-50 text-black">
+<main class="bg-violet-100 text-black">
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {{ $slot }}
     </div>
