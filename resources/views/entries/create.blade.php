@@ -12,7 +12,8 @@
     <x-slot:heading>Entry for {{$trial->name}}
     </x-slot:heading>
     @php
-        //    $trial from request
+            $sessionEmail = session('email') ? session('email') : "";
+            $sessionPhone = session('phone') ? session('phone') : "";
                 $classes = explode(',',$trial->classlist);
                 $courses = explode(',',$trial->courselist);
                 $auth = array("ACU", "AMCA");
@@ -28,7 +29,7 @@
                     <x-form-field>
                         <x-form-label for="email">Email</x-form-label>
                         <div class="mt-2">
-                            <x-form-input name="email" type="email" id="email" :value="old('email')" placeholder="Contact email" required />
+                            <x-form-input name="email" type="email" id="email" value="{{$sessionEmail}}" placeholder="Contact email" required />
                             <x-form-error name="email" />
                         </div>
                         @error('email')
@@ -40,7 +41,7 @@
                     <x-form-field>
                         <x-form-label for="email">Confirm Email</x-form-label>
                         <div class="mt-2">
-                            <x-form-input name="email_confirmation" type="email" id="email_confirmation" :value="old('email_confirmation')" placeholder="Contact email check" required />
+                            <x-form-input name="email_confirmation" type="email" id="email_confirmation" value="{{$sessionEmail}}" placeholder="Contact email check" required />
                             <x-form-error name="email_confirmation" />
                         </div>
 
@@ -49,7 +50,7 @@
                     <x-form-field>
                         <x-form-label for="phone">Phone</x-form-label>
                         <div class="mt-2">
-                            <x-form-input name="phone" type="text" id="phone" :value="old('phone')" placeholder="Contact phone" required />
+                            <x-form-input name="phone" type="text" id="phone" value="{{$sessionPhone}}" placeholder="Contact phone" required />
                             <x-form-error name="phone" />
                         </div>
                         @error('phone')
@@ -61,8 +62,8 @@
 
 
                 <div class="mt-4" id="buttons">
-                    <a href="/"  class="rounded-md  bg-violet-100 px-3 py-1 text-sm font-light border border-violet-800 text-violet-800 drop-shadow-lg hover:bg-violet-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Cancel</a>
-                    <button type="submit" class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Register</button>
+                    <a href="/"  class="rounded-md  bg-white px-3 py-1 text-sm font-light border border-blue-800 text-blue-800 drop-shadow-lg hover:bg-blue-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Cancel</a>
+                    <button type="submit" class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Next…</button>
                 </div>
             </div>
         </div>

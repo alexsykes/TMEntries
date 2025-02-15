@@ -10,9 +10,14 @@
         }
     </script>
     @php
+    $email = session('email');
+    $phone = session('phone');
+    $trial_id = session('trial_id');
+
         $classes = explode(',',$trial->classlist);
         $courses = explode(',',$trial->courselist);
         $auth = array("ACU", "AMCA");
+        $types = array("2 stroke", "4 stroke", "e-bike");
 $entryIDs = array();
     @endphp
     <x-slot:heading>
@@ -56,7 +61,7 @@ $entryIDs = array();
 
         <form action="checkout" method="post">
             @csrf
-            <button type="submit" class="mt-4 rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Checkout</button>
+            <button type="submit" class="mt-4 rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Checkout</button>
             <input type="hidden" id="entryID[]" name = "entryID[]" value="{{$entryIDstring}}">
 
         </form>
@@ -72,7 +77,7 @@ $entryIDs = array();
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
                 <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                    <div class="text-purple-900 mt-2 text-Lg  font-bold">Add another Entry</div>
+                    <div class="text-blue-900 mt-2 text-Lg  font-bold">Add an Entry</div>
 
                     <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
@@ -136,7 +141,7 @@ $entryIDs = array();
                         <x-form-field>
                             <x-form-label class="pb-2" for="course" >Type</x-form-label>
 
-                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-violet-600">
+                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-600">
                                 <div class="pb-2 pt-2    sm:col-span-2">
                                     <select class="ml-2 bg-white  space-x-4 border-none" name="type" id="type" required>
                                         <option value="">Select your engine type</option>
@@ -151,12 +156,12 @@ $entryIDs = array();
                         <x-form-field>
 
                             <x-form-label class="pb-2" for="course" >Course</x-form-label>
-                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-violet-600">
+                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-600">
                                 <div class="pb-2 pt-2    sm:col-span-2">
                                     <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course" required>
                                         <option value="">Select your course</option>
                                         @foreach($courses as $course)
-                                            <option value="{{$course}}">{{$course}}</option>
+                                            <option value="{{$course}}" >{{$course}}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -166,7 +171,7 @@ $entryIDs = array();
                         <x-form-field>
                             <x-form-label class="pb-2" for="class" >Class</x-form-label>
 
-                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-violet-600">
+                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-600">
                                 <div class="pb-2 pt-2 bg-white sm:col-span-2">
                                     <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class" required>
                                         <option value="">Select your class</option>
@@ -182,8 +187,8 @@ $entryIDs = array();
 
 
                 <div class="mt-4" id="buttons">
-
-                    <button type="submit" class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Register</button>
+                    <a href="{{ URL::previous() }}"  class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
+                    <button type="submit" class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Register</button>
                 </div>
             </div>
         </div>

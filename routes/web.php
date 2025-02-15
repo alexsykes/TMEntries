@@ -20,11 +20,12 @@ Route::post('/entry/store', [EntryController::class, 'store']);
 
 Route::post('checkout', [EntryController::class, 'checkout']);
 Route::post('entries/userdata', [EntryController::class, 'userdata']);
+Route::get('entries/userdata', [EntryController::class, 'userdata']);
 Route::get('entries/delete/{id}', [EntryController::class, 'delete']);
 
 Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->name('entries.edit');
 
-Route::get('/entries/user_entryList', [EntryController::class, 'list']);
+Route::get('/entries/user_entrylist', [EntryController::class, 'list']);
 
 Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
 

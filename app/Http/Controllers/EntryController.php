@@ -11,6 +11,8 @@ class EntryController extends Controller
     //
     public function create($id) {
 //        Not sure if this is necessary
+
+        session(['trial_id' => $id]);
         $trial = Trial::findOrFail($id);
         return view('entries.create', ['trial' => $trial, 'entry' => new Entry()]);
     }
@@ -23,9 +25,18 @@ class EntryController extends Controller
         return view('entries.create_another', ['trial' => $trial]);
     }
 
-    public function userdata(Request $request) {
-//
-        return redirect('entries/user_entryList');
+    public function userdata(Request $request)
+    {
+        session(['trial_id' => $request->trial_id]);
+        session(['email' => $request->email]);
+        session(['phone' => $request->phone]);
+
+
+//        return redirect('/entries/user_entrylist', );
+
+        $entries = Entry::all()->where('email', $request->email)->where('trial_id', $request->trial_id)->where('phone', $request->phone)->where('paid', 0);
+        $trial = Trial::findorfail($request->trial_id  );
+        return view('entries.entrydata', ['entries' => $entries,  'trial' => $trial]);
     }
 
 //    Store first record then pass email and trial_id to create_another view
@@ -71,7 +82,7 @@ class EntryController extends Controller
         session(['trial_id' => $attributes['trial_id']]);
         session(['email' => $attributes['email']]);
         session(['phone' => $attributes['phone']]);
-        return redirect('entries/user_entryList');
+        return view('entries.entrydata', ['entries' => $entries, 'trial' => $trial]);
     }
 
 
@@ -80,15 +91,13 @@ class EntryController extends Controller
         return redirect('entries/user_entryList');
     }
     public function list(Request $request) {
-
         $email = session('email');
-        $trial_id = session('trial_id');
-//        dd($trial_id);
+        $trial_id = $request->input('trial_id');
         $trial =  Trial::findOrFail($trial_id);
-//        dd($trial);
         $phone = session('phone');
         $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('paid', 0);
-        return view('entries.user_entryList', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
+//        dd($entries);
+        return view('entries.entrydata', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
     }
 
     public function edit(Request $request) {

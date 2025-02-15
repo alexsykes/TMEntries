@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  class="h-full bg-violet-900">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  class="h-full bg-blue-900">
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
@@ -72,21 +72,21 @@
             echo env('APP_NAME');
         } ?></title>
 </head>
-<body class="h-full bg-violet-800 text-white">
+<body class="h-full bg-blue-800 text-white">
 
-<header class="bg-violet-800 drop-shadow-md">
+<header class="bg-blue-800 drop-shadow-md">
 {{--    @php $heading = "Welcome" @endphp--}}
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8  sm:flex sm:justify-between">
         <h1 class="text-m sm:text-2xl  font-bold tracking-tight text-white">{{ $heading }}</h1>
 
     </div>
 </header>
-<main class="bg-violet-100 text-black">
+<main class="bg-blue-100 text-black">
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {{ $slot }}
     </div>
     <hr>
-    <div class = "bg-violet-800 text-white">
+    <div class = "bg-blue-800 text-white">
         <x-footer-link>
             <div class="text-center mx-auto  text-white">
                 <a href="/about" class="inline-block mt-1 mx-3 hover:underline">About</a>
@@ -96,7 +96,7 @@
                 <a href="/contact"  class="inline-block mt-1 mx-3 hover:underline">Contact</a>
             </div>
         </x-footer-link>
-        <div class="text-sm mt-1 text-center bg-violet-800 text-white">©{{date("Y")}} - TrialMonster UK</div></div>
+        <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - TrialMonster UK</div></div>
 </main>
 </body>
 </html>
