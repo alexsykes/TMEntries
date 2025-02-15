@@ -21,10 +21,13 @@ class EntryController extends Controller
     {
         session(['email' => $request->email]);
         session(['phone' => $request->phone]);
-
+    $email = session('email');
+    $phone = session('phone');
         $trial_id = session('trial_id');
-        $entries = Entry::all()->where('email', $request->email)->where('trial_id', $trial_id)->where('phone', $request->phone)->where('paid', 0);
+        $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('paid', 0);
+//        $entries = Entry::all();
 
+//        dump($entries);
         $trial = Trial::findorfail($trial_id);
 
         return view('entries.entrydata', ['entries' => $entries,  'trial' => $trial]);
