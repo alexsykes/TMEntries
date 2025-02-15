@@ -9,12 +9,34 @@ use Illuminate\Http\Request;
 class EntryController extends Controller
 {
     //
+
+    public function getUserDetails(Request $request) {
+        $trial_id = request('id');
+        session(['trial_id' => $trial_id]);
+
+        return view('entries.get_user_details');
+    }
+
+    public function showUserData(Request $request)
+    {
+        session(['email' => $request->email]);
+        session(['phone' => $request->phone]);
+
+        $trial_id = session('trial_id');
+        $entries = Entry::all()->where('email', $request->email)->where('trial_id', $trial_id)->where('phone', $request->phone)->where('paid', 0);
+
+        $trial = Trial::findorfail($trial_id);
+
+        return view('entries.entrydata', ['entries' => $entries,  'trial' => $trial]);
+    }
+
+
     public function create($id) {
 //        Not sure if this is necessary
 
         session(['trial_id' => $id]);
         $trial = Trial::findOrFail($id);
-        return view('entries.create', ['trial' => $trial, 'entry' => new Entry()]);
+        return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry()]);
     }
 
 
@@ -25,19 +47,7 @@ class EntryController extends Controller
         return view('entries.create_another', ['trial' => $trial]);
     }
 
-    public function userdata(Request $request)
-    {
-        session(['trial_id' => $request->trial_id]);
-        session(['email' => $request->email]);
-        session(['phone' => $request->phone]);
 
-
-//        return redirect('/entries/user_entrylist', );
-
-        $entries = Entry::all()->where('email', $request->email)->where('trial_id', $request->trial_id)->where('phone', $request->phone)->where('paid', 0);
-        $trial = Trial::findorfail($request->trial_id  );
-        return view('entries.entrydata', ['entries' => $entries,  'trial' => $trial]);
-    }
 
 //    Store first record then pass email and trial_id to create_another view
     public function store(Request $request)

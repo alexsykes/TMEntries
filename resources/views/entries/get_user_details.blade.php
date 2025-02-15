@@ -9,19 +9,15 @@
             }
         }
     </script>
-    <x-slot:heading>Entry for {{$trial->name}}
+    <x-slot:heading>Contact details
     </x-slot:heading>
     @php
             $sessionEmail = session('email') ? session('email') : "";
             $sessionPhone = session('phone') ? session('phone') : "";
-                $classes = explode(',',$trial->classlist);
-                $courses = explode(',',$trial->courselist);
-                $auth = array("ACU", "AMCA");
 //    dd($trial);
     @endphp
     <form action="/entries/userdata" method="POST">
         @csrf
-        <input type="hidden" id="trial_id" name="trial_id" value="{{$trial->id}}"/>
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
                 <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
