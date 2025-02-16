@@ -18,6 +18,15 @@ Route::get('/', [EntryController::class, 'showTrialList'])->name('triallist');
 Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails']);
 
 Route::post('entries/userdata', [EntryController::class, 'showUserData']);
+Route::get('entries/userdata', [EntryController::class, 'userdata']);
+
+Route::patch('/entries/update/{id}', [EntryController::class, 'updateEntry']);
+
+Route::patch('/entries/update/{id}', function (){
+    dump(request()->all());
+    dd("stop");
+});
+
 Route::get('entries/saveddata', [EntryController::class, 'showSavedData']);
 
 Route::get('/entries/entrylist', [EntryController::class, 'list']);
@@ -29,7 +38,6 @@ Route::get('/entries/create_another', [EntryController::class, 'create_another']
 Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
 
-Route::get('entries/userdata', [EntryController::class, 'userdata']);
 Route::get('entries/delete/{id}', [EntryController::class, 'delete']);
 
 Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->name('entries.edit');

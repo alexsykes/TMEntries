@@ -70,7 +70,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php if (config('APP_NAME') != ''){
             echo env('APP_NAME');
-        } ?></title>
+        }  else { echo "TM Entries"; } ?></title>
 </head>
 <body class="h-full bg-blue-800 text-white">
 
@@ -85,7 +85,6 @@
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {{ $slot }}
     </div>
-    <hr>
     <div class = "bg-blue-800 text-white">
         <x-footer-link>
             <div class="text-center mx-auto  text-white">

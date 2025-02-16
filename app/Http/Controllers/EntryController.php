@@ -10,6 +10,7 @@ class EntryController extends Controller
 {
     //
 
+//    Used at initial system entry to get user email/phone
     public function getUserDetails(Request $request) {
         $trial_id = request('id');
         session(['trial_id' => $trial_id]);
@@ -17,14 +18,28 @@ class EntryController extends Controller
         return view('entries.get_user_details');
     }
 
+//  Used to display user's current entries
     public function showUserData(Request $request)
     {
         session(['email' => $request->email]);
         session(['phone' => $request->phone]);
-    $email = session('email');
-    $phone = session('phone');
+        $email = session('email');
+        $phone = session('phone');
         $trial_id = session('trial_id');
-        $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('paid', 0);
+        $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('status', 0);
+//        $entries = Entry::all();
+
+//        dump($entries);
+        $trial = Trial::findorfail($trial_id);
+
+        return view('entries.entrydata', ['entries' => $entries,  'trial' => $trial]);
+    }
+    public function userdata(Request $request)
+    {
+        $email = session('email');
+        $phone = session('phone');
+        $trial_id = session('trial_id');
+        $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('status', 0);
 //        $entries = Entry::all();
 
 //        dump($entries);
@@ -33,7 +48,11 @@ class EntryController extends Controller
         return view('entries.entrydata', ['entries' => $entries,  'trial' => $trial]);
     }
 
+    public function updateEntry(Request $request)  {
+        dump($request);
+    }
 
+//  Not sure if currently used
     public function create($id) {
 //        Not sure if this is necessary
 
@@ -41,6 +60,7 @@ class EntryController extends Controller
         $trial = Trial::findOrFail($id);
         return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry()]);
     }
+
 
 
     public function create_another() {
@@ -74,6 +94,7 @@ class EntryController extends Controller
 
         $attributes['IPaddress'] = $IPaddress;
         $attributes['size'] = $request->size;
+        $attributes['licence'] = $request->licence;
         $attributes['token'] = $token;
 //        $attributes['course'] = request()->course;
 //        $attributes['class'] = request()->class;
@@ -88,10 +109,6 @@ class EntryController extends Controller
         $trial = Trial::findOrFail($attributes['trial_id']);
         $entries = Entry::all()->where('IPaddress', $IPaddress)->where('trial_id', session('trial_id'))->where('email', $attributes['email']);
 
-//        $request->session()->put('email', $attributes['email']);
-//        $request->session()->put('trial_id', $attributes['trial_id']);
-//        $request->session()->put('phone', $attributes['phone']);
-
         session(['trial_id' => $attributes['trial_id']]);
         session(['email' => $attributes['email']]);
         session(['phone' => $attributes['phone']]);
@@ -101,7 +118,8 @@ class EntryController extends Controller
 
     public function delete(Request $request) {
         Entry::destroy($request->id);
-        return redirect('entries/user_entryList');
+//        return redirect('entries/user_entryList');
+        return redirect('entries/userdata');
     }
     public function list(Request $request) {
         $email = session('email');

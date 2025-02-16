@@ -16,9 +16,10 @@
 
         $classes = explode(',',$trial->classlist);
         $courses = explode(',',$trial->courselist);
-        $auth = array("ACU", "AMCA");
+        $authority = array("ACU", "AMCA");
         $types = array("2 stroke", "4 stroke", "e-bike");
 $entryIDs = array();
+
     @endphp
     <x-slot:heading>
         My Entries
@@ -26,8 +27,9 @@ $entryIDs = array();
     <div>Contact email: {{$email}}</div>
     <div>Contact phone: {{$phone}}</div>
     @if(sizeof($entries) > 0)
-        <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-            <table class="w-auto">
+        <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Current entries </div>
+            <table class="w-full ml-4 mr-4">
                 <tr>
                     <th class="">ID</th>
                     <th class="pl-2">Name</th>
@@ -61,7 +63,7 @@ $entryIDs = array();
 
         <form action="checkout" method="post">
             @csrf
-            <button type="submit" class="mt-4 rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Checkout</button>
+            <button type="submit" class="mt-4 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Checkout</button>
             <input type="hidden" id="entryID[]" name = "entryID[]" value="{{$entryIDstring}}">
 
         </form>
@@ -71,21 +73,20 @@ $entryIDs = array();
 
     <form action="/entries/store" method="POST">
         @csrf
-        <input type="hidden" id="trial_id" name="trial_id" value="{{$trial_id}}"/>
-        <input type="hidden" id="email" name="email" value="{{$email}}"/>
-        <input type="hidden" id="phone" name="phone" value="{{$phone}}"/>
+        <input type="hidden" id="trial_id" name="trial_id" value="{{$trial_id}}">
+        <input type="hidden" id="email" name="email" value="{{$email}}">
+        <input type="hidden" id="phone" name="phone" value="{{$phone}}">
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
-                <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                    <div class="text-blue-900 mt-2 text-Lg  font-bold">Add an Entry</div>
+                <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                    <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add an Entry </div>
 
-                    <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-
+                    <div class="mt-2 px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
                         <x-form-field>
                             <x-form-label for="name">Name</x-form-label>
-                            <div class="mt-2 col-span-2">
-                                <x-form-input name="name" type="text" id="name" :value="old('name')" placeholder="Rider's name" required />
+                            <div class="mt-2 ">
+                                <x-form-input class="" name="name" type="text" id="name" :value="old('name')" placeholder="Rider's name" required />
                                 <x-form-error name="name" />
                             </div>
                             @error('name')
@@ -93,9 +94,8 @@ $entryIDs = array();
                             @enderror
                         </x-form-field>
 
-
                         <x-form-field>
-                            <x-form-label for="licence">{{$auth[$trial->authority]}} Licence</x-form-label>
+                            <x-form-label for="licence">{{$authority[$trial->authority]}} Licence</x-form-label>
                             <div class="mt-2 col-span-2">
                                 <x-form-input name="licence" type="text" id="licence" :value="old('licence')" placeholder="Licence number - leave blank if no licence"   />
                                 <x-form-error name="licence" />
@@ -141,13 +141,13 @@ $entryIDs = array();
                         <x-form-field>
                             <x-form-label class="pb-2" for="course" >Type</x-form-label>
 
-                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-600">
+                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
                                 <div class="pb-2 pt-2    sm:col-span-2">
                                     <select class="ml-2 bg-white  space-x-4 border-none" name="type" id="type" required>
                                         <option value="">Select your engine type</option>
-                                        <option value="2T" selected>2-stroke</option>
-                                        <option value="4T">4-stroke</option>
-                                        <option value="e-bike">e-Bike</option>
+                                        @foreach($types as $type)
+                                            <option value="{{$type}}">{{$type}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -156,7 +156,7 @@ $entryIDs = array();
                         <x-form-field>
 
                             <x-form-label class="pb-2" for="course" >Course</x-form-label>
-                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-600">
+                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
                                 <div class="pb-2 pt-2    sm:col-span-2">
                                     <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course" required>
                                         <option value="">Select your course</option>
@@ -171,7 +171,7 @@ $entryIDs = array();
                         <x-form-field>
                             <x-form-label class="pb-2" for="class" >Class</x-form-label>
 
-                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-600">
+                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
                                 <div class="pb-2 pt-2 bg-white sm:col-span-2">
                                     <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class" required>
                                         <option value="">Select your class</option>
