@@ -53,6 +53,21 @@
                         <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                         @enderror
                     </x-form-field>
+
+
+                    <x-form-field>
+                        <x-form-label for="phone">Motorsport can be Dangerous</x-form-label>
+                        <div class="mt-2">
+                            <div class="text-sm">
+                                By checking the box I confirm that I agree to the Terms and Conditions listed on this website and will comply with the Rules and Regulations of the organising body.
+                            </div>
+                            <input name="accept" type="checkbox" id="accept" value="1" placeholder="Contact accept" required />
+                            <x-form-error name="accept" />
+                        </div>
+                        @error('')
+                        <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                        @enderror
+                    </x-form-field>
                 </div>
 
 

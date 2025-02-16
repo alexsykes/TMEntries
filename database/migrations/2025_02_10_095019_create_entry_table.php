@@ -30,6 +30,7 @@ return new class extends Migration
 
             $table->date('dob')->nullable();
             $table->boolean('isYouth')->default(false);
+            $table->boolean('accept')->default(false);
 
             $table->string('stripe_product_id')->nullable();
             $table->string('stripe_price_id')->nullable();

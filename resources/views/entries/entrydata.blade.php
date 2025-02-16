@@ -22,23 +22,23 @@ $entryIDs = array();
 
     @endphp
     <x-slot:heading>
-        My Entries
+        Registrations
     </x-slot:heading>
     <div>Contact email: {{$email}}</div>
     <div>Contact phone: {{$phone}}</div>
     @if(sizeof($entries) > 0)
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Current entries </div>
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Registration for {{$trial->name}} </div>
             <table class="w-full ml-4 mr-4">
                 <tr>
-                    <th class="">ID</th>
+                    <th class="">Ref</th>
                     <th class="pl-2">Name</th>
-                    <th class="pl-2 visible sm:visible">Course</th>
-                    <th class="pl-2 visible sm:visible">Class</th>
+                    <th class="pl-2 hidden sm:table-cell">Course</th>
+                    <th class="pl-2 hidden sm:table-cell">Class</th>
 
-                    <th class="pl-2 visible sm:visible">Bike</th>
-                    <th class="pl-4"></th>
-                    <th class="pl-4"></th>
+                    <th class="pl-2 hidden md:table-cell">Bike</th>
+                    <th class="pl-2"></th>
+                    <th class="pl-2"></th>
                 </tr>
                 @foreach($entries as $entry)
                     @php
@@ -48,11 +48,11 @@ $entryIDs = array();
                     <tr>
                         <td class="">{{$entryID}}</td>
                         <td class="pl-2">{{$entry->name}}</td>
-                        <td class="pl-2 visible sm:pl-2 visible">{{$entry->course}}</td>
-                        <td class="pl-2 visible sm:pl-2 visible">{{$entry->class}}</td>
-                        <td class="pl-2 visible dden sm:pl-2 visible">{{$entry->make}} {{$entry->size}}</td>
-                        <td class="pl-4"><a href="edit/{{$entryID}}"><i class="fa-solid fa-pen-to-square"></i></a></td>
-                        <td class="pl-4"><a href="delete/{{$entryID}}"><i class="fa-solid fa-ban"></i></a></td>
+                        <td class="pl-2 hidden sm:table-cell">{{$entry->course}}</td>
+                        <td class="pl-2 hidden sm:table-cell">{{$entry->class}}</td>
+                        <td class="pl-2 hidden md:table-cell">{{$entry->make}} {{$entry->size}}</td>
+                        <td class="pl-2"><a href="edit/{{$entryID}}"><i class="fa-solid fa-pen-to-square"></i></a></td>
+                        <td class="pl-2"><a href="delete/{{$entryID}}"><i class="fa-solid fa-ban text-orange-700"></i></a></td>
                     </tr>
                 @endforeach
                 @php
@@ -187,7 +187,7 @@ $entryIDs = array();
 
 
                 <div class="mt-4" id="buttons">
-                    <a href="{{ URL::previous() }}"  class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
+                    <a href="/"  class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
                     <button type="submit" class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Register</button>
                 </div>
             </div>

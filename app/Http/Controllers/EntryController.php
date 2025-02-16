@@ -21,6 +21,11 @@ class EntryController extends Controller
 //  Used to display user's current entries
     public function showUserData(Request $request)
     {
+        if(!isset($request->accept)) {
+            exit(404);
+        } else {
+            session(['accept' => 1]);
+        }
         session(['email' => $request->email]);
         session(['phone' => $request->phone]);
         $email = session('email');
@@ -49,7 +54,35 @@ class EntryController extends Controller
     }
 
     public function updateEntry(Request $request)  {
-        dump($request);
+        $accept = session('accept');
+        $request->validate([
+            'name' => ['required', 'min:5', 'max:255'],
+            'class' => 'required',
+            'course' => 'required',
+            'make' => 'required',
+            'type' => 'required',
+        ]);
+
+
+        $entry = Entry::find($request->id);
+        $entry->name = $request->name;
+        $entry->class = $request->class;
+        $entry->course = $request->course;
+        $entry->licence = $request->licence;
+
+        $entry->make = $request->make;
+        $entry->type = $request->type;
+        $entry->size = $request->size;
+        $entry->accept = $accept;
+
+        if (isset($request->isYouth)) {
+            $entry->isYouth = 1;
+            $entry->dob = $request->dob;
+        }
+        $entry->save();
+
+
+        return redirect('entries/userdata');
     }
 
 //  Not sure if currently used
@@ -75,10 +108,12 @@ class EntryController extends Controller
 //    Store first record then pass email and trial_id to create_another view
     public function store(Request $request)
     {
-//        dd($request->all());
         $IPaddress = $request->ip();
         $request->session()->put('trial_id', $request->trial_id);
         $request->session()->put('email', $request->email);
+        $accept = session('accept');
+
+
         $token = bin2hex(random_bytes(16));
 
         $attributes = $request->validate([
@@ -96,9 +131,7 @@ class EntryController extends Controller
         $attributes['size'] = $request->size;
         $attributes['licence'] = $request->licence;
         $attributes['token'] = $token;
-//        $attributes['course'] = request()->course;
-//        $attributes['class'] = request()->class;
-//        $attributes['type'] = request()->type;
+        $attributes['accept'] = $accept;
 
         if (isset($request->isYouth)) {
             $attributes['isYouth'] = 1;

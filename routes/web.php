@@ -22,10 +22,7 @@ Route::get('entries/userdata', [EntryController::class, 'userdata']);
 
 Route::patch('/entries/update/{id}', [EntryController::class, 'updateEntry']);
 
-Route::patch('/entries/update/{id}', function (){
-    dump(request()->all());
-    dd("stop");
-});
+
 
 Route::get('entries/saveddata', [EntryController::class, 'showSavedData']);
 
