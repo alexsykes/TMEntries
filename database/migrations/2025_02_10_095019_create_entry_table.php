@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->unsignedBigInteger('trial_id');
+            $table->unsignedSmallInteger('ridingNumber')->nullable();
 
             $table->string('name');
             $table->string('email');

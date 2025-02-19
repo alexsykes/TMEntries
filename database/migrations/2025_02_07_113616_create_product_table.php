@@ -23,6 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('trial_id');
 
             $table->string('product_name');
+            $table->string('product_category')->nullable();
             $table->string('stripe_product_id');
             $table->string('stripe_price_id');
             $table->string('stripe_product_description');

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entry;
+use App\Models\Result;
 use App\Models\Trial;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 class EntryController extends Controller
 {
@@ -139,6 +142,15 @@ class EntryController extends Controller
         }
 
         $entry =   Entry::create($attributes);
+
+        $entryID = $entry->id;
+        $attr['entryID'] = $entryID;
+        $result = Result::create($attr);
+//        DB::insert('insert into results (id) values ($entry->id)');
+
+//        dd($entry->id);
+//        ResultController::class->create_result($entry->id);
+
         $trial = Trial::findOrFail($attributes['trial_id']);
         $entries = Entry::all()->where('IPaddress', $IPaddress)->where('trial_id', session('trial_id'))->where('email', $attributes['email']);
 
