@@ -3,17 +3,28 @@
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TrialController;
+use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
+use function Pest\Laravel\get;
+
+
+/*
+    Front door - display list of trials currently taking entries
+*/
+Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
 
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
+Route::get('/venues', function () {
+    return view('venues');
+})->name('venues');
 
-/*
-    Front door - display list of trials currently taking entries
-*/
-Route::get('/', [EntryController::class, 'showTrialList'])->name('triallist');
+Route::get('/trials', [TrialController::class, 'showTrialList'])->name('trials');
+Route::get('/adminTrials', [TrialController::class, 'adminTrials'])->name('adminTrials');
+Route::get('trials/details/{id}', [TrialController::class, 'details'])->name('details');
+
 
 Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails']);
 
@@ -34,13 +45,17 @@ Route::get('/entries/create_another', [EntryController::class, 'create_another']
 
 Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
-
 Route::get('entries/delete/{id}', [EntryController::class, 'delete']);
-
 Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->name('entries.edit');
 
 
-Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
+Route::get('/venues/add', [VenueController::class, 'create']);
+Route::get('/venues/edit/{$venueID}', [VenueController::class, 'edit']);
+Route::post('/venues/add', [VenueController::class, 'store']);
+Route::post('/venues/update', [VenueController::class, 'update']);
+
+
+Route::get('/showAdminTrialsList', [TrialController::class, 'showAdminTrialsList'])->name('triallist');
 
 
 
