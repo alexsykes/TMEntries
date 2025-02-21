@@ -19,9 +19,10 @@ return new class extends Migration
             $table->string('address');
             $table->string('phone')->nullable();
             $table->string('club')->nullable();
-            $table->string('directions')->nullable();
+            $table->string('centre')->nullable();
+            $table->text('directions')->nullable();
             $table->string('landowner');
-            $table->string('notes')->nullable();
+            $table->text('notes')->nullable();
             $table->string('w3w')->nullable();
 
             $table->string('postcode')->nullable()  ;

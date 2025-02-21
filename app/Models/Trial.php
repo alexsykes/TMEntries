@@ -8,6 +8,6 @@ class Trial extends Model
 {
     //
     protected $fillable = [
-        'name', 'id', 'classlist', 'courselist',  'date', 'club', 'updated_at','authority',
+        'name', 'id', 'classlist', 'courselist',  'date', 'club', 'updated_at','authority','created_by'
     ];
 }

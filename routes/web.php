@@ -12,44 +12,48 @@ use function Pest\Laravel\get;
     Front door - display list of trials currently taking entries
 */
 Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
-
-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
-Route::get('/venues', function () {
-    return view('venues');
-})->name('venues');
+
+
+/*
+ * TRIAL Routes
+ */
 
 Route::get('/trials', [TrialController::class, 'showTrialList'])->name('trials');
 Route::get('/adminTrials', [TrialController::class, 'adminTrials'])->name('adminTrials');
-Route::get('trials/details/{id}', [TrialController::class, 'details'])->name('details');
+Route::get('trials/edit/{id}', [TrialController::class, 'edit'])->name('edit');
+Route::get('trials/add', [TrialController::class, 'add'])->name('add');
+Route::get('trials/remove/{id}', [TrialController::class, 'remove'])->name('remove');
+Route::patch('trials/update', [TrialController::class, 'update'])->name('update');
+Route::post('trials/store', [TrialController::class, 'store'])->name('store');
+Route::post('trials/edit/saveasnew', [TrialController::class, 'saveasnew'])->name('saveasnew');
 
 
+/*
+ENTRY Routes
+*/
 Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails']);
 
 Route::post('entries/userdata', [EntryController::class, 'showUserData']);
 Route::get('entries/userdata', [EntryController::class, 'userdata']);
 
 Route::patch('/entries/update/{id}', [EntryController::class, 'updateEntry']);
-
-
-
 Route::get('entries/saveddata', [EntryController::class, 'showSavedData']);
-
 Route::get('/entries/entrylist', [EntryController::class, 'list']);
-
 Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->name('entries.create');
-
 Route::get('/entries/create_another', [EntryController::class, 'create_another'])->name('entries.create_another');
-
 Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
 Route::get('entries/delete/{id}', [EntryController::class, 'delete']);
 Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->name('entries.edit');
 
-
-Route::get('/venues/add', [VenueController::class, 'create']);
+/*
+ * VENUE Routes
+ */
+Route::get('/venues', [VenueController::class, 'list'])->name('venues');
+Route::get('/venues/add', [VenueController::class, 'add']);
 Route::get('/venues/edit/{$venueID}', [VenueController::class, 'edit']);
 Route::post('/venues/add', [VenueController::class, 'store']);
 Route::post('/venues/update', [VenueController::class, 'update']);
