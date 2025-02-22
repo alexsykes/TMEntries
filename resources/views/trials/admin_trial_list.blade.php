@@ -6,13 +6,20 @@
         <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Trial list</div>
         <table class="w-full">
 @foreach($trials as $trial)
+    @php
+        if ($trial->published) {
+            $publishIMG = "fa-solid fa-eye text-black";
+        } else {
+             $publishIMG = "fa-solid fa-eye-slash text-orange-700";
+        }
+    @endphp
     <div id="triallist" class="flex-auto">
     <tr class="pr-4 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
         <td class="pl-2 hidden md:table-cell">{{$trial->date}}</td>
         <td class="hidden md:table-cell">{{$trial->club}}</td>
         <td class="pl-2 table-cell">{{$trial->name}}</td>
-        <td class="table-cell"><a href="trials/remove/{{$trial->id}}"><span><i class="fa-solid fa-ban text-orange-700"></i></span></a></td>
-        <td class="table-cell"><a href="trials/edit/{{$trial->id}}"><span><i class="fa-solid fa-pencil"></i></span></a></td>
+        <td class="table-cell"><a href="/trials/toggleVisibility/{{$trial->id}}"><span><i class="{{$publishIMG}}"></i></span></a></td>
+        <td class="table-cell"><a href="/trials/edit/{{$trial->id}}"><span><i class="fa-solid fa-pencil"></i></span></a></td>
     </tr>
     </div>
 @endforeach

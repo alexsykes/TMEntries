@@ -95,7 +95,7 @@
                 <a href="/contact"  class="inline-block mt-1 mx-3 hover:underline">Contact</a>
             </div>
         </x-footer-link>
-        <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - TrialMonster UK</div></div>
+        <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - Oldgit UK</div></div>
 </main>
 </body>
 </html>

@@ -16,7 +16,7 @@
 
         $classes = explode(',',$trial->classlist);
         $courses = explode(',',$trial->courselist);
-        $authority = array("ACU", "AMCA");
+        $authority = $trial->authority;
         $types = array("2 stroke", "4 stroke", "e-bike");
 $entryIDs = array();
 
@@ -95,7 +95,7 @@ $entryIDs = array();
                         </x-form-field>
 
                         <x-form-field>
-                            <x-form-label for="licence">{{$authority[$trial->authority]}} Licence</x-form-label>
+                            <x-form-label for="licence">{{$authority}} Licence</x-form-label>
                             <div class="mt-2 col-span-2">
                                 <x-form-input name="licence" type="text" id="licence" :value="old('licence')" placeholder="Licence number - leave blank if no licence"   />
                                 <x-form-error name="licence" />

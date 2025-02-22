@@ -20,7 +20,16 @@
         $authority = array("ACU", "AMCA");
         $types = array("2 stroke", "4 stroke", "e-bike");
     @endphp
-
+    <script>
+        function toggle(checked) {
+            var x = document.getElementById("dateInput");
+            if (checked) {
+                x.style.display = "inline-block";
+            } else {
+                x.style.display = "none";
+            }
+        }
+    </script>
     <form action="/entries/update/{{$id}}" method="POST">
         <input type="hidden" name="id" id="id" value="{{$id}}"/>
         @csrf

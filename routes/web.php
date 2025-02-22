@@ -24,6 +24,7 @@ Route::get('/dashboard', function () {
 Route::get('/trials', [TrialController::class, 'showTrialList'])->name('trials');
 Route::get('/adminTrials', [TrialController::class, 'adminTrials'])->name('adminTrials');
 Route::get('trials/edit/{id}', [TrialController::class, 'edit'])->name('edit');
+Route::get('trials/toggleVisibility/{id}', [TrialController::class, 'toggleVisibility'])->name('toggleVisibility');
 Route::get('trials/add', [TrialController::class, 'add'])->name('add');
 Route::get('trials/remove/{id}', [TrialController::class, 'remove'])->name('remove');
 Route::patch('trials/update', [TrialController::class, 'update'])->name('update');

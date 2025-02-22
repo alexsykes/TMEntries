@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('courselist');
             $table->date('date');
             $table->string('club');
-            $table->integer('authority')->nullable();
 
             $table->unsignedBigInteger('created_by')->default(0);
         });
