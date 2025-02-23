@@ -90,9 +90,11 @@ class TrialController extends Controller
 
         $attrs = request()->validate([
             'name' => 'required',
+            'contactName' => 'required',
             'date' => ['required', Rule::date()->after(today()->addDays(1)),],
             'classlist' => 'required',
             'courselist' => 'required',
+            'startTime' => 'required',
             'club' => 'required',
             'email' => ['required','email', ],
             'phone' => ['required', ],

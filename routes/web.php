@@ -22,14 +22,14 @@ Route::get('/dashboard', function () {
  */
 
 Route::get('/trials', [TrialController::class, 'showTrialList'])->name('trials');
-Route::get('/adminTrials', [TrialController::class, 'adminTrials'])->name('adminTrials');
-Route::get('trials/edit/{id}', [TrialController::class, 'edit'])->name('edit');
-Route::get('trials/toggleVisibility/{id}', [TrialController::class, 'toggleVisibility'])->name('toggleVisibility');
-Route::get('trials/add', [TrialController::class, 'add'])->name('add');
-Route::get('trials/remove/{id}', [TrialController::class, 'remove'])->name('remove');
-Route::patch('trials/update', [TrialController::class, 'update'])->name('update');
-Route::post('trials/store', [TrialController::class, 'store'])->name('store');
-Route::post('trials/edit/saveasnew', [TrialController::class, 'saveasnew'])->name('saveasnew');
+Route::get('/adminTrials', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified'])->name('adminTrials');
+Route::get('trials/edit/{id}', [TrialController::class, 'edit'])->middleware(['auth', 'verified'])->name('edit');
+Route::get('trials/toggleVisibility/{id}', [TrialController::class, 'toggleVisibility'])->middleware(['auth', 'verified'])->name('toggleVisibility');
+Route::get('trials/add', [TrialController::class, 'add'])->middleware(['auth', 'verified'])->name('add');
+Route::get('trials/remove/{id}', [TrialController::class, 'remove'])->middleware(['auth', 'verified'])->name('remove');
+Route::patch('trials/update', [TrialController::class, 'update'])->middleware(['auth', 'verified'])->name('update');
+Route::post('trials/store', [TrialController::class, 'store'])->middleware(['auth', 'verified'])->name('store');
+Route::post('trials/edit/saveasnew', [TrialController::class, 'saveasnew'])->middleware(['auth', 'verified'])->name('saveasnew');
 
 
 /*
