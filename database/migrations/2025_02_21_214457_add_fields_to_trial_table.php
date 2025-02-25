@@ -29,6 +29,8 @@ return new class extends Migration
             $table->string('customCourses')->nullable();
             $table->string('customClasses')->nullable();
             $table->string('otherVenue')->nullable();
+            $table->string('entryMethod');
+            $table->string('onlineEntryLink')->nullable();
 
 
             $table->boolean('hasEodSurcharge')->default(false);
@@ -57,6 +59,7 @@ return new class extends Migration
             $table->unsignedInteger('adultEntryFee')->default(0);
             $table->unsignedInteger('eodSurcharge')->default(0);
             $table->unsignedInteger('penaltyDelta')->default(0);
+            $table->unsignedInteger('entryLimit')->default(0);
 
             $table->unsignedBigInteger('venueID')->nullable();
 

@@ -87,7 +87,7 @@ class TrialController extends Controller
 
     public function store()
     {
-
+//    dd(request());
         $attrs = request()->validate([
             'name' => 'required',
             'contactName' => 'required',
@@ -99,7 +99,10 @@ class TrialController extends Controller
             'email' => ['required','email', ],
             'phone' => ['required', ],
         ]);
-
+        $attrs['classlist'] = implode(',', request('classlist'));
+        $attrs['courselist'] = implode(',', request('courselist'));
+        $attrs['entryMethod'] = implode(',', request('entryMethod'));
+//dd(request());
         $user = Auth::user();
         $userid = $user->id;
         $attrs['created_by'] = $userid;

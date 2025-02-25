@@ -60,7 +60,7 @@ Route::post('/venues/add', [VenueController::class, 'store']);
 Route::post('/venues/update', [VenueController::class, 'update']);
 
 
-Route::get('/showAdminTrialsList', [TrialController::class, 'showAdminTrialsList'])->name('triallist');
+//Route::get('/showAdminTrialsList', [TrialController::class, 'showAdminTrialsList'])->name('adminTrialList');
 
 
 
