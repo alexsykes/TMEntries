@@ -1,5 +1,10 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+<x-guest-layout>    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <script>
+        function onSubmit(token) {
+            document.getElementById("registerForm").submit();
+        }
+    </script>
+    <form id="registerForm" method="POST" action="{{ route('register') }}">
         @csrf
 
         <!-- Name -->
@@ -44,9 +49,13 @@
                 {{ __('Already registered?') }}
             </a>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
+            <button class="g-recaptcha btn btn-primary btn-lg "
+                    data-sitekey="{{ config('services.recaptcha_v3.siteKey') }}"
+                    data-callback="onSubmit"
+                    data-action="registerUser">Submit</button>
+{{--            <x-primary-button class="ms-4">--}}
+{{--                {{ __('Register') }}--}}
+{{--            </x-primary-button>--}}
         </div>
     </form>
 </x-guest-layout>

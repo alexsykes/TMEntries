@@ -62,7 +62,8 @@ Route::post('/venues/update', [VenueController::class, 'update']);
 
 //Route::get('/showAdminTrialsList', [TrialController::class, 'showAdminTrialsList'])->name('adminTrialList');
 
-
+Route::get('/contact-us', ['App\Http\Controllers\ContactUsController', 'index'])->name('contact.index');
+Route::post('/contact-us', ['App\Http\Controllers\ContactUsController', 'send'])->name('contact.send');
 
 
 Route::post('checkout', [EntryController::class, 'checkout']);
