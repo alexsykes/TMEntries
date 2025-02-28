@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('centre')->nullable();
             $table->string('extras')->nullable();
             $table->string('stripeProductCodes')->nullable();
+            $table->string('status');
             $table->string('otherRestriction')->nullable();
             $table->string('notes')->nullable();
             $table->string('options')->nullable();
@@ -37,7 +38,6 @@ return new class extends Migration
             $table->boolean('hasEntryLimit')->default(false);
             $table->boolean('hasClosingDate')->default(false);
             $table->boolean('hasOpeningDate')->default(false);
-            $table->boolean('hasNotes')->default(false);
             $table->boolean('hasTimePenalty')->default(false);
             $table->boolean('hasWaitingList')->default(false);
             $table->boolean('published')->default(true);
@@ -51,7 +51,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('numDays')->default(1);
             $table->unsignedTinyInteger('numColumns')->default(1);
             $table->unsignedTinyInteger('numRows')->default(1);
-            $table->unsignedTinyInteger('numnumLaps')->default(1);
+            $table->unsignedTinyInteger('numLaps')->default(1);
             $table->unsignedTinyInteger('numSections')->default(1);
             $table->unsignedTinyInteger('numSheets')->default(1);
 
@@ -70,6 +70,7 @@ return new class extends Migration
             $table->enum('authority', ['ACU', 'AMCA', 'Other'])->default('AMCA');
             $table->enum('entrySelectionBasis', ['Order of Payment', 'Ballot', 'Selection', 'Other'])->default('Order of Payment');
             $table->enum('scoringMode', ['Observer', 'App', 'Sequential', 'Punch cards', 'Other'])->default('Observer');
+            $table->enum('restriction', ['Open', 'Centre', 'Closed to club', 'Other'])->default('Open');
         });
     }
 

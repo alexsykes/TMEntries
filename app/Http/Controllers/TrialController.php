@@ -92,20 +92,75 @@ class TrialController extends Controller
             'name' => 'required',
             'contactName' => 'required',
             'date' => ['required', Rule::date()->after(today()->addDays(1)),],
-            'classlist' => 'required',
-            'courselist' => 'required',
             'startTime' => 'required',
             'club' => 'required',
             'email' => ['required','email', ],
             'phone' => ['required', ],
+            'status' => 'required',
+            'stopNonStop' => 'required',
         ]);
-        $attrs['classlist'] = implode(',', request('classlist'));
-        $attrs['courselist'] = implode(',', request('courselist'));
-        $attrs['entryMethod'] = implode(',', request('entryMethod'));
-//dd(request());
+        if(request('classlist')){
+            $attrs['classlist'] = implode(',', request('classlist'));
+        } else {
+            $attrs['classlist'] = '';
+        }
+
+        if(request('courselist')){
+            $attrs['courselist'] = implode(',', request('courselist'));
+        } else {
+            $attrs['courselist'] = '';
+        }
+
         $user = Auth::user();
         $userid = $user->id;
         $attrs['created_by'] = $userid;
+
+        $attrs['status'] = request('status', "Open");
+        $attrs['centre'] = request('centre');
+        $attrs['extras'] = request('extras');
+        $attrs['otherRestrictions'] = request('otherRestrictions');
+        $attrs['notes'] = request('notes');
+        $attrs['options'] = request('options');
+        $attrs['customCourses'] = request('customCourses');
+        $attrs['customClasses'] = request('customClasses');
+        $attrs['entryMethod'] = implode(',', request('entryMethod', 'TrialMonster'));
+        $attrs['onlineEntryLink'] = request('onlineEntryLink');
+        $attrs['hasEodSurcharge'] = request('hasEodSurcharge', 0);
+        $attrs['hasEntryLimit'] = request('hasEntryLimit', 0);
+        $attrs['hasClosingDate'] = request('hasClosingDate', 0);
+        $attrs['hasOpeningDate'] = request('hasOpeningDate', 0);
+        $attrs['hasNotes'] = request('hasNotes', 0);
+        $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
+        $attrs['hasWaitingList'] = request('hasWaitingList', 0);
+
+        $attrs['isMultiDay'] = request('isMultiDay',0);
+
+        $attrs['numLaps'] = request('numLaps', 10);
+        $attrs['numSections'] = request('numSections', 4);
+        $attrs['numRows'] = request('numRows', 40);
+        $attrs['numColumns'] = request('numColumns', 3);
+
+        $attrs['youthEntryFee'] = request('youthEntryFee', 0);
+        $attrs['adultEntryFee'] = request('adultEntryFee', 0);
+        $attrs['eodSurcharge'] = request('eodSurcharge', 0);
+
+        $attrs['penaltyDelta'] = request('penaltyDelta', 60);
+        $attrs['startInterval'] = request('startInterval', 60);
+        $attrs['entryLimit'] = request('entryLimit', 0);
+        $attrs['venueID'] = request('venueID', 0);
+        $attrs['otherVenue'] = request('otherVenue');
+        $attrs['otherRestriction'] = request('otherRestriction');
+
+        $attrs['closingDate'] = request('closingDate');
+        $attrs['openingDate'] = request('openingDate');
+
+        $attrs['authority'] = request('authority');
+        $attrs['entrySelectionBasis'] = request('entrySelectionBasis', '');
+        $attrs['scoringMode'] = request('scoringMode');
+
+
+
+
 //        dd($attrs);
         Trial::create($attrs);
 

@@ -32,6 +32,8 @@ class ReCaptchaV3 implements ValidationRule
                 'response' => $value,
             ]);
 
+        dd(request()->ip);
+
         // This happens if google denied our request with an error
         if ($siteVerify->failed()) {
             $fail('Google reCAPTCHA was not able to verify the form, please try again.');
@@ -51,7 +53,7 @@ class ReCaptchaV3 implements ValidationRule
                 return;
             }
 
-            // When this fails it means the browser didn't send a correct code. This means it's very likely a bot we should block
+            // Tests pass so proceed
             if ($body['success'] == true) {
                 Log::info("Success");
             }
