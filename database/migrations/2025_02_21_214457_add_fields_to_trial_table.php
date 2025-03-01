@@ -59,6 +59,7 @@ return new class extends Migration
             $table->unsignedInteger('adultEntryFee')->default(0);
             $table->unsignedInteger('eodSurcharge')->default(0);
             $table->unsignedInteger('penaltyDelta')->default(0);
+            $table->unsignedInteger('startInterval')->default(0);
             $table->unsignedInteger('entryLimit')->default(0);
 
             $table->unsignedBigInteger('venueID')->nullable();
