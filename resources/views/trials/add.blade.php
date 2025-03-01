@@ -648,7 +648,7 @@
                                     <div class="mt-2 col-span-2">
                                         @foreach($restrictionArray as $option)
                                             <input name="status" type="radio" id="status" value="{{$option}}" required>
-                                            <label class="pl-1 pr-4" for="{{$option}}">{{$option}}</label>
+                                            <label class="pl-1 pr-4" for="status">{{$option}}</label>
                                         @endforeach
                                         <x-form-error name="status"/>
                                     </div>
@@ -747,9 +747,10 @@
                             </div>
 
 
+                            <div id="hasEodSurchargeDiv" class="mt-4 col-span-3">
                             <x-form-field>
                                 <x-form-label for="hasEodSurcharge">Surcharge for Entry on the Day</x-form-label>
-                                <div class="mt-2">
+                                <div class="mt-2 col-span-3">
                                     <input name="hasEodSurcharge" type="checkbox" value="1" id="hasEodSurcharge" onchange="toggle(checked, 'eodSurchargeDiv')" />
                                     <x-form-error name="hasEodSurcharge"/>
                                 </div>
@@ -757,6 +758,7 @@
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
+                            </div>
 
                             <div id="eodSurchargeDiv" class="mt-4 col-span-3">
                                 <x-form-field>

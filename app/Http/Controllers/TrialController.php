@@ -13,7 +13,7 @@ class TrialController extends Controller
     //
 
     public function showTrialList() {
-        $trials = Trial::all();
+        $trials = Trial::all()->where('published', 1)->sortBy('date');
         return view('trials.trial_list', ['trials' => $trials]);
     }
 
@@ -90,6 +90,7 @@ class TrialController extends Controller
             'phone' => ['required', ],
             'status' => 'required',
             'stopNonStop' => 'required',
+            'entryMethod' => 'required',
         ]);
         if(request('classlist')){
             $attrs['classlist'] = implode(',', request('classlist'));

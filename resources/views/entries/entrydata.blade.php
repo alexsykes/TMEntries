@@ -22,7 +22,7 @@ $entryIDs = array();
 
     @endphp
     <x-slot:heading>
-        Registrations
+        Registration for {{$trial->name}}
     </x-slot:heading>
     <div>Contact email: {{$email}}</div>
     <div>Contact phone: {{$phone}}</div>
