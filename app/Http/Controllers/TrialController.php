@@ -88,6 +88,7 @@ class TrialController extends Controller
     public function store()
     {
 //    dd(request());
+
         $attrs = request()->validate([
             'name' => 'required',
             'contactName' => 'required',
@@ -162,8 +163,11 @@ class TrialController extends Controller
 
 
 //        dd($attrs);
-        Trial::create($attrs);
+        $trial = Trial::create($attrs);
+//        $trialid = $trial->id;
 
+        $this->addStripeProducts($trial, $attrs['youthEntryFee'], $attrs['adultEntryFee']);
+//        dd($trialid);
         return redirect('/adminTrials');
     }
 
@@ -174,5 +178,43 @@ class TrialController extends Controller
 
     public function saveasnew() {
         dd(request());
+    }
+
+    private function addStripeProducts($trial, mixed $youthEntryFee = 15, mixed $adultEntryFee = 20)
+    {
+        $stripe_secret_key = config('stripe.stripe_secret_key');
+        $stripe = new \Stripe\StripeClient("$stripe_secret_key");
+
+        $stripe->products->create([
+            'name' => 'Youth Entry Fee',
+            'description' => 'Youth Entry Fee',
+            'statement_descriptor' => 'Youth Entry Fee',
+            'metadata' => [
+                'category' => 'entry fee',
+                'trialid' => $trial->id,
+                'club' => $trial->club,
+                'trialname' => $trial->name,
+                'amount' => $youthEntryFee,
+            ],
+        'default_price_data' => ['currency' => 'gbp',
+        'unit_amount' => 100 * $youthEntryFee,
+            ],
+        ]);
+
+        $stripe->products->create([
+            'name' => 'Adult Entry Fee',
+            'description' => 'Adult Entry Fee',
+            'statement_descriptor' => 'Adult Entry Fee',
+            'metadata' => [
+                'category' => 'entry fee',
+                'trialid' => $trial->id,
+                'club' => $trial->club,
+                'trialname' => $trial->name,
+                'amount' => $adultEntryFee,
+            ],
+            'default_price_data' => ['currency' => 'gbp',
+                'unit_amount' => 100 * $adultEntryFee,
+            ],
+        ]);
     }
 }
