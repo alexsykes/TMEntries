@@ -39,7 +39,7 @@
         <div id="Details" class="tabcontent">
             <div class="space-y-12">
                     <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                        <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                        <div class=" grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
                             <x-form-field>
                                 <x-form-label for="name">Event Name</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -185,13 +185,12 @@
         <div id="Trial" class="tabcontent">
             <div class="space-y-12">
                     <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                        <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                        <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
                             <div id="courseDataDiv" class="col-span-3">
-
                             <x-form-field>
                                 <x-form-label class="pr-0" for="courselist">Courses</x-form-label>
-                                <div class="mt-2 pl-2 pr-0">
+                                <div class=" pl-2 pr-0">
                                     @foreach($courseArray as $course)
                                         <div>
                                             <input
@@ -227,7 +226,7 @@
                             <div id="classDataDiv" class="col-span-3">
                             <x-form-field>
                                 <x-form-label for="classlist">Classes</x-form-label>
-                                <div class="mt-2 pl-2 pr-2">
+                                <div class=" pl-2 pr-2">
                                     @foreach($classArray as $class)
                                         <div><input
                                                     <?php
@@ -309,12 +308,11 @@
         <div id="Entries" class="tabcontent">
             <div class="space-y-12">
                     <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-
                         <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-                            <div id="entryMethodDiv" class="mt-2 col-span-3">
+                            <div id="entryMethodDiv" class=" col-span-3">
                             <x-form-field>
                                 <x-form-label class="pr-0" for="courselist">How to enter</x-form-label>
-                                <div class="mt-2 pl-2 pr-0">
+                                <div class="pl-2 pr-0">
                                     @foreach($entryMethodArray as $entryMethod)
                                         <div>
                                             <input
@@ -335,7 +333,7 @@
                             </div>
 
 
-                            <div id="entryLinkDiv" class="mt-2 col-span-3">
+                            <div id="entryLinkDiv" class="col-span-3">
                             <x-form-field>
                                 <x-form-label for="name">Online entry link</x-form-label>
                                 <div class="mt-2 col-span-3">
@@ -442,7 +440,6 @@
 
 
                             <div id="openingDateDiv" class=" col-span-3 mt-2">
-                            <div id="openingDate" class="col-span-full">
                                 <x-form-field >
                                     <x-form-label for="openingDate">Opening date/time for entries</x-form-label>
                                     <div class="mt-2 col-span-2">
@@ -453,7 +450,6 @@
                                     <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                     @enderror
                                 </x-form-field>
-                            </div>
                             </div>
 
 
@@ -474,7 +470,6 @@
 
 
                             <div id="closingDateDiv" class=" col-span-3 mt-2">
-                            <div id="closingDate" class="col-span-full">
                                 <x-form-field>
                                     <x-form-label for="closingDate">Closing date/time for entries</x-form-label>
                                     <div class="mt-2 col-span-2">
@@ -485,7 +480,6 @@
                                     <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                     @enderror
                                 </x-form-field>
-                            </div>
                             </div>
                         </div>
                     </div>
@@ -498,7 +492,7 @@
 
 
                         <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-                            <div id="scoringModeDiv" class="mt-2 col-span-3">
+                            <div id="scoringModeDiv" class="col-span-3">
                                 <x-form-field>
                                     <x-form-label for="scoringMode">Scoring mode</x-form-label>
                                     <div class="mt-2">
@@ -516,7 +510,7 @@
                                 </x-form-field>
                             </div>
 
-                            <div id="stopNonStopDiv" class="mt-2 col-span-3">
+                            <div id="stopNonStopDiv" class=" col-span-3">
                                 <x-form-field>
                                     <x-form-label for="stopNonStop">Stop permitted/Non-stop</x-form-label>
                                     <div class="mt-2 col-span-3">
@@ -534,7 +528,7 @@
                                 </x-form-field>
                             </div>
 
-                        <div id="numSectionsDiv" class="mt-2 col-span-3">
+                        <div id="numSectionsDiv" class="mt-4 col-span-3">
                             <x-form-field>
                                 <x-form-label for="numSections">Number of sections</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -549,7 +543,7 @@
                             </x-form-field>
                         </div>
 
-                        <div id="numLapsDiv" class="mt-2 col-span-3">
+                        <div id="numLapsDiv" class="mt-4 col-span-3">
                             <x-form-field>
                                 <x-form-label for="numLaps">Number of laps</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -564,7 +558,7 @@
                             </x-form-field>
                         </div>
 
-                        <div id="numRowsDiv" class="mt-2 col-span-3">
+                        <div id="numRowsDiv" class="mt-4 col-span-3">
                             <x-form-field>
                                 <x-form-label for="numRows">Number of rows in scoresheet</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -579,7 +573,7 @@
                             </x-form-field>
                         </div>
 
-                        <div id="numColumnsDiv" class="mt-2 col-span-3">
+                        <div id="numColumnsDiv" class="mt-4 col-span-3">
                             <x-form-field>
                                 <x-form-label for="numColumns">Number of columns in scoresheet</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -605,7 +599,7 @@
 
 
                         <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-                            <div id="authorityDiv" class="mt-2 col-span-3">
+                            <div id="authorityDiv" class=" col-span-3">
                                 <x-form-field>
                                     <x-form-label for="authority">Permit Authority</x-form-label>
                                     <div class="mt-2">
@@ -624,7 +618,7 @@
                             </div>
 
 
-                            <div id="centreDiv" class="mt-2  col-span-3">
+                            <div id="centreDiv" class=" col-span-3">
                                 <x-form-field>
                                     <x-form-label for="centre">Centre</x-form-label>
                                     <div class="mt-2 col-span-3">
@@ -703,7 +697,6 @@
                                     @enderror
                                 </x-form-field>
                             </div>
-
                         </div>
                     </div>
             </div>
@@ -714,7 +707,7 @@
                     <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                         <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
-                            <div id="adultEntryFeeDiv" class="mt-2 col-span-3">
+                            <div id="adultEntryFeeDiv" class=" col-span-3">
                                 <x-form-field>
                                     <x-form-label for="adultEntryFee">Adult entry fee</x-form-label>
                                     <div class="mt-2 col-span-3">
@@ -729,7 +722,7 @@
                                 </x-form-field>
                             </div>
 
-                            <div id="youthEntryFeeDiv" class="mt-2 col-span-3">
+                            <div id="youthEntryFeeDiv" class=" col-span-3">
                                 <x-form-field>
                                     <x-form-label for="youthEntryFee">Youth entry fee</x-form-label>
                                     <div class="mt-2 col-span-3">

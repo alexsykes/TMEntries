@@ -1,70 +1,3 @@
-<style>
-    /* Style the tab */
-    .tab {
-        overflow: hidden;
-    }
-
-    /* Style the buttons that are used to open the tab content */
-    .tab button {
-        /*background-color: inherit;*/
-        float: left;
-        /*border: black;*/
-        outline: none;
-        cursor: pointer;
-        /*padding: 14px 16px;*/
-        transition: 0.3s;
-    }
-
-    /* Change background color of buttons on hover */
-    .tab button:hover {
-        /*background-color: #ddd;*/
-    }
-
-    /* Create an active/current tablink class */
-    .tab button.active {
-        background-color: #fff;
-    }
-
-    /* Style the tab content */
-    .tabcontent {
-        display: none;
-        padding: 6px 12px;
-    }
-</style>
-<script>
-
-    function openSection(evt, tabName) {
-        // Declare all variables
-        var i, tabcontent, tablinks;
-
-        // Get all elements with class="tabcontent" and hide them
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
-
-        // Get all elements with class="tablinks" and remove the class "active"
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-
-        // Show the current tab, and add an "active" class to the button that opened the tab
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";
-    }
-
-
-    function toggle(checked, divName) {
-        console.log("toggle called")
-        var x = document.getElementById(divName);
-        if (checked) {
-            x.style.display = "inline-block";
-        } else {
-            x.style.display = "none";
-        }
-    }
-</script>
 <x-main>
     <x-slot:heading>
         Create a new trial
@@ -81,9 +14,17 @@
 
 //        dump(request()->all());
     @endphp
+    @if ($errors->any())
+        <div class="text-red-500">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-
-    <div class="tab pl-4">
+    <div class="tab pl-8">
         <button class="tablinks    hover:bg-blue-200 p-2  " id="defaultOpen" onclick="openSection(event, 'Details')">Details</button>
         <button class="tablinks  hover:bg-blue-200 p-2  " onclick="openSection(event, 'Trial')">Trial</button>
         <button class="tablinks  hover:bg-blue-200 p-2  " onclick="openSection(event, 'Entries')">Entries</button>
@@ -97,9 +38,8 @@
 
         <div id="Details" class="tabcontent">
             <div class="space-y-12">
-                <div class="border-b border-gray-900/10 pb-12">
                     <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                        <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                        <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
                             <x-form-field>
                                 <x-form-label for="name">Event Name</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -228,26 +168,19 @@
                                 @enderror
                             </x-form-field>
                         </div>
-
-
-
                     </div>
-
-
-
-                </div>
             </div>
         </div>
 
         <div id="Trial" class="tabcontent">
             <div class="space-y-12">
-                <div class="border-b border-gray-900/10 pb-12">
                     <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                        <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                        <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
+                            <div id="courseDataDiv" class="col-span-3">
                             <x-form-field>
                                 <x-form-label class="pr-0" for="courselist">Courses</x-form-label>
-                                <div class="mt-2 pl-2 pr-0">
+                                <div class=" pl-2 pr-0">
                                     @foreach($courseArray as $course)
                                         <div>
                                             <input  name="courselist[]" type="checkbox" id="courselist" value="{{$course}}"/>
@@ -274,10 +207,12 @@
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
+                            </div>
 
+                            <div id="classDataDiv" class="col-span-3">
                             <x-form-field>
                                 <x-form-label for="classlist">Classes</x-form-label>
-                                <div class="mt-2 pl-2 pr-2">
+                                <div class=" pl-2 pr-2">
                                     @foreach($classArray as $class)
 
                                         <div>
@@ -303,7 +238,8 @@
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
-
+                            </div>
+                            <div id="hasTimePenaltyDiv" class="col-span-full">
                             <x-form-field>
                                 <x-form-label for="hasTimePenalty">Time and Observation</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -314,7 +250,9 @@
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
+                            </div>
 
+                            <div id="startIntervalDiv" class="col-span-3">
                             <x-form-field>
                                 <x-form-label for="startInterval">Start interval (seconds)</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -326,7 +264,9 @@
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
+                            </div>
 
+                            <div id="penaltyDiv" class="col-span-3">
                             <x-form-field>
                                 <x-form-label for="penaltyDelta">Penalty tariff</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -338,18 +278,18 @@
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
 
         <div id="Entries" class="tabcontent">
             <div class="space-y-12">
-                <div class="border-b border-gray-900/10 pb-12">
                     <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                        <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                        <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
+                            <div id="entryMethodDiv" class="col-span-3">
                             <x-form-field>
                                 <x-form-label class="pr-0" for="courselist">How to enter</x-form-label>
                                 <div class="mt-2 pl-2 pr-0">
@@ -366,9 +306,9 @@
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
+                            </div>
 
-
-
+                            <div id="entryLinkDiv" class="col-span-3">
                             <x-form-field>
                                 <x-form-label for="name">Online entry link</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -379,9 +319,9 @@
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
+                            </div>
 
-
-
+                            <div id="hasEntryLinkDiv" class="mt-2 col-span-3">
                             <x-form-field>
                                 <x-form-label for="hasEntryLimit">Has entry limit</x-form-label>
                                 <div class="mt-2">
@@ -392,8 +332,9 @@
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
+                            </div>
 
-                            <div id="entryLimitDiv" class=" col-span-full">
+                            <div id="entryLimitDiv" class=" col-span-3">
                                 <x-form-field>
                                     <x-form-label for="club">Entry limit</x-form-label>
                                     <div class="mt-2 col-span-2">
@@ -409,7 +350,7 @@
 
 
 
-                            <div  class=" col-span-full">
+                            <div  id="entrySelectionBasisDiv"  class=" col-span-3 mt-2">
                                 <x-form-field>
                                     <x-form-label for="entrySelectionBasis">Entry selection</x-form-label>
                                     <div class="mt-2 col-span-2">
@@ -426,7 +367,7 @@
                                 </x-form-field>
                             </div>
 
-
+                            <div id="hasWaitingListDiv" class=" col-span-3 mt-2">
                             <x-form-field>
                                 <x-form-label for="hasWaitingList">Enable waiting list if entry full</x-form-label>
                                 <div class="mt-2">
@@ -437,7 +378,9 @@
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
+                            </div>
 
+                            <div id="hasOpeningDateDiv" class=" col-span-3 mt-2">
                             <x-form-field>
                                 <x-form-label for="hasOpeningDate">Has opening date/time for entries</x-form-label>
                                 <div class="mt-2">
@@ -448,8 +391,9 @@
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
+                            </div>
 
-                            <div id="openingDate" class="col-span-full">
+                            <div id="openingDateDiv" class=" col-span-3 mt-2">
                                 <x-form-field >
                                     <x-form-label for="openingDate">Opening date/time for entries</x-form-label>
                                     <div class="mt-2 col-span-2">
@@ -462,6 +406,7 @@
                                 </x-form-field>
                             </div>
 
+                            <div id="hasClosingDateDiv" class=" col-span-3 mt-2">
                             <x-form-field>
                                 <x-form-label for="hasClosingDate">Has closing date/time for entries</x-form-label>
                                 <div class="mt-2">
@@ -472,8 +417,9 @@
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
+                            </div>
 
-                            <div id="closingDate" class="col-span-full">
+                            <div id="closingDateDiv" class=" col-span-3 mt-2">
                                 <x-form-field>
                                     <x-form-label for="closingDate">Closing date/time for entries</x-form-label>
                                     <div class="mt-2 col-span-2">
@@ -488,20 +434,17 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
 
         <div id="Scoring" class="tabcontent">
             <div class="space-y-12">
-                <div class="border-b border-gray-900/10 pb-12">
                     <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
 
-
-                        <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-                            <div  class=" col-span-full">
+                        <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                            <div id="scoringModeDiv" class="col-span-3">
                                 <x-form-field>
                                     <x-form-label for="scoringMode">Scoring mode</x-form-label>
-                                    <div class="mt-2 col-span-2">
+                                    <div class="mt-2">
                                         @foreach($scoringModeArray as $option)
                                             <input name="scoringMode" type="radio" id="scoringMode" value="{{$option}}">
                                             <label class="pl-1 pr-4" for="scoringMode">{{$option}}</label>
@@ -513,15 +456,11 @@
                                     @enderror
                                 </x-form-field>
                             </div>
-                        </div>
 
-                        <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-
-
-                            <div id="stopNonStopDiv" class="mt-2 col-span-full">
+                            <div id="stopNonStopDiv" class="col-span-3">
                                 <x-form-field>
                                     <x-form-label for="stopNonStop">Stop permitted/Non-stop</x-form-label>
-                                    <div class="mt-2 col-span-2">
+                                    <div class="mt-2 col-span-3">
                                         @foreach($stopAllowedArray as $option)
                                             <input name="stopNonStop" type="radio" id="stopNonStop" value="{{$option}}" required>
                                             <label class="pl-1 pr-4" for="{{$option}}">{{$option}}</label>
@@ -533,12 +472,11 @@
                                     @enderror
                                 </x-form-field>
                             </div>
-                        </div>
 
-                        <div id="numSectionsDiv" class="mt-4 col-span-full">
+                        <div id="numSectionsDiv" class="mt-4 col-span-3">
                             <x-form-field>
                                 <x-form-label for="numSections">Number of sections</x-form-label>
-                                <div class="mt-2 col-span-2">
+                                <div class="mt-2 col-span-3">
                                     <x-form-input name="numSections" type="text" id="numSections"
                                                   placeholder="Number of sections" />
                                     <x-form-error name="numSections"/>
@@ -549,10 +487,10 @@
                             </x-form-field>
                         </div>
 
-                        <div id="numLapsDiv" class="mt-4 col-span-full">
+                        <div id="numLapsDiv" class="mt-4 col-span-3">
                             <x-form-field>
                                 <x-form-label for="numLaps">Number of laps</x-form-label>
-                                <div class="mt-2 col-span-2">
+                                <div class="mt-2 col-span-3">
                                     <x-form-input name="numLaps" type="text" id="numLaps"
                                                   placeholder="Number of laps" />
                                     <x-form-error name="numLaps"/>
@@ -566,7 +504,7 @@
                         <div id="numRowsDiv" class="mt-4 col-span-3">
                             <x-form-field>
                                 <x-form-label for="numRows">Number of rows in scoresheet</x-form-label>
-                                <div class="mt-2 col-span-2">
+                                <div class="mt-2 col-span-3">
                                     <x-form-input name="numRows" type="text" id="numRows"
                                                   placeholder="Number of rows" />
                                     <x-form-error name="numRows"/>
@@ -598,16 +536,14 @@
 
         <div id="Regulations" class="tabcontent">
             <div class="space-y-12">
-                <div class="border-b border-gray-900/10 pb-12">
                     <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
 
 
-                        <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-
-                            <div id="authorityDiv" class="mt-2 col-span-full">
+                        <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                            <div id="authorityDiv" class="col-span-3">
                                 <x-form-field>
                                     <x-form-label for="authority">Permit Authority</x-form-label>
-                                    <div class="mt-2 col-span-2">
+                                    <div class="mt-2">
                                         @foreach($authorityArray as $option)
                                             <input name="authority" type="radio" id="authority" value="{{$option}}" required>
                                             <label class="pl-1 pr-4" for="authority">{{$option}}</label>
@@ -619,15 +555,11 @@
                                     @enderror
                                 </x-form-field>
                             </div>
-                        </div>
 
-
-                        <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-
-                            <div id="centreDiv" class=" col-span-full">
+                            <div id="centreDiv" class=" col-span-3">
                                 <x-form-field>
                                     <x-form-label for="centre">Centre</x-form-label>
-                                    <div class="mt-2 col-span-2">
+                                    <div class="mt-2 col-span-3">
                                         <x-form-input name="centre" type="text" id="centre"
                                                       placeholder="Optional" />
                                         <x-form-error name="centre"/>
@@ -637,18 +569,17 @@
                                     @enderror
                                 </x-form-field>
                             </div>
-                        </div>
 
 
-                        <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
-                            <div id="statusDiv" class="mt-2 col-span-full">
+                            <div id="statusDiv" class="mt-2 col-span-3">
                                 <x-form-field>
                                     <x-form-label for="status">Entry restrictions</x-form-label>
                                     <div class="mt-2 col-span-2">
                                         @foreach($restrictionArray as $option)
                                             <input name="status" type="radio" id="status" value="{{$option}}" required>
-                                            <label class="pl-1 pr-4" for="status">{{$option}}</label>
+                                            <label class="pl-1 pr-4" for="status">{{$option}} required
+                                            </label>
                                         @endforeach
                                         <x-form-error name="status"/>
                                     </div>
@@ -657,11 +588,10 @@
                                     @enderror
                                 </x-form-field>
                             </div>
-                        </div>
 
 
 
-                        <div id="otherRestrictionDiv" class="mt-4 col-span-3">
+                        <div id="otherRestrictionDiv" class="mt-2 col-span-3">
                             <x-form-field>
                                 <x-form-label for="coc">Other Restriction</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -704,21 +634,17 @@
                                 @enderror
                             </x-form-field>
                         </div>
-
+                        </div>
                         </div>
                     </div>
-
-                </div>
             </div>
-
 
         <div id="Fees" class="tabcontent">
             <div class="space-y-12">
-                <div class="border-b border-gray-900/10 pb-12">
                     <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                        <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                        <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
-                            <div id="adultEntryFeeDiv" class="mt-4 col-span-3">
+                            <div id="adultEntryFeeDiv" class="col-span-3">
                                 <x-form-field>
                                     <x-form-label for="adultEntryFee">Adult entry fee</x-form-label>
                                     <div class="mt-2 col-span-3">
@@ -732,7 +658,7 @@
                                 </x-form-field>
                             </div>
 
-                            <div id="youthEntryFeeDiv" class="mt-4 col-span-3">
+                            <div id="youthEntryFeeDiv" class="col-span-3">
                                 <x-form-field>
                                     <x-form-label for="youthEntryFee">Youth entry fee</x-form-label>
                                     <div class="mt-2 col-span-3">
@@ -778,16 +704,15 @@
 
                         </div>
                     </div>
-                </div>
             </div>
         </div>
 
         <div class="mt-4" id="buttons">
             <a href="/adminTrials"
-               class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
+               class="rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-blue-900 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
 
             <button type="submit"
-                    class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                    class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
                 Save
             </button>
         </div>

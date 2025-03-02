@@ -24,8 +24,8 @@ $entryIDs = array();
     <x-slot:heading>
         Registration for {{$trial->name}}
     </x-slot:heading>
-    <div>Contact email: {{$email}}</div>
-    <div>Contact phone: {{$phone}}</div>
+    <div class="text-blue-800 font-semibold">Contact email: {{$email}}</div>
+    <div class="text-blue-800 font-semibold">Contact phone: {{$phone}}</div>
     @if(sizeof($entries) > 0)
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Registration for {{$trial->name}} </div>
