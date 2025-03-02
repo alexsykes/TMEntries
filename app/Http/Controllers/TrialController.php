@@ -248,9 +248,6 @@ class TrialController extends Controller
         $attrs['entrySelectionBasis'] = request('entrySelectionBasis', '');
         $attrs['scoringMode'] = request('scoringMode');
 
-
-
-
 //        dd($attrs);
         $trial = Trial::create($attrs);
 //        $trialid = $trial->id;
@@ -285,8 +282,8 @@ class TrialController extends Controller
                 'trialname' => $trial->name,
                 'amount' => $youthEntryFee,
             ],
-        'default_price_data' => ['currency' => 'gbp',
-        'unit_amount' => 100 * $youthEntryFee,
+            'default_price_data' => ['currency' => 'gbp',
+                'unit_amount' => 100 * $youthEntryFee,
             ],
         ]);
 
@@ -306,4 +303,5 @@ class TrialController extends Controller
             ],
         ]);
     }
+
 }

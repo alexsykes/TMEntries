@@ -147,7 +147,6 @@
 {{--    @php $heading = "Welcome" @endphp--}}
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8  sm:flex sm:justify-between">
         <h1 class="text-m sm:text-2xl  font-bold tracking-tight text-white">{{ $heading }}</h1>
-
     </div>
 </header>
 <main class="bg-blue-100 text-black">
