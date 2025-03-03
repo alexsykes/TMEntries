@@ -1,4 +1,4 @@
-<x-main>
+<x-layout>
     <x-slot:heading>
         Trials
     </x-slot:heading>
@@ -32,4 +32,4 @@
             Add a new trial
         </a>
     </div>
-</x-main>
+</x-layout>

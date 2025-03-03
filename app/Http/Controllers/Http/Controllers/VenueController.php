@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Http\Controllers;
 
 use App\Models\Venue;
-use Illuminate\Http\Request;
 
 class VenueController extends Controller
 {

@@ -25,20 +25,22 @@
     @endif
 
     <div class="tab pl-8">
-        <button class="tablinks    hover:bg-blue-200 p-2  " id="defaultOpen" onclick="openSection(event, 'Details')">Details</button>
-        <button class="tablinks  hover:bg-blue-200 p-2  " onclick="openSection(event, 'Trial')">Trial</button>
-        <button class="tablinks  hover:bg-blue-200 p-2  " onclick="openSection(event, 'Entries')">Entries</button>
-        <button class="tablinks  hover:bg-blue-200 p-2  " onclick="openSection(event, 'Scoring')">Scoring</button>
-        <button class="tablinks  hover:bg-blue-200 p-2  " onclick="openSection(event, 'Regulations')">Regulations</button>
-        <button class="tablinks  hover:bg-blue-200 p-2  " onclick="openSection(event, 'Fees')">Fees</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-2" id="defaultOpen" onclick="openSection(event, 'Details')">
+            Detail
+        </button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Trial')">Trial</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Entries')">Entries</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Scoring')">Scoring</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Regulations')">Regulations</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Fees')">Fees</button>
     </div>
     <form action="/trials/store" method="POST">
 
         @csrf
 
-        <div id="Details" class="tabcontent">
+        <div id="Details" class="tabcontent pt-0">
             <div class="space-y-12">
-                    <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                    <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                         <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
                             <x-form-field>
                                 <x-form-label for="name">Event Name</x-form-label>
@@ -172,9 +174,9 @@
             </div>
         </div>
 
-        <div id="Trial" class="tabcontent">
+        <div id="Trial" class="tabcontent pt-0">
             <div class="space-y-12">
-                    <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                    <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                         <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
                             <div id="courseDataDiv" class="col-span-3">
@@ -284,9 +286,9 @@
                 </div>
         </div>
 
-        <div id="Entries" class="tabcontent">
+        <div id="Entries" class="tabcontent pt-0">
             <div class="space-y-12">
-                    <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                    <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                         <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
                             <div id="entryMethodDiv" class="col-span-3">
@@ -436,9 +438,9 @@
                 </div>
         </div>
 
-        <div id="Scoring" class="tabcontent">
+        <div id="Scoring" class="pt-0 tabcontent">
             <div class="space-y-12">
-                    <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                    <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
 
                         <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
                             <div id="scoringModeDiv" class="col-span-3">
@@ -534,9 +536,9 @@
             </div>
         </div>
 
-        <div id="Regulations" class="tabcontent">
+        <div id="Regulations" class="pt-0 tabcontent">
             <div class="space-y-12">
-                    <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                    <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
 
 
                         <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
@@ -639,9 +641,9 @@
                     </div>
             </div>
 
-        <div id="Fees" class="tabcontent">
+        <div id="Fees" class="pt-0 tabcontent">
             <div class="space-y-12">
-                    <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                    <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                         <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
                             <div id="adultEntryFeeDiv" class="col-span-3">
@@ -707,7 +709,7 @@
             </div>
         </div>
 
-        <div class="mt-4" id="buttons">
+        <div class="ml-4 mt-4" id="buttons">
             <a href="/adminTrials"
                class="rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-blue-900 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
 

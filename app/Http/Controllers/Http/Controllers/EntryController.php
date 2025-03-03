@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Http\Controllers;
 
 use App\Models\Entry;
 use App\Models\Result;
 use App\Models\Trial;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 
 class EntryController extends Controller
@@ -174,6 +173,18 @@ class EntryController extends Controller
         $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('paid', 0);
 //        dd($entries);
         return view('entries.entrydata', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
+    }
+
+
+
+    public function adminEntries(Request $request) {
+        $email = session('email');
+        $trial_id = $request->input('trial_id');
+        $trial =  Trial::findOrFail($trial_id);
+        $phone = session('phone');
+        $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('paid', 0);
+//        dd($entries);
+        return view('entries.adminEntries', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
     }
 
     public function edit(Request $request) {

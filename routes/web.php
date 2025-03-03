@@ -1,20 +1,23 @@
 <?php
 
-use App\Http\Controllers\EntryController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TrialController;
-use App\Http\Controllers\VenueController;
+use App\Http\Controllers\Http\Controllers\EntryController;
+use App\Http\Controllers\Http\Controllers\ProfileController;
+use App\Http\Controllers\Http\Controllers\TrialController;
+use App\Http\Controllers\Http\Controllers\VenueController;
+
+use App\Http\Controllers\Http\Controller;
+
 use Illuminate\Support\Facades\Route;
-use function Pest\Laravel\get;
 
 
 /*
     Front door - display list of trials currently taking entries
 */
 Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->name('dashboard');
+})->middleware(['auth','verified'])->name('dashboard');
 
 
 /*
@@ -36,6 +39,7 @@ Route::post('trials/edit/saveasnew', [TrialController::class, 'saveasnew'])->mid
 ENTRY Routes
 */
 Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails']);
+Route::get('/adminEntries', [EntryController::class, 'adminEntries'])->middleware(['auth', 'verified'])->name('adminEntries');
 
 Route::post('entries/userdata', [EntryController::class, 'showUserData']);
 Route::get('entries/userdata', [EntryController::class, 'userdata']);
