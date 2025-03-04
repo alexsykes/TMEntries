@@ -105,12 +105,12 @@ $entryIDs = array();
                         <x-form-field>
                             <x-form-label for="isYouth">Under-18</x-form-label>
                             <div class="ml-2 mt-2 col-span-full">
-                                <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth" onchange="toggle(checked)" />
+                                <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth"  />
                                 <x-form-error name="isYouth" />
                             </div>
                         </x-form-field>
 
-                        <div id="dateInput" class="hidden col-span-full">
+                        <div id="dateInput" class=" col-span-full">
                             <x-form-field >
                                 <x-form-label for="dob">Date of Birth</x-form-label>
                                 <div class="mt-2  max-w-40 col-span-full">

@@ -96,7 +96,11 @@ class EntryController extends Controller
         return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry()]);
     }
 
+public function checkout(Request $request) {
+        dd($request);
+        return view('entries.checkout');
 
+}
 
     public function create_another() {
         $IPaddress = request()->ip();

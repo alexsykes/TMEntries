@@ -12,7 +12,11 @@ class TrialController extends Controller
     //
 
     public function showTrialList() {
-        $trials = Trial::all()->where('published', 1)->sortBy('date');
+
+        $trials = DB::table('trials')->where('published', 1)
+            ->where('date', '>', date('Y-m-d'))
+            ->orderBy('date', 'desc')
+            ->get();
         return view('trials.trial_list', ['trials' => $trials]);
     }
 

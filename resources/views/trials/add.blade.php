@@ -547,7 +547,7 @@
                                     <x-form-label for="authority">Permit Authority</x-form-label>
                                     <div class="mt-2">
                                         @foreach($authorityArray as $option)
-                                            <input name="authority" type="radio" id="authority" value="{{$option}}" required>
+                                            <input name="authority" type="radio" id="authority" value="{{$option}}" >
                                             <label class="pl-1 pr-4" for="authority">{{$option}}</label>
                                         @endforeach
                                         <x-form-error name="authority"/>
@@ -579,9 +579,9 @@
                                     <x-form-label for="status">Entry restrictions</x-form-label>
                                     <div class="mt-2 col-span-2">
                                         @foreach($restrictionArray as $option)
-                                            <input name="status" type="radio" id="status" value="{{$option}}" required>
-                                            <label class="pl-1 pr-4" for="status">{{$option}} required
-                                            </label>
+
+                                            <input name="status" type="radio" id="status" value="{{$option}}">
+                                            <label class="pl-1 pr-4" for="status">{{$option}}</label>
                                         @endforeach
                                         <x-form-error name="status"/>
                                     </div>
@@ -609,7 +609,7 @@
 
 
 
-                        <div id="cocDiv" class="mt-4 col-span-3">
+                        <div id="cocDiv" class="mt-2 col-span-3">
                             <x-form-field>
                                 <x-form-label for="coc">Clerk of Course</x-form-label>
                                 <div class="mt-2 col-span-2">

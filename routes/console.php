@@ -40,8 +40,5 @@ Artisan::command('getTrialList', function () {
                 'authority' => $trial["authority"],
             ]);
         }
-
-
-
     }
 });

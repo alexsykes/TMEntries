@@ -70,7 +70,7 @@ Route::get('/contact-us', ['App\Http\Controllers\ContactUsController', 'index'])
 Route::post('/contact-us', ['App\Http\Controllers\ContactUsController', 'send'])->name('contact.send');
 
 
-Route::post('checkout', [EntryController::class, 'checkout']);
+Route::post('/entries/checkout', [EntryController::class, 'checkout']);
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

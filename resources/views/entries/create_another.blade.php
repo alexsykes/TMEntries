@@ -11,10 +11,12 @@
 
     @endphp
 
-    <form action="entries.checkout">
+    <form method="POST" action="entries.checkout">
         @csrf
         <div id="checkout_button">
             <x-secondary-button>Checkout</x-secondary-button>
+            <input type="hidden" id="email" name="email" value="{{$email}}">
+            <input type="hidden" id="phone" name="phone" value="{{$phone}}">
         </div>
     </form>
     <div>Entries for {{$trial->name}} - from {{$email}}</div>

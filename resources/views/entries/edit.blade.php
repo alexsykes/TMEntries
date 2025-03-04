@@ -17,7 +17,8 @@
         $selected_dob = $entry->dob;
         $selected_class = $entry->class;
         $selected_course = $entry->course;
-        $authority = array("ACU", "AMCA");
+        $authority = $trial->authority;
+
         $types = array("2 stroke", "4 stroke", "e-bike");
     @endphp
     <script>
@@ -55,7 +56,7 @@
 
 
                         <x-form-field>
-                            <x-form-label for="licence">{{$authority[$trial->authority]}} Licence</x-form-label>
+                            <x-form-label for="licence">{{$trial->authority}} Licence</x-form-label>
                             <div class="mt-2 col-span-2">
                                 <x-form-input name="licence" type="text" id="licence" value="{{$selected_licence}}"
                                               placeholder="Licence number - leave blank if no licence"/>
@@ -67,7 +68,7 @@
                             <x-form-label for="isYouth">Under-18</x-form-label>
                             <div class="ml-2 mt-2 col-span-full">
                                 <input type="checkbox" name="isYouth" id="isYouth" value="1"
-                                       {{$isYouthCB}} class="isYouth" onchange="toggle(checked)"/>
+                                       {{$isYouthCB}} class="isYouth" />
                                 <x-form-error name="isYouth"/>
                             </div>
                         </x-form-field>
