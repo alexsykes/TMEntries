@@ -6,6 +6,7 @@ use App\Models\Entry;
 use App\Models\Result;
 use App\Models\Trial;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 
 class EntryController extends Controller
@@ -76,10 +77,12 @@ class EntryController extends Controller
         $entry->type = $request->type;
         $entry->size = $request->size;
         $entry->accept = $accept;
+        $entry->dob = $request->dob;
 
         if (isset($request->isYouth)) {
             $entry->isYouth = 1;
-            $entry->dob = $request->dob;
+        } else {
+            $entry->isYouth = 0;
         }
         $entry->save();
 
@@ -96,18 +99,29 @@ class EntryController extends Controller
         return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry()]);
     }
 
-public function checkout(Request $request) {
-        dd($request);
-        return view('entries.checkout');
+    public function checkout(Request $request) {
+//        dd($request->email);
+        $email = session('email');
+        $phone = session('phone');
+        $trial_id = session('trial_id');
 
-}
+        $trial = Trial::findorfail($trial_id);
 
-    public function create_another() {
-        $IPaddress = request()->ip();
-        $id = session('trial_id');
-        $trial = Trial::findOrFail($id);
-        return view('entries.create_another', ['trial' => $trial]);
+        $entries = Entry::all()->where('email', $email)
+            ->where('trial_id', $trial_id)
+            ->where('status', 0)
+            ->where('phone', $phone)
+            ->sortBy('name');
+
+        return view('entries.checkout', ['entries' => $entries,  'trial' => $trial, 'email' => $email, 'phone' => $phone] );
     }
+
+//    public function create_another() {
+//        $IPaddress = request()->ip();
+//        $id = session('trial_id');
+//        $trial = Trial::findOrFail($id);
+//        return view('entries.create_another', ['trial' => $trial]);
+//    }
 
 
 
@@ -118,6 +132,29 @@ public function checkout(Request $request) {
         $request->session()->put('trial_id', $request->trial_id);
         $request->session()->put('email', $request->email);
         $accept = session('accept');
+
+//        Get product/price IDs
+        $youthProductID = DB::table('products')
+            ->where('trial_id', $request->trial_id)
+            ->where('isYouth', true)
+            ->value('stripe_product_id');
+
+
+        $adultProductID = DB::table('products')
+            ->where('trial_id', $request->trial_id)
+            ->where('isYouth', false)
+            ->value('stripe_product_id');
+
+
+        $youthPriceID = DB::table('products')
+            ->where('trial_id', $request->trial_id)
+            ->where('isYouth', true)
+            ->value('stripe_price_id');
+
+        $adultPriceID = DB::table('products')
+            ->where('trial_id', $request->trial_id)
+            ->where('isYouth', false)
+            ->value('stripe_price_id');
 
 
         $token = bin2hex(random_bytes(16));
@@ -141,8 +178,17 @@ public function checkout(Request $request) {
 
         if (isset($request->isYouth)) {
             $attributes['isYouth'] = 1;
-            $attributes['dob'] = $request->dob;
+            $attributes['stripe_price_id'] = $youthPriceID;
+            $attributes['stripe_product_id'] = $youthProductID;
+        } else {
+            $attributes['isYouth'] = 0;
+            $attributes['stripe_price_id'] = $adultPriceID;
+            $attributes['stripe_product_id'] = $adultProductID;
         }
+
+        $attributes['dob'] = $request->dob;
+
+
 
         $entry =   Entry::create($attributes);
 
@@ -196,5 +242,64 @@ public function checkout(Request $request) {
         $trialid = session('trial_id');
         $trial = Trial::findorfail($trialid);
         return view('entries.edit', ['entry' => $entry, 'trial' => $trial]);
+    }
+
+    public function createStripeSession(Request $request) {
+        require ('../vendor/autoload.php');
+        require('../vendor/stripe/stripe-php/lib/StripeClient.php');
+        $stripe = new \Stripe\StripeClient('sk_test_51MMQJsDJZeL6aXCC6MsOulFeSySfNQI7NELzajF8qZKhDueOO1vWVM1oj59FN7cPOluMZ2GFOS9Hp0J8u9oofbNy00v3rPESVH');
+
+        $email = $request->input('email');
+        $trial_id = $request->input('trial_id');
+        $trial_id = session('trial_id');
+        $phone  = $request->input('phone');
+        $entryIDs = $request->input('entryIDs');
+        $entryIDArray  = explode(',',$request->input('entryIDs'));
+
+
+
+        $entryData = Entry::all()->whereIn('id',  $entryIDArray);
+
+        $lineItems = array();
+
+        foreach($entryData as $entry ) {
+//            dump($index);
+            $entryID = $entry['id'];
+            $isYouth = $entry['isYouth'];
+            $stripe_price_id = $entry['stripe_price_id'];
+            $stripe_product_id = $entry['stripe_product_id'];
+
+            $name = $entry['name'];
+            $entryid = $trial_id . "/" . $entryID;
+
+
+            $line = [
+                'product' => $stripe_product_id,
+                'quantity' => 1,
+            ];
+            // Add to lineItems
+
+//            dump($line);
+            array_push($lineItems, $line);
+//            array_push($ids, $id);
+//            array_push($entryPriceIds, $stripe_product_id);
+        }
+
+        $data = [
+            'metadata' => [
+                'entryids' => $entryIDs,
+                'payment_type' => 'session',
+                'trialid' => $trial_id,
+                'category' => 'entry fee',
+            ],
+            'line_items' => $lineItems,
+//            'mode' => 'payment',
+            'success_url' =>"https://dev.trialmonster.net",
+            'cancel_url' => "https://dev.trialmonster.net/entries/checkout",
+//            'phone_number_collection' => ['enabled' => true],
+        ];
+dd("lineitems: ", $lineItems, "data: ", $data);
+        $checkout_session = $stripe->checkout->sessions->create($data);
+        $url = $checkout_session->url;
     }
 }

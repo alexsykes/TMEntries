@@ -48,11 +48,14 @@ Route::patch('/entries/update/{id}', [EntryController::class, 'updateEntry']);
 Route::get('entries/saveddata', [EntryController::class, 'showSavedData']);
 Route::get('/entries/entrylist', [EntryController::class, 'list']);
 Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->name('entries.create');
-Route::get('/entries/create_another', [EntryController::class, 'create_another'])->name('entries.create_another');
+//Route::get('/entries/create_another', [EntryController::class, 'create_another'])->name('entries.create_another');
 Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
 Route::get('entries/delete/{id}', [EntryController::class, 'delete']);
 Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->name('entries.edit');
+
+
+Route::post('/entries/createSession', [EntryController::class, 'createStripeSession']);
 
 /*
  * VENUE Routes
