@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Http\Controllers;
+namespace App\Http\Controllers;
 
 class TransactionController extends Controller
 {
