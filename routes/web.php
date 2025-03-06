@@ -3,6 +3,7 @@
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\Http\Controller;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\TrialController;
 use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
@@ -77,5 +78,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/stripe', [StripePaymentController::class, 'stripe'])->name('stripe.index');
+Route::get('stripe/checkout', [StripePaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
+Route::get('stripe/checkout/success', [StripePaymentController::class, 'stripeCheckoutSuccess'])->name('stripe.checkout.success');
+
 
 require __DIR__.'/auth.php';
