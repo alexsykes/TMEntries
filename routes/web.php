@@ -80,7 +80,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/stripe', [StripePaymentController::class, 'stripe'])->name('stripe.index');
-Route::get('stripe/checkout', [StripePaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
+Route::post('stripe/checkout', [StripePaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
 Route::get('stripe/checkout/success', [StripePaymentController::class, 'stripeCheckoutSuccess'])->name('stripe.checkout.success');
 
 

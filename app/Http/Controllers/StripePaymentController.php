@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class StripePaymentController extends Controller
 {
@@ -16,21 +17,37 @@ class StripePaymentController extends Controller
 
     public function stripeCheckout(Request $request)
     {
+        $entryIDs = explode(',',$request->entryIDs);
+        $entries = DB::table('entries')
+            ->whereIn('id', $entryIDs)
+            ->get();
+
+
         $stripe = new \Stripe\StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $redirectUrl = route('stripe.checkout.success') . '?session_id={CHECKOUT_SESSION_ID}';
+
+        $lineItems = array();
+        foreach ($entries as $entry) {
+            $line = [
+                'price' => $entry->stripe_price_id,
+                'quantity'  => 1,
+            ];
+            // Add to lineItems
+            array_push($lineItems, $line);
+        }
+
         $response =  $stripe->checkout->sessions->create([
             'success_url' => $redirectUrl,
             'line_items' => [
-                [
-                    'price' => 'price_1Qyfg1RmEmasrI2yJkwTqheV',
-                    'quantity' => 12,
-                ],
+                $lineItems
             ],
-//            'phone_number_collection' => true,
             'phone_number_collection' => ['enabled' => true],
             'mode' => 'payment',
-            'allow_promotion_codes' => false
+            'allow_promotion_codes' => false,
+            'metadata' => [
+                'entryIDs' => $request->entryIDs,
+            ]
         ]);
 
         return redirect($response['url']);

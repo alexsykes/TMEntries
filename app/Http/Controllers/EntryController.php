@@ -58,6 +58,8 @@ class EntryController extends Controller
 
     public function updateEntry(Request $request)  {
         $accept = session('accept');
+        //        Get product/price IDs
+
         $request->validate([
             'name' => ['required', 'min:5', 'max:255'],
             'class' => 'required',
@@ -68,6 +70,30 @@ class EntryController extends Controller
 
 
         $entry = Entry::find($request->id);
+        $trial_id = $entry->trial_id;
+
+        $youthProductID = DB::table('products')
+            ->where('trial_id', $trial_id)
+            ->where('isYouth', true)
+            ->value('stripe_product_id');
+
+
+        $adultProductID = DB::table('products')
+            ->where('trial_id', $trial_id)
+            ->where('isYouth', false)
+            ->value('stripe_product_id');
+
+
+        $youthPriceID = DB::table('products')
+            ->where('trial_id', $trial_id)
+            ->where('isYouth', true)
+            ->value('stripe_price_id');
+
+        $adultPriceID = DB::table('products')
+            ->where('trial_id', $trial_id)
+            ->where('isYouth', false)
+            ->value('stripe_price_id');
+
         $entry->name = $request->name;
         $entry->class = $request->class;
         $entry->course = $request->course;
@@ -81,12 +107,15 @@ class EntryController extends Controller
 
         if (isset($request->isYouth)) {
             $entry->isYouth = 1;
+            $entry->stripe_price_id = $youthPriceID;
+            $entry->stripe_product_id = $youthProductID;
         } else {
             $entry->isYouth = 0;
+            $entry->stripe_price_id = $adultPriceID;
+            $entry->stripe_product_id = $adultProductID;
         }
+
         $entry->save();
-
-
         return redirect('entries/userdata');
     }
 
@@ -208,7 +237,6 @@ class EntryController extends Controller
         session(['phone' => $attributes['phone']]);
         return view('entries.entrydata', ['entries' => $entries, 'trial' => $trial]);
     }
-
 
     public function delete(Request $request) {
         Entry::destroy($request->id);

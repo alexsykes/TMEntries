@@ -1,7 +1,7 @@
 <x-main xmlns="http://www.w3.org/1999/html">
     <x-slot:heading>Checkout
     </x-slot:heading>
-    <form method="POST" action="/entries/createSession">
+    <form method="POST" action="/stripe/checkout">
         @csrf
         @php
             $adultEntryFee = "£".$trial['adultEntryFee'];
