@@ -3,10 +3,12 @@
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\Http\Controller;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WebhookEndpointController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\TrialController;
 use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
+//use Laravel\Cashier\Http\Controllers\WebhookController;
 
 
 /*
