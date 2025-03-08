@@ -284,7 +284,7 @@ class TrialController extends Controller
 
     private function addStripeProducts($trial, mixed $youthEntryFee = 15, mixed $adultEntryFee = 20)
     {
-        $stripe_secret_key = config('stripe.stripe_secret_key');
+        $stripe_secret_key = config('cashier.secret');
         $stripe = new \Stripe\StripeClient("$stripe_secret_key");
 
         $stripe->products->create([
@@ -319,5 +319,4 @@ class TrialController extends Controller
             ],
         ]);
     }
-
 }

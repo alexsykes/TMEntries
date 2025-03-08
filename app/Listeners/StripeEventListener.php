@@ -1,30 +1,25 @@
 <?php
 
 namespace App\Listeners;
-
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
+use Laravel\Cashier\Events\WebhookReceived;
 
 class StripeEventListener
 {
     /**
      * Create the event listener.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() {}
 
     /**
      * Handle the event.
      */
-    public function handle(object $event): void
+    public function handle(WebhookReceived $event): void
     {
-        if ($event->payload['type'] === 'checkout.session.completed') {
+        if ($event->payload['type'] === 'price.created') {
 
-            Log::debug('Checkout session completed message.');
+//            Log::debug('Checkout session completed message.');
 
-
+            echo"Thank you for shopping with us. We will contact you soon.";
         }
     }
 }

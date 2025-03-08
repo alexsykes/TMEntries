@@ -1,20 +1,19 @@
 <?php
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\Http\Controller;
 use App\Http\Controllers\ProfileController;
+
 //use App\Http\Controllers\WebhookEndpointController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\TrialController;
 use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
-//use Laravel\Cashier\Http\Controllers\WebhookController;
+use Laravel\Cashier\Http\Controllers\WebhookController;
 use App\Models\User;
-
-
 
 
 /*
@@ -24,7 +23,7 @@ Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth','verified'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 
 /*
@@ -104,7 +103,7 @@ Route::get('/checkout/success', function (Request $request) {
     }
 
     $session = Cashier::stripe()->checkout->sessions->retrieve($sessionId);
-        if ($session->payment_status !== 'paid') {
+    if ($session->payment_status !== 'paid') {
         return;
     }
 
@@ -126,7 +125,6 @@ Route::middleware('auth')->group(function () {
 //Route::get('/stripe', [StripePaymentController::class, 'stripe'])->name('stripe.index');
 //Route::post('stripe/checkout', [StripePaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
 //Route::get('stripe/checkout/success', [StripePaymentController::class, 'stripeCheckoutSuccess'])->name('stripe.checkout.success');
-
 
 
 //Route::get('/showAdminTrialsList', [TrialController::class, 'showAdminTrialsList'])->name('adminTrialList');
