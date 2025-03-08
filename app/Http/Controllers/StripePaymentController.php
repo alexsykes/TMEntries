@@ -25,7 +25,7 @@ class StripePaymentController extends Controller
 
         $stripe = new \Stripe\StripeClient(Config::get('stripe.stripe_secret_key'));
 
-        $redirectUrl = route('stripe.checkout.success') . '?session_id={CHECKOUT_SESSION_ID}';
+        $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
 
         $lineItems = array();
         foreach ($entries as $entry) {

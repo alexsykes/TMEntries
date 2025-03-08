@@ -14,7 +14,8 @@ class EntryController extends Controller
     //
 
 //    Used at initial system entry to get user email/phone
-    public function getUserDetails(Request $request) {
+    public function getUserDetails(Request $request)
+    {
         $trial_id = request('id');
         session(['trial_id' => $trial_id]);
 
@@ -24,40 +25,39 @@ class EntryController extends Controller
 //  Used to display user's current entries
     public function showUserData(Request $request)
     {
-        if(!isset($request->accept)) {
-            exit(404);
-        } else {
-            session(['accept' => 1]);
-        }
-        session(['email' => $request->email]);
-        session(['phone' => $request->phone]);
+
         $email = session('email');
         $phone = session('phone');
         $trial_id = session('trial_id');
-        $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('status', 0);
+        $entries = Entry::all()->where('created_by', 1)
+            ->where('trial_id', $trial_id)
+            ->where('status', 0);
 //        $entries = Entry::all();
 
 //        dump($entries);
         $trial = Trial::findorfail($trial_id);
 
-        return view('entries.entrydata', ['entries' => $entries,  'trial' => $trial]);
+        return view('entries.userdata', ['entries' => $entries, 'trial' => $trial]);
     }
+
     public function userdata(Request $request)
     {
-        $email = session('email');
-        $phone = session('phone');
-        $trial_id = session('trial_id');
-        $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('status', 0);
-//        $entries = Entry::all();
+        $trial_id = $request->trialid;
+        $user_id = \Auth::user()->id;
 
-//        dump($entries);
+        $entries = Entry::all()
+            ->where('created_by', $user_id)
+            ->where('trial_id', $trial_id)
+            ->where('status', 0);
+
         $trial = Trial::findorfail($trial_id);
 
-        return view('entries.entrydata', ['entries' => $entries,  'trial' => $trial]);
+        return view('entries.userdata', ['entries' => $entries, 'trial' => $trial]);
     }
 
-    public function updateEntry(Request $request)  {
-        $accept = session('accept');
+    public function updateEntry(Request $request)
+    {
+//        $accept = session('accept');
         //        Get product/price IDs
 
         $request->validate([
@@ -102,7 +102,7 @@ class EntryController extends Controller
         $entry->make = $request->make;
         $entry->type = $request->type;
         $entry->size = $request->size;
-        $entry->accept = $accept;
+//        $entry->accept = $accept;
         $entry->dob = $request->dob;
 
         if (isset($request->isYouth)) {
@@ -116,11 +116,12 @@ class EntryController extends Controller
         }
 
         $entry->save();
-        return redirect('entries/userdata');
+        return redirect("/entries/userdata/{$trial_id}");
     }
 
 //  Not sure if currently used
-    public function create($id) {
+    public function create($id)
+    {
 //        Not sure if this is necessary
 
         session(['trial_id' => $id]);
@@ -128,21 +129,19 @@ class EntryController extends Controller
         return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry()]);
     }
 
-    public function checkout(Request $request) {
-//        dd($request->email);
-        $email = session('email');
-        $phone = session('phone');
+    public function checkout(Request $request)
+    {
+        $user_id = \Auth::user()->id;
         $trial_id = session('trial_id');
 
         $trial = Trial::findorfail($trial_id);
 
-        $entries = Entry::all()->where('email', $email)
+        $entries = Entry::all()->where('created_by', $user_id)
             ->where('trial_id', $trial_id)
             ->where('status', 0)
-            ->where('phone', $phone)
             ->sortBy('name');
 
-        return view('entries.checkout', ['entries' => $entries,  'trial' => $trial, 'email' => $email, 'phone' => $phone] );
+        return view('entries.checkout', ['entries' => $entries, 'trial' => $trial]);
     }
 
 //    public function create_another() {
@@ -153,13 +152,14 @@ class EntryController extends Controller
 //    }
 
 
-
 //    Store first record then pass email and trial_id to create_another view
     public function store(Request $request)
     {
+
+        $trial_id = session('trial_id');
+
         $IPaddress = $request->ip();
         $request->session()->put('trial_id', $request->trial_id);
-        $request->session()->put('email', $request->email);
         $accept = session('accept');
 
 //        Get product/price IDs
@@ -185,14 +185,11 @@ class EntryController extends Controller
             ->where('isYouth', false)
             ->value('stripe_price_id');
 
-
         $token = bin2hex(random_bytes(16));
 
         $attributes = $request->validate([
             'name' => ['required', 'min:5', 'max:255'],
             'trial_id' => 'required',
-            'phone' => ['required', 'regex:/^([0-9\s\-\+\(\)]*)$/'],
-            'email' => ['required', 'email', 'max:254',],
             'class' => 'required',
             'course' => 'required',
             'make' => 'required',
@@ -204,6 +201,7 @@ class EntryController extends Controller
         $attributes['licence'] = $request->licence;
         $attributes['token'] = $token;
         $attributes['accept'] = $accept;
+        $attributes['created_by'] = \Auth::user()->id;
 
         if (isset($request->isYouth)) {
             $attributes['isYouth'] = 1;
@@ -216,81 +214,75 @@ class EntryController extends Controller
         }
 
         $attributes['dob'] = $request->dob;
-
-
-
-        $entry =   Entry::create($attributes);
+        $entry = Entry::create($attributes);
 
         $entryID = $entry->id;
         $attr['entryID'] = $entryID;
-        $result = Result::create($attr);
-//        DB::insert('insert into results (id) values ($entry->id)');
-
-//        dd($entry->id);
-//        ResultController::class->create_result($entry->id);
-
         $trial = Trial::findOrFail($attributes['trial_id']);
-        $entries = Entry::all()->where('IPaddress', $IPaddress)->where('trial_id', session('trial_id'))->where('email', $attributes['email']);
+        $entries = Entry::all()
+            ->where('trial_id', $trial_id)
+            ->where('created_by', $attributes['created_by']);
 
-        session(['trial_id' => $attributes['trial_id']]);
-        session(['email' => $attributes['email']]);
-        session(['phone' => $attributes['phone']]);
-        return view('entries.entrydata', ['entries' => $entries, 'trial' => $trial]);
+//        $entries = Entry::all()->where('IPaddress', $IPaddress)->where('trial_id', session('trial_id'))->where('email', $attributes['email']);
+        return view('entries.userdata', ['entries' => $entries, 'trial' => $trial]);
     }
 
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
         Entry::destroy($request->id);
-//        return redirect('entries/user_entryList');
-        return redirect('entries/userdata');
+        return redirect('entries/userdata/' . session('trial_id'));
     }
-    public function list(Request $request) {
+
+    public function list(Request $request)
+    {
         $email = session('email');
         $trial_id = $request->input('trial_id');
-        $trial =  Trial::findOrFail($trial_id);
+        $trial = Trial::findOrFail($trial_id);
         $phone = session('phone');
         $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('paid', 0);
 //        dd($entries);
-        return view('entries.entrydata', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
+        return view('entries.userdata', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
     }
 
 
-
-    public function adminEntries(Request $request) {
+    public function adminEntries(Request $request)
+    {
         $email = session('email');
         $trial_id = $request->input('trial_id');
-        $trial =  Trial::findOrFail($trial_id);
+        $trial = Trial::findOrFail($trial_id);
         $phone = session('phone');
         $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('paid', 0);
 //        dd($entries);
         return view('entries.adminEntries', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
     }
 
-    public function edit(Request $request) {
+    public function edit(Request $request)
+    {
         $entry = Entry::findorfail($request->entry);
         $trialid = session('trial_id');
         $trial = Trial::findorfail($trialid);
         return view('entries.edit', ['entry' => $entry, 'trial' => $trial]);
     }
 
-    public function createStripeSession(Request $request) {
-        require ('../vendor/autoload.php');
+    public function createStripeSession(Request $request)
+    {
+        require('../vendor/autoload.php');
         require('../vendor/stripe/stripe-php/lib/StripeClient.php');
         $stripe = new \Stripe\StripeClient('sk_test_51MMQJsDJZeL6aXCC6MsOulFeSySfNQI7NELzajF8qZKhDueOO1vWVM1oj59FN7cPOluMZ2GFOS9Hp0J8u9oofbNy00v3rPESVH');
 
         $email = $request->input('email');
         $trial_id = $request->input('trial_id');
         $trial_id = session('trial_id');
-        $phone  = $request->input('phone');
+        $phone = $request->input('phone');
         $entryIDs = $request->input('entryIDs');
-        $entryIDArray  = explode(',',$request->input('entryIDs'));
+        $entryIDArray = explode(',', $request->input('entryIDs'));
 
 
-
-        $entryData = Entry::all()->whereIn('id',  $entryIDArray);
+        $entryData = Entry::all()->whereIn('id', $entryIDArray);
 
         $lineItems = array();
 
-        foreach($entryData as $entry ) {
+        foreach ($entryData as $entry) {
 //            dump($index);
             $entryID = $entry['id'];
             $isYouth = $entry['isYouth'];
@@ -322,11 +314,11 @@ class EntryController extends Controller
             ],
             'line_items' => $lineItems,
 //            'mode' => 'payment',
-            'success_url' =>"https://dev.trialmonster.net",
+            'success_url' => "https://dev.trialmonster.net",
             'cancel_url' => "https://dev.trialmonster.net/entries/checkout",
 //            'phone_number_collection' => ['enabled' => true],
         ];
-dd("lineitems: ", $lineItems, "data: ", $data);
+        dd("lineitems: ", $lineItems, "data: ", $data);
         $checkout_session = $stripe->checkout->sessions->create($data);
         $url = $checkout_session->url;
     }

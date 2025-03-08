@@ -8,6 +8,6 @@ class Entry extends Model
 {
     //
     protected $fillable = [
-        'name', 'trial_id', 'class', 'course',  'isYouth', 'dob', 'updated_at', 'email', 'phone', 'stripe_product_id', 'stripe_price_id', 'status', 'licence', 'IPaddress', 'make', 'size', 'type', 'token'
+        'name', 'trial_id', 'class', 'course',  'isYouth', 'dob', 'updated_at', 'email', 'phone', 'stripe_product_id', 'stripe_price_id', 'status', 'licence', 'IPaddress', 'make', 'size', 'type', 'token', 'created_by'
     ];
 }

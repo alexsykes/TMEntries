@@ -10,32 +10,33 @@
         }
     </script>
     @php
-    $email = session('email');
-    $phone = session('phone');
-    $trial_id = session('trial_id');
-
+    $trial_id = $trial->id;
         $classes = explode(',',$trial->classlist);
         $courses = explode(',',$trial->courselist);
         $authority = $trial->authority;
         $types = array("2 stroke", "4 stroke", "e-bike");
 $entryIDs = array();
 
+$userID = Auth::user()->id;
+//dump($entries);
     @endphp
     <x-slot:heading>
         Registration for {{$trial->name}}
     </x-slot:heading>
-    <div class="text-blue-800 font-semibold">Contact email: {{$email}}</div>
-    <div class="text-blue-800 font-semibold">Contact phone: {{$phone}}</div>
+
+@error('')
+    {{ $message }}
+@enderror
     @if(sizeof($entries) > 0)
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Registration for {{$trial->name}} </div>
+
             <table class="w-full ml-4 mr-4">
                 <tr>
                     <th class="">Ref</th>
                     <th class="pl-2">Name</th>
                     <th class="pl-2 hidden sm:table-cell">Course</th>
                     <th class="pl-2 hidden sm:table-cell">Class</th>
-
                     <th class="pl-2 hidden md:table-cell">Bike</th>
                     <th class="pl-2"></th>
                     <th class="pl-2"></th>
@@ -51,8 +52,8 @@ $entryIDs = array();
                         <td class="pl-2 hidden sm:table-cell">{{$entry->course}}</td>
                         <td class="pl-2 hidden sm:table-cell">{{$entry->class}}</td>
                         <td class="pl-2 hidden md:table-cell">{{$entry->make}} {{$entry->size}}</td>
-                        <td class="pl-2"><a href="edit/{{$entryID}}"><i class="fa-solid fa-pen-to-square"></i></a></td>
-                        <td class="pl-2"><a href="delete/{{$entryID}}"><i class="fa-solid fa-ban text-orange-700"></i></a></td>
+                        <td class="pl-2"><a href="/entries/edit/{{$entryID}}"><i class="fa-solid fa-pen-to-square"></i></a></td>
+                        <td class="pl-2"><a href="/entries/delete/{{$entryID}}"><i class="fa-solid fa-ban text-orange-700"></i></a></td>
                     </tr>
                 @endforeach
                 @php
@@ -61,7 +62,7 @@ $entryIDs = array();
             </table>
         </div>
 
-        <form action="checkout" method="post">
+        <form action="/entries/checkout" method="post">
             @csrf
             <button type="submit" class="mt-4 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Checkout</button>
             <input type="hidden" id="entryID[]" name = "entryID[]" value="{{$entryIDstring}}">
@@ -70,12 +71,10 @@ $entryIDs = array();
     @endif
 
 
-
     <form action="/entries/store" method="POST">
         @csrf
         <input type="hidden" id="trial_id" name="trial_id" value="{{$trial_id}}">
-        <input type="hidden" id="email" name="email" value="{{$email}}">
-        <input type="hidden" id="phone" name="phone" value="{{$phone}}">
+        <input type="hidden" id="created_by" name="created_by" value="{{$userID}}">
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
                 <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">

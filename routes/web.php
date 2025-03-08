@@ -1,14 +1,20 @@
 <?php
 
+require __DIR__.'/auth.php';
+
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\Http\Controller;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\WebhookEndpointController;
+//use App\Http\Controllers\WebhookEndpointController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\TrialController;
 use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 //use Laravel\Cashier\Http\Controllers\WebhookController;
+use App\Models\User;
+
+
 
 
 /*
@@ -25,9 +31,13 @@ Route::get('/dashboard', function () {
  * TRIAL Routes
  */
 
-Route::get('/trials', [TrialController::class, 'showTrialList'])->name('trials');
 Route::get('/adminTrials', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified'])->name('adminTrials');
 Route::get('trials/edit/{id}', [TrialController::class, 'edit'])->middleware(['auth', 'verified'])->name('edit');
+
+// Public
+Route::get('/trials', [TrialController::class, 'showTrialList'])->name('trials');
+Route::get('trial/details/{trial_id}', [TrialController::class, 'details'])->name('details');
+
 Route::get('trials/toggleVisibility/{id}', [TrialController::class, 'toggleVisibility'])->middleware(['auth', 'verified'])->name('toggleVisibility');
 Route::get('trials/add', [TrialController::class, 'add'])->middleware(['auth', 'verified'])->name('add');
 Route::get('trials/remove/{id}', [TrialController::class, 'remove'])->middleware(['auth', 'verified'])->name('remove');
@@ -38,12 +48,16 @@ Route::post('trials/edit/saveasnew', [TrialController::class, 'saveasnew'])->mid
 
 /*
 ENTRY Routes
-*/
+*/// Entry gateway -
+
+Route::get('/entries/userdata/{trialid}', [EntryController::class, 'userdata'])->middleware(['auth', 'verified'])->name('userdata');
+Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->middleware('auth', 'verified')->name('entries.edit');
+Route::get('/entries/delete/{id}', [EntryController::class, 'delete'])->middleware('auth', 'verified')->name('entries.delete');
+
 Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails']);
 Route::get('/adminEntries', [EntryController::class, 'adminEntries'])->middleware(['auth', 'verified'])->name('adminEntries');
 
 Route::post('entries/userdata', [EntryController::class, 'showUserData']);
-Route::get('entries/userdata', [EntryController::class, 'userdata']);
 
 Route::patch('/entries/update/{id}', [EntryController::class, 'updateEntry']);
 Route::get('entries/saveddata', [EntryController::class, 'showSavedData']);
@@ -52,8 +66,6 @@ Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->nam
 //Route::get('/entries/create_another', [EntryController::class, 'create_another'])->name('entries.create_another');
 Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
-Route::get('entries/delete/{id}', [EntryController::class, 'delete']);
-Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->name('entries.edit');
 
 
 Route::post('/entries/createSession', [EntryController::class, 'createStripeSession']);
@@ -68,11 +80,41 @@ Route::post('/venues/add', [VenueController::class, 'store']);
 Route::post('/venues/update', [VenueController::class, 'update']);
 
 
-//Route::get('/showAdminTrialsList', [TrialController::class, 'showAdminTrialsList'])->name('adminTrialList');
+//Route::post('/stripe/checkout', function (Request $request) {
+////    dd(config());
+//    $stripePriceId = 'price_1QzuOBRmEmasrI2y2N8MDXPO';
+//    $quantity = 1;
+////    $stripeCharge = (new User)->charge(100, 'card');
+//
+//
+//
+//    return $request->user()->checkout([$stripePriceId => $quantity], [
+//        'success_url' => route('checkout-success'),
+//        'cancel_url' => route('checkout-cancel'),
+//    ]);
+//})->name('checkout');
 
-Route::get('/contact-us', ['App\Http\Controllers\ContactUsController', 'index'])->name('contact.index');
-Route::post('/contact-us', ['App\Http\Controllers\ContactUsController', 'send'])->name('contact.send');
+Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeCheckout']);
 
+Route::get('/checkout/success', function (Request $request) {
+    $sessionId = $request->get('session_id');
+
+    if ($sessionId === null) {
+        return;
+    }
+
+    $session = Cashier::stripe()->checkout->sessions->retrieve($sessionId);
+        if ($session->payment_status !== 'paid') {
+        return;
+    }
+
+    $orderId = $session['metadata']['order_id'] ?? null;
+    $order = Order::findOrFail($orderId);
+    $order->update(['status' => 'completed']);
+    return view('success', ['order' => $order]);
+})->name('checkout-success');
+
+Route::view('/checkout/cancel', 'checkout.cancel')->name('checkout-cancel');
 
 Route::post('/entries/checkout', [EntryController::class, 'checkout']);
 Route::middleware('auth')->group(function () {
@@ -81,9 +123,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/stripe', [StripePaymentController::class, 'stripe'])->name('stripe.index');
-Route::post('stripe/checkout', [StripePaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
-Route::get('stripe/checkout/success', [StripePaymentController::class, 'stripeCheckoutSuccess'])->name('stripe.checkout.success');
+//Route::get('/stripe', [StripePaymentController::class, 'stripe'])->name('stripe.index');
+//Route::post('stripe/checkout', [StripePaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
+//Route::get('stripe/checkout/success', [StripePaymentController::class, 'stripeCheckoutSuccess'])->name('stripe.checkout.success');
 
 
-require __DIR__.'/auth.php';
+
+//Route::get('/showAdminTrialsList', [TrialController::class, 'showAdminTrialsList'])->name('adminTrialList');
+
+//Route::get('/contact-us', ['App\Http\Controllers\ContactUsController', 'index'])->name('contact.index');
+//Route::post('/contact-us', ['App\Http\Controllers\ContactUsController', 'send'])->name('contact.send');

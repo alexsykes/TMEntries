@@ -10,9 +10,15 @@ use Illuminate\Validation\Rule;
 class TrialController extends Controller
 {
     //
+    public function details($trial_id)
+    {
+//    $trialid = $id;
+        $trial = Trial::findorfail($trial_id);
+        return view('trials.details', compact('trial_id', 'trial'));
+    }
 
-    public function showTrialList() {
-
+    public function showTrialList()
+    {
         $trials = DB::table('trials')->where('published', 1)
             ->where('date', '>', date('Y-m-d'))
             ->orderBy('date', 'desc')
@@ -20,19 +26,21 @@ class TrialController extends Controller
         return view('trials.trial_list', ['trials' => $trials]);
     }
 
-    public function adminTrials() {
+    public function adminTrials()
+    {
         $trials = Trial::all()->sortBy('date');
         return view('trials.admin_trial_list', ['trials' => $trials]);
     }
 
-    public function add()  {
+    public function add()
+    {
         $prefix = config('database.connections.mysql.prefix');
-        $venues = DB::select('select id, name from '.$prefix.'venues order by name');
-        $authorities = array("ACU","AMCA","Other");
-        $selection = array('Order of Payment','Ballot','Selection','Other');
+        $venues = DB::select('select id, name from ' . $prefix . 'venues order by name');
+        $authorities = array("ACU", "AMCA", "Other");
+        $selection = array('Order of Payment', 'Ballot', 'Selection', 'Other');
         $scoring = array('Observer', 'App', 'Sequential', 'Punch cards', 'Other');
         $stopAllowed = array('Stop permitted', 'Non-stop');
-        $entryRestrictions = array('Closed to club', 'Centre', 'Open', 'Other Restriction' );
+        $entryRestrictions = array('Closed to club', 'Centre', 'Open', 'Other Restriction');
 
         return view('trials.add', [
             'venues' => $venues,
@@ -44,18 +52,19 @@ class TrialController extends Controller
         ]);
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $prefix = config('database.connections.mysql.prefix');
-        $venues = DB::select('select id, name from '.$prefix.'venues order by name');
-        $authorities = array("ACU","AMCA","Other");
-        $selection = array('Order of Payment','Ballot','Selection','Other');
+        $venues = DB::select('select id, name from ' . $prefix . 'venues order by name');
+        $authorities = array("ACU", "AMCA", "Other");
+        $selection = array('Order of Payment', 'Ballot', 'Selection', 'Other');
         $scoring = array('Observer', 'App', 'Sequential', 'Punch cards', 'Other');
         $stopAllowed = array('Stop permitted', 'Non-stop');
-        $entryRestrictions = array('Closed to club', 'Centre', 'Open', 'Other Restriction' );
+        $entryRestrictions = array('Closed to club', 'Centre', 'Open', 'Other Restriction');
 
         $trial = Trial::find($id);
         return view('trials.edit', [
-           'trial' => $trial,
+            'trial' => $trial,
             'venues' => $venues,
             'authorities' => $authorities,
             'selection' => $selection,
@@ -64,7 +73,9 @@ class TrialController extends Controller
             'entryRestrictions' => $entryRestrictions,
         ]);
     }
-    public function toggleVisibility($id) {
+
+    public function toggleVisibility($id)
+    {
 //        dd($id);
         $trial = Trial::findorfail($id);
         $published = $trial->published;
@@ -89,19 +100,19 @@ class TrialController extends Controller
             'date' => ['required', Rule::date()->after(today()->addDays(1)),],
             'startTime' => 'required',
             'club' => 'required',
-            'email' => ['required','email', ],
-            'phone' => ['required', ],
+            'email' => ['required', 'email',],
+            'phone' => ['required',],
             'status' => 'required',
             'stopNonStop' => 'required',
             'entryMethod' => 'required',
         ]);
-        if(request('classlist')){
+        if (request('classlist')) {
             $attrs['classlist'] = implode(',', request('classlist'));
         } else {
             $attrs['classlist'] = '';
         }
 
-        if(request('courselist')){
+        if (request('courselist')) {
             $attrs['courselist'] = implode(',', request('courselist'));
         } else {
             $attrs['courselist'] = '';
@@ -130,7 +141,7 @@ class TrialController extends Controller
         $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
         $attrs['hasWaitingList'] = request('hasWaitingList', 0);
 
-        $attrs['isMultiDay'] = request('isMultiDay',0);
+        $attrs['isMultiDay'] = request('isMultiDay', 0);
         $attrs['numDays'] = request('numDays', 1);
 
         $attrs['numLaps'] = request('numLaps', 10);
@@ -160,8 +171,8 @@ class TrialController extends Controller
 //        dd($trialid);
 
 //    case 'save':
-                $trial = Trial::findorfail($trialid);
-                $trial->update($attrs);
+        $trial = Trial::findorfail($trialid);
+        $trial->update($attrs);
 
 //        switch ($action) {
 //            case 'save':
@@ -186,18 +197,18 @@ class TrialController extends Controller
             'date' => ['required', Rule::date()->after(today()->addDays(1)),],
             'startTime' => 'required',
             'club' => 'required',
-            'email' => ['required','email', ],
-            'phone' => ['required', ],
+            'email' => ['required', 'email',],
+            'phone' => ['required',],
             'status' => 'required',
             'stopNonStop' => 'required',
         ]);
-        if(request('classlist')){
+        if (request('classlist')) {
             $attrs['classlist'] = implode(',', request('classlist'));
         } else {
             $attrs['classlist'] = '';
         }
 
-        if(request('courselist')){
+        if (request('courselist')) {
             $attrs['courselist'] = implode(',', request('courselist'));
         } else {
             $attrs['courselist'] = '';
@@ -225,7 +236,7 @@ class TrialController extends Controller
         $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
         $attrs['hasWaitingList'] = request('hasWaitingList', 0);
 
-        $attrs['isMultiDay'] = request('isMultiDay',0);
+        $attrs['isMultiDay'] = request('isMultiDay', 0);
         $attrs['numDays'] = request('numDays', 1);
 
         $attrs['numLaps'] = request('numLaps', 10);
@@ -260,12 +271,14 @@ class TrialController extends Controller
         return redirect('/adminTrials');
     }
 
-    public function remove($id) {
+    public function remove($id)
+    {
         Trial::destroy($id);
         return redirect('/adminTrials');
     }
 
-    public function saveasnew() {
+    public function saveasnew()
+    {
         dd(request());
     }
 

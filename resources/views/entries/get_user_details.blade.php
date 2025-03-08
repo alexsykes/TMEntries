@@ -12,8 +12,6 @@
     <x-slot:heading>Contact details
     </x-slot:heading>
     @php
-            $sessionEmail = session('email') ? session('email') : "";
-            $sessionPhone = session('phone') ? session('phone') : "";
 //    dd($trial);
     @endphp
     <form action="/entries/userdata" method="POST">

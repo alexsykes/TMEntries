@@ -10,7 +10,7 @@
                         <td class="hidden md:table-cell">{{$trial->date}}</td>
                         <td class="hidden md:table-cell">{{$trial->club}}</td>
                         <td class="table-cell">{{$trial->name}}</td>
-                        <td class="table-cell"><a href="entries/user_details/{{$trial->id}}"><span><i class="fa-solid fa-pencil"></i></span></a></td>
+                        <td class="table-cell"><a href="/trial/details/{{$trial->id}}"><span><i class="text-lg  fa-solid fa-circle-info"></i></span></a></td>
                     </tr>
             @endforeach
         </table>

@@ -49,10 +49,10 @@
                 {{ __('Already registered?') }}
             </a>
 
-            <button class="g-recaptcha btn btn-primary btn-lg "
+            <x-primary-button class="g-recaptcha btn btn-primary btn-lg ms-4"
                     data-sitekey="{{ config('services.recaptcha_v3.siteKey') }}"
                     data-callback="onSubmit"
-                    data-action="registerUser">Submit</button>
+                    data-action="registerUser">Submit</x-primary-button>
 {{--            <x-primary-button class="ms-4">--}}
 {{--                {{ __('Register') }}--}}
 {{--            </x-primary-button>--}}

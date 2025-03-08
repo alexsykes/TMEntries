@@ -6,6 +6,7 @@
         @php
             $adultEntryFee = "£".$trial['adultEntryFee'];
             $youthEntryFee = "£".$trial['youthEntryFee'];
+            $trial_id = session('$trial_id');
 
         @endphp
 
@@ -15,7 +16,6 @@
                 @foreach($entries as $entry)
                     <tr><td>{{$entry->id}}</td><td>{{$entry->name}}</td><td>{{$entry->class}}</td><td>{{$entry->course}}</td><td>{{ ($entry->isYouth == 1) ? $youthEntryFee : $adultEntryFee}}</td></tr>
                 @endforeach
-                <tr><td colspan="5">Please check that your contact details are entered correctly - email: {{$email}} phone: {{$phone}}</td> </tr>
         `       </table>
             @php
                 $entryIDarray = array();
@@ -25,11 +25,9 @@
                 $entryIDs = implode(',', $entryIDarray);
             @endphp
             <input type="hidden" value="{{$entryIDs}}" id="entryIDs" name="entryIDs">
-            <input type="hidden" value="{{$phone}}" id="phone" name="phone">
-            <input type="hidden" value="{{$email}}" id="email" name="email">
         </div>
         <div class="mt-4" id="buttons">
-            <a href="/entries/userdata"  class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Back</a>
+            <a href="/entries/userdata/{{$trial_id}}"  class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Back</a>
             <button type="submit" class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Pay</button>
         </div>
     </form>
