@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class StripePaymentController extends Controller
 {
@@ -17,7 +18,8 @@ class StripePaymentController extends Controller
 
     public function stripeCheckout(Request $request)
     {
-        $entryIDs = explode(',',$request->entryIDs);
+//        $url = Storage::get('public/files/Disclaimer.pdf');
+        $entryIDs = explode(',', $request->entryIDs);
         $entries = DB::table('entries')
             ->whereIn('id', $entryIDs)
             ->get();
@@ -31,14 +33,20 @@ class StripePaymentController extends Controller
         foreach ($entries as $entry) {
             $line = [
                 'price' => $entry->stripe_price_id,
-                'quantity'  => 1,
+                'quantity' => 1,
             ];
             // Add to lineItems
             array_push($lineItems, $line);
         }
 
-        $response =  $stripe->checkout->sessions->create([
+        $response = $stripe->checkout->sessions->create([
             'success_url' => $redirectUrl,
+//            'consent_collection' => ['required' => true],
+
+            'consent_collection' => ['terms_of_service' => 'required'],
+            'custom_text' => ['terms_of_service_acceptance' =>
+                ['message' => 'I agree to the [Disclaimer]({{$url}})',],
+            ],
             'line_items' => [
                 $lineItems
             ],
@@ -47,6 +55,7 @@ class StripePaymentController extends Controller
             'allow_promotion_codes' => false,
             'metadata' => [
                 'entryIDs' => $request->entryIDs,
+                'trialID' => $request->trialID,
             ]
         ]);
 
