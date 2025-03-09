@@ -18,7 +18,6 @@ class StripePaymentController extends Controller
 
     public function stripeCheckout(Request $request)
     {
-//        $url = Storage::get('public/files/Disclaimer.pdf');
         $entryIDs = explode(',', $request->entryIDs);
         $entries = DB::table('entries')
             ->whereIn('id', $entryIDs)
@@ -28,6 +27,7 @@ class StripePaymentController extends Controller
         $stripe = new \Stripe\StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
+        $redirectUrl = "https://bbc.com";
 
         $lineItems = array();
         foreach ($entries as $entry) {
@@ -41,11 +41,10 @@ class StripePaymentController extends Controller
 
         $response = $stripe->checkout->sessions->create([
             'success_url' => $redirectUrl,
-//            'consent_collection' => ['required' => true],
 
             'consent_collection' => ['terms_of_service' => 'required'],
             'custom_text' => ['terms_of_service_acceptance' =>
-                ['message' => 'I agree to the [Disclaimer]({{$url}})',],
+                ['message' => 'I agree to the Terms and Conditions which were supplied by email on registration with TrialMonster',],
             ],
             'line_items' => [
                 $lineItems
