@@ -27,7 +27,7 @@ class StripePaymentController extends Controller
         $stripe = new \Stripe\StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
-        $redirectUrl = "https://bbc.com";
+//        $redirectUrl = "https://bbc.com";
 
         $lineItems = array();
         foreach ($entries as $entry) {
@@ -61,14 +61,16 @@ class StripePaymentController extends Controller
         return redirect($response['url']);
     }
 
-    public function stripeCheckoutSuccess(Request $request)
+    public function checkoutSuccess(Request $request)
     {
+//        dd($request->all());
         $stripe = new \Stripe\StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $session = $stripe->checkout->sessions->retrieve($request->session_id);
+
         info($session);
 
-        $successMessage = "We have received your payment request and will let you know shortly.";
+        $successMessage = "Your payment has been successfully processed! You should shortly received an email notification.";
 
         return view('success', compact('successMessage'));
     }

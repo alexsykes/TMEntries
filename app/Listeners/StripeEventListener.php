@@ -2,10 +2,13 @@
 
 namespace App\Listeners;
 
+use App\Mail\PaymentReceived;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Laravel\Cashier\Events\WebhookReceived;
 use App\Models\Price;
+use App\Models\Entry;
+use Illuminate\Support\Facades\Mail;
 
 
 function onPriceCreated($priceObject)
@@ -112,6 +115,39 @@ function onProductUpdated($productObject)
 
 }
 
+function onCheckoutSessionCompleted($sessionObject) {
+    $metadata = $sessionObject['metadata'];
+    $email = $sessionObject['customer_details']['email'];
+    $email = 'admin@trialmonster.uk';
+    $entryIDs = $metadata['entryIDs'];
+    $entryIDArray = explode(',', $entryIDs);
+    
+    $entries = DB::table('entries')
+        ->whereIn('id', $entryIDArray)
+        ->update(['status' => 1]);
+
+    $entries = Entry::all()
+    ->whereIn('id', $entryIDArray)
+    ;
+
+//    $entryData = "<table>";
+//    foreach (Entry::all() as $entry) {
+//        $id = $entry->id;
+//        $name = $entry->name;
+//        $token = $entry->token;
+//        $entryLine = "<tr><td>Ref: $id</td><td>$name</td><td>$token</td></tr>";
+//        $entryData .= $entryLine;
+//
+//    }
+//
+//    $entryData .= "</table>";
+//    info($entryData);
+
+    Mail::to($email)->send(new PaymentReceived($entries));
+    info("Mail sent to $email");
+
+}
+
 class StripeEventListener
 {
     /**
@@ -131,8 +167,8 @@ class StripeEventListener
 
         switch ($eventType) {
             case 'checkout.session.completed':
-
-//                onCheckoutSessionCompleted($event);
+                $object = $event->payload['data']['object'];
+                onCheckoutSessionCompleted($object);
                 break;
             case 'product.updated':
                 $object = $event->payload['data']['object'];

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Laravel\Cashier\Http\Controllers\WebhookController;
 use App\Models\User;
+use Laravel\Cashier\Cashier;
 
 
 /*
@@ -78,56 +79,13 @@ Route::get('/venues/edit/{$venueID}', [VenueController::class, 'edit']);
 Route::post('/venues/add', [VenueController::class, 'store']);
 Route::post('/venues/update', [VenueController::class, 'update']);
 
-
-//Route::post('/stripe/checkout', function (Request $request) {
-////    dd(config());
-//    $stripePriceId = 'price_1QzuOBRmEmasrI2y2N8MDXPO';
-//    $quantity = 1;
-////    $stripeCharge = (new User)->charge(100, 'card');
-//
-//
-//
-//    return $request->user()->checkout([$stripePriceId => $quantity], [
-//        'success_url' => route('checkout-success'),
-//        'cancel_url' => route('checkout-cancel'),
-//    ]);
-//})->name('checkout');
-
+// Stripe Routes
 Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeCheckout']);
-
-Route::get('/checkout/success', function (Request $request) {
-    $sessionId = $request->get('session_id');
-
-    if ($sessionId === null) {
-        return;
-    }
-
-    $session = Cashier::stripe()->checkout->sessions->retrieve($sessionId);
-    if ($session->payment_status !== 'paid') {
-        return;
-    }
-
-    $orderId = $session['metadata']['order_id'] ?? null;
-    $order = Order::findOrFail($orderId);
-    $order->update(['status' => 'completed']);
-    return view('success', ['order' => $order]);
-})->name('checkout-success');
-
+Route::get('/checkout/success', [StripePaymentController::class, 'checkoutSuccess'])->name('checkout-success');
 Route::view('/checkout/cancel', 'checkout.cancel')->name('checkout-cancel');
-
 Route::post('/entries/checkout', [EntryController::class, 'checkout']);
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-//Route::get('/stripe', [StripePaymentController::class, 'stripe'])->name('stripe.index');
-//Route::post('stripe/checkout', [StripePaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
-//Route::get('stripe/checkout/success', [StripePaymentController::class, 'stripeCheckoutSuccess'])->name('stripe.checkout.success');
-
-
-//Route::get('/showAdminTrialsList', [TrialController::class, 'showAdminTrialsList'])->name('adminTrialList');
-
-//Route::get('/contact-us', ['App\Http\Controllers\ContactUsController', 'index'])->name('contact.index');
-//Route::post('/contact-us', ['App\Http\Controllers\ContactUsController', 'send'])->name('contact.send');

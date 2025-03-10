@@ -7,7 +7,6 @@
             $adultEntryFee = "£".$trial['adultEntryFee'];
             $youthEntryFee = "£".$trial['youthEntryFee'];
             $trial_id = session('$trial_id');
-
         @endphp
 
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
