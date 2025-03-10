@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Trial;
+use App\Models\Entry;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -185,6 +186,22 @@ class TrialController extends Controller
 //                break;
 //        }
         return redirect('/adminTrials');
+    }
+
+    public function entrylist($id)
+    {
+        $entries = Entry::where('trial_id', $id)
+            ->where('status', 1)
+            ->get()
+            ->sortBy('name');
+
+        $unconfirmed = Entry::where('trial_id', $id)
+            ->where('status', 0)
+            ->select('name')
+        ->get();
+
+        $trial = Trial::where('id', $id)->first();
+        return view('trials.entrylist', ['entries' => $entries, 'unconfirmed' => $unconfirmed, 'trial' => $trial]);
     }
 
     public function store()
