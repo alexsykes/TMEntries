@@ -43,6 +43,18 @@
                     <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                         <div class=" grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
                             <x-form-field>
+                                <x-form-label for="permit">Permit</x-form-label>
+                                <div class="mt-2 col-span-2">
+                                    <x-form-input name="permit" type="text" id="permit" value="{{$trial->permit}}"
+                                                  placeholder="Permit" required/>
+                                    <x-form-error name="permit"/>
+                                </div>
+                                @error('permit')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
+                            </x-form-field>
+
+                            <x-form-field>
                                 <x-form-label for="name">Event Name</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="name" type="text" id="name" value="{{$trial->name}}"

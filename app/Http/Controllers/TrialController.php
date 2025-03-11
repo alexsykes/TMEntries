@@ -108,6 +108,7 @@ class TrialController extends Controller
             'status' => 'required',
             'stopNonStop' => 'required',
             'entryMethod' => 'required',
+            'permit' => 'required',
         ]);
         if (request('classlist')) {
             $attrs['classlist'] = implode(',', request('classlist'));
@@ -220,6 +221,7 @@ class TrialController extends Controller
             'phone' => ['required',],
             'status' => 'required',
             'stopNonStop' => 'required',
+            'permit' => 'required',
         ]);
         if (request('classlist')) {
             $attrs['classlist'] = implode(',', request('classlist'));

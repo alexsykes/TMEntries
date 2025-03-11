@@ -118,7 +118,7 @@ function onProductUpdated($productObject)
 function onCheckoutSessionCompleted($sessionObject) {
     $metadata = $sessionObject['metadata'];
     $email = $sessionObject['customer_details']['email'];
-    $email = 'admin@trialmonster.uk';
+    $bcc = 'admin@trialmonster.uk';
     $entryIDs = $metadata['entryIDs'];
     $entryIDArray = explode(',', $entryIDs);
     
@@ -143,8 +143,10 @@ function onCheckoutSessionCompleted($sessionObject) {
 //    $entryData .= "</table>";
 //    info($entryData);
 
-    Mail::to($email)->send(new PaymentReceived($entries));
-    info("Mail sent to $email");
+    Mail::to($email)
+        ->bcc($bcc)
+        ->send(new PaymentReceived($entries));
+    info("Mail sent to $email, bcc: $bcc");
 
 }
 

@@ -23,11 +23,11 @@
             @endforeach
         </table>
 
+@if(sizeof($unconfirmed) != 0 )
+
     <div class="font-bold w-full pt-2 mt-2 pb-2 pl-4 pr-4   text-white bg-blue-600">Unconfirmed entries</div>
-
-
-
         <div class="w-full ml-4 pr-6">   {{$names}} </div>
-    </div>
 
+    @endif
+    </div>
 </x-main>
