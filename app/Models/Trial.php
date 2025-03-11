@@ -3,14 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Trial extends Model
 {
-
-    //
-//    protected $fillable = [
-//        'name', 'id', 'classlist', 'courselist',  'date', 'club', 'updated_at','authority','created_by', 'email', 'phone',
-//    ];
+    public function venue(): HasOne {
+        return $this->hasOne(Venue::class, 'id', 'venueID');
+    }
 
     protected $guarded = ['id'];
 }

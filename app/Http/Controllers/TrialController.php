@@ -15,7 +15,9 @@ class TrialController extends Controller
     {
 //    $trialid = $id;
         $trial = Trial::findorfail($trial_id);
-        return view('trials.details', compact('trial_id', 'trial'));
+//        dd($trial);
+        $venue = $trial->venue();
+        return view('trials.details', compact('trial_id', 'venue', 'trial'));
     }
 
     public function showTrialList()
