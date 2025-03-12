@@ -407,9 +407,9 @@
                                             <input name="entrySelectionBasis"
                                                    <?php if($option == $trial->entrySelectionBasis) { ?>checked="checked" <?php } ?>
                                                    type="radio"
-                                                   id="entrySelectionBasis
+                                                   id="entrySelectionBasis"
                                                    value="{{$option}}">
-                                            <label class="pl-1 pr-4" for="{{$option}}">{{$option}}</label>
+                                            <label class="pl-1 pr-4" for="entrySelectionBasis">{{$option}}</label>
                                         @endforeach
                                         <x-form-error name="entrySelectionBasis"/>
                                     </div>

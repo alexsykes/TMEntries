@@ -14,10 +14,10 @@ class TrialController extends Controller
     public function details($trial_id)
     {
 //    $trialid = $id;
+        $gmap_key = config('gmap.gmap_key');
         $trial = Trial::findorfail($trial_id);
-//        dd($trial);
         $venue = $trial->venue();
-        return view('trials.details', compact('trial_id', 'venue', 'trial'));
+        return view('trials.details', compact('trial_id', 'gmap_key', 'venue', 'trial'));
     }
 
     public function showTrialList()
@@ -167,8 +167,9 @@ class TrialController extends Controller
         $attrs['closingDate'] = request('closingDate');
         $attrs['openingDate'] = request('openingDate');
 
+//        dd(request('entrySelectionBasis'));
         $attrs['authority'] = request('authority');
-//        $attrs['entrySelectionBasis'] = request('entrySelectionBasis', '');
+        $attrs['entrySelectionBasis'] = request('entrySelectionBasis');
         $attrs['scoringMode'] = request('scoringMode');
 
 
@@ -280,7 +281,7 @@ class TrialController extends Controller
         $attrs['openingDate'] = request('openingDate');
 
         $attrs['authority'] = request('authority');
-        $attrs['entrySelectionBasis'] = request('entrySelectionBasis', '');
+        $attrs['entrySelectionBasis'] = request('entrySelectionBasis');
         $attrs['scoringMode'] = request('scoringMode');
 
 //        dd($attrs);

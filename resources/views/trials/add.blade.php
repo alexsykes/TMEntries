@@ -368,10 +368,9 @@
                                 <x-form-field>
                                     <x-form-label for="entrySelectionBasis">Entry selection</x-form-label>
                                     <div class="mt-2 col-span-2">
-
                                         @foreach($entrySelectionArray as $option)
                                             <input name="entrySelectionBasis" type="radio" id="entrySelectionBasis" value="{{$option}}">
-                                            <label class="pl-1 pr-4" for="{{$option}}">{{$option}}</label>
+                                            <label class="pl-1 pr-4" for="entrySelectionBasis">{{$option}}</label>
                                         @endforeach
                                         <x-form-error name="entrySelectionBasis"/>
                                     </div>
@@ -453,8 +452,10 @@
         <div id="Scoring" class="pt-0 tabcontent">
             <div class="space-y-12">
                     <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-
                         <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+
+
+
                             <div id="scoringModeDiv" class="col-span-3">
                                 <x-form-field>
                                     <x-form-label for="scoringMode">Scoring mode</x-form-label>
