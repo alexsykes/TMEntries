@@ -141,8 +141,10 @@ class EntryController extends Controller
 
             $stripe->refunds->create
             ([
+                'metadata' => ['id' => $id],
                 'payment_intent' => $pi,
                 'amount' => $cost - 300,
+//            'amount' => 1,
             ]);
 
 //    Mark as refund requested

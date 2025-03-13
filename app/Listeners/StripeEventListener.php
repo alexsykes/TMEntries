@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Mail\PaymentReceived;
 use App\Mail\RefundRequested;
+use App\Mail\RefundConfirmed;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Laravel\Cashier\Events\WebhookReceived;
@@ -145,13 +146,38 @@ function onCheckoutSessionCompleted($sessionObject) {
 
 function onRefundCreated(mixed $object)
 {
-    $entryID=$object['metadata']['entryID'];
-    $entries = DB::table('entries')
+    $entryID=$object['metadata']['id'];
+
+    $entry = DB::table('entries')
         ->where('id', $entryID)
         ->update(['status' => 2]);
 
-    Mail::send(new RefundRequested($entryID));
+    $bcc = 'admin@trialmonster.uk';
+
+    $entry = DB::table('entries')->find($entryID);
+    $email = $entry->email;
+    Mail::to($email)
+        ->bcc($bcc)
+        ->send(new RefundRequested($entry));
     info("Refund Requested: $entryID");
+}
+
+function onRefundUpdated(mixed $object)
+{
+    $entryID=$object['metadata']['id'];
+
+    $entry = DB::table('entries')
+        ->where('id', $entryID)
+        ->update(['status' => 3]);
+
+    $bcc = 'admin@trialmonster.uk';
+
+    $entry = DB::table('entries')->find($entryID);
+    $email = $entry->email;
+    Mail::to($email)
+        ->bcc($bcc)
+        ->send(new RefundConfirmed($entry));
+    info("Refund Confirmed: $entryID");
 }
 
 class StripeEventListener
@@ -175,6 +201,14 @@ class StripeEventListener
             case 'refund.created':
                 $object = $event->payload['data']['object'];
                 onRefundCreated($object);
+                break;
+
+            case 'refund.updated':
+                $object = $event->payload['data']['object'];
+                $status = $object['status'];
+                if($status == 'succeeded') {
+                onRefundUpdated($object);
+                }
                 break;
 
             case 'checkout.session.completed':
