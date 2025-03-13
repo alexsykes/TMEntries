@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Mail\PaymentReceived;
+use App\Mail\RefundRequested;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Laravel\Cashier\Events\WebhookReceived;
@@ -118,36 +119,39 @@ function onProductUpdated($productObject)
 function onCheckoutSessionCompleted($sessionObject) {
     $metadata = $sessionObject['metadata'];
     $email = $sessionObject['customer_details']['email'];
+    $stripe_payment_intent = $sessionObject['payment_intent'];
+
     $bcc = 'admin@trialmonster.uk';
     $entryIDs = $metadata['entryIDs'];
     $entryIDArray = explode(',', $entryIDs);
     
     $entries = DB::table('entries')
         ->whereIn('id', $entryIDArray)
-        ->update(['status' => 1]);
+        ->update(['status' => 1,
+            'email' => $email,
+            'stripe_payment_intent' => $stripe_payment_intent,]);
 
     $entries = Entry::all()
     ->whereIn('id', $entryIDArray)
     ;
 
-//    $entryData = "<table>";
-//    foreach (Entry::all() as $entry) {
-//        $id = $entry->id;
-//        $name = $entry->name;
-//        $token = $entry->token;
-//        $entryLine = "<tr><td>Ref: $id</td><td>$name</td><td>$token</td></tr>";
-//        $entryData .= $entryLine;
-//
-//    }
-//
-//    $entryData .= "</table>";
-//    info($entryData);
 
     Mail::to($email)
         ->bcc($bcc)
         ->send(new PaymentReceived($entries));
     info("Mail sent to $email, bcc: $bcc");
 
+}
+
+function onRefundCreated(mixed $object)
+{
+    $entryID=$object['metadata']['entryID'];
+    $entries = DB::table('entries')
+        ->where('id', $entryID)
+        ->update(['status' => 2]);
+
+    Mail::send(new RefundRequested($entryID));
+    info("Refund Requested: $entryID");
 }
 
 class StripeEventListener
@@ -168,6 +172,11 @@ class StripeEventListener
         $eventType = $event->payload['type'];
 
         switch ($eventType) {
+            case 'refund.created':
+                $object = $event->payload['data']['object'];
+                onRefundCreated($object);
+                break;
+
             case 'checkout.session.completed':
                 $object = $event->payload['data']['object'];
                 onCheckoutSessionCompleted($object);

@@ -52,11 +52,18 @@ ENTRY Routes
 */// Entry gateway -
 
 Route::get('/entries/userdata/{trialid}', [EntryController::class, 'userdata'])->middleware(['auth', 'verified'])->name('userdata');
+Route::patch('/entries/userupdate', [EntryController::class, 'userupdate']);
+
+Route::get('/entry/withdraw/{id}', [EntryController::class, 'withdraw']);
+
+
 Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->middleware('auth', 'verified')->name('entries.edit');
 Route::get('/entries/delete/{id}', [EntryController::class, 'delete'])->middleware('auth', 'verified')->name('entries.delete');
 
 Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails']);
 Route::get('/adminEntries', [EntryController::class, 'adminEntries'])->middleware(['auth', 'verified'])->name('adminEntries');
+
+Route::get('/entry/useredit', [EntryController::class, 'useredit']);
 
 Route::post('entries/userdata', [EntryController::class, 'showUserData']);
 

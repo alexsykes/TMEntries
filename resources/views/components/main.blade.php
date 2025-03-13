@@ -140,7 +140,6 @@
     <title><?php if (config('APP_NAME') != ''){
             echo env('APP_NAME');
         }  else { echo "TM Entries"; } ?></title>
-    @bukStyles
 </head>
 <body class="h-full bg-blue-800 text-white">
 
@@ -162,12 +161,11 @@
                     @endguest
 
                     @auth
-                        {{--                Logout via form --}}
                         <form method="POST" action="/logout">
                             @csrf
-                            <x-form-button>Log Out</x-form-button>
+                            <button type="submit"
+                                    class="rounded-md ml-0 bg-blue-500 px-2 py-1 text-sm font-light  border border-white text-white drop-shadow-xl hover:bg-blue-500 focus-visible:outline focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600">Log out</button>
                         </form>
-                        <x-nav-link href="/auth/profile" :active="request()->is('auth/profile')">Profile</x-nav-link>
                     @endauth
                 </div>
             </div>
@@ -208,6 +206,5 @@
         </x-footer-link>
         <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - Oldgit UK</div></div>
 </main>
-@bukScripts
 </body>
 </html>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Entry;
 use App\Models\Result;
 use App\Models\Trial;
+use App\Models\Price;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -45,12 +46,12 @@ class EntryController extends Controller
         $trial_id = $request->trialid;
         $user_id = \Auth::user()->id;
 
+        $trial = Trial::findorfail($trial_id);
+
         $entries = Entry::all()
             ->where('created_by', $user_id)
             ->where('trial_id', $trial_id)
             ->where('status', 0);
-
-        $trial = Trial::findorfail($trial_id);
 
         return view('entries.userdata', ['entries' => $entries, 'trial' => $trial]);
     }
@@ -117,6 +118,78 @@ class EntryController extends Controller
 
         $entry->save();
         return redirect("/entries/userdata/{$trial_id}");
+    }
+
+    public function withdraw(Request $request)
+    {
+        $id = $request->id;
+        $entry = Entry::where('id', $id)->where('status', 1)->first();
+
+        if($entry) {
+            $pi = $entry->stripe_payment_intent;
+            $price = Price::where('stripe_price_id', $entry->stripe_price_id)->first();
+            $cost = $price->stripe_price;
+
+//            $entry->status = 2; // Mark as withdrawn, having paid, waiting for refund
+//            $entry->token = $token = bin2hex(random_bytes(16));
+            $entry->save();
+
+//        Request request
+            require('../vendor/autoload.php');
+            require('../vendor/stripe/stripe-php/lib/StripeClient.php');
+            $stripe = new \Stripe\StripeClient(config('stripe.stripe_secret_key'));
+
+            $stripe->refunds->create
+            ([
+                'payment_intent' => $pi,
+                'amount' => $cost - 300,
+            ]);
+
+//    Mark as refund requested
+//    Email user
+        }
+        return redirect("/");
+
+    }
+
+    public function userupdate(Request $request)
+    {
+        $id = $request->id;
+
+        $attributes = $request->validate([
+            'class' => 'required',
+            'course' => 'required',
+            'make' => 'required',
+            'type' => 'required',
+        ]);
+
+        $entry = Entry::find($id);
+        $entry->class = $request->class;
+        $entry->course = $request->course;
+        $entry->make = $request->make;
+        $entry->type = $request->type;
+        $entry->size = $request->size;
+        $entry->token = $token = bin2hex(random_bytes(16));
+        $entry->save();
+
+//       emailConfirmation($id, 'change');
+        return redirect("/entries/userdata/");
+    }
+
+    public function useredit(Request $request)
+    {
+//        dd($request->all());
+        $token = $request->token;
+        $id = $request->id;
+
+        $entry = Entry::get()
+            ->where('id', $id)
+            ->where('status', 1)
+            ->where('token', $token)->first();
+        if($entry) {
+            return view('entries.useredit', ['entry' => $entry]);
+        }
+        else { return redirect('404'); }
     }
 
 //  Not sure if currently used
@@ -268,7 +341,8 @@ class EntryController extends Controller
     {
         require('../vendor/autoload.php');
         require('../vendor/stripe/stripe-php/lib/StripeClient.php');
-        $stripe = new \Stripe\StripeClient('sk_test_51MMQJsDJZeL6aXCC6MsOulFeSySfNQI7NELzajF8qZKhDueOO1vWVM1oj59FN7cPOluMZ2GFOS9Hp0J8u9oofbNy00v3rPESVH');
+
+        $stripe = new \Stripe\StripeClient(config('stripe.stripe_secret_key'));
 
         $email = $request->input('email');
         $trial_id = $request->input('trial_id');

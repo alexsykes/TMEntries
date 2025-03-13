@@ -156,7 +156,7 @@
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">OFFICIALS: </span>Secretary of the Meeting (To whom all correspondence
             regarding this event shall be addressed): {{$trial->contactName}} <br><i class="fa-solid fa-envelope"></i>&nbsp;<a
-                    href="mailto:{{$trial->email}}">{{$trial->email}}<a></a><br><i
+                    href="mailto:{{$trial->email}}">{{$trial->email}}</a><br><i
                         class="fa-solid fa-phone"></i>&nbsp; {{$trial->phone}}<br>Point of Contact for Child Protection
                 Matters: Secretary of the Meeting.
         </div>
