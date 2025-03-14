@@ -30,7 +30,9 @@ class EntryController extends Controller
         $email = session('email');
         $phone = session('phone');
         $trial_id = session('trial_id');
-        $entries = Entry::all()->where('created_by', 1)
+        $user_id = \Auth::user()->id;
+        $entries = Entry::all()
+            ->where('created_by', $user_id)
             ->where('trial_id', $trial_id)
             ->where('status', 0);
 //        $entries = Entry::all();

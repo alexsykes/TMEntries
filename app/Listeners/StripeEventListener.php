@@ -117,7 +117,8 @@ function onProductUpdated($productObject)
 
 }
 
-function onCheckoutSessionCompleted($sessionObject) {
+function onCheckoutSessionCompleted($sessionObject)
+{
     $metadata = $sessionObject['metadata'];
     $email = $sessionObject['customer_details']['email'];
     $stripe_payment_intent = $sessionObject['payment_intent'];
@@ -125,7 +126,25 @@ function onCheckoutSessionCompleted($sessionObject) {
     $bcc = 'admin@trialmonster.uk';
     $entryIDs = $metadata['entryIDs'];
     $entryIDArray = explode(',', $entryIDs);
-    
+
+    foreach ($entryIDArray as $entryID) {
+
+        $entry = DB::table('entries')
+            ->where('id', '=', $entryID)
+            ->get();
+
+        $stripe_price_id = $entry[0]->stripe_price_id;
+        $stripe_product_id = $entry[0]->stripe_product_id;
+
+        DB::table('products')
+            ->where('stripe_product_id', '=', $stripe_product_id)
+            ->increment('purchases');
+
+        DB::table('prices')
+            ->where('stripe_price_id', '=', $stripe_price_id)
+            ->increment('purchases');
+    }
+
     $entries = DB::table('entries')
         ->whereIn('id', $entryIDArray)
         ->update(['status' => 1,
@@ -133,20 +152,17 @@ function onCheckoutSessionCompleted($sessionObject) {
             'stripe_payment_intent' => $stripe_payment_intent,]);
 
     $entries = Entry::all()
-    ->whereIn('id', $entryIDArray)
-    ;
-
+        ->whereIn('id', $entryIDArray);
 
     Mail::to($email)
         ->bcc($bcc)
         ->send(new PaymentReceived($entries));
-    info("Mail sent to $email, bcc: $bcc");
-
+    info("Checkout session completed. $entryIDs");
 }
 
 function onRefundCreated(mixed $object)
 {
-    $entryID=$object['metadata']['id'];
+    $entryID = $object['metadata']['id'];
 
     $entry = DB::table('entries')
         ->where('id', $entryID)
@@ -164,7 +180,7 @@ function onRefundCreated(mixed $object)
 
 function onRefundUpdated(mixed $object)
 {
-    $entryID=$object['metadata']['id'];
+    $entryID = $object['metadata']['id'];
 
     $entry = DB::table('entries')
         ->where('id', $entryID)
@@ -206,8 +222,8 @@ class StripeEventListener
             case 'refund.updated':
                 $object = $event->payload['data']['object'];
                 $status = $object['status'];
-                if($status == 'succeeded') {
-                onRefundUpdated($object);
+                if ($status == 'succeeded') {
+                    onRefundUpdated($object);
                 }
                 break;
 
