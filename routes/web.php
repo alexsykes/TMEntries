@@ -50,7 +50,7 @@ Route::post('trials/edit/saveasnew', [TrialController::class, 'saveasnew'])->mid
 /*
 ENTRY Routes
 */// Entry gateway -
-
+Route::get('/userEntryList', [EntryController::class, 'userEntryList'])->middleware(['auth', 'verified'])->name('userEntryList');
 Route::get('/entries/userdata/{trialid}', [EntryController::class, 'userdata'])->middleware(['auth', 'verified'])->name('userdata');
 Route::patch('/entries/userupdate', [EntryController::class, 'userupdate']);
 

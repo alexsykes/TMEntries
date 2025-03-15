@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RefundRequested;
+use App\Mail\EntryChanged;
 use App\Models\Entry;
 use App\Models\Result;
 use App\Models\Trial;
 use App\Models\Price;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 
 class EntryController extends Controller
@@ -41,6 +44,15 @@ class EntryController extends Controller
         $trial = Trial::findorfail($trial_id);
 
         return view('entries.userdata', ['entries' => $entries, 'trial' => $trial]);
+    }
+
+    public function userEntryList(Request $request){
+        $user = \Auth::user();
+        $userID = $user->id;
+        $entries = Entry::all()
+            ->groupBy('status')
+            ->sortBy('status');
+        return view('entries.user_entry_list', ['entries' => $entries, 'user' => $user]);
     }
 
     public function userdata(Request $request)
@@ -153,9 +165,12 @@ class EntryController extends Controller
 //    Email user
         }
         return redirect("/");
-
     }
 
+/*   User updates entry
+    Show screen for entry with form for updated fields
+    Limited changes can be made
+*/
     public function userupdate(Request $request)
     {
         $id = $request->id;
@@ -166,20 +181,37 @@ class EntryController extends Controller
             'make' => 'required',
             'type' => 'required',
         ]);
-
+       $newToken = bin2hex(random_bytes(16));
         $entry = Entry::find($id);
         $entry->class = $request->class;
         $entry->course = $request->course;
         $entry->make = $request->make;
         $entry->type = $request->type;
         $entry->size = $request->size;
-        $entry->token = $token = bin2hex(random_bytes(16));
+        $entry->token = $newToken;
         $entry->save();
 
-//       emailConfirmation($id, 'change');
-        return redirect("/entries/userdata/");
+        $this->emailConfirmation($id, $newToken);
+        return redirect("/");
     }
 
+    /*
+     * Email confirmation of entry changes
+     */
+    public function emailConfirmation($id, $newToken){
+        $entry = DB::table('entries')->where('id', $id)->first();
+        $email = $entry->email;
+        $token  = $entry->token;
+        $bcc = 'admin@trialmonster.uk';
+        Mail::to($email)
+            ->bcc($bcc)
+            ->send(new EntryChanged($entry, $newToken));
+        info("Entry changed: $entry->id");
+        return redirect("/");
+    }
+/*
+ * Entry is loaded based on entry ID and token emailed in link on entry confirmation
+ */
     public function useredit(Request $request)
     {
 //        dd($request->all());

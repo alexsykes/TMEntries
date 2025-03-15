@@ -26,7 +26,6 @@ function onPriceCreated($priceObject)
     ]);
 }
 
-
 function onProductCreated($productObject)
 {
     $metadata = $productObject['metadata'];

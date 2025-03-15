@@ -22,6 +22,7 @@
                     <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                         <div class="text-blue-700 text-m font-bold">Entry update - {{$entry->name}}. </div>
                         <div class="text-sm p-2">You may make changes to the entry details below. Should you wish to withdraw your entry, a refund will be processed and your entry fee will be refunded to your account. All refunds are subject to our standard administration charge of £3</div>
+                        <div class="font-semibold">You will receive an email confirmation of any changes you make.</div>
                         <div class="mt-2 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
                             <x-form-field>
