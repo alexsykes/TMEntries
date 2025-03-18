@@ -3,14 +3,14 @@
 namespace App\Listeners;
 
 use App\Mail\PaymentReceived;
-use App\Mail\RefundRequested;
 use App\Mail\RefundConfirmed;
+use App\Mail\RefundRequested;
+use App\Models\Entry;
+use App\Models\Price;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
-use Laravel\Cashier\Events\WebhookReceived;
-use App\Models\Price;
-use App\Models\Entry;
 use Illuminate\Support\Facades\Mail;
+use Laravel\Cashier\Events\WebhookReceived;
 
 
 function onPriceCreated($priceObject)

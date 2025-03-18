@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\RefundRequested;
 use App\Mail\EntryChanged;
 use App\Models\Entry;
-use App\Models\Result;
-use App\Models\Trial;
 use App\Models\Price;
+use App\Models\Trial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;

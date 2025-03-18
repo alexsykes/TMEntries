@@ -788,14 +788,22 @@
                 </div>
         </div>
 
-        <div class="ml-4 mt-2" id="buttons">
+        <div class="flex ml-4 mr-4  mt-2 justify-between" id="buttons">
+            <div>
             <a href="/adminTrials"
                class="rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-blue-900 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
 
-            <button type="submit"
+            <button type="submit" name="submitbutton" value="apply"
                     class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
                 Update
             </button>
+            </div>
+<div>
+    <button type="submit" name="submitbutton" value="saveasnew"
+                    class="rounded-md ml-2 bg-green-600 px-3 py-1 text-sm font-light  border border-green-800 text-white drop-shadow-lg hover:bg-green-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+                Add as New Trial
+            </button>
+        </div>
         </div>
     </form>
     <script>

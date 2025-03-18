@@ -24,7 +24,7 @@ class TrialController extends Controller
     {
         $trials = DB::table('trials')->where('published', 1)
             ->where('date', '>', date('Y-m-d'))
-            ->orderBy('date', 'desc')
+            ->orderBy('date')
             ->get();
         return view('trials.trial_list', ['trials' => $trials]);
     }
@@ -90,12 +90,12 @@ class TrialController extends Controller
         return view('trials.admin_trial_list', ['trials' => $trials]);
     }
 
+
     public function update()
     {
         $user = Auth::user();
         $userid = $user->id;
 
-//        $action = request('action');
         $trialid = request('trialid');
         $attrs = request()->validate([
             'name' => 'required',
@@ -173,23 +173,15 @@ class TrialController extends Controller
         $attrs['scoringMode'] = request('scoringMode');
 
 
-//        dd($trialid);
+        if (request()->submitbutton == "saveasnew") {
+            $this->saveasnew($attrs);
+        } else {
 
-//    case 'save':
-        $trial = Trial::findorfail($trialid);
-        $trial->update($attrs);
+            $trial = Trial::findorfail($trialid);
+            $trial->update($attrs);
 
-//        switch ($action) {
-//            case 'save':
-//                $trial = Trial::findorfail($trialid);
-//                $trial->update($attrs);
-//                break;
-//            case 'saveasnew':
-//                $attrs['created_by'] = $userid;
-//                Trial::create($attrs);
-//                break;
-//        }
-        return redirect('/adminTrials');
+            return redirect('/adminTrials');
+        }
     }
 
     public function entrylist($id)
@@ -202,7 +194,7 @@ class TrialController extends Controller
         $unconfirmed = Entry::where('trial_id', $id)
             ->where('status', 0)
             ->select('name')
-        ->get();
+            ->get();
 
         $trial = Trial::where('id', $id)->first();
         return view('trials.entrylist', ['entries' => $entries, 'unconfirmed' => $unconfirmed, 'trial' => $trial]);
@@ -299,10 +291,12 @@ class TrialController extends Controller
         return redirect('/adminTrials');
     }
 
-    public function saveasnew()
+    public function saveasnew($attrs)
     {
-        dd(request());
-    }
+        $trial = Trial::create($attrs);
+        $this->addStripeProducts($trial, $attrs['youthEntryFee'], $attrs['adultEntryFee']);
+        return redirect('/adminTrials');
+}
 
     private function addStripeProducts($trial, mixed $youthEntryFee = 15, mixed $adultEntryFee = 20)
     {
@@ -342,5 +336,6 @@ class TrialController extends Controller
                 'unit_amount' => 100 * $adultEntryFee,
             ],
         ]);
+        return;
     }
 }
