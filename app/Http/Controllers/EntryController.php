@@ -49,10 +49,24 @@ class EntryController extends Controller
     public function userEntryList(Request $request){
         $user = \Auth::user();
         $userID = $user->id;
-        $entries = Entry::all()
-            ->groupBy('status')
-            ->sortBy('status');
-        return view('entries.user_entry_list', ['entries' => $entries, 'user' => $user]);
+        $usedStatus = DB::table('entries')
+            ->distinct('status')
+            ->where('created_by', $userID)
+            ->orderBy('status', 'asc')
+            ->get('status');
+
+//        dd($usedStatus);
+        $entriesArray = array();
+
+        foreach($usedStatus as $status){
+            $entries = DB::table('entries')
+                ->where('status', $status->status)
+                ->where('created_by', $userID)
+                ->orderBy('name', 'asc')
+            ->get();
+            array_push($entriesArray, $entries);;
+        }
+        return view('entries.user_entry_list', ['entriesArray' => $entriesArray, 'user' => $user]);
     }
 
     public function userdata(Request $request)
