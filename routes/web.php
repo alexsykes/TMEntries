@@ -3,8 +3,9 @@
 require __DIR__ . '/auth.php';
 
 use App\Http\Controllers\EntryController;
-use App\Http\Controllers\Http\Controller;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ScoringController;
 
 //use App\Http\Controllers\WebhookEndpointController;
 use App\Http\Controllers\StripePaymentController;
@@ -97,3 +98,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// SCORING routes
+Route::get('/scores/setup/{id}', [ScoringController::class, 'setup'])->name('scores.setup');
+Route::post('/scores/setup', [ScoringController::class, 'setupscoregrid'])->name('scores.setupgrid');
+Route::get('/scores/grid/{id}', [ScoringController::class, 'grid'])->name('scores.grid');
+Route::get('/scores/section/{id}', [ScoringController::class, 'section'])->name('scores.section');
+Route::get('/scores/sectionScoresForRider/{id}', [ScoringController::class, 'sectionScoresForRider'])->name('scores.sectionScoreForRider');
+Route::get('/scores/sectionScores/{id}', [ScoringController::class, 'sectionScores'])->name('scores.sectionScores');

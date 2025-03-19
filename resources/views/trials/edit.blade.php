@@ -1,4 +1,4 @@
-<x-main>
+<x-club>
     <x-slot:heading>
         Edit Trial: {{$trial->name}}
     </x-slot:heading>
@@ -810,4 +810,4 @@
         // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpen").click();
     </script>
-</x-main>
+</x-club>

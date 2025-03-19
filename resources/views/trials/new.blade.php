@@ -1,4 +1,4 @@
-<x-club>
+<x-main>
     <x-slot:heading>
         Create a new trial
     </x-slot:heading>
@@ -161,7 +161,7 @@
                         <x-form-field class="mt-2 col-span-2 sm:col-span-3">
                             <x-form-label for="venue">Venue</x-form-label>
                             <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-blue-600 sm:max-w-md" >
-                                <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0" name="venueID" id="venueID">
+                                <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus" name="venueID" id="venueID">
                                     <option value="0">Other</option>
                                     @foreach($venues as $venue)
                                         <option value="{{$venue->id}}">{{$venue->name}}</option>
@@ -736,4 +736,4 @@
         // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpen").click();
     </script>
-</x-club>
+</x-main>
