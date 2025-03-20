@@ -24,7 +24,7 @@ class ScoringController extends Controller
     {
 //        Update trial
         $trial = Trial::find($request->trialID);
-        if($trial->isScoringSetup) {
+        if ($trial->isScoringSetup) {
             return redirect("/scores/grid/{$trial->id}");
         }
 
@@ -54,7 +54,7 @@ class ScoringController extends Controller
         return redirect("/scores/grid/{$trial->id}");
     }
 
-    public function grid( $trialID)
+    public function grid($trialID)
     {
         $trial = Trial::find($trialID);
 
@@ -70,29 +70,38 @@ class ScoringController extends Controller
 //        dd($scores);
         return view('scoring.section_score_grid', ['scores' => $scores, 'trial' => $trial, 'section' => $section]);
     }
-    public function sectionScoresForRider($id)
+
+    public function sectionScoresForRider($trialID, $rider, $section)
     {
-        dd($id);
-        return view('scores.section');
+        $scores = DB::table('scores')
+            ->where('trial_id', $trialID)
+            ->where('rider', $rider)
+            ->where('section', $section)
+            ->orderBy('lap', 'asc')
+            ->get(['score', 'id']);
+        $scores = DB::select("SELECT  GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM tme_scores WHERE trial_id = {$trialID} AND section = {$section}  AND  rider	= {$rider}  GROUP BY rider  ORDER BY rider;");
+
+        return view('scoring.editRiderSectionScore', ['scores' => $scores, 'rider' => $rider, 'section' => $section, 'trialID' => $trialID]);
     }
 
-    public function updateSectionScores(Request $request) {
+    public function updateSectionScores(Request $request)
+    {
         $trialID = $request->trialID;
         $scores = $request->scores;
         $scoreIDs = $request->scoreIDs;
 //        $numLaps = 4;
 //        dd($trialID, $scores, $scoreIDs);
 
-        for($index = 0; $index < count($scores); $index++) {
+        for ($index = 0; $index < count($scores); $index++) {
             $riderScoresForSection = $scores[$index];
             $scoreIDsForSection = $scoreIDs[$index];
 
-            if($riderScoresForSection) {
+            if ($riderScoresForSection) {
                 $riderscoresForLap = str_split($riderScoresForSection);
                 $scoreIdsForLap = explode(',', $scoreIDsForSection);
 //                dump(sizeof($scoreIdsForLap), sizeof($riderscoresForLap));
 
-                for($lap = 0; $lap < sizeof($riderscoresForLap); $lap++) {
+                for ($lap = 0; $lap < sizeof($riderscoresForLap); $lap++) {
                     DB::table('scores')
                         ->where('id', $scoreIdsForLap[$lap])
                         ->update([
@@ -103,6 +112,29 @@ class ScoringController extends Controller
             }
 
         }
+        return redirect("/scores/grid/{$trialID}");
+    }
+
+    public function updateSectionScoreForRider(Request $request)
+    {
+        $trialID = $request->trialID;
+        $ids = explode(',', $request->scoreIDs);
+        $scores = $request->scores;
+
+        for ($index = 0; $index < sizeof($ids); $index++) {
+            if (strlen($scores) <= $index) {
+                $score = null;
+            } else {
+                $score = $scores[$index];
+            }
+            DB::table('scores')
+                ->where('id', $ids[$index])
+                ->update([
+                    'score' => $score,
+                    'updated_at' => now(),/**/
+                ]);
+        }
+
         return redirect("/scores/grid/{$trialID}");
     }
 }

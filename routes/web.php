@@ -108,3 +108,4 @@ Route::get('/scores/sectionScoresForRider/{trialid}/{rider}/{section}', [Scoring
 Route::get('/scores/sectionScores/{id}/{section}', [ScoringController::class, 'sectionScores'])->name('scores.sectionScores');
 
 Route::patch('/scores/updateSectionScores', [ScoringController::class, 'updateSectionScores'])->name('scores.updateSectionScores');
+Route::post('/scores/updateSectionScoreForRider', [ScoringController::class, 'updateSectionScoreForRider'])->name('scores.updateSectionScoreForRider');

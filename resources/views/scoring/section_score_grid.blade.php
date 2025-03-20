@@ -9,7 +9,7 @@
         $sequence = 0;
 
     @endphp
-    <div class=" mt-4 bg-violet-50 border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+    <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
             Section {{$section}}</div>
         <form action="/scores/updateSectionScores" method="post">
