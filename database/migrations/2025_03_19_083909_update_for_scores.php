@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('rider');
             $table->integer('lap');
             $table->integer('section');
-            $table->integer('score')->nullable();
+            $table->char('score')->nullable();
         });
 
         Schema::table('trials', function (Blueprint $table) {

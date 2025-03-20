@@ -25,7 +25,7 @@
                     <th>&nbsp;</th>
                     @php
                         for($section = 1; $section<=$numSections; $section++) {
-                            $slug = "/scores/sectionScores/$trial->id&section=$section";
+                            $slug = "/scores/sectionScores/$trial->id/$section";
                             echo "<th><a href=\"$slug\">$section</a></th>";
                         }
 
@@ -38,7 +38,7 @@
                             $sectionScores = str_split($score->scoreData, $numLaps);
                             for($section = 1; $section <= $numSections; $section++) {
                                 $s = $section - 1;
-                                $slug = "/scores/sectionScoresForRider/$trial->id&rider=$score->rider&section=$section";
+                                $slug = "/scores/sectionScoresForRider/$trial->id/$score->rider/$section";
                                 echo "<td><a href=\"$slug\">$sectionScores[$s]</a></td>";
                             }
                             ?>
@@ -47,5 +47,4 @@
             </table>
         </form>
     </div>
-
 </x-club>
