@@ -3,7 +3,7 @@
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Confirm settings below then click Setup</div>
             <div class="pl-4 pr-4 pt-2 py-2">
-<form action="/scores/setup/" method="post">
+<form action="/scores/setup" method="post">
     <input type="hidden" name="trialID" id="trialID" value="{{$trial->id}}">
     @csrf
             <x-form-field>

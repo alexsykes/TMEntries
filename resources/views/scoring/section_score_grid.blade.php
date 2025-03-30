@@ -35,7 +35,12 @@
                                 $index = $row + ($column * $numRows);
                             @endphp
                             <td class="font-semibold text-violet-800">{{$index}}</td>
-                            <td><input name="scores[]" id="scores[]" tabIndex="{{$index}}" type="text"
+                            <td><input name="scores[]"
+                                       pattern="[Xox01235]{0,<?php echo $numLaps; ?>}"
+                                       id="scores[]"
+                                       tabIndex="{{$index}}"
+                                       title="Please check that you have no more than {{$numLaps}} scores."
+                                       type="text"
                                        value="{{$scores[$index-1]->scores}}">
                                 <input type="hidden" name="scoreIDs[]" id="scoreIDs[]"
                                        value="{{$scores[$index-1]->ids}}">

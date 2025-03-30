@@ -13,6 +13,11 @@ class ScoringController extends Controller
     public function setup($trialID)
     {
         $trial = Trial::find($trialID);
+        if($trial->isScoringSetup) {
+
+//            dd($trial->isScoringSetup);
+            return redirect("/scores/grid/{$trial->id}");
+        }
         $numSections = $trial->numSections;
         $numLaps = $trial->numLaps;
         $numColumns = $trial->numColumns;
@@ -73,15 +78,11 @@ class ScoringController extends Controller
 
     public function sectionScoresForRider($trialID, $rider, $section)
     {
-        $scores = DB::table('scores')
-            ->where('trial_id', $trialID)
-            ->where('rider', $rider)
-            ->where('section', $section)
-            ->orderBy('lap', 'asc')
-            ->get(['score', 'id']);
+        $trial = Trial::find($trialID);
+        $numLaps = $trial->numLaps;
         $scores = DB::select("SELECT  GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM tme_scores WHERE trial_id = {$trialID} AND section = {$section}  AND  rider	= {$rider}  GROUP BY rider  ORDER BY rider;");
 
-        return view('scoring.editRiderSectionScore', ['scores' => $scores, 'rider' => $rider, 'section' => $section, 'trialID' => $trialID]);
+        return view('scoring.editRiderSectionScore', ['scores' => $scores, 'rider' => $rider, 'section' => $section,'numLaps' => $numLaps,  'trialID' => $trialID]);
     }
 
     public function updateSectionScores(Request $request)
@@ -99,7 +100,6 @@ class ScoringController extends Controller
             if ($riderScoresForSection) {
                 $riderscoresForLap = str_split($riderScoresForSection);
                 $scoreIdsForLap = explode(',', $scoreIDsForSection);
-//                dump(sizeof($scoreIdsForLap), sizeof($riderscoresForLap));
 
                 for ($lap = 0; $lap < sizeof($riderscoresForLap); $lap++) {
                     DB::table('scores')

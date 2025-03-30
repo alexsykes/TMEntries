@@ -13,8 +13,9 @@
             <x-form-field>
                 <x-form-label for="scores">Scores</x-form-label>
                 <div class="mt-2 col-span-2">
-                    <x-form-input name="scores" type="text" id="scores"
+                    <x-form-input name="scores" pattern="[Xox01235]{0,<?php echo $numLaps; ?>}" type="text" id="scores"
                                   class="w-3"
+                                  title="Please check that you have no more than {{$numLaps}} scores."
                                   value="{{$scores[0]->scores}}"
                                   placeholder="Scores" />
                     <x-form-error name="scores"/>
