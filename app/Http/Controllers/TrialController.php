@@ -31,7 +31,7 @@ class TrialController extends Controller
 
     public function adminTrials()
     {
-        $trials = Trial::all()->sortBy('date');
+        $trials = Trial::all()->sortByDesc('date');
         return view('trials.admin_trial_list', ['trials' => $trials]);
     }
 
@@ -129,6 +129,7 @@ class TrialController extends Controller
 
         $attrs['status'] = request('status', "Open");
         $attrs['centre'] = request('centre');
+        $attrs['coc'] = request('coc');
         $attrs['extras'] = request('extras');
         $attrs['otherRestrictions'] = request('otherRestrictions');
         $attrs['notes'] = request('notes');
@@ -244,6 +245,7 @@ class TrialController extends Controller
 
         $attrs['status'] = request('status', "Open");
         $attrs['centre'] = request('centre');
+        $attrs['coc'] = request('coc');
         $attrs['extras'] = request('extras');
         $attrs['otherRestrictions'] = request('otherRestrictions');
         $attrs['notes'] = request('notes');
