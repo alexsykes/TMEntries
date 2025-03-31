@@ -67,9 +67,6 @@ class StripePaymentController extends Controller
         $stripe = new \Stripe\StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $session = $stripe->checkout->sessions->retrieve($request->session_id);
-
-        info($session);
-
         $successMessage = "Your payment has been successfully processed! You should shortly received an email notification.";
 
         return view('success', compact('successMessage'));

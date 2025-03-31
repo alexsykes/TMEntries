@@ -199,6 +199,16 @@ class TrialController extends Controller
         $trial = Trial::where('id', $id)->first();
         return view('trials.entrylist', ['entries' => $entries, 'unconfirmed' => $unconfirmed, 'trial' => $trial]);
     }
+    public function adminEntryList($id)
+    {
+        $entries = Entry::where('trial_id', $id)
+            ->get()
+
+            ->sortBy('status');
+
+        $trial = Trial::where('id', $id)->first();
+        return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial]);
+    }
 
     public function store()
     {

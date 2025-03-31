@@ -18,7 +18,7 @@
         <td class="hidden md:table-cell">{{$trial->club}}</td>
         <td class="pl-2 table-cell">{{$trial->name}}</td>
         <td class="pl-2 table-cell"><a href="/scores/setup/{{$trial->id}}"><span><i class="fa-solid fa-pencil"></i></span></a></td>
-        <td class="pl-2 table-cell"><a href="/trials/entrylist/{{$trial->id}}"><span><i class="fa-solid fa-list-ol"></i></span></a></td>
+        <td class="pl-2 table-cell"><a href="/trials/adminEntryList/{{$trial->id}}"><span><i class="fa-solid fa-list-ol"></i></span></a></td>
         <td class="pl-2 table-cell"><a href="/trials/toggleVisibility/{{$trial->id}}"><span><i class="{{$publishIMG}}"></i></span></a></td>
         <td class="pl-2 table-cell"><a href="/trials/edit/{{$trial->id}}"><span><i class="fa-solid fa-gear"></i></span></a></td>
     </tr>

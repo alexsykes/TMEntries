@@ -377,6 +377,22 @@ class EntryController extends Controller
         return view('entries.adminEntries', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
     }
 
+    public function adminEdit($id)
+    {
+        $entry = Entry::findOrFail($id);
+        $trial = Trial::findOrFail($entry->trial_id);
+        return view('entries.adminEdit', ['entry' => $entry, 'trial' => $trial]);
+    }
+
+    public function adminCancel($id)
+    {
+        $entry = Entry::findOrFail($id);
+        $trial_id = $entry->trial_id;
+        $entry->status = 6;
+        $entry->save();
+        return redirect("/trials/adminEntryList/{$trial_id}");
+    }
+
     public function edit(Request $request)
     {
         $entry = Entry::findorfail($request->entry);

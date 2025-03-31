@@ -211,7 +211,7 @@ class StripeEventListener
     public function handle(WebhookReceived $event): void
     {
         $eventType = $event->payload['type'];
-
+    info("event type: $eventType");
         switch ($eventType) {
             case 'refund.created':
                 $object = $event->payload['data']['object'];
