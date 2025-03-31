@@ -146,6 +146,64 @@ class EntryController extends Controller
         return redirect("/entries/userdata/{$trial_id}");
     }
 
+    public function adminEntryUpdate(Request $request) {
+        $entryID = $request->entryID;
+        $trialID = $request->trialID;
+
+        $request->validate([
+            'name' => ['required', 'min:5', 'max:255'],
+            'class' => 'required',
+            'course' => 'required',
+            'make' => 'required',
+            'type' => 'required',
+            'status' => 'required',
+        ]);
+
+        $entry = Entry::find($entryID);
+//        dd($entry);
+        $entry->name = $request->name;
+
+        $entry->class = $request->class;
+        $entry->course = $request->course;
+        $entry->make = $request->make;
+        $entry->type = $request->type;
+        $entry->size = $request->size;
+        $entry->status = $request->status;
+        $entry->updated_at = date('Y-m-d H:i:s');
+        $entry->save();
+
+        return redirect("/trials/adminEntryList/{$trialID}");
+    }
+    public function adminEntryStore(Request $request) {
+        $token = bin2hex(random_bytes(16));
+        $trialID = $request->trialID;
+        $attributes = $request->validate([
+            'name' => ['required', 'min:5', 'max:255'],
+            'class' => 'required',
+            'course' => 'required',
+            'make' => 'required',
+            'type' => 'required',
+            'status' => 'required',
+        ]);
+        $attributes['status'] = $attributes['status'] + 7 ;
+        $attributes['trial_id'] = $trialID;
+        $attributes['IPaddress'] = $request->ip();
+        $attributes['size'] = $request->size;
+        $attributes['licence'] = $request->licence;
+        $attributes['token'] = $token;
+        $attributes['accept'] = false;
+        $attributes['created_by'] = \Auth::user()->id;
+
+        if (isset($request->isYouth)) {
+            $attributes['isYouth'] = 1;
+        } else {
+            $attributes['isYouth'] = 0;
+        }
+
+        $entry = Entry::create($attributes);
+        return redirect("/trials/adminEntryList/{$trialID}");
+    }
+
     public function withdraw(Request $request)
     {
         $id = $request->id;
@@ -459,5 +517,38 @@ class EntryController extends Controller
         dd("lineitems: ", $lineItems, "data: ", $data);
         $checkout_session = $stripe->checkout->sessions->create($data);
         $url = $checkout_session->url;
+    }
+
+    public function editRidingNumbers(Request $request) {
+        $trialid = $request->id;
+
+        $entries = DB::table('entries')
+            ->where('trial_id', $trialid)
+            ->whereIn('status',[1, 4,  5, 7, 8, 9] )
+            ->orderBy('course')
+        ->orderBy('class')
+            ->orderBy('id')
+        ->get();
+
+
+        return view('entries.editRidingNumbers', ['entries' => $entries, 'trialid' => $trialid]);
+
+    }
+
+    public function saveRidingNumbers(Request $request) {
+        $trialID = $request->trialID;
+
+        $numbers = $request->input('ridingNumber');
+        $entryIDs = $request->input('entryID');
+        for($i = 0; $i < count($numbers); $i++) {
+            $entryID = $entryIDs[$i];
+            $number = $numbers[$i];
+
+            DB::table('entries')
+                ->where('id', $entryID)
+                ->update(['ridingNumber' => $number]);
+        }
+
+        return redirect("/trials/adminEntryList/{$trialID}");
     }
 }

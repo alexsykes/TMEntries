@@ -9,8 +9,26 @@
     $courses = explode(',',$trial->courselist);
     $types = array("2 stroke", "4 stroke", "e-bike");
     @endphp
-        <form action="/entries/adminUpdate/}" method="POST">
-            <input type="hidden" name="id" id="id" value="{{$entry->id}}"/>
+    @if ($errors->any())
+
+        <div class="alert alert-danger">
+
+            <ul>
+
+                @foreach ($errors->all() as $error)
+
+                    <li>{{ $error }}</li>
+
+                @endforeach
+
+            </ul>
+
+        </div>
+
+    @endif
+        <form action="/admin/entries/update" method="POST">
+            <input type="hidden" name="entryID" id="entryID" value="{{$entry->id}}"/>
+            <input type="hidden" name="trialID" id="trialID" value="{{$trial->id}}"/>
             @csrf
             @method('PATCH')
             <div class="space-y-12">
@@ -55,7 +73,7 @@
                             </x-form-field>
 
                             <x-form-field>
-                                <x-form-label class="pb-2" for="course">Type</x-form-label>
+                                <x-form-label class="pb-2" for="type">Type</x-form-label>
 
                                 <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
                                     <div class="pb-2 pt-2    sm:col-span-2">
@@ -105,7 +123,7 @@
 
                                 <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
                                     <div class="pb-2 pt-2 bg-white sm:col-span-2">
-                                        <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class"
+                                        <select class="ml-2  bg-white  space-x-4 border-none" name="status" id="status"
                                                 required>
                                             <option value="">Status</option>
                                             @foreach($statusOptions as $key => $status)
@@ -125,7 +143,7 @@
 
                         <button type="submit"
                                 class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
-                            Save
+                            Update
                         </button>
                     </div>
                 </div>

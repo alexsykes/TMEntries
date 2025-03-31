@@ -37,6 +37,9 @@ Route::get('adminTrials', [TrialController::class, 'adminTrials'])->middleware([
 Route::get('/trials/adminEntryList/{id}', [TrialController::class, 'adminEntryList'])->middleware(['auth', 'verified']);
 Route::get('/admin/entry/edit/{id}', [EntryController::class, 'adminEdit'])->middleware(['auth', 'verified']);
 Route::get('/admin/entry/cancel/{id}', [EntryController::class, 'adminCancel'])->middleware(['auth', 'verified']);
+Route::get('/admin/entries/editRidingNumbers/{id}', [EntryController::class, 'editRidingNumbers'])->middleware(['auth', 'verified']);
+Route::patch('/admin/entries/update', [EntryController::class, 'adminEntryUpdate'])->middleware(['auth', 'verified']);
+Route::post('/admin/entries/store', [EntryController::class, 'adminEntryStore'])->middleware(['auth', 'verified']);
 //
 
 Route::get('/trials/edit/{id}', [TrialController::class, 'edit'])->middleware(['auth', 'verified'])->name('edit');
@@ -81,6 +84,7 @@ Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->nam
 //Route::get('/entries/create_another', [EntryController::class, 'create_another'])->name('entries.create_another');
 Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
+Route::post('/entries/saveRidingNumbers', [EntryController::class, 'saveRidingNumbers']);
 
 
 Route::post('/entries/createSession', [EntryController::class, 'createStripeSession']);
