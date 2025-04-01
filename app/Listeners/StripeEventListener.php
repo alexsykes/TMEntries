@@ -147,7 +147,9 @@ function onCheckoutSessionCompleted($sessionObject)
     $entries = DB::table('entries')
         ->whereIn('id', $entryIDArray)
         ->update(['status' => 1,
+            'accept' => true,
             'email' => $email,
+            'updated_at' => now(),
             'stripe_payment_intent' => $stripe_payment_intent,]);
 
     $entries = Entry::all()

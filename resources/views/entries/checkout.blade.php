@@ -25,6 +25,7 @@
                 $entryIDs = implode(',', $entryIDarray);
             @endphp
             <input type="hidden" value="{{$entryIDs}}" id="entryIDs" name="entryIDs">
+            <input type="hidden" value="{{$trial_id}}" id="trialID" name="trialID">
         </div>
         <div class="mt-4" id="buttons">
             <a href="/entries/register/{{$trial->id}}"  class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Back</a>

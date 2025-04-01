@@ -318,7 +318,7 @@ class EntryController extends Controller
             ->where('status', 0)
             ->sortBy('name');
 
-        return view('entries.checkout', ['entries' => $entries, 'trial' => $trial]);
+        return view('entries.checkout', ['entries' => $entries, 'trial' => $trial, 'trial_id' => $trial_id]);
     }
 
 //    public function create_another() {
