@@ -67,7 +67,7 @@ class EntryController extends Controller
         return view('entries.user_entry_list', ['entriesArray' => $entriesArray, 'user' => $user]);
     }
 
-    public function userdata(Request $request)
+    public function register(Request $request)
     {
         $trial_id = $request->trialid;
         $user_id = \Auth::user()->id;
@@ -79,7 +79,7 @@ class EntryController extends Controller
             ->where('trial_id', $trial_id)
             ->where('status', 0);
 
-        return view('entries.userdata', ['entries' => $entries, 'trial' => $trial]);
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial]);
     }
 
     public function updateEntry(Request $request)
@@ -143,7 +143,7 @@ class EntryController extends Controller
         }
 
         $entry->save();
-        return redirect("/entries/userdata/{$trial_id}");
+        return redirect("/entries/register/{$trial_id}");
     }
 
     public function adminEntryUpdate(Request $request) {
@@ -301,8 +301,6 @@ class EntryController extends Controller
 //  Not sure if currently used
     public function create($id)
     {
-//        Not sure if this is necessary
-
         session(['trial_id' => $id]);
         $trial = Trial::findOrFail($id);
         return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry()]);
@@ -311,7 +309,7 @@ class EntryController extends Controller
     public function checkout(Request $request)
     {
         $user_id = \Auth::user()->id;
-        $trial_id = session('trial_id');
+        $trial_id = $request->trial_id;
 
         $trial = Trial::findorfail($trial_id);
 
@@ -403,13 +401,13 @@ class EntryController extends Controller
             ->where('created_by', $attributes['created_by']);
 
 //        $entries = Entry::all()->where('IPaddress', $IPaddress)->where('trial_id', session('trial_id'))->where('email', $attributes['email']);
-        return view('entries.userdata', ['entries' => $entries, 'trial' => $trial]);
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial]);
     }
 
     public function delete(Request $request)
     {
         Entry::destroy($request->id);
-        return redirect('entries/userdata/' . session('trial_id'));
+        return redirect('entries/register/' . session('trial_id'));
     }
 
     public function list(Request $request)

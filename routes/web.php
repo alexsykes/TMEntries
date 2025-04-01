@@ -5,6 +5,7 @@ require __DIR__ . '/auth.php';
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ScoringController;
 
 //use App\Http\Controllers\WebhookEndpointController;
@@ -61,7 +62,7 @@ Route::post('trials/edit/saveasnew', [TrialController::class, 'saveasnew'])->mid
 ENTRY Routes
 */// Entry gateway -
 Route::get('/userEntryList', [EntryController::class, 'userEntryList'])->middleware(['auth', 'verified'])->name('userEntryList');
-Route::get('/entries/userdata/{trialid}', [EntryController::class, 'userdata'])->middleware(['auth', 'verified'])->name('userdata');
+Route::get('/entries/register/{trialid}', [EntryController::class, 'register'])->middleware(['auth', 'verified']);
 Route::patch('/entries/userupdate', [EntryController::class, 'userupdate']);
 
 Route::get('/entry/withdraw/{id}', [EntryController::class, 'withdraw']);
@@ -119,3 +120,7 @@ Route::get('/scores/sectionScores/{id}/{section}', [ScoringController::class, 's
 
 Route::patch('/scores/updateSectionScores', [ScoringController::class, 'updateSectionScores'])->name('scores.updateSectionScores');
 Route::post('/scores/updateSectionScoreForRider', [ScoringController::class, 'updateSectionScoreForRider'])->name('scores.updateSectionScoreForRider');
+
+// RESULT Routes
+Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');
+Route::get('/results/display/{id}', [ResultController::class, 'display'])->name('results.display.id');

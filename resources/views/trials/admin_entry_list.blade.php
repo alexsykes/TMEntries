@@ -2,6 +2,8 @@
     <x-slot:heading>
         {{$trial->name}}
     </x-slot:heading>
+
+    <div class="mx-auto max-w-7xl px-4  sm:px-6 lg:px-8">
     @php
         $statusOptions = array(    'Unconfirmed', 'Confirmed', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
         $manualStatusOptions = array(  'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
@@ -174,5 +176,6 @@
                 </div>
 
         </form>
+    </div>
     </div>
 </x-club>

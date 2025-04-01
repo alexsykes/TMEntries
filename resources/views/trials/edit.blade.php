@@ -24,14 +24,14 @@
         </div>
     @endif
     <div class="tab pl-8">
-        <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-2" id="defaultOpen" onclick="openSection(event, 'Details')">
+        <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-violet-500 p-2" id="defaultOpen" onclick="openSection(event, 'Details')">
             Detail
         </button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Trial')">Trial</button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Entries')">Entries</button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Scoring')">Scoring</button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Regulations')">Regulations</button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Fees')">Fees</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Trial')">Trial</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Entries')">Entries</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Scoring')">Scoring</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Regulations')">Regulations</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Fees')">Fees</button>
     </div>
     <form action="/trials/update" method="POST">
         <input type="hidden" value="{{$trial->id}}" id="trialid" name="trialid">
@@ -162,7 +162,7 @@
 
                             <x-form-field class="mt-2 col-span-2 sm:col-span-3">
                                 <x-form-label for="venue">Venue</x-form-label>
-                                <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-blue-600 sm:max-w-md" >
+                                <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-violet-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-violet-600 sm:max-w-md" >
                                     <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0" name="venueID" id="venueID">
                                         <option value="0">Other</option>
                                         @foreach($venues as $venue)
@@ -791,10 +791,10 @@
         <div class="flex ml-4 mr-4  mt-2 justify-between" id="buttons">
             <div>
             <a href="/adminTrials"
-               class="rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-blue-900 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
+               class="rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-900 shadow-sm hover:bg-violet-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-900">Cancel</a>
 
             <button type="submit" name="submitbutton" value="apply"
-                    class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                    class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
                 Update
             </button>
             </div>

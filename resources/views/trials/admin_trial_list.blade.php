@@ -14,7 +14,7 @@
         }
     @endphp
     <tr class="pr-4 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
-        <td class="pl-2 hidden md:table-cell">{{$trial->date}}</td>
+        <td class="pl-4 pt-1 pb-1  hidden md:table-cell">{{$trial->date}}</td>
         <td class="hidden md:table-cell">{{$trial->club}}</td>
         <td class="pl-2 table-cell">{{$trial->name}}</td>
         <td class="pl-2 table-cell"><a href="/scores/setup/{{$trial->id}}"><span><i class="fa-solid fa-pencil"></i></span></a></td>

@@ -19,4 +19,8 @@ class Entry extends Model
     public function price(): HasOne {
         return $this->hasOne(Price::class, 'stripe_price_id', 'id');
     }
+
+    public function result(): HasOne {
+        return $this->hasOne(Result::class, 'id', 'id');
+    }
 }

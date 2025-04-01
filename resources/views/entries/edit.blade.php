@@ -154,7 +154,7 @@
 
 
                 <div class="mt-4" id="buttons">
-                    <a href="/entries/userdata"
+                    <a href="/entries/register/{{$trial->id}}"
                        class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
 
                     <button type="submit"

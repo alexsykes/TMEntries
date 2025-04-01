@@ -65,6 +65,7 @@ $userID = Auth::user()->id;
         <form action="/entries/checkout" method="post">
             @csrf
             <button type="submit" class="mt-4 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Checkout</button>
+            <input type="hidden" id="trial_id" name="trial_id" value="{{$trial_id}}">
             <input type="hidden" id="entryID[]" name = "entryID[]" value="{{$entryIDstring}}">
 
         </form>

@@ -94,7 +94,7 @@
             break;
     }
     ?>
-    <x-button href="/entries/userdata/{{$trial_id}}">Register</x-button>
+    <x-button href="/entries/register/{{$trial_id}}">Register</x-button>
     <div class="text-sm mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <gmp-map class="p-4  rounded-xl drop-shadow-lg "
                  center="{{$latitude}},{{$longitude}}"

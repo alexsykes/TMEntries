@@ -86,8 +86,11 @@ class TrialController extends Controller
         $trial->save();
 
 
-        $trials = Trial::all()->sortBy('date');
-        return view('trials.admin_trial_list', ['trials' => $trials]);
+        $trials = DB::table('trials')
+            ->orderBy('date', 'desc')
+            ->get();
+
+        return redirect('adminTrials')->with('trials', $trials);
     }
 
 
