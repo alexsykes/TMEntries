@@ -104,11 +104,6 @@ Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeCheckout
 Route::get('/checkout/success', [StripePaymentController::class, 'checkoutSuccess'])->name('checkout-success');
 Route::view('/checkout/cancel', 'checkout.cancel')->name('checkout-cancel');
 Route::post('/entries/checkout', [EntryController::class, 'checkout']);
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
 // SCORING routes
 Route::get('/scores/setup/{id}', [ScoringController::class, 'setup'])->name('scores.setup');
@@ -124,3 +119,10 @@ Route::post('/scores/updateSectionScoreForRider', [ScoringController::class, 'up
 // RESULT Routes
 Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');
 Route::get('/results/display/{id}', [ResultController::class, 'display'])->name('results.display.id');
+
+// MIDDLEWARE
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
