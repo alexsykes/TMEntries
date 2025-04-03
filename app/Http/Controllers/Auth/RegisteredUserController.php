@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 
 class RegisteredUserController extends Controller
@@ -21,7 +22,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $disclaimerUrl = Storage::url('Disclaimer.pdf');
+//        dd($disclaimerUrl);
+        return view('auth.register', compact('disclaimerUrl'));
     }
 
     /**
@@ -36,6 +39,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Password::defaults()],
+            'agree' => ['required', 'accepted'],
             'g-recaptcha-response' => ['required', new ReCaptchaV3('registerUser')],
         ]
     );
@@ -44,7 +48,6 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-
         event(new Registered($user));
 
         Auth::login($user);

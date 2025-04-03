@@ -24,9 +24,7 @@
         </div>
     @endif
     <div class="tab pl-8">
-        <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-violet-500 p-2" id="defaultOpen" onclick="openSection(event, 'Details')">
-            Detail
-        </button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-violet-500 p-2" id="defaultOpen" onclick="openSection(event, 'Details')">Detail</button>
         <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Trial')">Trial</button>
         <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Entries')">Entries</button>
         <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Scoring')">Scoring</button>
