@@ -16,8 +16,13 @@ class TrialController extends Controller
 //    $trialid = $id;
         $gmap_key = config('gmap.gmap_key');
         $trial = Trial::findorfail($trial_id);
+        $numEntries = Entry::all()
+            ->where('trial_id', $trial_id)
+            ->whereIn('status', [1, 2, 4, 5, 7, 8, 9])
+            ->count();
+
         $venue = $trial->venue();
-        return view('trials.details', compact('trial_id', 'gmap_key', 'venue', 'trial'));
+        return view('trials.details', compact('trial_id', 'gmap_key', 'venue', 'trial', 'numEntries'));
     }
 
     public function showTrialList()
@@ -31,7 +36,11 @@ class TrialController extends Controller
 
     public function adminTrials()
     {
-        $trials = Trial::all()->sortByDesc('date');
+        $user = Auth::user();
+        $userID = $user->id;
+        $trials = Trial::all()
+            ->where('created_by', $userID)
+            ->sortByDesc('date');
         return view('trials.admin_trial_list', ['trials' => $trials]);
     }
 
@@ -183,9 +192,8 @@ class TrialController extends Controller
 
             $trial = Trial::findorfail($trialid);
             $trial->update($attrs);
-
-            return redirect('/adminTrials');
         }
+        return redirect('/adminTrials');
     }
 
     public function entrylist($id)
@@ -214,10 +222,9 @@ class TrialController extends Controller
         return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial]);
     }
 
+//    Add new trial
     public function store()
     {
-//    dd(request());
-
         $attrs = request()->validate([
             'name' => 'required',
             'contactName' => 'required',
@@ -297,6 +304,8 @@ class TrialController extends Controller
 
         $this->addStripeProducts($trial, $attrs['youthEntryFee'], $attrs['adultEntryFee']);
 //        dd($trialid);
+
+        info("new trial created by $userid");
         return redirect('/adminTrials');
     }
 
@@ -308,8 +317,12 @@ class TrialController extends Controller
 
     public function saveasnew($attrs)
     {
+        $user = Auth::user();
+        $userid = $user->id;
         $trial = Trial::create($attrs);
         $this->addStripeProducts($trial, $attrs['youthEntryFee'], $attrs['adultEntryFee']);
+        info("new trial created by $userid");
+
         return redirect('/adminTrials');
 }
 

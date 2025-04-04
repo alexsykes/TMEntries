@@ -197,11 +197,18 @@
     <div class = "bg-violet-800 text-white">
         <x-footer-link>
             <div class="text-center mx-auto  text-white">
-                <a href="/adminTrials" class="inline-block mt-1 mx-3 hover:underline">Admin</a>
+                @auth
+                    @if (Auth::user()->isAdminUser == 1)
+                        <a href="/adminaccess" class="inline-block mt-1 mx-3 hover:underline">Admin access</a>
+                    @endif
+
+                    @if (Auth::user()->isClubUser == 1)
+                        <a href="/clubaccess" class="inline-block mt-1 mx-3 hover:underline">Club access</a>
+                    @endif
+                @endauth
                 <a href="/terms" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
-                <a href="/clublist" class="inline-block mt-1 mx-3 hover:underline">Clubs</a>
-                <a href="/privacy"  class="inline-block mt-1 mx-3 hover:underline">Privacy Policy</a>
-                <a href="/contact"  class="inline-block mt-1 mx-3 hover:underline">Contact</a>
+                <a href="/privacy" class="inline-block mt-1 mx-3 hover:underline">Privacy Policy</a>
+                <a href="/contact" class="inline-block mt-1 mx-3 hover:underline">Contact</a>
             </div>
         </x-footer-link>
         <div class="text-sm mt-1 text-center bg-violet-800 text-white">©{{date("Y")}} - Oldgit UK</div></div>

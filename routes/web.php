@@ -29,6 +29,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
+// CLUB access
+Route::get('clubaccess', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified']);
+// ADMIN access
+Route::get('adminaccess', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified']);
+
 /*
  * TRIAL Routes
  */

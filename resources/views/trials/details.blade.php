@@ -15,19 +15,47 @@
     $marker = array($latitude, $longitude);
     array_push($markerArray, $marker);
 
-
     // Trial details
-    $date = date_create($trial->date);
-    $formattedDate = date_format($date, "jS F, Y");
-
-    $closingDate = date_format(date_create($trial->closingDate), "g:ia jS F, Y");
-    $openingDate = date_format(date_create($trial->openingDate), "g:ia jS F, Y");
+//  Get parameters
     $hasClosingDate = $trial->hasClosingDate;
     $hasOpeningDate = $trial->hasOpeningDate;
     $hasEntryLimit = $trial->hasEntryLimit;
     $hasEodSurcharge = $trial->hasEodSurcharge;
     $hasWaitingList = $trial->hasWaitingList;
     $hasTimePenalty = $trial->hasTimePenalty;
+
+//  Entry opening and closing dates
+    $date = date_create($trial->date);
+    $formattedDate = date_format($date, "jS F, Y");
+    $now = new DateTime();
+    $openingDate = new DateTime($trial->openingDate);
+    $closingDate = new DateTime($trial->closingDate);
+
+    $closingDateFormatted = date_format($closingDate, "g:ia  F jS, Y");
+    $openingDateFormatted = date_format($openingDate, "g:ia  F jS, Y");
+    $entryStatus = "";
+
+    if (($hasOpeningDate == 1) && ($now < $openingDate)) {
+        $entryStatus .= "Registration will open at $openingDateFormatted";
+        $showButton="hidden";
+    } elseif ($now > $closingDate) {
+        $entryStatus .= "Registration is now closed";
+        $showButton="hidden";
+    }
+    else if(($hasClosingDate == 1) && ($closingDate > $now)) {
+        $entryStatus .= "Entries are open until $closingDateFormatted";
+        $showButton="";
+    }
+
+
+
+
+//    dd($date, $openingDate, $closingDate);
+
+    if ($openingDate > $now) {
+//        dd("Entries open on $openingDateFormatted");
+    }
+
 
     if ($trial->stopNonStop == "Stop permitted") {
         $stopNonStop = "This trial will be a Stop Permitted trial.<br>";
@@ -94,7 +122,8 @@
             break;
     }
     ?>
-    <x-button href="/entries/register/{{$trial_id}}">Register</x-button>
+    <div class="text-blue-800 font-semibold text-center">{{$entryStatus}}</div>
+    <x-button class="{{$showButton}}" href="/entries/register/{{$trial_id}}">Register</x-button>
     <div class="text-sm mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <gmp-map class="p-4  rounded-xl drop-shadow-lg "
                  center="{{$latitude}},{{$longitude}}"
@@ -157,18 +186,18 @@
                     class="font-semibold">OFFICIALS: </span>Secretary of the Meeting (To whom all correspondence
             regarding this event shall be addressed): {{$trial->contactName}} <br><i class="fa-solid fa-envelope"></i>&nbsp;<a
                     href="mailto:{{$trial->email}}">{{$trial->email}}</a><br><i
-                        class="fa-solid fa-phone"></i>&nbsp; {{$trial->phone}}<br>Point of Contact for Child Protection
-                Matters: Secretary of the Meeting.
+                    class="fa-solid fa-phone"></i>&nbsp; {{$trial->phone}}<br>Point of Contact for Child Protection
+            Matters: Secretary of the Meeting.
         </div>
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">ENTRIES: </span>Adult entry fee: £{{$trial->adultEntryFee}}<br>Youth entry
             fee: £{{$trial->youthEntryFee}}<br>
             <?php echo $entryOptionsHTML;
             if ($trial->hasOpeningDate) {
-                echo "<br>Opening date for entries: $openingDate";
+                echo "<br>Opening date for entries: $openingDateFormatted";
             }
             if ($trial->hasClosingDate) {
-                echo "<br>Closing date for entries: $closingDate";
+                echo "<br>Closing date for entries: $closingDateFormatted";
             }
             ?>
         </div>

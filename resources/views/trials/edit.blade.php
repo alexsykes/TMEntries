@@ -3,7 +3,7 @@
         Edit Trial: {{$trial->name}}
     </x-slot:heading>
     @php
-        $courseArray = array("Expert", "Intermediate", "Novice", "50/50", "Easy", "Clubman", "Clubman A", "Clubman B", "Hard Novice");
+        $courseArray = array("Expert", "Intermediate", "Hard Novice", "Novice", "50/50", "Easy", "Clubman", "Clubman A", "Clubman B");
         $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
         $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
         $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
