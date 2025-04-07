@@ -15,6 +15,7 @@ class TrialController extends Controller
     {
 //    $trialid = $id;
         $gmap_key = config('gmap.gmap_key');
+//        dd($gmap_key);
         $trial = Trial::findorfail($trial_id);
         $numEntries = Entry::all()
             ->where('trial_id', $trial_id)
@@ -236,6 +237,7 @@ class TrialController extends Controller
             'status' => 'required',
             'stopNonStop' => 'required',
             'permit' => 'required',
+
         ]);
         if (request('classlist')) {
             $attrs['classlist'] = implode(',', request('classlist'));
@@ -248,6 +250,7 @@ class TrialController extends Controller
         } else {
             $attrs['courselist'] = '';
         }
+
 
         $user = Auth::user();
         $userid = $user->id;
@@ -366,4 +369,5 @@ class TrialController extends Controller
         ]);
         return;
     }
+
 }

@@ -12,6 +12,7 @@
         "php": "^8.2",
         "aws/aws-sdk-php": "^3.342",
         "blade-ui-kit/blade-ui-kit": "^0.7.0",
+        "elibyy/tcpdf-laravel": "^11.4",
         "laravel/cashier": "^15.6",
         "laravel/framework": "^12.0.1",
         "laravel/sanctum": "^4.0",

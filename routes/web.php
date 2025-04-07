@@ -22,8 +22,11 @@ use Laravel\Cashier\Cashier;
 /*
     Front door - display list of trials currently taking entries
 */
-Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
+Route::get('/home', [TrialController::class, 'showTrialList'])->name('triallist');
 
+Route::get('/', function () {
+    return view('temp');
+});
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -46,6 +49,8 @@ Route::get('/admin/entry/cancel/{id}', [EntryController::class, 'adminCancel'])-
 Route::get('/admin/entries/editRidingNumbers/{id}', [EntryController::class, 'editRidingNumbers'])->middleware(['auth', 'verified']);
 Route::patch('/admin/entries/update', [EntryController::class, 'adminEntryUpdate'])->middleware(['auth', 'verified']);
 Route::post('/admin/entries/store', [EntryController::class, 'adminEntryStore'])->middleware(['auth', 'verified']);
+Route::get('/admin/entries/delete/{id}', [EntryController::class, 'adminEntryDelete'])->middleware(['auth', 'verified']);
+Route::get('admin/entries/printSignOnSheets/{id}', [EntryController::class, 'printSignOnSheets'])->middleware(['auth', 'verified']);
 //
 
 Route::get('/trials/edit/{id}', [TrialController::class, 'edit'])->middleware(['auth', 'verified'])->name('edit');
