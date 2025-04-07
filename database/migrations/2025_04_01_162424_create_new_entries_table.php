@@ -1,0 +1,69 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('entries', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->unsignedBigInteger('created_by')->default(0);
+            $table->unsignedBigInteger('trial_id');
+
+            $table->string('name');
+            $table->string('email')->nullable();
+            $table->string('licence')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('class');
+            $table->string('course');
+            $table->string('IPaddress');
+            $table->string('make');
+            $table->string('size')->nullable();
+            $table->string('type');
+
+
+            $table->date('dob')->nullable();
+            $table->boolean('isYouth')->default(false);
+            $table->boolean('accept')->nullable()->default(false);
+
+            $table->string('stripe_product_id')->nullable();
+            $table->string('stripe_price_id')->nullable();
+            $table->integer('status')->default(0);
+            $table->string('token')->nullable();
+
+            $table->unsignedSmallInteger('ridingNumber')->nullable();
+
+            $table->unsignedSmallInteger('cleans')->default(0);
+            $table->unsignedSmallInteger('ones')->default(0)   ;
+            $table->unsignedSmallInteger('twos')->default(0)   ;
+            $table->unsignedSmallInteger('threes')->default(0)   ;
+            $table->unsignedSmallInteger('fives')->default(0)   ;
+            $table->unsignedSmallInteger('missed')->default(0)   ;
+
+            $table->unsignedSmallInteger('total')->default(0)   ;
+            $table->unsignedSmallInteger('position')->default(0)   ;
+
+            $table->unsignedSmallInteger('timePenalties')->default(0)   ;
+
+            $table->tinyInteger('resultStatus')->default(0)   ;
+
+            $table->string('sectionScores')->nullable();
+            $table->string('sequentialScores')->nullable();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('new_result');
+    }
+};

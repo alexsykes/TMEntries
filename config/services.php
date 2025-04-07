@@ -41,4 +41,7 @@ return [
         'secretKey' => env('RECAPTCHA_V3_SECRET_KEY'),
     ],
 
+    'mapbox' => [
+        'public_token' => env('MAPBOX_PUBLIC_TOKEN'),
+    ],
 ];

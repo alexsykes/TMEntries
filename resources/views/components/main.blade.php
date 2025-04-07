@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  class="h-full bg-blue-900">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-blue-900">
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
@@ -47,11 +47,11 @@
         }
 
         .topnav button:hover {
-            color:lavender;
+            color: lavender;
         }
 
         .topnav a:hover {
-            color:lavender;
+            color: lavender;
         }
 
         .topnav a.active {
@@ -61,8 +61,14 @@
             .topnav {
                 display: inline-flex;
             }
-            .topnav a {display: inline-block;}
-            .topnav button {display: inline-block;}
+
+            .topnav a {
+                display: inline-block;
+            }
+
+            .topnav button {
+                display: inline-block;
+            }
         }
 
     </style>
@@ -137,33 +143,85 @@
         }
     </script>
 
-    <title><?php if (config('APP_NAME') != ''){
+    <title><?php if (config('APP_NAME') != '') {
             echo env('APP_NAME');
-        }  else { echo "TM Entries"; } ?></title>
+        } else {
+            echo "TM Entries";
+        } ?></title>
 </head>
 <body class="h-full bg-blue-800 text-white">
 
 <header class="bg-blue-800 drop-shadow-md">
-{{--    @php $heading = "Welcome" @endphp--}}
-    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8  sm:flex sm:justify-between">
-        <h1 class="text-m sm:text-2xl  font-bold tracking-tight text-white">{{ $heading }}</h1>
-    </div>
+    {{--    @php $heading = "Welcome" @endphp--}}
+    <header class="bg-blue-800 drop-shadow-md">
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8  sm:flex sm:justify-between">
+            <h1 class="text-m sm:text-2xl  font-bold tracking-tight text-white">{{ $heading }}</h1>
+
+
+            {{--        Hidden for small screens --}}
+            <div class="hidden sm:block">
+                <div class="ml-4 flex space-x-4 items-center m-auto px md:ml-6">
+                    <x-nav-link href="/home" :active="request()->is('/')">Coming up</x-nav-link>
+                    <x-nav-link href="/results/list" :active="request()->is('/results/list')">Results</x-nav-link>
+                    @guest
+                        <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>
+                        {{--                        <x-nav-link href="/register" :active="request()->is('register')">Register</x-nav-link>--}}
+                    @endguest
+
+                    @auth
+                        <form method="POST" action="/logout">
+                            @csrf
+                            <button type="submit"
+                                    class="rounded-md ml-0 bg-blue-500 px-2 py-1 text-sm font-light  border border-white text-white drop-shadow-xl hover:bg-blue-500 focus-visible:outline focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                                Log out
+                            </button>
+                        </form>
+                    @endauth
+                </div>
+            </div>
+
+
+            {{--        So - for small screens --}}
+            <div class="topnav " id="myTopnav">
+                @guest
+                    <a href="/register" class="text-white"><i class="text-xl fa-solid fa-user-plus"></i></a>
+                    <a href="/login" class="text-white "><i class="text-xl fa-solid fa-right-to-bracket"></i></a>
+                @endguest
+                @auth
+                    <a href="/auth/profile" class="text-white"><i class="text-xl fa-solid fa-user"></i></a>
+                    <form method="POST" action="/logout">
+                        @csrf
+                        <button class="topnav"><i class="text-xl fa-solid fa-right-from-bracket"></i></button>
+                    </form>
+                @endauth
+                <a href="/" class="text-white"><i class="text-xl  fa-solid fa-house"></i></a>
+            </div>
+        </div>
+    </header>
 </header>
 <main class="bg-blue-100 text-black">
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {{ $slot }}
     </div>
-    <div class = "bg-blue-800 text-white">
+    <div class="bg-blue-800 text-white">
         <x-footer-link>
             <div class="text-center mx-auto  text-white">
-                <a href="/about" class="inline-block mt-1 mx-3 hover:underline">About</a>
+                @auth
+                    @if (Auth::user()->isAdminUser == 1)
+                        <a href="/adminaccess" class="inline-block mt-1 mx-3 hover:underline">Admin access</a>
+                    @endif
+
+                    @if (Auth::user()->isClubUser == 1)
+                        <a href="/clubaccess" class="inline-block mt-1 mx-3 hover:underline">Club access</a>
+                    @endif
+                @endauth
                 <a href="/terms" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
-                <a href="/clublist" class="inline-block mt-1 mx-3 hover:underline">Clubs</a>
-                <a href="/privacy"  class="inline-block mt-1 mx-3 hover:underline">Privacy Policy</a>
-                <a href="/contact"  class="inline-block mt-1 mx-3 hover:underline">Contact</a>
+                <a href="/privacy" class="inline-block mt-1 mx-3 hover:underline">Privacy Policy</a>
+                <a href="/contact" class="inline-block mt-1 mx-3 hover:underline">Contact</a>
             </div>
         </x-footer-link>
-        <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - Oldgit UK</div></div>
+        <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - Oldgit UK</div>
+    </div>
 </main>
 </body>
 </html>

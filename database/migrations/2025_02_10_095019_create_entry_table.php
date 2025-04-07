@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('entries', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->unsignedBigInteger('created_by')->default(0);
             $table->unsignedBigInteger('trial_id');
             $table->unsignedSmallInteger('ridingNumber')->nullable();
 
             $table->string('name');
-            $table->string('email');
+            $table->string('email')->nullable();
             $table->string('licence')->nullable();
-            $table->string('phone');
+            $table->string('phone')->nullable();
             $table->string('class');
             $table->string('course');
             $table->string('IPaddress');

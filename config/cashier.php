@@ -61,7 +61,7 @@ return [
     |
     */
 
-    'currency' => env('CASHIER_CURRENCY', 'usd'),
+    'currency' => env('CASHIER_CURRENCY', 'gbp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -105,7 +105,7 @@ return [
 
         'options' => [
             // Supported: 'letter', 'legal', 'A4'
-            'paper' => env('CASHIER_PAPER', 'letter'),
+            'paper' => env('CASHIER_PAPER', 'A4'),
         ],
     ],
 

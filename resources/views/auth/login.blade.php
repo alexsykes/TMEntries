@@ -1,13 +1,24 @@
 <x-guest-layout>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
+    <div class="font-semibold">Registered with TrialMonster's old site?  </div>
+    <div>If your email address is already registered with us, your account will still be active - however, your password will need to be updated.   </div>
+    <div>Simply click on this link <a class="underline  text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+            {{ __('Reset my password') }}
+        </a>and you will receive an email link with details on how to proceed. </div>
+
+    <div class="mt-4 font-semibold">New User?</div>
+    <div>If you wish to enter a trial, you will need to create an account using the link below.</div>
+    <div><a class="underline mt-2 text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('register') }}">
+            {{ __('No account? Register now') }}
+        </a></div>
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
         <!-- Email Address -->
         <div>
-            <x-input-label for="email" :value="__('Email')" />
+            <x-input-label class="mt-4" for="email" :value="__('Email')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
@@ -43,5 +54,6 @@
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
+
     </form>
 </x-guest-layout>

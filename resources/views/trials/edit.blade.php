@@ -1,9 +1,9 @@
-<x-main>
+<x-club>
     <x-slot:heading>
         Edit Trial: {{$trial->name}}
     </x-slot:heading>
     @php
-        $courseArray = array("Expert", "Intermediate", "Novice", "50/50", "Easy", "Clubman", "Clubman A", "Clubman B", "Hard Novice");
+        $courseArray = array("Expert", "Intermediate", "Hard Novice", "Novice", "50/50", "Easy", "Clubman", "Clubman A", "Clubman B");
         $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
         $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
         $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
@@ -24,14 +24,12 @@
         </div>
     @endif
     <div class="tab pl-8">
-        <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-2" id="defaultOpen" onclick="openSection(event, 'Details')">
-            Detail
-        </button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Trial')">Trial</button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Entries')">Entries</button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Scoring')">Scoring</button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Regulations')">Regulations</button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Fees')">Fees</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-violet-500 p-2" id="defaultOpen" onclick="openSection(event, 'Details')">Detail</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Trial')">Trial</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Entries')">Entries</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Scoring')">Scoring</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Regulations')">Regulations</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Fees')">Fees</button>
     </div>
     <form action="/trials/update" method="POST">
         <input type="hidden" value="{{$trial->id}}" id="trialid" name="trialid">
@@ -42,6 +40,18 @@
             <div class="space-y-2">
                     <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                         <div class=" grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                            <x-form-field>
+                                <x-form-label for="permit">Permit</x-form-label>
+                                <div class="mt-2 col-span-2">
+                                    <x-form-input name="permit" type="text" id="permit" value="{{$trial->permit}}"
+                                                  placeholder="Permit" required/>
+                                    <x-form-error name="permit"/>
+                                </div>
+                                @error('permit')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
+                            </x-form-field>
+
                             <x-form-field>
                                 <x-form-label for="name">Event Name</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -150,7 +160,7 @@
 
                             <x-form-field class="mt-2 col-span-2 sm:col-span-3">
                                 <x-form-label for="venue">Venue</x-form-label>
-                                <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-blue-600 sm:max-w-md" >
+                                <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-violet-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-violet-600 sm:max-w-md" >
                                     <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0" name="venueID" id="venueID">
                                         <option value="0">Other</option>
                                         @foreach($venues as $venue)
@@ -395,9 +405,9 @@
                                             <input name="entrySelectionBasis"
                                                    <?php if($option == $trial->entrySelectionBasis) { ?>checked="checked" <?php } ?>
                                                    type="radio"
-                                                   id="entrySelectionBasis
+                                                   id="entrySelectionBasis"
                                                    value="{{$option}}">
-                                            <label class="pl-1 pr-4" for="{{$option}}">{{$option}}</label>
+                                            <label class="pl-1 pr-4" for="entrySelectionBasis">{{$option}}</label>
                                         @endforeach
                                         <x-form-error name="entrySelectionBasis"/>
                                     </div>
@@ -776,18 +786,26 @@
                 </div>
         </div>
 
-        <div class="ml-4 mt-2" id="buttons">
+        <div class="flex ml-4 mr-4  mt-2 justify-between" id="buttons">
+            <div>
             <a href="/adminTrials"
-               class="rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-blue-900 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
+               class="rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-900 shadow-sm hover:bg-violet-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-900">Cancel</a>
 
-            <button type="submit"
-                    class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+            <button type="submit" name="submitbutton" value="apply"
+                    class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
                 Update
             </button>
+            </div>
+<div>
+    <button type="submit" name="submitbutton" value="saveasnew"
+                    class="rounded-md ml-2 bg-green-600 px-3 py-1 text-sm font-light  border border-green-800 text-white drop-shadow-lg hover:bg-green-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+                Add as New Trial
+            </button>
+        </div>
         </div>
     </form>
     <script>
         // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpen").click();
     </script>
-</x-main>
+</x-club>
