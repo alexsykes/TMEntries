@@ -68,40 +68,6 @@
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <style>
-        /* Style the tab */
-        .tab {
-            overflow: hidden;
-        }
-
-        /* Style the buttons that are used to open the tab content */
-        .tab button {
-            /*background-color: inherit;*/
-            float: left;
-            /*border: black;*/
-            outline: none;
-            cursor: pointer;
-            /*padding: 14px 16px;*/
-            transition: 0.3s;
-        }
-
-        /* Change background color of buttons on hover */
-        .tab button:hover {
-            /*background-color: #ddd;*/
-        }
-
-        /* Create an active/current tablink class */
-        .tab button.active {
-            background-color: #fff;
-        }
-
-        /* Style the tab content */
-        .tabcontent {
-            display: none;
-            padding: 6px 12px;
-        }
-    </style>
     <script>
 
         function openSection(evt, tabName) {
@@ -206,9 +172,6 @@
                         <a href="/clubaccess" class="inline-block mt-1 mx-3 hover:underline">Club access</a>
                     @endif
                 @endauth
-                <a href="/terms" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
-                <a href="/privacy" class="inline-block mt-1 mx-3 hover:underline">Privacy Policy</a>
-                <a href="/contact" class="inline-block mt-1 mx-3 hover:underline">Contact</a>
             </div>
         </x-footer-link>
         <div class="text-sm mt-1 text-center bg-violet-800 text-white">©{{date("Y")}} - Oldgit UK</div></div>

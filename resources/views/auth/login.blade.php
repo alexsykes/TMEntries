@@ -3,7 +3,7 @@
     <x-auth-session-status class="mb-4" :status="session('status')" />
     <div class="font-semibold">Registered with TrialMonster's old site?  </div>
     <div>If your email address is already registered with us, your account will still be active - however, your password will need to be updated.   </div>
-    <div>Simply click on this link <a class="underline  text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+    <div class="mt-2">Simply click on this link <a class="underline  text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
             {{ __('Reset my password') }}
         </a>and you will receive an email link with details on how to proceed. </div>
 

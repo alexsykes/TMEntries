@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Trial;
 use App\Models\Entry;
+use App\Models\Trial;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Stripe\StripeClient;
 
 class TrialController extends Controller
 {
@@ -55,7 +56,7 @@ class TrialController extends Controller
         $stopAllowed = array('Stop permitted', 'Non-stop');
         $entryRestrictions = array('Closed to club', 'Centre', 'Open', 'Other Restriction');
 
-        return view('trials.add', [
+        return view('trials.add_trial_detail', [
             'venues' => $venues,
             'authorities' => $authorities,
             'selection' => $selection,
@@ -103,6 +104,93 @@ class TrialController extends Controller
         return redirect('adminTrials')->with('trials', $trials);
     }
 
+    public function addTrialDetail()
+    {
+        dump(request()->all());
+
+        return view('trials/add_trial_trial');
+    }
+
+    public function save()
+    {
+        $user = Auth::user();
+        $task = request('task');
+        dump($task);
+
+        switch ($task) {
+            case 'detail':
+                $attrs = request()->validate([
+                    'permit' => 'required',
+                    'name' => 'required',
+                    'club' => 'required',
+                    'date' => ['required', Rule::date()->after(today()->addDays(1)),],
+                    'startTime' => 'required',
+                    'contactName' => 'required',
+                    'email' => ['required', 'email',],
+                    'phone' => ['required',],
+                ]);
+
+
+                $attrs['created_by'] = $user->id;
+                $attrs['status'] = request('status', "Open");
+                $attrs['centre'] = request('centre');
+                $attrs['extras'] = request('extras');
+                $attrs['otherRestrictions'] = request('otherRestrictions');
+                $attrs['notes'] = request('notes');
+                $attrs['options'] = request('options');
+                $attrs['customCourses'] = request('customCourses');
+                $attrs['customClasses'] = request('customClasses');
+                $attrs['onlineEntryLink'] = request('onlineEntryLink');
+                $attrs['hasEodSurcharge'] = request('hasEodSurcharge', 0);
+                $attrs['hasEntryLimit'] = request('hasEntryLimit', 0);
+                $attrs['hasClosingDate'] = request('hasClosingDate', 0);
+                $attrs['hasOpeningDate'] = request('hasOpeningDate', 0);
+                $attrs['hasNotes'] = request('hasNotes', 0);
+                $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
+                $attrs['hasWaitingList'] = request('hasWaitingList', 0);
+
+                $attrs['isMultiDay'] = request('isMultiDay', 0);
+                $attrs['numDays'] = request('numDays', 1);
+
+                $attrs['numLaps'] = request('numLaps', 10);
+                $attrs['numSections'] = request('numSections', 4);
+                $attrs['numRows'] = request('numRows', 40);
+                $attrs['numColumns'] = request('numColumns', 3);
+
+                $attrs['youthEntryFee'] = request('youthEntryFee', 0);
+                $attrs['adultEntryFee'] = request('adultEntryFee', 0);
+                $attrs['eodSurcharge'] = request('eodSurcharge', 0);
+
+                $attrs['penaltyDelta'] = request('penaltyDelta', 60);
+                $attrs['startInterval'] = request('startInterval', 60);
+                $attrs['entryLimit'] = request('entryLimit', 0);
+                $attrs['venueID'] = request('venueID', 0);
+                $attrs['otherVenue'] = request('otherVenue');
+                $attrs['otherRestriction'] = request('otherRestriction');
+
+                $attrs['closingDate'] = request('closingDate');
+                $attrs['openingDate'] = request('openingDate');
+
+
+                $attrs['entrySelectionBasis'] = "Order of Payment";
+                $attrs['scoringMode'] = "Observer";
+
+                $attrs['entryMethod'] = "TrialMonster";
+                $attrs['coc'] = "";
+                $attrs['authority'] = "AMCA";
+                $attrs['classlist'] = "";
+                $attrs['courselist'] = "";
+
+                $trial = Trial::create($attrs);
+                return redirect("trials/addTrialDetail/$trial->id");
+
+                break;
+            default:
+                break;
+        }
+
+
+    }
 
     public function update()
     {
@@ -197,6 +285,60 @@ class TrialController extends Controller
         return redirect('/adminTrials');
     }
 
+    public function saveasnew($attrs)
+    {
+        $user = Auth::user();
+        $userid = $user->id;
+        $trial = Trial::create($attrs);
+        $this->addStripeProducts($trial, $attrs['youthEntryFee'], $attrs['adultEntryFee']);
+        info("new trial created by $userid");
+
+        return redirect('/adminTrials');
+    }
+
+//    Add new trial
+
+    private function addStripeProducts($trial, mixed $youthEntryFee = 15, mixed $adultEntryFee = 20)
+    {
+        $stripe_secret_key = config('cashier.secret');
+        $stripe = new StripeClient("$stripe_secret_key");
+
+        $stripe->products->create([
+            'name' => 'Youth Entry Fee',
+            'description' => 'Youth Entry Fee',
+            'statement_descriptor' => 'Youth Entry Fee',
+            'metadata' => [
+                'category' => 'entry fee',
+                'trialid' => $trial->id,
+                'club' => $trial->club,
+                'trialname' => $trial->name,
+                'amount' => $youthEntryFee,
+                'isYouth' => true,
+            ],
+            'default_price_data' => ['currency' => 'gbp',
+                'unit_amount' => 100 * $youthEntryFee,
+            ],
+        ]);
+
+        $stripe->products->create([
+            'name' => 'Adult Entry Fee',
+            'description' => 'Adult Entry Fee',
+            'statement_descriptor' => 'Adult Entry Fee',
+            'metadata' => [
+                'category' => 'entry fee',
+                'trialid' => $trial->id,
+                'club' => $trial->club,
+                'trialname' => $trial->name,
+                'amount' => $adultEntryFee,
+                'isYouth' => false,
+            ],
+            'default_price_data' => ['currency' => 'gbp',
+                'unit_amount' => 100 * $adultEntryFee,
+            ],
+        ]);
+        return;
+    }
+
     public function entrylist($id)
     {
         $entries = Entry::where('trial_id', $id)
@@ -212,18 +354,17 @@ class TrialController extends Controller
         $trial = Trial::where('id', $id)->first();
         return view('trials.entrylist', ['entries' => $entries, 'unconfirmed' => $unconfirmed, 'trial' => $trial]);
     }
+
     public function adminEntryList($id)
     {
         $entries = Entry::where('trial_id', $id)
             ->get()
-
             ->sortBy('status');
 
         $trial = Trial::where('id', $id)->first();
         return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial]);
     }
 
-//    Add new trial
     public function store()
     {
         $attrs = request()->validate([
@@ -316,58 +457,6 @@ class TrialController extends Controller
     {
         Trial::destroy($id);
         return redirect('/adminTrials');
-    }
-
-    public function saveasnew($attrs)
-    {
-        $user = Auth::user();
-        $userid = $user->id;
-        $trial = Trial::create($attrs);
-        $this->addStripeProducts($trial, $attrs['youthEntryFee'], $attrs['adultEntryFee']);
-        info("new trial created by $userid");
-
-        return redirect('/adminTrials');
-}
-
-    private function addStripeProducts($trial, mixed $youthEntryFee = 15, mixed $adultEntryFee = 20)
-    {
-        $stripe_secret_key = config('cashier.secret');
-        $stripe = new \Stripe\StripeClient("$stripe_secret_key");
-
-        $stripe->products->create([
-            'name' => 'Youth Entry Fee',
-            'description' => 'Youth Entry Fee',
-            'statement_descriptor' => 'Youth Entry Fee',
-            'metadata' => [
-                'category' => 'entry fee',
-                'trialid' => $trial->id,
-                'club' => $trial->club,
-                'trialname' => $trial->name,
-                'amount' => $youthEntryFee,
-                'isYouth' => true,
-            ],
-            'default_price_data' => ['currency' => 'gbp',
-                'unit_amount' => 100 * $youthEntryFee,
-            ],
-        ]);
-
-        $stripe->products->create([
-            'name' => 'Adult Entry Fee',
-            'description' => 'Adult Entry Fee',
-            'statement_descriptor' => 'Adult Entry Fee',
-            'metadata' => [
-                'category' => 'entry fee',
-                'trialid' => $trial->id,
-                'club' => $trial->club,
-                'trialname' => $trial->name,
-                'amount' => $adultEntryFee,
-                'isYouth' => false,
-            ],
-            'default_price_data' => ['currency' => 'gbp',
-                'unit_amount' => 100 * $adultEntryFee,
-            ],
-        ]);
-        return;
     }
 
 }

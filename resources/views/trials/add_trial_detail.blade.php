@@ -11,7 +11,7 @@
         $stopAllowedArray = array("Stop permitted", "Non-stop");
         $authorityArray = array("ACU", "AMCA", "Other");
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
-
+//    dd($restrictionArray);
     @endphp
     @if ($errors->any())
         <div class="text-red-500">
@@ -23,8 +23,8 @@
         </div>
     @endif
 
-    <form action="/trials/store" method="POST">
-
+    <form action="/trials/save" method="POST">
+    <input type="hidden" value="detail" id="task" name="task">
         @csrf
 
         <div id="Details" class="tabcontent pt-0">

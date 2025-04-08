@@ -27,9 +27,9 @@ Route::get('/home', [TrialController::class, 'showTrialList'])->name('triallist'
 Route::get('/', function () {
     return view('temp');
 });
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+//Route::get('/dashboard', function () {
+//    return view('dashboard');
+//})->middleware(['auth', 'verified'])->name('dashboard');
 
 
 // CLUB access
@@ -62,9 +62,11 @@ Route::get('trial/{trial_id}/entrylist', [TrialController::class, 'entryList'])-
 
 Route::get('trials/toggleVisibility/{id}', [TrialController::class, 'toggleVisibility'])->middleware(['auth', 'verified'])->name('toggleVisibility');
 Route::get('trials/add', [TrialController::class, 'add'])->middleware(['auth', 'verified'])->name('add');
+Route::get('trials/addTrialDetail/{$id}', [TrialController::class, 'addTrialDetail'])->middleware(['auth', 'verified']);
 Route::get('trials/remove/{id}', [TrialController::class, 'remove'])->middleware(['auth', 'verified'])->name('remove');
 Route::patch('trials/update', [TrialController::class, 'update'])->middleware(['auth', 'verified'])->name('update');
 Route::post('trials/store', [TrialController::class, 'store'])->middleware(['auth', 'verified'])->name('store');
+Route::post('trials/save', [TrialController::class, 'save'])->middleware(['auth', 'verified'])->name('save');
 Route::post('trials/edit/saveasnew', [TrialController::class, 'saveasnew'])->middleware(['auth', 'verified'])->name('saveasnew');
 
 
