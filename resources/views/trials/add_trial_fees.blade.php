@@ -23,9 +23,10 @@
         </div>
     @endif
 
-    <form action="/trials/store" method="POST">
-
+    <form action="/trials/save" method="POST">
         @csrf
+        <input type="hidden" name="task" id="task" value="feeData">
+        <input type="hidden" name="trialID" id="trialID" value="{{$trial->id}}">
         <div id="Fees" class="pt-0 tabcontent">
             <div class="space-y-12">
                 <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">

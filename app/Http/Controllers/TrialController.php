@@ -104,18 +104,12 @@ class TrialController extends Controller
         return redirect('adminTrials')->with('trials', $trials);
     }
 
-    public function addTrialDetail()
-    {
-        dump(request()->all());
-
-        return view('trials/add_trial_trial');
-    }
 
     public function save()
     {
         $user = Auth::user();
         $task = request('task');
-        dump($task);
+//        dump($task);
 
         switch ($task) {
             case 'detail':
@@ -129,7 +123,6 @@ class TrialController extends Controller
                     'email' => ['required', 'email',],
                     'phone' => ['required',],
                 ]);
-
 
                 $attrs['created_by'] = $user->id;
                 $attrs['status'] = request('status', "Open");
@@ -182,8 +175,101 @@ class TrialController extends Controller
                 $attrs['courselist'] = "";
 
                 $trial = Trial::create($attrs);
-                return redirect("trials/addTrialDetail/$trial->id");
+                return redirect("trials/addTrialDetail/{$trial->id}");
+                break;
 
+            case 'trialData':
+                $id = request('trialID');
+                $attrs = request()->validate([
+                    'courselist' => Rule::requiredIf(request('customCourses') == ""),
+                    'classlist' => Rule::requiredIf(request('customClasses') == ""),
+                    'customCourses' => Rule::requiredIf(request('courselist') == ""),
+                    'customClasses' => Rule::requiredIf(request('classlist') == ""),
+                ]);
+
+                $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
+                $attrs['startInterval'] = request('startInterval', 60);
+                $attrs['penaltyDelta'] = request('penaltyDelta', 60);
+
+                if (request('classlist')) {
+                    $attrs['classlist'] = implode(',', request('classlist'));
+                } else {
+                    $attrs['classlist'] = '';
+                }
+
+                if (request('courselist')) {
+                    $attrs['courselist'] = implode(',', request('courselist'));
+                } else {
+                    $attrs['courselist'] = '';
+                }
+
+                $trial = Trial::findorfail($id);
+                $trial->update($attrs);
+
+                return redirect("trials/addTrialEntry/{$trial->id}");
+                break;
+            case 'entryData':
+                $id = request('trialID');
+                $trial = Trial::findorfail($id);
+
+                $attrs = request()->validate([
+                    'entryMethod' => 'required',
+                    'onlineEntryLink' => Rule::requiredIf(request('entryMethod') !== null && (in_array('Online', request('entryMethod')))),
+                    'entryLimit' => Rule::requiredIf(request('hasEntryLimit') == 1),
+                    'openingDate' => Rule::requiredIf(request('hasOpeningDate') == 1),
+                    'closingDate' => Rule::requiredIf(request('hasClosingDate') == 1),
+                    'entrySelectionBasis' => Rule::requiredIf(request('hasEntryLimit') == 1),
+                ]);
+
+                $trial->update($attrs);
+
+                return redirect("trials/addTrialScoring/{$trial->id}");
+
+                break;
+            case 'scoringData':
+                $id = request('trialID');
+                $trial = Trial::findorfail($id);
+
+                $attrs = request()->validate([
+                    'scoringMode' => 'required',
+                    'stopNonStop' => 'required',
+                ]);
+
+                $trial->update($attrs);
+
+                return redirect("trials/addTrialRegs/{$trial->id}");
+
+                break;
+
+            case 'regData':
+                $id = request('trialID');
+                $trial = Trial::findorfail($id);
+
+                $attrs = request()->validate([
+               'authority' => 'required',
+                    'status' => 'required',
+                    'coc' => 'required',
+                    'centre' => Rule::requiredIf(request('authority') == "ACU"),
+                    'otherRestriction' => Rule::requiredIf(request('status') == "Other Restriction"),
+                ]);
+
+                $trial->update($attrs);
+                return redirect("trials/addTrialFees/{$trial->id}");
+
+                break;
+            case 'feeData':
+//                dd(request('adultEntryFee'));
+                $id = request('trialID');
+                $trial = Trial::findorfail($id);
+
+                $attrs = request()->validate([
+                    'adultEntryFee' => 'required',
+                    'youthEntryFee' => 'required',
+                    'eodSurcharge' => Rule::requiredIf(request('hasEodSurcharge') == 1),
+                ]);
+
+                $trial->update($attrs);
+                return redirect("adminTrials");
                 break;
             default:
                 break;
@@ -296,8 +382,6 @@ class TrialController extends Controller
         return redirect('/adminTrials');
     }
 
-//    Add new trial
-
     private function addStripeProducts($trial, mixed $youthEntryFee = 15, mixed $adultEntryFee = 20)
     {
         $stripe_secret_key = config('cashier.secret');
@@ -337,6 +421,39 @@ class TrialController extends Controller
             ],
         ]);
         return;
+    }
+
+//    Add new trial
+
+    public function addTrialTrial($id)
+    {
+        $trial = Trial::findOrFail($id);
+        return view('trials/add_trial_trial', ['trial' => $trial]);
+    }
+
+    public function addTrialEntry($id)
+    {
+//        dd($id);
+        $trial = Trial::findOrFail($id);
+        return view('trials/add_trial_entry', ['trial' => $trial]);
+    }
+
+    public function addTrialScoring($id)
+    {
+        $trial = Trial::findOrFail($id);
+        return view('trials/add_trial_scoring', ['trial' => $trial]);
+    }
+
+    public function addTrialRegs($id)
+    {
+        $trial = Trial::findOrFail($id);
+        return view('trials/add_trial_regulations', ['trial' => $trial]);
+    }
+
+    public function addTrialFees($id)
+    {
+        $trial = Trial::findOrFail($id);
+        return view('trials/add_trial_fees', ['trial' => $trial]);
     }
 
     public function entrylist($id)

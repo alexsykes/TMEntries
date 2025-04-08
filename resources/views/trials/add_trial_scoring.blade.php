@@ -23,8 +23,9 @@
         </div>
     @endif
 
-    <form action="/trials/store" method="POST">
-
+    <form action="/trials/save" method="POST">
+        <input type="hidden" name="task" id="task" value="scoringData">
+        <input type="hidden" name="trialID" id="trialID" value="{{$trial->id}}">
         @csrf
         <div id="Scoring" class="pt-0 tabcontent">
             <div class="space-y-12">
@@ -38,7 +39,7 @@
                                 <x-form-label for="scoringMode">Scoring mode</x-form-label>
                                 <div class="mt-2">
                                     @foreach($scoringModeArray as $option)
-                                        <input name="scoringMode" type="radio" id="scoringMode" value="{{$option}}">
+                                        <input name="scoringMode" type="radio" id="scoringMode" value="{{$option}}" required>
                                         <label class="pl-1 pr-4" for="scoringMode">{{$option}}</label>
                                     @endforeach
                                     <x-form-error name="scoringMode"/>

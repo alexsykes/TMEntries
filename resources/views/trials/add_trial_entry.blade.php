@@ -3,7 +3,7 @@
         Create a new trial
     </x-slot:heading>
     @php
-        $courseArray = array("Expert", "Intermediate", "Hard Novice", "Novice", "50/50", "Easy", "Clubman", "Clubman A", "Clubman B");
+        $courseArray = array("Expert", "Intermediate", "Hard Novice", "Novice", "50/50", "Clubman", "Clubman A", "Clubman B", "Easy");
         $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
         $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
         $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
@@ -24,113 +24,154 @@
     @endif
 
 
-    <form action="/trials/store" method="POST">
+    <form action="/trials/save" method="POST">
+        <input type="hidden" name="task" id="task" value="entryData">
+        <input type="hidden" name="trialID" id="trialID" value="{{$trial->id}}">
 
         @csrf
 
-        <div id="Trial" class="tabcontent pt-0">
+        <div id="Entries" class="tabcontent pt-0">
             <div class="space-y-12">
                 <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                     <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
-                        <div id="courseDataDiv" class="col-span-3">
+                        <div id="entryMethodDiv" class="col-span-3">
                             <x-form-field>
-                                <x-form-label class="pr-0" for="courselist">Courses</x-form-label>
-                                <div class=" pl-2 pr-0">
-                                    @foreach($courseArray as $course)
+                                <x-form-label class="pr-0" for="courselist">How to enter</x-form-label>
+                                <div class="mt-2 pl-2 pr-0">
+                                    @foreach($entryMethodArray as $entryMethod)
                                         <div>
-                                            <input  name="courselist[]" type="checkbox" id="courselist" value="{{$course}}"/>
-                                            <label  class="pl-4 pr-0" for="courselist">{{$course}}
+                                            <input  name="entryMethod[]" type="checkbox" id="entryMethod[]" value="{{$entryMethod}}" />
+                                            <label  class="pl-4 pr-0" for="entryMethod">{{$entryMethod}}
                                             </label>
                                         </div>
                                     @endforeach
-                                    <x-form-error name="courselist[]"/>
+                                    <x-form-error name="entryMethod[]"/>
                                 </div>
-                                @error('courselist')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
-                            </x-form-field>
-
-
-                            <x-form-field>
-                                <x-form-label for="customCourses">Custom courses</x-form-label>
-                                <div class="mt-2 col-span-2">
-                                    <x-form-input name="customCourses" type="checkboxes" id="customCourses"
-                                                  placeholder="List of courses separated by commas" />
-                                    <x-form-error name="customCourses"/>
-                                </div>
-                                @error('customCourses')
+                                @error('entryMethod')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
                         </div>
 
-                        <div id="classDataDiv" class="col-span-3">
+                        <div id="entryLinkDiv" class="col-span-3">
                             <x-form-field>
-                                <x-form-label for="classlist">Classes</x-form-label>
-                                <div class=" pl-2 pr-2">
-                                    @foreach($classArray as $class)
+                                <x-form-label for="name">Online entry link</x-form-label>
+                                <div class="mt-2 col-span-2">
+                                    <x-form-input name="onlineEntryLink" type="text" id="onlineEntryLink" placeholder="Entry URL here"/>
+                                    <x-form-error name="onlineEntryLink"/>
+                                </div>
+                                @error('onlineEntryLink')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
+                            </x-form-field>
+                        </div>
 
-                                        <div>
-                                            <input  name="classlist[]" type="checkbox" id="classlist" value="{{$class}}"/>
-                                            <label  class="pl-4 pr-2" for="classlist">{{$class}}</label>
-                                        </div>
+                        <div id="hasEntryLinkDiv" class="mt-2 col-span-3">
+                            <x-form-field>
+                                <x-form-label for="hasEntryLimit">Has entry limit</x-form-label>
+                                <div class="mt-2">
+                                    <input name="hasEntryLimit" type="checkbox" value="1" id="hasEntryLimit"  />
+                                    <x-form-error name="openingDate"/>
+                                </div>
+                                @error('hasEntryLimit')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
+                            </x-form-field>
+                        </div>
+
+                        <div id="entryLimitDiv" class=" col-span-3">
+                            <x-form-field>
+                                <x-form-label for="club">Entry limit</x-form-label>
+                                <div class="mt-2 col-span-2">
+                                    <x-form-input name="entryLimit" type="text" id="entryLimit"
+                                                  placeholder="Entry limit" />
+                                    <x-form-error name="entryLimit"/>
+                                </div>
+                                @error('entryLimit')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
+                            </x-form-field>
+                        </div>
+
+
+
+                        <div  id="entrySelectionBasisDiv"  class=" col-span-3 mt-2">
+                            <x-form-field>
+                                <x-form-label for="entrySelectionBasis">Entry selection</x-form-label>
+                                <div class="mt-2 col-span-2">
+                                    @foreach($entrySelectionArray as $option)
+                                        <input name="entrySelectionBasis" type="radio" id="entrySelectionBasis" value="{{$option}}">
+                                        <label class="pl-1 pr-4" for="entrySelectionBasis">{{$option}}</label>
                                     @endforeach
-                                    <x-form-error name="classlist[]"/>
+                                    <x-form-error name="entrySelectionBasis"/>
                                 </div>
-                                @error('classlist')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
-                            </x-form-field>
-
-                            <x-form-field>
-                                <x-form-label for="customClasses">Custom classes</x-form-label>
-                                <div class="mt-2 col-span-2">
-                                    <x-form-input name="customClasses" type="text" id="customClasses"
-                                                  placeholder="List of classes separated by commas" />
-                                    <x-form-error name="customClasses"/>
-                                </div>
-                                @error('customClasses')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
-                            </x-form-field>
-                        </div>
-                        <div id="hasTimePenaltyDiv" class="col-span-full">
-                            <x-form-field>
-                                <x-form-label for="hasTimePenalty">Time and Observation</x-form-label>
-                                <div class="mt-2 col-span-2">
-                                    <input name="hasTimePenalty" type="checkbox" id="hasTimePenalty" value="1" />
-                                    <x-form-error name="hasTimePenalty"/>
-                                </div>
-                                @error('hasTimePenalty')
+                                @error('entryLimit')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
                         </div>
 
-                        <div id="startIntervalDiv" class="col-span-3">
+                        <div id="hasWaitingListDiv" class=" col-span-3 mt-2">
                             <x-form-field>
-                                <x-form-label for="startInterval">Start interval (seconds)</x-form-label>
-                                <div class="mt-2 col-span-2">
-                                    <x-form-input name="startInterval" type="text" id="startInterval"
-                                                  placeholder="Start interval in seconds" />
-                                    <x-form-error name="startInterval"/>
+                                <x-form-label for="hasWaitingList">Enable waiting list if entry full</x-form-label>
+                                <div class="mt-2">
+                                    <input name="hasWaitingList" type="checkbox" value="1" id="hasWaitingList"  />
+                                    <x-form-error name="openingDate"/>
                                 </div>
-                                @error('startInterval')
+                                @error('hasWaitingList')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
                         </div>
 
-                        <div id="penaltyDiv" class="col-span-3">
+                        <div id="hasOpeningDateDiv" class=" col-span-3 mt-2">
                             <x-form-field>
-                                <x-form-label for="penaltyDelta">Penalty tariff</x-form-label>
-                                <div class="mt-2 col-span-2">
-                                    <x-form-input name="penaltyDelta" type="text" id="penaltyDelta"
-                                                  placeholder="Number of seconds per point lost" />
-                                    <x-form-error name="penaltyDelta"/>
+                                <x-form-label for="hasOpeningDate">Has opening date/time for entries</x-form-label>
+                                <div class="mt-2">
+                                    <input name="hasOpeningDate" type="checkbox" value="1" id="hasOpeningDate"  />
+                                    <x-form-error name="openingDate"/>
                                 </div>
-                                @error('penaltyDelta')
+                                @error('hasOpeningDate')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
+                            </x-form-field>
+                        </div>
+
+                        <div id="openingDateDiv" class=" col-span-3 mt-2">
+                            <x-form-field >
+                                <x-form-label for="openingDate">Opening date/time for entries</x-form-label>
+                                <div class="mt-2 col-span-2">
+                                    <x-form-input name="openingDate" type="datetime-local" min="{{date('Y-m-d')}}" id="openingDate" />
+                                    <x-form-error name="openingDate"/>
+                                </div>
+                                @error('date')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
+                            </x-form-field>
+                        </div>
+
+                        <div id="hasClosingDateDiv" class=" col-span-3 mt-2">
+                            <x-form-field>
+                                <x-form-label for="hasClosingDate">Has closing date/time for entries</x-form-label>
+                                <div class="mt-2">
+                                    <input name="hasClosingDate" type="checkbox" value="1" id="hasClosingDate" />
+                                    <x-form-error name="openingDate"/>
+                                </div>
+                                @error('hasClosingDate')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
+                            </x-form-field>
+                        </div>
+
+                        <div id="closingDateDiv" class=" col-span-3 mt-2">
+                            <x-form-field>
+                                <x-form-label for="closingDate">Closing date/time for entries</x-form-label>
+                                <div class="mt-2 col-span-2">
+                                    <x-form-input name="closingDate" type="datetime-local" min="{{date('Y-m-d')}}" id="closingDate" />
+                                    <x-form-error name="closingDate"/>
+                                </div>
+                                @error('date')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>

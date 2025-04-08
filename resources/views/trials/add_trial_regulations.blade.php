@@ -23,9 +23,11 @@
         </div>
     @endif
 
-    <form action="/trials/store" method="POST">
-
+    <form action="/trials/save" method="POST">
         @csrf
+        <input type="hidden" name="task" id="task" value="regData">
+        <input type="hidden" name="trialID" id="trialID" value="{{$trial->id}}">
+
 
         <div id="Regulations" class="pt-0 tabcontent">
             <div class="space-y-12">
@@ -38,7 +40,7 @@
                                 <x-form-label for="authority">Permit Authority</x-form-label>
                                 <div class="mt-2">
                                     @foreach($authorityArray as $option)
-                                        <input name="authority" type="radio" id="authority" value="{{$option}}" >
+                                        <input name="authority" type="radio" id="authority" value="{{$option}}" required>
                                         <label class="pl-1 pr-4" for="authority">{{$option}}</label>
                                     @endforeach
                                     <x-form-error name="authority"/>
@@ -54,7 +56,7 @@
                                 <x-form-label for="centre">Centre</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="centre" type="text" id="centre"
-                                                  placeholder="Optional" />
+                                                  placeholder="Required if ACU permit" />
                                     <x-form-error name="centre"/>
                                 </div>
                                 @error('centre')
@@ -71,7 +73,7 @@
                                 <div class="mt-2 col-span-2">
                                     @foreach($restrictionArray as $option)
 
-                                        <input name="status" type="radio" id="status" value="{{$option}}">
+                                        <input name="status" type="radio" id="status" value="{{$option}}" required>
                                         <label class="pl-1 pr-4" for="status">{{$option}}</label>
                                     @endforeach
                                     <x-form-error name="status"/>

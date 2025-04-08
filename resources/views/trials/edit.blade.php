@@ -226,7 +226,7 @@
                             <x-form-field>
                                 <x-form-label for="customCourses">Custom courses</x-form-label>
                                 <div class="mt-2 col-span-2">
-                                    <x-form-input name="customCourses" type="checkboxes" id="customCourses" value="{{$trial->customCourses}}"
+                                    <x-form-input name="customCourses" type="text" id="customCourses" value="{{$trial->customCourses}}"
                                                   placeholder="List of courses separated by commas" />
                                     <x-form-error name="customCourses"/>
                                 </div>

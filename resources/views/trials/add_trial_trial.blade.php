@@ -3,7 +3,7 @@
         Create a new trial
     </x-slot:heading>
     @php
-        $courseArray = array("Expert", "Intermediate", "Hard Novice", "Novice", "50/50", "Easy", "Clubman", "Clubman A", "Clubman B");
+        $courseArray = array("Expert", "Intermediate", "Hard Novice", "Novice", "50/50", "Clubman", "Clubman A", "Clubman B", "Easy");
         $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
         $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
         $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
@@ -23,10 +23,11 @@
         </div>
     @endif
 
-    <form action="/trials/store" method="POST">
+    <form action="/trials/save" method="POST">
 
         @csrf
-
+        <input type="hidden" name="task" id="task" value="trialData">
+        <input type="hidden" name="trialID" id="trialID" value="{{$trial->id}}">
         <div id="Trial" class="tabcontent pt-0">
             <div class="space-y-12">
                 <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
@@ -54,7 +55,7 @@
                             <x-form-field>
                                 <x-form-label for="customCourses">Custom courses</x-form-label>
                                 <div class="mt-2 col-span-2">
-                                    <x-form-input name="customCourses" type="checkboxes" id="customCourses"
+                                    <x-form-input name="customCourses" type="text" id="customCourses"
                                                   placeholder="List of courses separated by commas" />
                                     <x-form-error name="customCourses"/>
                                 </div>

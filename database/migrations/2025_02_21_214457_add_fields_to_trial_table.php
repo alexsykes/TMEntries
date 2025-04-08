@@ -70,7 +70,7 @@ return new class extends Migration
             $table->enum('stopNonStop', ['Stop permitted', 'Non-stop'])->default('Stop permitted');
             $table->enum('authority', ['ACU', 'AMCA', 'Other'])->default('AMCA');
             $table->enum('entrySelectionBasis', ['Order of Payment', 'Ballot', 'Selection', 'Other'])->default('Order of Payment');
-            $table->enum('scoringMode', ['Observer', 'App', 'Sequential', 'Punch cards', 'Other'])->default('Observer');
+            $table->enum('scoringMode', ['Observer', 'Electronic', 'Punch cards', 'Other'])->default('Observer');
             $table->enum('restriction', ['Open', 'Centre', 'Closed to club', 'Other'])->default('Open');
         });
     }
