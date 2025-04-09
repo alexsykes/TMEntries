@@ -142,12 +142,13 @@
             }
         }
     </script>
+    @php
+        $tandc = Storage::url('files/Disclaimer.pdf');
+        $privacy = Storage::url('files/Privacy.pdf');
 
-    <title><?php if (config('APP_NAME') != '') {
-            echo env('APP_NAME');
-        } else {
-            echo "TM Entries";
-        } ?></title>
+@endphp
+
+    <title>TrialMonster UK</title>
 </head>
 <body class="h-full bg-blue-800 text-white">
 
@@ -161,7 +162,7 @@
             {{--        Hidden for small screens --}}
             <div class="hidden sm:block">
                 <div class="ml-4 flex space-x-4 items-center m-auto px md:ml-6">
-                    <x-nav-link href="/home" :active="request()->is('/')">Coming up</x-nav-link>
+                    <x-nav-link href="/" :active="request()->is('/')">Coming up</x-nav-link>
                     <x-nav-link href="/results/list" :active="request()->is('/results/list')">Results</x-nav-link>
                     @guest
                         <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>
@@ -215,9 +216,9 @@
                         <a href="/clubaccess" class="inline-block mt-1 mx-3 hover:underline">Club access</a>
                     @endif
                 @endauth
-                <a href="/terms" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
-                <a href="/privacy" class="inline-block mt-1 mx-3 hover:underline">Privacy Policy</a>
-                <a href="/contact" class="inline-block mt-1 mx-3 hover:underline">Contact</a>
+                <a href="{{$tandc}}" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
+                <a href="{{$privacy}}" class="inline-block mt-1 mx-3 hover:underline">Privacy Policy</a>
+                <a href="mailto:monster@trialmonster.uk?subject=Web Enquiry" class="inline-block mt-1 mx-3 hover:underline">Contact</a>
             </div>
         </x-footer-link>
         <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - Oldgit UK</div>

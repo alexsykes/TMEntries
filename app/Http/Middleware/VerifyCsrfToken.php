@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 class VerifyCsrfToken
 {
     protected $except = [
-        'https://dev.trialmonster.net/hook/',
+        'https://trialmonster.uk/hook/',
     ];
 
     /**

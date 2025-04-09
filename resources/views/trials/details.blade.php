@@ -34,7 +34,7 @@
     $closingDateFormatted = date_format($closingDate, "g:ia  F jS, Y");
     $openingDateFormatted = date_format($openingDate, "g:ia  F jS, Y");
     $entryStatus = "";
-
+    $showButton = "";
     if (($hasOpeningDate == 1) && ($now < $openingDate)) {
         $entryStatus .= "Registration will open at $openingDateFormatted";
         $showButton="hidden";

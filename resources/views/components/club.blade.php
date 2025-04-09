@@ -105,7 +105,7 @@
 
     <title><?php if (config('APP_NAME') != ''){
             echo env('APP_NAME');
-        }  else { echo "TM Entries"; } ?></title>
+        }  else { echo "Club admin"; } ?></title>
 </head>
 <body class="h-full bg-violet-800 text-white">
 

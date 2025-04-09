@@ -12,7 +12,6 @@
         $authorityArray = array("ACU", "AMCA", "Other");
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
 
-        dump($errors);
     @endphp
     @if ($errors->any())
         <div class="text-red-500">

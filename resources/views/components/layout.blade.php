@@ -85,7 +85,7 @@
 {{--        Hidden for small screens --}}
         <div class="hidden sm:block">
             <div class="ml-4 flex space-x-4 items-center m-auto px md:ml-6" >
-                <x-nav-link href="/" :active="request()->is('/')">Home</x-nav-link>
+                <x-nav-link href="/" :active="request()->is('/')">Coming up</x-nav-link>
                 @guest
                     <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>
                     <x-nav-link href="/register" :active="request()->is('register')">Register</x-nav-link>

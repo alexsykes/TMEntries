@@ -136,10 +136,10 @@
             }
         }
     </script>
-
-    <title><?php if (config('APP_NAME') != ''){
-            echo env('APP_NAME');
-        }  else { echo "TM Entries"; } ?></title>
+<title>TM Club Admin</title>
+{{--    <title><?php if (config('APP_NAME') != ''){--}}
+{{--            echo env('APP_NAME');--}}
+{{--        }  else { echo "Admin area"; } ?></title>--}}
 </head>
 <body class="h-full bg-blue-800 text-white">
 

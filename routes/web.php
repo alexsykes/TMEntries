@@ -22,14 +22,12 @@ use Laravel\Cashier\Cashier;
 /*
     Front door - display list of trials currently taking entries
 */
-Route::get('/home', [TrialController::class, 'showTrialList'])->name('triallist');
+Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
 
-Route::get('/', function () {
-    return view('temp');
-});
-//Route::get('/dashboard', function () {
-//    return view('dashboard');
-//})->middleware(['auth', 'verified'])->name('dashboard');
+//Route::get('/', function () {
+//    return view('trials.trial_list');
+//});
+Route::get('dashboard', [TrialController::class, 'showTrialList'])->name('dashboard');
 
 
 // CLUB access

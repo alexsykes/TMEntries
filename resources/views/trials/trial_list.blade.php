@@ -1,6 +1,6 @@
 <x-main>
     <x-slot:heading>
-        TM Entries
+        TrialMonster Entries
     </x-slot:heading>
     <?php $message = "Hello World"; ?>
     <x-alert type="error" message="$message" class="mt-4"/>
@@ -13,8 +13,8 @@
                         <td class="hidden md:table-cell">{{$trial->date}}</td>
                         <td class="hidden md:table-cell">{{$trial->club}}</td>
                         <td class="table-cell">{{$trial->name}}</td>
-                        <td class="table-cell"><a href="/trial/{{$trial->id}}/entrylist"><span><i class="text-lg  fa-solid fa-list-ul"></i></span></a></td>
-                        <td class="table-cell"><a href="/trial/details/{{$trial->id}}"><span><i class="text-lg  fa-solid fa-circle-info"></i></span></a></td>
+                        <td title="Entry list" class="table-cell" ><a href="/trial/{{$trial->id}}/entrylist"><span><i class="text-xl  fa-solid fa-list-ul"></i></span></a></td>
+                        <td title="Register" class="table-cell "><a href="/trial/details/{{$trial->id}}"><span><i class="text-xl  fa-solid fa-circle-info"></i></span></a></td>
                     </tr>
             @endforeach
         </table>

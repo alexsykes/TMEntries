@@ -516,8 +516,8 @@ class EntryController extends Controller
             ],
             'line_items' => $lineItems,
 //            'mode' => 'payment',
-            'success_url' => "https://dev.trialmonster.net",
-            'cancel_url' => "https://dev.trialmonster.net/entries/checkout",
+            'success_url' => "https://trialmonster.uk",
+            'cancel_url' => "https://trialmonster.uk/entries/checkout",
 //            'phone_number_collection' => ['enabled' => true],
         ];
         dd("lineitems: ", $lineItems, "data: ", $data);

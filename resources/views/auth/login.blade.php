@@ -1,7 +1,8 @@
 <x-guest-layout>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
-    <div class="font-semibold">Registered with TrialMonster's old site?  </div>
+    <div class="font-semibold text-center text-blue-700">We've made some changes</div>
+    <div class="font-semibold mt-4">Registered with TrialMonster's old site?  </div>
     <div>If your email address is already registered with us, your account will still be active - however, your password will need to be updated.   </div>
     <div class="mt-2">Simply click on this link <a class="underline  text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
             {{ __('Reset my password') }}
@@ -9,7 +10,7 @@
 
     <div class="mt-4 font-semibold">New User?</div>
     <div>If you wish to enter a trial, you will need to create an account using the link below.</div>
-    <div><a class="underline mt-2 text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('register') }}">
+    <div class="mt-4"><a class="underline  text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('register') }}">
             {{ __('No account? Register now') }}
         </a></div>
 

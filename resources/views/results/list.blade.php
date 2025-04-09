@@ -7,9 +7,9 @@
             @foreach($pastTrials as $trial)
 
                 <tr class="pr-4 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
-                        <td class="table-celll pl-4 pt-1 pb-1">{{$trial->date}}</td>
-                        <td class="table-celll pl-4">{{$trial->club}}</td>
-                        <td class="table-celll pl-4">{{$trial->name}}</td>
+                        <td class="table-cell  pl-4 pt-1 pb-1">{{$trial->date}}</td>
+                        <td class="table-cell  pl-4">{{$trial->club}}</td>
+                        <td class="table-cell  pl-4">{{$trial->name}}</td>
                     <td class="pl-2 table-cell"><a href="/results/display/{{$trial->id}}"><span><i class="fa-solid fa-eye"></i></span></a></td>
                     </tr>
                 @endforeach
