@@ -13,15 +13,7 @@
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
 
     @endphp
-    @if ($errors->any())
-        <div class="text-red-500">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+
 
     <div class="tab pl-8">
         <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-2" id="defaultOpen" onclick="openSection(event, 'Details')">
@@ -66,7 +58,7 @@
                         </x-form-field>
 
                         <x-form-field>
-                            <x-form-label for="numsections">Organising Club</x-form-label>
+                            <x-form-label for="club">Organising Club</x-form-label>
                             <div class="mt-2 col-span-2">
                                 <x-form-input name="club" type="text" id="club"
                                               placeholder="Club name" required/>
@@ -94,7 +86,7 @@
                                 <input name="isMultiDay" type="checkbox" value="1" id="isMultiDay" />
                                 <x-form-error name="isMultiDay"/>
                             </div>
-                            @error('date')
+                            @error('isMultiDay')
                             <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                             @enderror
                         </x-form-field>
@@ -106,7 +98,7 @@
                                     <x-form-input name="numDays" type="number" id="numDays" value="1" min="1"/>
                                     <x-form-error name="numDays"/>
                                 </div>
-                                @error('email')
+                                @error('numDays')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -129,7 +121,7 @@
                                 <x-form-input name="contactName" type="text" id="contactName  " placeholder="Contact name " required/>
                                 <x-form-error name="contactName"/>
                             </div>
-                            @error('email')
+                            @error('contactName')
                             <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                             @enderror
                         </x-form-field>
@@ -168,6 +160,9 @@
 
                                 </select>
                             </div>
+                            @error('venueID')
+                            <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                            @enderror
                         </x-form-field>
 
                         <x-form-field>
@@ -196,14 +191,14 @@
                                 <div class=" pl-2 pr-0">
                                     @foreach($courseArray as $course)
                                         <div>
-                                            <input  name="courselist[]" type="checkbox" id="courselist" value="{{$course}}"/>
+                                            <input  name="courselist[]" type="checkbox" id="courselist[]" value="{{$course}}"/>
                                             <label  class="pl-4 pr-0" for="courselist">{{$course}}
                                             </label>
                                         </div>
                                     @endforeach
                                     <x-form-error name="courselist[]"/>
                                 </div>
-                                @error('courselist')
+                                @error('courselist[]')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -304,7 +299,7 @@
 
                         <div id="entryMethodDiv" class="col-span-3">
                             <x-form-field>
-                                <x-form-label class="pr-0" for="courselist">How to enter</x-form-label>
+                                <x-form-label class="pr-0" for="entryMethod">How to enter</x-form-label>
                                 <div class="mt-2 pl-2 pr-0">
                                     @foreach($entryMethodArray as $entryMethod)
                                         <div>
@@ -361,8 +356,6 @@
                             </x-form-field>
                         </div>
 
-
-
                         <div  id="entrySelectionBasisDiv"  class=" col-span-3 mt-2">
                             <x-form-field>
                                 <x-form-label for="entrySelectionBasis">Entry selection</x-form-label>
@@ -373,7 +366,7 @@
                                     @endforeach
                                     <x-form-error name="entrySelectionBasis"/>
                                 </div>
-                                @error('entryLimit')
+                                @error('entrySelectionBasis')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -397,7 +390,7 @@
                                 <x-form-label for="hasOpeningDate">Has opening date/time for entries</x-form-label>
                                 <div class="mt-2">
                                     <input name="hasOpeningDate" type="checkbox" value="1" id="hasOpeningDate"  />
-                                    <x-form-error name="openingDate"/>
+                                    <x-form-error name="hasOpeningDate"/>
                                 </div>
                                 @error('hasOpeningDate')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -412,7 +405,7 @@
                                     <x-form-input name="openingDate" type="datetime-local" min="{{date('Y-m-d')}}" id="openingDate" />
                                     <x-form-error name="openingDate"/>
                                 </div>
-                                @error('date')
+                                @error('openingDate')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -438,7 +431,7 @@
                                     <x-form-input name="closingDate" type="datetime-local" min="{{date('Y-m-d')}}" id="closingDate" />
                                     <x-form-error name="closingDate"/>
                                 </div>
-                                @error('date')
+                                @error('closingDate')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -465,7 +458,7 @@
                                     @endforeach
                                     <x-form-error name="scoringMode"/>
                                 </div>
-                                @error('entryLimit')
+                                @error('scoringMode')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -481,7 +474,7 @@
                                     @endforeach
                                     <x-form-error name="stopNonStop"/>
                                 </div>
-                                @error('entryLimit')
+                                @error('stopNonStop')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -591,7 +584,6 @@
                                 <x-form-label for="status">Entry restrictions</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     @foreach($restrictionArray as $option)
-
                                         <input name="status" type="radio" id="status" value="{{$option}}">
                                         <label class="pl-1 pr-4" for="status">{{$option}}</label>
                                     @endforeach
@@ -666,7 +658,7 @@
                                                   placeholder="Omit £ signs eg. 25.00" />
                                     <x-form-error name="adultEntryFee"/>
                                 </div>
-                                @error('Adult entry fee')
+                                @error('adultEntryFee')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>

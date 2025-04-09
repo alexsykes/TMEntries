@@ -13,15 +13,7 @@
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
 
     @endphp
-    @if ($errors->any())
-        <div class="text-red-500">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+
 
     <form action="/trials/save" method="POST">
 
@@ -44,7 +36,7 @@
                                             </label>
                                         </div>
                                     @endforeach
-                                    <x-form-error name="courselist[]"/>
+{{--                                    <x-form-error name="courselist"/>--}}
                                 </div>
                                 @error('courselist')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -57,7 +49,7 @@
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="customCourses" type="text" id="customCourses"
                                                   placeholder="List of courses separated by commas" />
-                                    <x-form-error name="customCourses"/>
+{{--                                    <x-form-error name="customCourses"/>--}}
                                 </div>
                                 @error('customCourses')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -76,7 +68,7 @@
                                             <label  class="pl-4 pr-2" for="classlist">{{$class}}</label>
                                         </div>
                                     @endforeach
-                                    <x-form-error name="classlist[]"/>
+{{--                                    <x-form-error name="classlist"/>--}}
                                 </div>
                                 @error('classlist')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -88,7 +80,7 @@
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="customClasses" type="text" id="customClasses"
                                                   placeholder="List of classes separated by commas" />
-                                    <x-form-error name="customClasses"/>
+{{--                                    <x-form-error name="customClasses"/>--}}
                                 </div>
                                 @error('customClasses')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -100,7 +92,6 @@
                                 <x-form-label for="hasTimePenalty">Time and Observation</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <input name="hasTimePenalty" type="checkbox" id="hasTimePenalty" value="1" />
-                                    <x-form-error name="hasTimePenalty"/>
                                 </div>
                                 @error('hasTimePenalty')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -114,7 +105,6 @@
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="startInterval" type="text" id="startInterval"
                                                   placeholder="Start interval in seconds" />
-                                    <x-form-error name="startInterval"/>
                                 </div>
                                 @error('startInterval')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -128,7 +118,6 @@
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="penaltyDelta" type="text" id="penaltyDelta"
                                                   placeholder="Number of seconds per point lost" />
-                                    <x-form-error name="penaltyDelta"/>
                                 </div>
                                 @error('penaltyDelta')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

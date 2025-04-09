@@ -13,15 +13,7 @@
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
 //    dd($restrictionArray);
     @endphp
-    @if ($errors->any())
-        <div class="text-red-500">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+
 
     <form action="/trials/save" method="POST">
     <input type="hidden" value="detail" id="task" name="task">
@@ -56,7 +48,7 @@
                         </x-form-field>
 
                         <x-form-field>
-                            <x-form-label for="numsections">Organising Club</x-form-label>
+                            <x-form-label for="club">Organising Club</x-form-label>
                             <div class="mt-2 col-span-2">
                                 <x-form-input name="club" type="text" id="club"
                                               placeholder="Club name" required/>
@@ -84,7 +76,7 @@
                                 <input name="isMultiDay" type="checkbox" value="1" id="isMultiDay" />
                                 <x-form-error name="isMultiDay"/>
                             </div>
-                            @error('date')
+                            @error('isMultiDay')
                             <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                             @enderror
                         </x-form-field>
@@ -96,7 +88,7 @@
                                     <x-form-input name="numDays" type="number" id="numDays" value="1" min="1"/>
                                     <x-form-error name="numDays"/>
                                 </div>
-                                @error('email')
+                                @error('numDays')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -119,7 +111,7 @@
                                 <x-form-input name="contactName" type="text" id="contactName  " placeholder="Contact name " required/>
                                 <x-form-error name="contactName"/>
                             </div>
-                            @error('email')
+                            @error('contactName')
                             <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                             @enderror
                         </x-form-field>
@@ -158,6 +150,9 @@
 
                                 </select>
                             </div>
+                            @error('venue')
+                            <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                            @enderror
                         </x-form-field>
 
                         <x-form-field>

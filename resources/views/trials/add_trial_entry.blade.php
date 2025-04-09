@@ -13,17 +13,6 @@
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
 
     @endphp
-    @if ($errors->any())
-        <div class="text-red-500">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-
     <form action="/trials/save" method="POST">
         <input type="hidden" name="task" id="task" value="entryData">
         <input type="hidden" name="trialID" id="trialID" value="{{$trial->id}}">
@@ -37,7 +26,7 @@
 
                         <div id="entryMethodDiv" class="col-span-3">
                             <x-form-field>
-                                <x-form-label class="pr-0" for="courselist">How to enter</x-form-label>
+                                <x-form-label class="pr-0" for="entryMethod">How to enter</x-form-label>
                                 <div class="mt-2 pl-2 pr-0">
                                     @foreach($entryMethodArray as $entryMethod)
                                         <div>
@@ -46,7 +35,6 @@
                                             </label>
                                         </div>
                                     @endforeach
-                                    <x-form-error name="entryMethod[]"/>
                                 </div>
                                 @error('entryMethod')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -59,7 +47,6 @@
                                 <x-form-label for="name">Online entry link</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="onlineEntryLink" type="text" id="onlineEntryLink" placeholder="Entry URL here"/>
-                                    <x-form-error name="onlineEntryLink"/>
                                 </div>
                                 @error('onlineEntryLink')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -72,7 +59,6 @@
                                 <x-form-label for="hasEntryLimit">Has entry limit</x-form-label>
                                 <div class="mt-2">
                                     <input name="hasEntryLimit" type="checkbox" value="1" id="hasEntryLimit"  />
-                                    <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasEntryLimit')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -86,7 +72,6 @@
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="entryLimit" type="text" id="entryLimit"
                                                   placeholder="Entry limit" />
-                                    <x-form-error name="entryLimit"/>
                                 </div>
                                 @error('entryLimit')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -104,9 +89,8 @@
                                         <input name="entrySelectionBasis" type="radio" id="entrySelectionBasis" value="{{$option}}">
                                         <label class="pl-1 pr-4" for="entrySelectionBasis">{{$option}}</label>
                                     @endforeach
-                                    <x-form-error name="entrySelectionBasis"/>
                                 </div>
-                                @error('entryLimit')
+                                @error('entrySelectionBasis')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -117,7 +101,6 @@
                                 <x-form-label for="hasWaitingList">Enable waiting list if entry full</x-form-label>
                                 <div class="mt-2">
                                     <input name="hasWaitingList" type="checkbox" value="1" id="hasWaitingList"  />
-                                    <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasWaitingList')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -130,7 +113,6 @@
                                 <x-form-label for="hasOpeningDate">Has opening date/time for entries</x-form-label>
                                 <div class="mt-2">
                                     <input name="hasOpeningDate" type="checkbox" value="1" id="hasOpeningDate"  />
-                                    <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasOpeningDate')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -143,9 +125,8 @@
                                 <x-form-label for="openingDate">Opening date/time for entries</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="openingDate" type="datetime-local" min="{{date('Y-m-d')}}" id="openingDate" />
-                                    <x-form-error name="openingDate"/>
                                 </div>
-                                @error('date')
+                                @error('openingDate')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -156,7 +137,6 @@
                                 <x-form-label for="hasClosingDate">Has closing date/time for entries</x-form-label>
                                 <div class="mt-2">
                                     <input name="hasClosingDate" type="checkbox" value="1" id="hasClosingDate" />
-                                    <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasClosingDate')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -169,9 +149,8 @@
                                 <x-form-label for="closingDate">Closing date/time for entries</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="closingDate" type="datetime-local" min="{{date('Y-m-d')}}" id="closingDate" />
-                                    <x-form-error name="closingDate"/>
                                 </div>
-                                @error('date')
+                                @error('closingDate')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>

@@ -185,6 +185,8 @@ class TrialController extends Controller
                     'classlist' => Rule::requiredIf(request('customClasses') == ""),
                     'customCourses' => Rule::requiredIf(request('courselist') == ""),
                     'customClasses' => Rule::requiredIf(request('classlist') == ""),
+                    'penaltyDelta' => Rule::requiredIf(request('hasTimePenalty') == 1),
+                    'startInterval' => Rule::requiredIf(request('hasTimePenalty') == 1),
                 ]);
 
                 $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);

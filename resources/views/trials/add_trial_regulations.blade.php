@@ -13,15 +13,7 @@
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
 
     @endphp
-    @if ($errors->any())
-        <div class="text-red-500">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+
 
     <form action="/trials/save" method="POST">
         @csrf
@@ -43,7 +35,7 @@
                                         <input name="authority" type="radio" id="authority" value="{{$option}}" required>
                                         <label class="pl-1 pr-4" for="authority">{{$option}}</label>
                                     @endforeach
-                                    <x-form-error name="authority"/>
+
                                 </div>
                                 @error('authority')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -57,7 +49,7 @@
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="centre" type="text" id="centre"
                                                   placeholder="Required if ACU permit" />
-                                    <x-form-error name="centre"/>
+
                                 </div>
                                 @error('centre')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -76,7 +68,7 @@
                                         <input name="status" type="radio" id="status" value="{{$option}}" required>
                                         <label class="pl-1 pr-4" for="status">{{$option}}</label>
                                     @endforeach
-                                    <x-form-error name="status"/>
+
                                 </div>
                                 @error('status')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -88,11 +80,11 @@
 
                         <div id="otherRestrictionDiv" class="mt-2 col-span-3">
                             <x-form-field>
-                                <x-form-label for="coc">Other Restriction</x-form-label>
+                                <x-form-label for="otherRestriction">Other Restriction</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="otherRestriction" type="text" id="otherRestriction"
                                                   placeholder="Please give details" />
-                                    <x-form-error name="otherRestriction"/>
+
                                 </div>
                                 @error('otherRestriction')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -108,7 +100,7 @@
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="coc" type="text" id="coc" required
                                                   placeholder="Clerk of the course (please include licence number)" />
-                                    <x-form-error name="coc"/>
+
                                 </div>
                                 @error('coc')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

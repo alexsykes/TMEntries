@@ -13,15 +13,7 @@
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
 
     @endphp
-    @if ($errors->any())
-        <div class="text-red-500">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+
 
     <form action="/trials/save" method="POST">
         <input type="hidden" name="task" id="task" value="scoringData">
@@ -42,9 +34,9 @@
                                         <input name="scoringMode" type="radio" id="scoringMode" value="{{$option}}" required>
                                         <label class="pl-1 pr-4" for="scoringMode">{{$option}}</label>
                                     @endforeach
-                                    <x-form-error name="scoringMode"/>
+
                                 </div>
-                                @error('entryLimit')
+                                @error('scoringMode')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -58,9 +50,9 @@
                                         <input name="stopNonStop" type="radio" id="stopNonStop" value="{{$option}}" required>
                                         <label class="pl-1 pr-4" for="{{$option}}">{{$option}}</label>
                                     @endforeach
-                                    <x-form-error name="stopNonStop"/>
+
                                 </div>
-                                @error('entryLimit')
+                                @error('stopNonStop')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -72,7 +64,7 @@
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="numSections" type="text" id="numSections"
                                                   placeholder="Number of sections" />
-                                    <x-form-error name="numSections"/>
+
                                 </div>
                                 @error('numSections')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -86,7 +78,7 @@
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="numLaps" type="text" id="numLaps"
                                                   placeholder="Number of laps" />
-                                    <x-form-error name="numLaps"/>
+
                                 </div>
                                 @error('numLaps')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -100,7 +92,6 @@
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="numRows" type="text" id="numRows"
                                                   placeholder="Number of rows" />
-                                    <x-form-error name="numRows"/>
                                 </div>
                                 @error('numRows')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -114,7 +105,6 @@
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="numColumns" type="text" id="numColumns"
                                                   placeholder="Number of columns" />
-                                    <x-form-error name="numColumns"/>
                                 </div>
                                 @error('numColumns')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

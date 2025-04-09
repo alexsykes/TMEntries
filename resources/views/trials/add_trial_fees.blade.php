@@ -13,15 +13,7 @@
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
 
     @endphp
-    @if ($errors->any())
-        <div class="text-red-500">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+
 
     <form action="/trials/save" method="POST">
         @csrf
@@ -38,9 +30,8 @@
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="adultEntryFee" type="text" id="adultEntryFee" required
                                                   placeholder="Omit £ signs eg. 25.00" />
-                                    <x-form-error name="adultEntryFee"/>
                                 </div>
-                                @error('Adult entry fee')
+                                @error('adultEntryFee')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                                 @enderror
                             </x-form-field>
@@ -52,7 +43,6 @@
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="youthEntryFee" type="text" id="youthEntryFee" required
                                                   placeholder="Omit £ signs eg. 25.00" />
-                                    <x-form-error name="youthEntryFee"/>
                                 </div>
                                 @error('youthEntryFee')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -66,7 +56,6 @@
                                 <x-form-label for="hasEodSurcharge">Surcharge for Entry on the Day</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     <input name="hasEodSurcharge" type="checkbox" value="1" id="hasEodSurcharge"  />
-                                    <x-form-error name="hasEodSurcharge"/>
                                 </div>
                                 @error('hasEodSurcharge')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -80,7 +69,6 @@
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="eodSurcharge" type="text" id="eodSurcharge"
                                                   placeholder="Omit £ signs eg. 5.00" />
-                                    <x-form-error name="eodSurcharge"/>
                                 </div>
                                 @error('eodSurcharge')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
