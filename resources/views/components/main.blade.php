@@ -151,7 +151,7 @@
     <title>TrialMonster UK</title>
 </head>
 <body class="h-full bg-blue-800 text-white">
-
+@include('navbar')
 <header class="bg-blue-800 drop-shadow-md">
     {{--    @php $heading = "Welcome" @endphp--}}
     <header class="bg-blue-800 drop-shadow-md">
@@ -224,5 +224,15 @@
         <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - Oldgit UK</div>
     </div>
 </main>
+<script>document.addEventListener('DOMContentLoaded', function () {
+        const button = document.querySelector('button[aria-controls="mobile-menu"]');
+        const menu = document.getElementById('mobile-menu');
+
+        button.addEventListener('click', function () {
+            menu.classList.toggle('hidden');
+        });
+    });
+</script>
+
 </body>
 </html>
