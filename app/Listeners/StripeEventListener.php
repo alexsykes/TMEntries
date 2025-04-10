@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Mail\PaymentReceived;
 use App\Mail\RefundConfirmed;
 use App\Mail\RefundRequested;
+use App\Mail\ProductCreated;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Product;
@@ -45,11 +46,16 @@ function onProductCreated($productObject)
     } else {
         $youth = false;
     };
-////
-////
+
+
     if ($product_category == 'entry fee') {
         $isEntryFee = true;
     }
+    $email = 'monster@trialmonster.uk';
+    Mail::to($email)
+        ->send(new ProductCreated());
+
+    info("Product created");
 
     $product = Product::create([
         'stripe_product_id' => $stripe_product_id,
