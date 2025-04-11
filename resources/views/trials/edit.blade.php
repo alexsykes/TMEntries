@@ -160,11 +160,11 @@
                             <x-form-field class="mt-2 col-span-2 sm:col-span-3">
                                 <x-form-label for="venue">Venue</x-form-label>
                                 <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-violet-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-violet-600 sm:max-w-md" >
-                                    <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0" name="venueID" id="venueID">
+                                    <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 " name="venueID" id="venueID">
                                         <option value="0">Other</option>
                                         @foreach($venues as $venue)
                                             <option
-                                                    <?php if($trial->venueID == $venue->id ) { ?>selected = "selected"<?php } ?>
+                                                    <?php if($trial->venueID == $venue->id ) { ?> selected = "selected"<?php } ?>
 
                                             value="{{$venue->id}}">{{$venue->name}}
 

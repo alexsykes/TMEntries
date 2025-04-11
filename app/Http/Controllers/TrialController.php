@@ -268,8 +268,7 @@ class TrialController extends Controller
             default:
                 break;
         }
-
-
+        return redirect('/adminTrials');
     }
 
     public function update()
