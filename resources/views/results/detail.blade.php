@@ -5,7 +5,8 @@
     $classlist = $trial->classlist;
     $numsections = $trial->numSections;
     $numlaps = $trial->numLaps;
-@endphp    <div class="tab pl-8">
+@endphp
+    <div class="tab pl-8">
         <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-1" id="defaultOpen" onclick="openSection(event, 'Results')">
             Results
         </button>

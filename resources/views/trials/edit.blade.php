@@ -91,7 +91,7 @@
                                 <div class="mt-2">
                                     <input @php if ($trial->isMultiDay== 1){echo "checked"; } @endphp
 
-                                           name="isMultiDay" type="checkbox" value="1" id="isMultiDay" onchange="toggle(checked, 'numDaysDiv')" />
+                                           name="isMultiDay" type="checkbox" value="1" id="isMultiDay"  />
                                     <x-form-error name="isMultiDay"/>
                                 </div>
                                 @error('date')
@@ -368,7 +368,7 @@
                                 <div class="mt-2">
                                     <input
                                             @php if ($trial->hasEntryLimit== 1){echo "checked"; } @endphp
-                                            name="hasEntryLimit" type="checkbox" value="1" id="hasEntryLimit" onchange="toggle(checked, 'entryLimitDiv')" />
+                                            name="hasEntryLimit" type="checkbox" value="1" id="hasEntryLimit"/>
                                     <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasEntryLimit')
@@ -440,8 +440,7 @@
                                 <div class="mt-2">
                                     <input
                                             @php if ($trial->hasOpeningDate == 1){echo "checked"; } @endphp
-                                            name="hasOpeningDate" type="checkbox" value="1" id="hasOpeningDate" onchange="toggle(checked, 'openingDate')" />
-                                    <x-form-error name="openingDate"/>
+                                            name="hasOpeningDate" type="checkbox" value="1" id="hasOpeningDate" >                                  <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasOpeningDate')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -470,7 +469,7 @@
                                 <div class="mt-2">
                                     <input
                                             @php if ($trial->hasClosingDate== 1){ echo "checked"; } @endphp
-                                            name="hasClosingDate" type="checkbox" value="1" id="hasClosingDate" onchange="toggle(checked, 'closingDate')" />
+                                            name="hasClosingDate" type="checkbox" value="1" id="hasClosingDate"   >
                                     <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasClosingDate')
@@ -754,7 +753,7 @@
                                     <div class="mt-2">
                                         <input
                                                 @php if ($trial->hasEodSurcharge == 1){echo "checked"; } @endphp
-                                                name="hasEodSurcharge" type="checkbox" value="1" id="hasEodSurcharge" onchange="toggle(checked, 'eodSurchargeDiv')" />
+                                                name="hasEodSurcharge" type="checkbox" value="1" id="hasEodSurcharge" />
                                         <x-form-error name="hasEodSurcharge"/>
                                     </div>
                                     @error('hasEodSurcharge')

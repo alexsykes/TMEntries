@@ -136,12 +136,13 @@
             }
         }
     </script>
-<title>TM Club Admin</title>
-{{--    <title><?php if (config('APP_NAME') != ''){--}}
-{{--            echo env('APP_NAME');--}}
-{{--        }  else { echo "Admin area"; } ?></title>--}}
+    <title>TM Club Admin</title>
+    {{--    <title><?php if (config('APP_NAME') != ''){--}}
+    {{--            echo env('APP_NAME');--}}
+    {{--        }  else { echo "Admin area"; } ?></title>--}}
 </head>
 <body class="h-full bg-blue-800 text-white">
+@include('nav.admin_navbar')
 
 <header class="bg-blue-800 drop-shadow-md">
     {{--    @php $heading = "Welcome" @endphp--}}

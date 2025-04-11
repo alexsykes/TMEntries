@@ -176,7 +176,6 @@ class TrialController extends Controller
 
                 $trial = Trial::create($attrs);
                 return redirect("trials/addTrialDetail/{$trial->id}");
-                break;
 
             case 'trialData':
                 $id = request('trialID');
@@ -209,7 +208,6 @@ class TrialController extends Controller
                 $trial->update($attrs);
 
                 return redirect("trials/addTrialEntry/{$trial->id}");
-                break;
             case 'entryData':
                 $id = request('trialID');
                 $trial = Trial::findorfail($id);
@@ -226,8 +224,6 @@ class TrialController extends Controller
                 $trial->update($attrs);
 
                 return redirect("trials/addTrialScoring/{$trial->id}");
-
-                break;
             case 'scoringData':
                 $id = request('trialID');
                 $trial = Trial::findorfail($id);
@@ -240,8 +236,6 @@ class TrialController extends Controller
                 $trial->update($attrs);
 
                 return redirect("trials/addTrialRegs/{$trial->id}");
-
-                break;
 
             case 'regData':
                 $id = request('trialID');
@@ -258,7 +252,6 @@ class TrialController extends Controller
                 $trial->update($attrs);
                 return redirect("trials/addTrialFees/{$trial->id}");
 
-                break;
             case 'feeData':
 //                dd(request('adultEntryFee'));
                 $id = request('trialID');
@@ -272,7 +265,6 @@ class TrialController extends Controller
 
                 $trial->update($attrs);
                 return redirect("adminTrials");
-                break;
             default:
                 break;
         }
@@ -460,8 +452,13 @@ class TrialController extends Controller
 
     public function entrylist($id)
     {
+//        $entries = Entry::where('trial_id', $id)
+//            ->where('status', 1)
+//            ->get()
+//            ->sortBy('name');
+
         $entries = Entry::where('trial_id', $id)
-            ->where('status', 1)
+            ->whereIn('status', [1, 7,8,9 ])
             ->get()
             ->sortBy('name');
 

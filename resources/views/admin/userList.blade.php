@@ -14,7 +14,8 @@
             <th class="table-cell pl-4">Club User</th>
             <th class="table-cell pl-4">Admin User</th>
             <th class="table-cell pl-4">Super User</th>
-            <th class="font-semibold table-cell pl-4">&nbsp;</th>
+            <th class="table-cell pl-4">&nbsp;</th>
+            <th class="table-cell pl-4">&nbsp;</th>
 
         </tr>
     @foreach($users as $user)
@@ -31,7 +32,13 @@
         <td class="text-center table-cell  pl-4">{{$isClubUser}}</td>
         <td class="text-center table-cell pl-4">{{$isAdminUser}}</td>
         <td class="text-center table-cell pl-4">{{$isSuperUser}}</td>
-                <td class="font-semibold table-cell pl-4"><a class="underline"href="admin/user/remove/{{$user->id}}">Remove</a></td>
+                <td class="font-semibold table-cell pl-4"><a class="underline" href="admin/user/change_password/{{$user->id}}">Change Password</a></td>
+                <td class="font-semibold table-cell pl-4 pr-4"><a class="underline" href="admin/user/remove/{{$user->id}}">
+                        @if(!$isSuperUser)
+                            <i class="text-red-500 fa-solid fa-trash"></i>
+                        @endif
+
+                    </a></td>
         </tr>
     @endforeach
     </table>

@@ -7,8 +7,8 @@
                 </div>
                 <div class="hidden sm:block sm:ml-6">
                     <div class="flex space-x-4">
-                        <a href="/" class="text-white bg-blue-700 border-white border  hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Coming up…</a>
-                        <a href="/results/list" class="text-white bg-blue-700 border-white border hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Results</a>
+                        <a href="/adminaccess" class="text-white bg-blue-700 border-white border  hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Users</a>
+                        <a href="/admin/sendMail" class="text-white bg-blue-700 border-white border hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Email</a>
                         @auth
                             <form method="POST" action="/logout">
                                 @csrf
@@ -19,7 +19,7 @@
                             </form>
                         @endauth
                         @guest
-                        <a href="/login" class="text-white bg-blue-700 border-white border hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
+                            <a href="/login" class="text-white bg-blue-700 border-white border hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
                         @endguest
                     </div>
                 </div>
@@ -45,17 +45,17 @@
             <a href="/results/list" class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Results</a>
             @auth
                 <form method="POST" action="/logout">
-                @csrf
+                    @csrf
                     <div class="flex justify-end">
-                <button type="submit"
-                        class="text-white hover:bg-blue-300  hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-                    Log out
-                </button>
+                        <button type="submit"
+                                class="text-white hover:bg-blue-300  hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                            Log out
+                        </button>
                     </div>
-            </form>
+                </form>
             @endauth
             @guest
-            <a href="/login" class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Login</a>
+                <a href="/login" class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Login</a>
             @endguest
         </div>
     </div>

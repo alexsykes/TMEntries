@@ -28,10 +28,16 @@ class ResultController extends Controller
 
     public function display($id)
     {
-        $trial = DB::table('trials')
+        $trials = DB::table('trials')
             ->where('id', $id)
-            ->get()[0];
+            ->get();
 
+       if($trials->isEmpty())
+       {
+           abort(404   );
+       }
+
+$trial = $trials[0];
         $courselist = $trial->courselist;
         $classlist = $trial->classlist;
         $numsections = $trial->numSections;

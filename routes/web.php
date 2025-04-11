@@ -2,6 +2,7 @@
 
 require __DIR__ . '/auth.php';
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProfileController;
@@ -49,6 +50,7 @@ Route::patch('/admin/entries/update', [EntryController::class, 'adminEntryUpdate
 Route::post('/admin/entries/store', [EntryController::class, 'adminEntryStore'])->middleware(['auth', 'verified']);
 Route::get('/admin/entries/delete/{id}', [EntryController::class, 'adminEntryDelete'])->middleware(['auth', 'verified']);
 Route::get('admin/entries/printSignOnSheets/{id}', [EntryController::class, 'printSignOnSheets'])->middleware(['auth', 'verified']);
+Route::get('/admin/sendMail', [AdminController::class, 'sendMail'])->middleware(['auth', 'verified']);
 //
 
 Route::get('/trials/edit/{id}', [TrialController::class, 'edit'])->middleware(['auth', 'verified'])->name('edit');
@@ -131,6 +133,12 @@ Route::get('/scores/sectionScores/{id}/{section}', [ScoringController::class, 's
 
 Route::patch('/scores/updateSectionScores', [ScoringController::class, 'updateSectionScores'])->name('scores.updateSectionScores');
 Route::post('/scores/updateSectionScoreForRider', [ScoringController::class, 'updateSectionScoreForRider'])->name('scores.updateSectionScoreForRider');
+
+// USER Routes
+Route::get('/close-my-account/{id}/{email}', [AdminController::class, 'closeMyAccount']);
+
+// ADMIN Routes
+Route::get('/admin/user/remove/{id}', [AdminController::class, 'adminRemove'])->middleware(['auth', 'verified'])->name('admin.remove');
 
 // RESULT Routes
 Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');
