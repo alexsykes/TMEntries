@@ -49,7 +49,7 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
         event(new Registered($user));
-
+        info("New user registration: $user->name");
         Auth::login($user);
 
         return redirect(route('triallist', absolute: false));

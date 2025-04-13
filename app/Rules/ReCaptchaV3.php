@@ -55,7 +55,7 @@ class ReCaptchaV3 implements ValidationRule
 
             // Tests pass so proceed
             if ($body['success'] == true) {
-                Log::info("Success");
+                Log::info("Recaptcha Success");
             }
 
             // When this fails it means the action didn't match the one set in the button's data-action.

@@ -4,18 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Mail\TMLogin;
 use App\Models\User;
-use Illuminate\Http\Request;
-use App\Notifications\EmailDispatch;
-
-use App\Models\Entry;
-use App\Models\Trial;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
-    public function userList() {
+    public function userList()
+    {
         $users = User::orderBy('name', 'asc')
             ->paginate(50);
 
@@ -23,26 +17,31 @@ class AdminController extends Controller
 
     }
 
-    public function sendMail() {
-        $delay = 0;
-        for($delay = 0; $delay < 10; $delay++) {
-            $user = User::find(Auth::id());
+    public function sendMail()
+    {
+        $delay = 1;
+
+        $users = User::get();
+
+
+        foreach ($users as $user) {
             Mail::to($user->email)
                 ->later(now()->addSeconds($delay++), new TMLogin($user));
-
+            $delay++;
             info("sendMail - delay: $delay");
         }
         return redirect('/adminaccess');
     }
 
 
-    public function closeMyAccount() {
+    public function closeMyAccount()
+    {
         $email = request('email');
         $id = request('id');
         $user = User::where('email', $email)
             ->where('id', $id)
             ->first();
-        if($user) {
+        if ($user) {
             $user->delete();
         } else {
             abort(404);
