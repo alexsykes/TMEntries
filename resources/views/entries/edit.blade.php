@@ -21,6 +21,7 @@
 
         $types = array("2 stroke", "4 stroke", "e-bike");
     @endphp
+
     <script>
         function toggle(checked) {
             var x = document.getElementById("dateInput");
@@ -79,6 +80,9 @@
                                 <div class="mt-2  max-w-40 col-span-full">
                                     <x-form-input type="date" name="dob" id="dob" value="{{$selected_dob}}"/>
                                 </div>
+                                @error('dob')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
                             </x-form-field>
                         </div>
 

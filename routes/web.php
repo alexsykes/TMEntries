@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ScoringController;
+use \App\Http\Controllers\UserController;
 
 //use App\Http\Controllers\WebhookEndpointController;
 use App\Http\Controllers\StripePaymentController;
@@ -136,6 +137,8 @@ Route::post('/scores/updateSectionScoreForRider', [ScoringController::class, 'up
 
 // USER Routes
 Route::get('/close-my-account/{id}/{email}', [AdminController::class, 'closeMyAccount']);
+Route::get('/user/entries', [UserController::class, 'entryList'])->middleware(['auth', 'verified']);
+Route::get('/users/entry/edit/{id}', [UserController::class, 'editEntry'])->middleware(['auth', 'verified']);
 
 // ADMIN Routes
 Route::get('/admin/user/remove/{id}', [AdminController::class, 'adminRemove'])->middleware(['auth', 'verified'])->name('admin.remove');
