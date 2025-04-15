@@ -206,7 +206,7 @@
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">ENTRY LIMIT: </span>This trial has a limited entry of {{$trial->entryLimit}}.
             In the event of the limit being exceeded, acceptance will be determined
-            by <?php echo $entrySelectionBasis; ?>. Entrants will be informed by email once their entry is confirmed.
+            by <?php echo $entrySelectionBasis; ?>. Entrants will be informed by email once payment is received and their entry is confirmed.
         </div>
 
         <?php } ?>

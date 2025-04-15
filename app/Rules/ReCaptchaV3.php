@@ -38,7 +38,7 @@ class ReCaptchaV3 implements ValidationRule
         if ($siteVerify->failed()) {
             $fail('Google reCAPTCHA was not able to verify the form, please try again.');
 
-            Log::info("Form verify fail");
+            Log::info("Form verify fail IP: " .request()->ip());
             return;
         }
 
@@ -56,7 +56,7 @@ class ReCaptchaV3 implements ValidationRule
             // Tests pass so proceed
             if ($body['success'] == true) {
                 Log::info("Recaptcha Success");
-            }
+        }
 
             // When this fails it means the action didn't match the one set in the button's data-action.
             // Either a bot or a code mistake. Compare form data-action and value passed to $action (should be equal).

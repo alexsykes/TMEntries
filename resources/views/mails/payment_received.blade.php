@@ -9,7 +9,7 @@
             <td>{{$entry->name}}</td>
             <td>{{$entry->class}}</td>
             <td>{{$entry->course}}</td>
-            <td><a href="https://trialmonster.uk/entry/useredit/?id={{$entry->id}}&token={{$entry->token}}">Make changes</a></td>
+            <td><a href="{{config('app.url')}}/entry/useredit/?id={{$entry->id}}&token={{$entry->token}}">Make changes</a></td>
         </tr>
     @endforeach
 </table>

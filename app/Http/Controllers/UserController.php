@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Entry;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -29,7 +32,11 @@ class UserController extends Controller
             ->orderBy('entries.status')
             ->select('entries.id', 'entries.status', 'entries.name', 'entries.class', 'entries.course', 'trials.name as trial')
             ->get();
-        return view('user.entry_list', compact('entries'));
+
+        $query = DB::select('SELECT COUNT(e.id) AS numToPays FROM tme_entries AS e LEFT JOIN tme_trials AS t ON e.trial_id = t.id WHERE e.created_by = 1 AND e.status = 0 AND t.`date` > NOW()');
+    $numToPays = $query[0]->numToPays;
+
+        return view('user.entry_list', compact('entries', 'numToPays'));
     }
 
     public function editEntry($id)
@@ -41,5 +48,35 @@ class UserController extends Controller
         $entry = $entryArray[0];
 
         return view('user.edit_entry', ['entry' => $entry]);
+    }
+
+    public function updateEntry(Request $request) {
+//dd(request()->all());
+        $id = $request->entryID;
+        $entry = Entry::findorfail($id);
+        $request->validate([
+            'class' => 'required',
+            'course' => 'required',
+            'make' => 'required',
+            'type' => 'required',
+        ]);
+
+        $entry->class = $request->class;
+        $entry->course = $request->course;
+        $entry->make = $request->make;
+        $entry->type = $request->type;
+        $entry->save();
+
+
+        return redirect('/user/entries');
+    }
+
+    public function checkout() {
+        $userID = auth()->user()->id;
+
+//         Get entries
+
+
+        dd($userID);
     }
 }

@@ -44,7 +44,7 @@ class StripePaymentController extends Controller
 
             'consent_collection' => ['terms_of_service' => 'required'],
             'custom_text' => ['terms_of_service_acceptance' =>
-                ['message' => 'I agree to the Terms and Conditions which were supplied by email on registration with TrialMonster',],
+                ['message' => 'I agree to the Terms and Conditions as displayed on the TrialMonster website',],
             ],
             'line_items' => [
                 $lineItems

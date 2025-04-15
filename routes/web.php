@@ -136,9 +136,11 @@ Route::patch('/scores/updateSectionScores', [ScoringController::class, 'updateSe
 Route::post('/scores/updateSectionScoreForRider', [ScoringController::class, 'updateSectionScoreForRider'])->name('scores.updateSectionScoreForRider');
 
 // USER Routes
+Route::post('/user/checkout',[UserController::class, 'checkout']);
 Route::get('/close-my-account/{id}/{email}', [AdminController::class, 'closeMyAccount']);
 Route::get('/user/entries', [UserController::class, 'entryList'])->middleware(['auth', 'verified']);
 Route::get('/users/entry/edit/{id}', [UserController::class, 'editEntry'])->middleware(['auth', 'verified']);
+Route::patch('/user/entry/update', [UserController::class, 'updateEntry'])->middleware(['auth', 'verified']);
 
 // ADMIN Routes
 Route::get('/admin/user/remove/{id}', [AdminController::class, 'adminRemove'])->middleware(['auth', 'verified'])->name('admin.remove');

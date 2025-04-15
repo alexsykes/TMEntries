@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Entry;
-use App\Models\Trial;
 use Illuminate\Support\Facades\DB;
 
 class ResultController extends Controller
@@ -32,12 +30,11 @@ class ResultController extends Controller
             ->where('id', $id)
             ->get();
 
-       if($trials->isEmpty())
-       {
-           abort(404   );
-       }
+        if ($trials->isEmpty()) {
+            abort(404);
+        }
 
-$trial = $trials[0];
+        $trial = $trials[0];
         $courselist = $trial->courselist;
         $classlist = $trial->classlist;
         $numsections = $trial->numSections;
@@ -52,9 +49,21 @@ $trial = $trials[0];
         }
 
         $results = $this->getResults($id, $courselist);
-        return view('results.detail', ['trial' => $trial,'courseResults' => $courseResults, 'courses' => $courses]);
+        if(sizeof($results) == 0) {
+            abort(404);
+        }
+        return view('results.detail', ['trial' => $trial, 'courseResults' => $courseResults, 'courses' => $courses]);
     }
 
+    private function getCourseResult($id, string $course)
+    {
+        $query = "SELECT id AS entryID, DATE_FORMAT(created_at, '%d/%m/%Y %h:%i%p') AS created_at, 
+RANK() OVER (
+        ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos,
+id AS id, ridingNumber  AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores as sectionScores, sequentialScores AS sequentialScores, trial_id FROM tme_entries WHERE trial_id = $id AND resultStatus < 2 AND course = '" . $course . "'";
+        $courseResult = DB::select($query);
+        return $courseResult;
+    }
 
     private function getResults($id, $courselist)
     {
@@ -77,15 +86,5 @@ $trial = $trials[0];
 
         $results = DB::select($query);
         return $results;
-    }
-
-    private function getCourseResult($id, string $course)
-    {
-       $query =  "SELECT id AS entryID, DATE_FORMAT(created_at, '%d/%m/%Y %h:%i%p') AS created_at, 
-RANK() OVER (
-        ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos,
-id AS id, ridingNumber  AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores as sectionScores, sequentialScores AS sequentialScores, trial_id FROM tme_entries WHERE trial_id = $id AND resultStatus < 2 AND course = '".$course."'";
-        $courseResult = DB::select($query);
-        return $courseResult;
     }
 }

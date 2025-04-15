@@ -9,15 +9,12 @@
     <x-slot:heading>{{$entry->club}} {{$entry->trial_name}}</x-slot:heading>
 
     <div class="mb-2 ml-4 col-span-4">Entry status: {{$statusOptions[$entry->status]}}</div>
-    <form action="user/entry/save" type="POST">
+    <form action="/user/entry/update" method="post">
         @csrf
+@method('PATCH')
         <input type="hidden" name="entryID" id="entryID" value="{{$entry->id}}">
         <div class=" mt-0 mb-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Editing entry for {{$entry->name}}</div>
-
-
-            @method('PATCH')
-
 
                         <div class="mt-6    mb-2 ml-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
@@ -94,7 +91,7 @@
 
 
                     <div class="mt-4" id="buttons">
-                        <a href="/entries/userdata"
+                        <a href="/user/entries"
                            class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
 
                         <button type="submit"
