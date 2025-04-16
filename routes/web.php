@@ -121,7 +121,7 @@ Route::post('/venues/update', [VenueController::class, 'update']);
 // Stripe Routes
 Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeCheckout']);
 Route::get('/checkout/success', [StripePaymentController::class, 'checkoutSuccess'])->name('checkout-success');
-Route::view('/checkout/cancel', 'checkout.cancel')->name('checkout-cancel');
+Route::view('/checkout/cancel', [UserController::class, 'entryList'])->name('checkout-cancel');
 Route::post('/entries/checkout', [EntryController::class, 'checkout']);
 
 // SCORING routes
@@ -141,6 +141,7 @@ Route::get('/close-my-account/{id}/{email}', [AdminController::class, 'closeMyAc
 Route::get('/user/entries', [UserController::class, 'entryList'])->middleware(['auth', 'verified']);
 Route::get('/users/entry/edit/{id}', [UserController::class, 'editEntry'])->middleware(['auth', 'verified']);
 Route::patch('/user/entry/update', [UserController::class, 'updateEntry'])->middleware(['auth', 'verified']);
+Route::get('/stripe/usercheckout', [StripePaymentController::class, 'stripeUserCheckout']);
 
 // ADMIN Routes
 Route::get('/admin/user/remove/{id}', [AdminController::class, 'adminRemove'])->middleware(['auth', 'verified'])->name('admin.remove');

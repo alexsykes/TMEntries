@@ -72,11 +72,8 @@ class UserController extends Controller
     }
 
     public function checkout() {
-        $userID = auth()->user()->id;
-
-//         Get entries
 
 
-        dd($userID);
+        return redirect('stripe/usercheckout');
     }
 }

@@ -27,7 +27,8 @@ class StripePaymentController extends Controller
         $stripe = new \Stripe\StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
-//        $redirectUrl = "https://bbc.com";
+//        $cancelUrl = "https://dev.trialmonster.net/user/entries";
+        $cancelUrl = route('checkout-cancel');
 
         $lineItems = array();
         foreach ($entries as $entry) {
@@ -41,6 +42,7 @@ class StripePaymentController extends Controller
 
         $response = $stripe->checkout->sessions->create([
             'success_url' => $redirectUrl,
+            'cancel_url' => $cancelUrl,
 
             'consent_collection' => ['terms_of_service' => 'required'],
             'custom_text' => ['terms_of_service_acceptance' =>
@@ -59,6 +61,21 @@ class StripePaymentController extends Controller
         ]);
 
         return redirect($response['url']);
+    }
+
+
+    public function stripeUserCheckout(Request $request){
+        $userID = auth()->user()->id;
+
+        $toPayEntries = DB::table('entries')
+            ->join('trials', 'entries.trial_id', '=', 'trials.id')
+            ->select('entries.id',  'entries.trial_id', 'entries.stripe_price_id' ,'trials.name as trial')
+            ->where('entries.created_by', $userID)
+            ->where('entries.status', '=', 0)
+            ->whereFuture('trials.date')
+            ->get();
+
+        dd($toPayEntries);
     }
 
     public function checkoutSuccess(Request $request)
