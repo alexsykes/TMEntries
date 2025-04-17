@@ -17,6 +17,7 @@ class ResultController extends Controller
     {
         $pastTrials = DB::table('trials')
             ->where('published', 1)
+            ->where('isResultPublished', 1)
             ->whereBeforeToday('date')
             ->orderBy('date', 'desc')
             ->get(['name', 'club', 'date', 'id']);

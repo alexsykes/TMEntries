@@ -17,7 +17,7 @@
         @for($course=0;  $course < sizeof($courses); $course++)
             <div class=" mt-0 mb-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">{{$courses[$course]}}</div>
-                <table class="w-full">
+                <table class="w-full text-sm">
                     <tr class="pr-4 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
                         <th class="pl-2 text-right w-10  table-cell">&nbsp;</th>
                         <th class=" w-10 text-right table-cell pr-2">&nbsp;</th>
@@ -64,6 +64,9 @@
     </div>
 
     <div id="Scores" class="tabcontent pt-0 ">
+        @php
+            if(sizeof($courses) > 0) {
+        @endphp
         @for($course=0;  $course < sizeof($courses); $course++)
             <div class=" mt-0 mb-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">{{$courses[$course]}}</div>
@@ -98,6 +101,9 @@
                 </table>
             </div>
         @endfor
+        @php
+            }
+        @endphp
     </div>
     <script>
         // Get the element with id="defaultOpen" and click on it
