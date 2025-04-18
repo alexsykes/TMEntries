@@ -8,7 +8,7 @@
                 <div class="hidden sm:block sm:ml-6">
                     <div class="flex space-x-4">
                         <a href="/adminaccess" class="text-white bg-blue-700 border-white border  hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Users</a>
-                        <a href="/admin/sendMail" class="text-white bg-blue-700 border-white border hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Email</a>
+                        <a href="/admin/sendMailDelete" class="text-white bg-blue-700 border-white border hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Email</a>
                         @auth
                             <form method="POST" action="/logout">
                                 @csrf

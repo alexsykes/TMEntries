@@ -13,11 +13,18 @@
         <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Confirmed entries</div>
         <table class="w-full  pr-6 text-sm">
             @foreach($entries as $entry)
+                @php
+                    if($entry->class==="Adult") {
+                        $class = "";
+                    } else {
+                        $class = $entry->class;
+                    }
+                @endphp
                 <tr class="flex-auto odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
                     <td class="table-cell">{{$entry->number}}</td>
                     <td class="table-cell">{{$entry->name}}</td>
                     <td class="table-cell">{{$entry->course}}</td>
-                    <td class="table-cell">{{$entry->class}}</td>
+                    <td class="table-cell">{{$class}}</td>
                     <td class="table-cell">{{$entry->make}} {{$entry->size}}</td>
                 </tr>
             @endforeach

@@ -15,7 +15,7 @@
     <div class="pl-4 pt-2 pb-2">
     <table class="w-full">
     @foreach($entries as $entry)
-        <tr>
+        <tr class="flex-auto odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
             <td><input type="hidden" name="entryID[]" id="entryID[]" value="{{$entry->id}}"> {{$entry->name}}</td>
             <td> {{$entry->course}}</td>
             <td> {{$entry->class}}</td>

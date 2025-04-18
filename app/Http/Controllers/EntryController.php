@@ -331,12 +331,6 @@ class EntryController extends Controller
         return view('entries.checkout', ['entries' => $entries, 'trial' => $trial, 'trial_id' => $trial_id]);
     }
 
-//    public function create_another() {
-//        $IPaddress = request()->ip();
-//        $id = session('trial_id');
-//        $trial = Trial::findOrFail($id);
-//        return view('entries.create_another', ['trial' => $trial]);
-//    }
 
 
 //    Store first record then pass email and trial_id to create_another view

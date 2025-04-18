@@ -3,8 +3,20 @@
         Trials
     </x-slot:heading>
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-        <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Trial list</div>
-        <table class="w-full">
+        <div class="flex justify-between  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
+            <div class="font-bold">Trial List</div>
+            <div class="flex">
+                <div class="text-sm">Scoring <span><i
+                                class="ml-1 mr-3 fa-solid fa-pencil text-white"></i></span></div>
+                <div class="text-sm">Entries <span><i
+                                class="ml-1 mr-3 fa-solid fa-list-ol text-white"></i></span></div>
+                <div class="text-sm">Show/Hide<span><i
+                                class="ml-1 mr-3 fa-solid fa-eye text-white"></i></span></div>
+                <div class="text-sm">Trial Setup<span><i
+                                class="ml-1 mr-3 fa-solid fa-gear text-white"></i></span></div>
+            </div>
+        </div>
+        <table class="w-full text-sm">
             @foreach($trials as $trial)
                 @php
                     if ($trial->published) {
@@ -14,7 +26,7 @@
                     }
 
                 @endphp
-                <tr>
+                <tr class="flex-auto odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
                     <td class="pl-4  pt-1  pb-1   hidden  md:table-cell">{{$trial->date}}</td>
                     <td class="hidden md:table-cell">{{$trial->club}}</td>
                     <td class="pl-2 table-cell">{{$trial->name}}</td>
