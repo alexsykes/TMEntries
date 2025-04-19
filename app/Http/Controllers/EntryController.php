@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
+use Nette\Utils\Image;
 use PDF;
 
 
@@ -559,9 +560,7 @@ class EntryController extends Controller
     }
 
 
-    public function printSignOnSheets($id)
-    {
-        $id = 119;
+    public function printSignOnSheets_($id){
         $trialDetails = DB::table('trials')->where('id', $id)->first();
         $startList = DB::table('entries')
             ->where('trial_id', $trialDetails->id)
@@ -573,6 +572,29 @@ class EntryController extends Controller
         }
         $filename= "Sign-on $trialDetails->name.pdf";
 
+            PDF::SetTitle('Sign-on sheet');
+            PDF::AddPage();
+            PDF::Write(0, 'Hello World');
+            PDF::Output(public_path("Sign_on.pdf" ), 'F');
+            PDF::reset();
+
+
+    }
+
+    public function printSignOnSheets($id)
+    {
+//        $id = 119;
+        $trialDetails = DB::table('trials')->where('id', $id)->first();
+        $startList = DB::table('entries')
+            ->where('trial_id', $trialDetails->id)
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
+            ->orderBy('name')
+            ->get();
+        if(sizeof($startList) == 0) {
+            exit("No entries to print");
+        }
+        $filename= "Sign-on $trialDetails->name.pdf";
+//        dd($startList, $trialDetails);
         $img_file = storage_path('app/public/images/acu.jpg');
 //        PDF::setPageOrientation('L');
         MYPDF::SetCreator('TM UK');
@@ -627,22 +649,26 @@ class EntryController extends Controller
                 $linesPerPage = 20;
                 break;
 
-                default:
-                    $img_file = storage_path('app/public/images/amca.jpg');
-                    $topMargin = 10;
-                    $bottomMargin = 10;
-                    $rowHeight = 6.65;
-                    $numberIndent = 15;
-                    $nameIndent = 18;
-                    $idIndent = 132;
-                    $idWidth = 19;
-                    $classIndent = 177;
-                    $numberWidth = 3;
-                    $nameWidth = 33;
-                    $linesPerPage = 20;
-                    break;
+            default:
+                $img_file = storage_path('app/public/images/amca.jpg');
+                $topMargin = 10;
+                $bottomMargin = 10;
+                $rowHeight = 6.65;
+                $numberIndent = 15;
+                $nameIndent = 18;
+                $idIndent = 132;
+                $idWidth = 19;
+                $classIndent = 177;
+                $numberWidth = 3;
+                $nameWidth = 33;
+                $linesPerPage = 20;
+                break;
         }
         PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+
+//        $file = Image::fromFile($img_file);
+//
+//        dd($file);
 //        PDF::SetAutoPageBreak($auto_page_break, $bMargin);
 
         // set the starting point for the page content
@@ -669,7 +695,9 @@ class EntryController extends Controller
                 $id = $entry->id;
                 $class = $entry->class;
 
-                if ($class == "Adult") $class = "";
+                if ($class == "Adult"){
+                    $class = "";
+                }
 
                 // Number cell
                 if ($number != 0) {
@@ -706,9 +734,9 @@ class EntryController extends Controller
             }
         }
         PDF::Close();
-        PDF::Output(public_path($filename), 'I');
+        PDF::Output(public_path($filename), 'F');
         PDF::reset();
-
+        return response()->download($filename);
     }
     function nameize($str,$a_char = array("'","-"," ")){
         //$str contains the complete raw name string
