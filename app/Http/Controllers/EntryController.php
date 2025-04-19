@@ -560,40 +560,153 @@ class EntryController extends Controller
 
 
     public function printSignOnSheets($id)
-    {   $id=119;
+    {
+        $id = 119;
         $trialDetails = DB::table('trials')->where('id', $id)->first();
         $startList = DB::table('entries')
             ->where('trial_id', $trialDetails->id)
             ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
             ->orderBy('name')
             ->get();
-
-
+        if(sizeof($startList) == 0) {
+            exit("No entries to print");
+        }
         $filename= "Sign-on $trialDetails->name.pdf";
 
         $img_file = storage_path('app/public/images/acu.jpg');
 //        PDF::setPageOrientation('L');
         MYPDF::SetCreator('TM UK');
+
+
         PDF::SetAuthor('TrialMonster.uk');
-        PDF::SetTitle('AMCA Sign-on sheet');
+        PDF::SetTitle('Sign-on sheet');
         PDF::SetImageScale(PDF_IMAGE_SCALE_RATIO);
         PDF::AddPage();
+        $bMargin = PDF::GetBreakMargin();
+        PDF::SetHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        PDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        PDF::SetHeaderMargin(0);
+        PDF::SetFooterMargin(0);
+        PDF::SetPrintFooter(false);
+        PDF::SetAutoPageBreak(TRUE, 0);
+
         $lineHeight = 8;
         // set background image
-        PDF::Image($img_file, 0, 0, 40 , 60, '', '', '', true, 300, '', false, false, 0);
+
+//        PDF::SetPageMark();
+
+        $authority = $trialDetails->authority;
+        info("Authority: $authority");
+        switch($authority) {
+            case 'ACU':
+                $img_file = storage_path('app/public/images/acu.jpg');
+                $topMargin = 97;
+                $bottomMargin = 24;
+                $rowHeight = 7.95;
+                $numberIndent = 15;
+                $nameIndent = 20;
+                $idIndent = 132;
+                $idWidth = 19;
+                $classIndent = 177;
+                $numberWidth = 3;
+                $nameWidth = 46;
+                $linesPerPage = 22;
+                break;
+            case 'AMCA' :
+                $img_file = storage_path('app/public/images/amca.jpg');
+                $topMargin = 152;
+                $bottomMargin = 10;
+                $rowHeight = 6.65;
+                $numberIndent = 15;
+                $nameIndent = 18;
+                $idIndent = 132;
+                $idWidth = 19;
+                $classIndent = 177;
+                $numberWidth = 3;
+                $nameWidth = 33;
+                $linesPerPage = 20;
+                break;
+
+                default:
+                    $img_file = storage_path('app/public/images/amca.jpg');
+                    $topMargin = 10;
+                    $bottomMargin = 10;
+                    $rowHeight = 6.65;
+                    $numberIndent = 15;
+                    $nameIndent = 18;
+                    $idIndent = 132;
+                    $idWidth = 19;
+                    $classIndent = 177;
+                    $numberWidth = 3;
+                    $nameWidth = 33;
+                    $linesPerPage = 20;
+                    break;
+        }
+        PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+//        PDF::SetAutoPageBreak($auto_page_break, $bMargin);
+
+        // set the starting point for the page content
         PDF::SetPageMark();
+        PDF::SetFontSize(10, true);
+        PDF::SetTopMargin($topMargin);
+        PDF::SetAutoPageBreak(false, $bMargin);
+
 //        PDF::Write(0, "What's next?");
         $index = 0;
-        foreach ($startList as $entry) {
-            PDF::SetX(0);
-            PDF::Write(0, $entry->ridingNumber);
-            PDF::SetX(10);
-            PDF::Write(0, $entry->name);
-            $y = PDF::getY();
-            PDF::SetY($y + $lineHeight);
-        }
+        $lineNumber = 1;
+        if(sizeof($startList) > 0) {
+            foreach ($startList as $entry) {
+//            if($trialDetails-> == 5) {
+//                $number = $rrCodes[$entry[0]];
+//            } else {
+                $number = $entry->ridingNumber;
+//            }
+                $name = ucwords(strtolower($entry->name), " \t\r\n\f\v'");
+                $paid = $entry->status;
+                if ($paid == 0 or $paid == 4 or $paid == 5 or $paid == 7) {
+                    $name = "To pay - " . $name;
+                }
+                $id = $entry->id;
+                $class = $entry->class;
 
-        PDF::Output(public_path($filename), 'F');
+                if ($class == "Adult") $class = "";
+
+                // Number cell
+                if ($number != 0) {
+                    PDF::setX($numberIndent);
+                    PDF::Cell($numberWidth, $rowHeight, $number, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                }
+                // AMCA
+                if ($authority == 'AMCA') {
+                    // Name cell
+                    PDF::setX($nameIndent);
+                    PDF::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+
+                    // ID cell
+                    if ($id != 0) {
+                        PDF::setX($idIndent);
+                        PDF::Cell($idWidth, $rowHeight, $id, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                    }
+                    // Class cell
+                    PDF::setX($classIndent);
+                    PDF::Cell(17, $rowHeight, $class, 0, 1, 'L', false, null, 1, 0, 'C' . 'M');
+                } // ACU
+                else if ($authority == 'ACU') {
+                    // Name cell
+                    PDF::setX($nameIndent);
+                    PDF::Cell($nameWidth, $rowHeight, $name, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
+                }
+
+                if ($lineNumber % $linesPerPage == 0) {
+                    PDF::addPage();
+                    PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+                }
+                $lineNumber++;
+
+            }
+        }
+        PDF::Close();
+        PDF::Output(public_path($filename), 'I');
         PDF::reset();
 
     }
@@ -616,272 +729,7 @@ class EntryController extends Controller
         }
         return ucfirst($string);
     }
-    public function printSignOnSheets_($trialid)
-    {
-        // create new PDF document
-        $pdf = new PDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-        // set document information
-        PDF::SetCreator('TrialMonster');
-        PDF::SetAuthor('TrialMonster.uk');
-        PDF::SetTitle('AMCA Sign-on sheet');
-
-        // set header and footer fonts
-        PDF::setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-
-        // set default monospaced font
-        PDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
-        // set margins
-//     PDF::SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-        PDF::SetHeaderMargin(0);
-        PDF::SetFooterMargin(0);
-
-        // remove default footer
-        PDF::setPrintFooter(false);
-
-        // set auto page breaks
-        PDF::SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-
-        // set image scale factor
-//        PDF::setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-//     // set some language-dependent strings (optional)
-//     if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-//     require_once(dirname(__FILE__).'/lang/eng.php');
-//     PDF::setLanguageArray($l);
-//     }
-// get the current page break margin
-//        $bMargin = PDF::getBreakMargin();
-//// get current auto-page-break mode
-//        $auto_page_break = PDF::getAutoPageBreak();
-//// disable auto-page-break
-//        PDF::SetAutoPageBreak(false, 0);
-// set bacground image
-//        $img_file = storage_path('app/public/images/acu.jpg');
-//        PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
-// restore auto-page-break status
-//        PDF::SetAutoPageBreak($auto_page_break, $bMargin);
-// set the starting point for the page content
-//        PDF::setPageMark();
-        // ---------------------------------------------------------
-
-
-        // remove default header
-        PDF::setPrintHeader(false);
-
-        PDF::Close();
-        // close and output PDF document
-        PDF::Output("Sign on sheet", "I");
-        PDF::Output();
-    }
-
-    public function printSignOnSheetsDev($trialid)
-    {
-// Include the main TCPDF library (search for installation path).
-        $trialid = 119;
-        $img_file = storage_path('app/public/images/acu.jpg');
-//        dd($img_file);
-//        Get trial data
-        $trialDataArray = DB::table('trials')
-            ->where('id', $trialid)
-            ->get();
-
-        $trialData = $trialDataArray[0];
-//        Get entry list
-        $entryList = DB::table('entries')
-            ->where('trial_id', $trialid)
-            ->get();
-
-        $entryCount = sizeof($entryList);
-        $numPages = floor(1 + ($entryCount / 22));
-
-        $date = $trialData->date;
-        $club = $trialData->club;
-        $venuename = $trialData->venueID;
-        $authority = $trialData->authority;
-        $eventname = $trialData->name;
-        $permit = $trialData->permit;
-        $scoringmode = $trialData->scoringMode;
-//dd($authority, $eventname, $permit, $scoringmode);
-
-
-        // Set up dimensions for different authorities
-        switch ($authority) {
-            case "ACU":
-//                $img_file = JPATH_COMPONENT.'/assets/images/amca.jpg';
-                $topMargin = 97;
-                $bottomMargin = 24;
-                $rowHeight = 7.95;
-                $numberIndent = 15;
-                $nameIndent = 20;
-                $idIndent = 132;
-                $idWidth = 19;
-                $classIndent = 177;
-                $numberWidth = 3;
-                $nameWidth = 46;
-                $linesPerPage = 22;
-                break;
-            case "AMCA" :
-//                $img_file = JPATH_COMPONENT.'/assets/images/acu.jpg';
-                $topMargin = 152;
-                $bottomMargin = 10;
-                $rowHeight = 6.65;
-                $numberIndent = 15;
-                $nameIndent = 18;
-                $idIndent = 132;
-                $idWidth = 19;
-                $classIndent = 177;
-                $numberWidth = 3;
-                $nameWidth = 33;
-                $linesPerPage = 20;
-                break;
-        }
-
-        // create new PDF document
-        $pdf = new PDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-        // set document information
-        PDF::SetCreator(PDF_CREATOR);
-        PDF::SetAuthor('TrialMonster.uk');
-        PDF::SetTitle('AMCA Sign-on sheet');
-
-        // set header and footer fonts
-        PDF::setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-
-        // set default monospaced font
-        PDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
-        // set margins
-//     PDF::SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-        PDF::SetHeaderMargin(0);
-        PDF::SetFooterMargin(0);
-
-        // remove default footer
-        PDF::setPrintFooter(false);
-
-        // set auto page breaks
-        PDF::SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-
-        // set image scale factor
-        PDF::setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-//     // set some language-dependent strings (optional)
-//     if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-//     require_once(dirname(__FILE__).'/lang/eng.php');
-//     PDF::setLanguageArray($l);
-//     }
-
-        // ---------------------------------------------------------
-
-
-        // remove default header
-        PDF::setPrintHeader(false);
-
-        //  for($page = 0; $page < $numPages; $page++) {
-        // add a page
-        PDF::AddPage();
-
-
-        // get the current page break margin
-        $bMargin = PDF::getBreakMargin();
-        // get current auto-page-break mode
-        $auto_page_break = PDF::getAutoPageBreak();
-        // disable auto-page-break
-        PDF::SetAutoPageBreak(false, 0);
-        // set bacground image
-        PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
-//dd($img_file);
-        switch ($authority) {
-            case 0:
-                PDF::setLeftMargin(21);
-                PDF::setY(43);
-                PDF::Cell(0, 0, $eventname, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::setY(51);
-                PDF::Cell(0, 0, $venuename, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::setY(59);
-                PDF::setLeftMargin(29);
-                PDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::setY(67);
-                PDF::setLeftMargin(29);
-                PDF::Cell(0, 0, $permit, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                break;
-
-            case 1:
-                PDF::setLeftMargin(26);
-                PDF::setY(75);
-                PDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::Cell(0, 0, $venuename, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                break;
-        }
-        // restore auto-page-break status
-        PDF::SetAutoPageBreak($auto_page_break, $bMargin);
-
-        // set the starting point for the page content
-        PDF::setPageMark();
-        PDF::setFontSize(10, true);
-//        PDF::setTopMargin($topMargin);
-//        PDF::setAutoPageBreak(false, $bottomMargin);
-
-
-        $lineNumber = 1;
-        // Paid entries
-        for ($index = 0; $index < $entryCount; $index++) {
-            $entry = $entryList[$index];
-            if ($scoringmode == 5) {
-//                $number = $rrCodes[$entry[0]];
-            } else {
-                $number = $entry->ridingNumber;
-            }
-            $name = ucwords(strtolower($entry->name), " \t\r\n\f\v'");
-            $paid = $entry->status;
-            if ($paid == 0 or $paid == 4 or $paid == 5 or $paid == 7) {
-                $name = "To pay - " . $name;
-            }
-            $id = $entry->id;
-            $class = $entry->class;
-            if ($class == "Adult") $class = "";
-
-            // Number cell
-            if ($number != 0) {
-                PDF::setX($numberIndent);
-                PDF::Cell($numberWidth, $rowHeight, $number, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
-            }
-            // AMCA
-            if ($authority == 1) {
-                // Name cell
-                PDF::setX($nameIndent);
-                PDF::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
-
-                // ID cell
-                if ($id != 0) {
-                    PDF::setX($idIndent);
-                    PDF::Cell($idWidth, $rowHeight, $id, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
-                }
-                // Class cell
-                PDF::setX($classIndent);
-                PDF::Cell(17, $rowHeight, $class, 0, 1, 'L', false, null, 1, 0, 'C' . 'M');
-            } // ACU
-            else if ($authority == 0) {
-                // Name cell
-                PDF::setX($nameIndent);
-                PDF::Cell($nameWidth, $rowHeight, $name, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
-            }
-
-            if ($lineNumber % $linesPerPage == 0) {
-                PDF::addPage();
-                PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
-            }
-            $lineNumber++;
-        }
-
-        PDF::Close();
-        // close and output PDF document
-        PDF::Output("Sign on sheet", "I");
-        PDF::Output();
-    }
 }
 
 
