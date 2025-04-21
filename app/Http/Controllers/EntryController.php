@@ -405,6 +405,7 @@ class EntryController extends Controller
         $trial = Trial::findOrFail($attributes['trial_id']);
         $entries = Entry::all()
             ->where('trial_id', $trial_id)
+            ->where('status', 0)
             ->where('created_by', $attributes['created_by']);
 
 //        $entries = Entry::all()->where('IPaddress', $IPaddress)->where('trial_id', session('trial_id'))->where('email', $attributes['email']);
@@ -560,27 +561,6 @@ class EntryController extends Controller
     }
 
 
-    public function printSignOnSheets_($id){
-        $trialDetails = DB::table('trials')->where('id', $id)->first();
-        $startList = DB::table('entries')
-            ->where('trial_id', $trialDetails->id)
-            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
-            ->orderBy('name')
-            ->get();
-        if(sizeof($startList) == 0) {
-            exit("No entries to print");
-        }
-        $filename= "Sign-on $trialDetails->name.pdf";
-
-            PDF::SetTitle('Sign-on sheet');
-            PDF::AddPage();
-            PDF::Write(0, 'Hello World');
-            PDF::Output(public_path("Sign_on.pdf" ), 'F');
-            PDF::reset();
-
-
-    }
-
     public function printSignOnSheets($id)
     {
 //        $id = 119;
@@ -618,10 +598,10 @@ class EntryController extends Controller
 //        PDF::SetPageMark();
 
         $authority = $trialDetails->authority;
-        info("Authority: $authority");
+//        info("Authority: $authority");
         switch($authority) {
-            case 'ACU':
-                $img_file = storage_path('app/public/images/acu.jpg');
+            case 'AMCA':
+                $img_file = storage_path('app/public/images/amca.jpg');
                 $topMargin = 97;
                 $bottomMargin = 24;
                 $rowHeight = 7.95;
@@ -634,8 +614,8 @@ class EntryController extends Controller
                 $nameWidth = 46;
                 $linesPerPage = 22;
                 break;
-            case 'AMCA' :
-                $img_file = storage_path('app/public/images/amca.jpg');
+            case 'ACU' :
+                $img_file = storage_path('app/public/images/acu.jpg');
                 $topMargin = 152;
                 $bottomMargin = 10;
                 $rowHeight = 6.65;
@@ -650,7 +630,7 @@ class EntryController extends Controller
                 break;
 
             default:
-                $img_file = storage_path('app/public/images/amca.jpg');
+                $img_file = storage_path('app/public/images/grid.jpg');
                 $topMargin = 10;
                 $bottomMargin = 10;
                 $rowHeight = 6.65;
@@ -675,7 +655,7 @@ class EntryController extends Controller
         PDF::SetPageMark();
         PDF::SetFontSize(10, true);
         PDF::SetTopMargin($topMargin);
-        PDF::SetAutoPageBreak(false, $bMargin);
+        PDF::SetAutoPageBreak(false, $bottomMargin);
 
 //        PDF::Write(0, "What's next?");
         $index = 0;
