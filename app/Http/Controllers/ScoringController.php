@@ -62,9 +62,10 @@ class ScoringController extends Controller
     public function grid($trialID)
     {
         $trial = Trial::find($trialID);
+        $riderNumbers = $this->getRiderNumbers($trialID);
 
         $scores = DB::select("SELECT rider, GROUP_CONCAT( IF(score IS NULL, '.',score) ORDER BY section, lap SEPARATOR '') AS scoreData FROM tme_scores WHERE trial_id = {$trialID} GROUP BY rider  ORDER BY rider");
-        return view('scoring.grid', ['scores' => $scores, 'trial' => $trial]);
+        return view('scoring.grid', ['scores' => $scores, 'trial' => $trial, 'riderNumbers' => $riderNumbers]);
     }
 
     public function sectionScores($trialid, $section)
@@ -136,5 +137,20 @@ class ScoringController extends Controller
         }
 
         return redirect("/scores/grid/{$trialID}");
+    }
+
+    public function getRiderNumbers($id){
+        $riderNumbers = DB::table('entries')
+            ->where('trial_id', $id)
+            ->whereIn('status', [0, 1, 7, 8, 9])
+            ->get('ridingNumber');
+
+        $riderNumberArray = array();
+
+        foreach($riderNumbers as $riderNumber){
+            array_push($riderNumberArray, $riderNumber->ridingNumber);
+        }
+
+        return $riderNumberArray;
     }
 }

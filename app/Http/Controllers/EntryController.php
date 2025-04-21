@@ -592,6 +592,8 @@ class EntryController extends Controller
         PDF::SetPrintFooter(false);
         PDF::SetAutoPageBreak(TRUE, 0);
 
+        PDF::SetMargins(0, 0, 0);
+
         $lineHeight = 8;
         // set background image
 
@@ -615,8 +617,8 @@ class EntryController extends Controller
                 $linesPerPage = 22;
                 break;
             case 'ACU' :
-                $img_file = storage_path('app/public/images/acu.jpg');
-                $topMargin = 152;
+                $img_file = storage_path('app/public/images/ACU_2025.png');
+                $topMargin = 158;
                 $bottomMargin = 10;
                 $rowHeight = 6.65;
                 $numberIndent = 15;
@@ -626,7 +628,7 @@ class EntryController extends Controller
                 $classIndent = 177;
                 $numberWidth = 3;
                 $nameWidth = 33;
-                $linesPerPage = 20;
+                $linesPerPage = 19;
                 break;
 
             default:

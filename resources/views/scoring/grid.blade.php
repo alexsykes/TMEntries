@@ -20,7 +20,7 @@
             @csrf
             <input type="hidden" id="trialID" name="trialID" value="{{$trial->id}}">
 
-            <table class="m-4 w-full ">
+            <table class=" w-full ">
                 <tr>
                     <th>&nbsp;</th>
                     @php
@@ -32,14 +32,27 @@
                     @endphp
                 </tr>
                 @foreach($scores as $score)
-                    <tr>
-                        <td>{{$score->rider}}</td>
+                    @php
+                    $rider = $score->rider;
+                    if(!in_array($rider, $riderNumbers)) {
+                        @endphp
+                         <tr class="text-red-500 flex-auto odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+                             @php
+                    } else {
+                        @endphp
+                            <tr class="flex-auto odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b">
+                             @php
+                    }
+                    @endphp
+
+
+                        <td class="pl-4 text-right  pr-2">{{$rider}}</td>
                             <?php
                             $sectionScores = str_split($score->scoreData, $numLaps);
                             for($section = 1; $section <= $numSections; $section++) {
                                 $s = $section - 1;
                                 $slug = "/scores/sectionScoresForRider/$trial->id/$score->rider/$section";
-                                echo "<td><a href=\"$slug\">$sectionScores[$s]</a></td>";
+                                echo "<td class=\"text-center\"><a href=\"$slug\">$sectionScores[$s]</a></td>";
                             }
                             ?>
                     </tr>

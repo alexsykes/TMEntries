@@ -22,9 +22,9 @@
             </div>
         </div>
         <div class="pl-4">
-            <table class="w-full">
+            <table class="w-full text-sm">
                 @foreach($entries as $entry)
-                    <tr>
+                    <tr class="flex-auto odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
                         <td class="text-right pr-2 w-12">{{$entry->ridingNumber}}</td>
                         <td>{{$entry->name}}</td>
                         <td>{{$entry->class}}</td>
