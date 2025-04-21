@@ -109,7 +109,6 @@
 </head>
 <body class="h-full bg-violet-800 text-white">
 
-<header class="bg-violet-800 drop-shadow-md">
     {{--    @php $heading = "Welcome" @endphp--}}
     <header class="bg-violet-800 drop-shadow-md">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8  sm:flex sm:justify-between">
@@ -155,7 +154,6 @@
             </div>
         </div>
     </header>
-</header>
 <main class="bg-violet-100 text-black">
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {{ $slot }}

@@ -142,7 +142,7 @@ class ScoringController extends Controller
     public function getRiderNumbers($id){
         $riderNumbers = DB::table('entries')
             ->where('trial_id', $id)
-            ->whereIn('status', [0, 1, 7, 8, 9])
+            ->whereIn('status', [1, 7, 8, 9])
             ->get('ridingNumber');
 
         $riderNumberArray = array();
@@ -153,4 +153,77 @@ class ScoringController extends Controller
 
         return $riderNumberArray;
     }
+
+    public function publish(Request $request)
+    {
+//        Get trial details
+        $trialID = $request->trialID;
+        $trial = DB::table('trials')->where('id', $trialID)->first();
+        $numLaps = $trial->numLaps;
+        $numSections = $trial->numSections;
+        $numPossibleScores = $trial->numSections * $trial->numLaps;
+        $cutoff = $numPossibleScores * 0.25;
+
+        $authority = $trial->authority;
+        if ($authority == 'ACU') {
+            $missedValue = 10;
+        } else {
+            $missedValue = 5;
+        }
+
+//        Fill missing scores with x
+        DB::table('scores')
+            ->where('trial_id', $trialID)
+            ->whereNull('score')
+            ->update(['score' => 'x']);
+
+//        Get confirmed rider numbers
+        $riderNumbers = $this->getRiderNumbers($trialID);
+
+//        Get rider scores
+        $riderScores = Db::select("SELECT e.ridingNumber, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS sectionScores, GROUP_CONCAT(score ORDER BY lap, section SEPARATOR '') AS sequentialScores FROM tme_entries e JOIN tme_scores s ON e.ridingNumber = s.rider AND e.trial_id = s.trial_id WHERE e.trial_id = $trialID GROUP BY ridingNumber");
+
+//        then transfer all scores to entries
+        foreach ($riderScores as $riderScore) {
+            $sectionScores = $riderScore->sectionScores;
+            $cleans = substr_count($sectionScores, '0', 0);
+            $ones = substr_count($sectionScores, '1', 0);
+            $twos = substr_count($sectionScores, '2', 0);
+            $threes = substr_count($sectionScores, '3', 0);
+            $fives = substr_count($sectionScores, '5', 0);
+            $missed = substr_count($sectionScores, 'x', 0);
+            $total = $ones + 2 * ($twos) + 3 * ($threes) + 5 * ($fives) + $missedValue * ($missed);
+            $resultStatus = 0;
+            if ($missed > $cutoff) {
+                $resultStatus = 1;
+            }
+            if ($missed == $numPossibleScores) {
+                $resultStatus = 2;
+            }
+
+            DB::table('entries')
+                ->where('trial_id', $trialID)
+                ->where('ridingNumber', $riderScore->ridingNumber)
+                ->update(['sectionScores' => $riderScore->sectionScores,
+                    'sequentialScores' => $riderScore->sequentialScores,
+                    'cleans' => $cleans,
+                    'ones' => $ones,
+                    'twos' => $twos,
+                    'threes' => $threes,
+                    'fives' => $fives,
+                    'missed' => $missed,
+                    'total' => $total,
+                    'updated_at' => now(),
+                    'resultStatus' => $resultStatus
+                ]);
+        }
+
+        return redirect("/results/display/{$trialID}");
+    }
+
+        public function confirmPublish(Request $request)
+        {
+        return view('scoring.confirmPublish', ['trialID' => $request->trialID]);;
+        }
+
 }

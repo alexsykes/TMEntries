@@ -145,31 +145,6 @@
 @include('nav.admin_navbar')
 
 <header class="bg-blue-800 drop-shadow-md">
-    {{--    @php $heading = "Welcome" @endphp--}}
-    <header class="bg-blue-800 drop-shadow-md">
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8  sm:flex sm:justify-between">
-            <h1 class="text-m sm:text-2xl  font-bold tracking-tight text-white">{{ $heading }}</h1>
-
-
-            {{--        Hidden for small screens --}}
-            <div class="hidden sm:block">
-                <div class="ml-4 flex space-x-4 items-center m-auto px md:ml-6" >
-                    <x-nav-link href="/" :active="request()->is('/')">Coming up</x-nav-link>
-                    <x-nav-link href="/results/list" :active="request()->is('/results/list')">Results</x-nav-link>
-                    @guest
-                        <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>
-                        {{--                        <x-nav-link href="/register" :active="request()->is('register')">Register</x-nav-link>--}}
-                    @endguest
-
-                    @auth
-                        <form method="POST" action="/logout">
-                            @csrf
-                            <button type="submit"
-                                    class="rounded-md ml-0 bg-blue-500 px-2 py-1 text-sm font-light  border border-white text-white drop-shadow-xl hover:bg-blue-500 focus-visible:outline focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600">Log out</button>
-                        </form>
-                    @endauth
-                </div>
-            </div>
 
 
 
@@ -188,11 +163,9 @@
                 @endauth
                 <a href="/" class="text-white"><i class="text-xl  fa-solid fa-house"></i></a>
             </div>
-        </div>
-    </header>
 </header>
 <main class="bg-blue-100 text-black">
-    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl px-2 py-6 sm:px-6 lg:px-8">
         {{ $slot }}
     </div>
     <div class = "bg-blue-800 text-white">
@@ -200,7 +173,7 @@
             <div class="text-center mx-auto  text-white">
                 <a href="/adminTrials" class="inline-block mt-1 mx-3 hover:underline">Admin</a>
                 <a href="/terms" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
-                <a href="/clublist" class="inline-block mt-1 mx-3 hover:underline">Clubs</a>
+                <a href="/clubaccess" class="inline-block mt-1 mx-3 hover:underline">Clubs</a>
                 <a href="/privacy"  class="inline-block mt-1 mx-3 hover:underline">Privacy Policy</a>
                 <a href="/contact"  class="inline-block mt-1 mx-3 hover:underline">Contact</a>
             </div>

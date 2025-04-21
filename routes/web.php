@@ -134,6 +134,8 @@ Route::get('/scores/sectionScores/{id}/{section}', [ScoringController::class, 's
 
 Route::patch('/scores/updateSectionScores', [ScoringController::class, 'updateSectionScores'])->name('scores.updateSectionScores');
 Route::post('/scores/updateSectionScoreForRider', [ScoringController::class, 'updateSectionScoreForRider'])->name('scores.updateSectionScoreForRider');
+Route::post('/scores/confirmPublish', [ScoringController::class, 'confirmPublish'])->name('scores.confirmPublish');
+Route::post('/scores/publish', [ScoringController::class, 'publish'])->name('scores.publish');
 
 // USER Routes
 Route::post('/user/checkout',[UserController::class, 'checkout']);
