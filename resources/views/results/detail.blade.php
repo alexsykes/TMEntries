@@ -5,7 +5,14 @@
     $classlist = $trial->classlist;
     $numsections = $trial->numSections;
     $numlaps = $trial->numLaps;
-//    dd($courseResults);
+
+    $nonStarterArray = array();
+foreach($nonStarters as $notStarter) {
+    array_push($nonStarterArray, $notStarter->name);
+}
+    $nonStarterList = implode(', ', $nonStarterArray);
+
+    //    dd($courseResults);
 @endphp
     <div class="tab pl-8">
         <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-1" id="defaultOpen" onclick="openSection(event, 'Results')">
@@ -65,6 +72,8 @@
             </div>
             @endif
         @endfor
+
+{{--        <div class="pl-2 pr-2 text-sm">Non starters: {{$nonStarterList}}</div>--}}
     </div>
 
     <div id="Scores" class="tabcontent pt-0 ">
@@ -90,9 +99,12 @@
                         @php
                             $sectionsScores = $courseResult->sectionScores;
                             $scoreArray = str_split($sectionsScores, $numlaps);
+                            $dnf = $courseResult->resultStatus;
+                            $pos = $dnf == 0 ? $courseResult->pos : "DNF";
+                            $total = $dnf == 0 ? $courseResult->total : "";
                         @endphp
                         <tr class="pr-4 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
-                            <td class="pl-2 text-right w-10  table-cell font-semibold">{{$courseResult->pos}}</td>
+                            <td class="pl-2 text-right w-10  table-cell font-semibold">{{$pos}}</td>
                             <td class=" w-10 text-right table-cell pr-2">{{$courseResult->rider}}</td>
                             <td class="table-cell">{{$courseResult->name}}</td>
                             <td class="w-10 pr-4 font-semibold text-center table-cell">{{$courseResult->total}}</td>

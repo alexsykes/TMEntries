@@ -3,9 +3,9 @@
 namespace App\Listeners;
 
 use App\Mail\PaymentReceived;
+use App\Mail\ProductCreated;
 use App\Mail\RefundConfirmed;
 use App\Mail\RefundRequested;
-use App\Mail\ProductCreated;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Product;

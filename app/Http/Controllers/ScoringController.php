@@ -152,7 +152,25 @@ class ScoringController extends Controller
         }
 
         return $riderNumberArray;
+
     }
+
+    public function getNonStarters($id, $allMissed){
+    $riders = DB::table('entries')
+        ->where('trial_id', $id)
+        ->whereIn('status', [1, 7, 8, 9])
+        ->where('name', '!=',"")
+        ->where('sectionScores',$allMissed)
+        ->get('name');
+
+    $nonStarters = array();
+
+    foreach($riders as $rider){
+        array_push($nonStarters, $rider->name);
+    }
+
+    return$nonStarters;
+}
 
     public function publish(Request $request)
     {
@@ -163,6 +181,8 @@ class ScoringController extends Controller
         $numSections = $trial->numSections;
         $numPossibleScores = $trial->numSections * $trial->numLaps;
         $cutoff = $numPossibleScores * 0.25;
+        $allMissed = str_pad('', $numPossibleScores, 'x', STR_PAD_LEFT);
+
 
         $authority = $trial->authority;
         if ($authority == 'ACU') {
@@ -179,6 +199,7 @@ class ScoringController extends Controller
 
 //        Get confirmed rider numbers
         $riderNumbers = $this->getRiderNumbers($trialID);
+        $nonStarters = $this->getNonStarters($trialID, $allMissed);
 
 //        Get rider scores
         $riderScores = Db::select("SELECT e.ridingNumber, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS sectionScores, GROUP_CONCAT(score ORDER BY lap, section SEPARATOR '') AS sequentialScores FROM tme_entries e JOIN tme_scores s ON e.ridingNumber = s.rider AND e.trial_id = s.trial_id WHERE e.trial_id = $trialID GROUP BY ridingNumber");
@@ -201,6 +222,10 @@ class ScoringController extends Controller
                 $resultStatus = 2;
             }
 
+            if (in_array($riderScore->ridingNumber, $nonStarters)) {
+                $resultStatus = 2;
+            }
+
             DB::table('entries')
                 ->where('trial_id', $trialID)
                 ->where('ridingNumber', $riderScore->ridingNumber)
@@ -217,7 +242,6 @@ class ScoringController extends Controller
                     'resultStatus' => $resultStatus
                 ]);
         }
-
         return redirect("/results/display/{$trialID}");
     }
 

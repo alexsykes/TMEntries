@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
-use Nette\Utils\Image;
 use PDF;
 
 
@@ -126,7 +125,7 @@ class EntryController extends Controller
             ->where('isYouth', false)
             ->value('stripe_price_id');
 
-        $entry->name =  $this->nameize($request->name);
+        $entry->name = $this->nameize($request->name);
         $entry->class = $request->class;
         $entry->course = $request->course;
         $entry->licence = $request->licence;
@@ -333,7 +332,6 @@ class EntryController extends Controller
     }
 
 
-
 //    Store first record then pass email and trial_id to create_another view
     public function store(Request $request)
     {
@@ -465,66 +463,6 @@ class EntryController extends Controller
         return view('entries.edit', ['entry' => $entry, 'trial' => $trial]);
     }
 
-    public function createStripeSession(Request $request)
-    {
-        require('../vendor/autoload.php');
-        require('../vendor/stripe/stripe-php/lib/StripeClient.php');
-
-        $stripe = new \Stripe\StripeClient(config('stripe.stripe_secret_key'));
-
-        $email = $request->input('email');
-        $trial_id = $request->input('trial_id');
-        $trial_id = session('trial_id');
-        $phone = $request->input('phone');
-        $entryIDs = $request->input('entryIDs');
-        $entryIDArray = explode(',', $request->input('entryIDs'));
-
-
-        $entryData = Entry::all()->whereIn('id', $entryIDArray);
-
-        $lineItems = array();
-
-        foreach ($entryData as $entry) {
-//            dump($index);
-            $entryID = $entry['id'];
-            $isYouth = $entry['isYouth'];
-            $stripe_price_id = $entry['stripe_price_id'];
-            $stripe_product_id = $entry['stripe_product_id'];
-
-            $name = $entry['name'];
-            $entryid = $trial_id . "/" . $entryID;
-
-
-            $line = [
-                'product' => $stripe_product_id,
-                'quantity' => 1,
-            ];
-            // Add to lineItems
-
-//            dump($line);
-            array_push($lineItems, $line);
-//            array_push($ids, $id);
-//            array_push($entryPriceIds, $stripe_product_id);
-        }
-
-        $data = [
-            'metadata' => [
-                'entryids' => $entryIDs,
-                'payment_type' => 'session',
-                'trialid' => $trial_id,
-                'category' => 'entry fee',
-            ],
-            'line_items' => $lineItems,
-//            'mode' => 'payment',
-            'success_url' => "https://trialmonster.uk",
-            'cancel_url' => "https://trialmonster.uk/entries/checkout",
-//            'phone_number_collection' => ['enabled' => true],
-        ];
-        dd("lineitems: ", $lineItems, "data: ", $data);
-        $checkout_session = $stripe->checkout->sessions->create($data);
-        $url = $checkout_session->url;
-    }
-
     public function editRidingNumbers(Request $request)
     {
         $trialid = $request->id;
@@ -570,10 +508,10 @@ class EntryController extends Controller
             ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
             ->orderBy('name')
             ->get();
-        if(sizeof($startList) == 0) {
+        if (sizeof($startList) == 0) {
             exit("No entries to print");
         }
-        $filename= "Sign-on $trialDetails->name.pdf";
+        $filename = "Sign-on $trialDetails->name.pdf";
 //        dd($startList, $trialDetails);
         $img_file = storage_path('app/public/images/acu.jpg');
 //        PDF::setPageOrientation('L');
@@ -585,7 +523,7 @@ class EntryController extends Controller
         PDF::SetImageScale(PDF_IMAGE_SCALE_RATIO);
         PDF::AddPage();
         $bMargin = PDF::GetBreakMargin();
-        PDF::SetHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        PDF::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
         PDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
         PDF::SetHeaderMargin(0);
         PDF::SetFooterMargin(0);
@@ -601,7 +539,7 @@ class EntryController extends Controller
 
         $authority = $trialDetails->authority;
 //        info("Authority: $authority");
-        switch($authority) {
+        switch ($authority) {
             case 'AMCA':
                 $img_file = storage_path('app/public/images/amca.jpg');
                 $topMargin = 97;
@@ -662,7 +600,7 @@ class EntryController extends Controller
 //        PDF::Write(0, "What's next?");
         $index = 0;
         $lineNumber = 1;
-        if(sizeof($startList) > 0) {
+        if (sizeof($startList) > 0) {
             foreach ($startList as $entry) {
 //            if($trialDetails-> == 5) {
 //                $number = $rrCodes[$entry[0]];
@@ -677,7 +615,7 @@ class EntryController extends Controller
                 $id = $entry->id;
                 $class = $entry->class;
 
-                if ($class == "Adult"){
+                if ($class == "Adult") {
                     $class = "";
                 }
 
@@ -720,29 +658,69 @@ class EntryController extends Controller
         PDF::reset();
         return response()->download($filename);
     }
-    function nameize($str,$a_char = array("'","-"," ")){
+
+    function nameize($str, $a_char = array("'", "-", " "))
+    {
         //$str contains the complete raw name string
         //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
         $string = strtolower($str);
-        foreach ($a_char as $temp){
-            $pos = strpos($string,$temp);
-            if ($pos){
+        foreach ($a_char as $temp) {
+            $pos = strpos($string, $temp);
+            if ($pos) {
                 //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
                 $mend = '';
-                $a_split = explode($temp,$string);
-                foreach ($a_split as $temp2){
+                $a_split = explode($temp, $string);
+                foreach ($a_split as $temp2) {
                     //capitalize each portion of the string which was separated at a special character
-                    $mend .= ucfirst($temp2).$temp;
+                    $mend .= ucfirst($temp2) . $temp;
                 }
-                $string = substr($mend,0,-1);
+                $string = substr($mend, 0, -1);
             }
         }
         return ucfirst($string);
     }
 
+
+    public function storeMultiple(Request $request)
+    {
+//        dd(request()->all());
+        $trial_id = $request->input('trialID');
+        $ridingNumbers = $request->input('ridingNumber', null);
+        $names = $request->input('name');
+        $makes = $request->input('make');
+        $sizes = $request->input('size');
+        $types = $request->input('type');
+        $courses = $request->input('course');
+        $classs = $request->input('class');
+        $isYouths = $request->input('isYouth');
+        $statuss = $request->input('status');
+
+        for($i = 0; $i < sizeof($names); $i++) {
+            if(isset($names[$i]) && $names[$i] != "") {
+            if(!isset($isYouths[$i])) {
+                $isYouths[$i] = 0;
+            }
+                DB::table('entries')->insert([
+                    'name' => $this->nameize($names[$i]),
+                    'ridingNumber' => $ridingNumbers[$i],
+                    'make' => $makes[$i],
+                    'size' => $sizes[$i],
+                    'type' => $types[$i],
+                    'course' => $courses[$i],
+                    'class' => $classs[$i],
+                    'isYouth' => $isYouths[$i],
+                    'status' => $statuss[$i],
+                    'created_by' => \Auth::user()->id,
+                    'ipaddress' => $request->ip(),
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'trial_id' => $trial_id,
+                ]);
+            }
+        }
+
+        return redirect("/trials/adminEntryList/{$trial_id}");
+    }
 }
-
-
 class MYPDF extends PDF {
     //Page header
     public function Header() {

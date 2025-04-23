@@ -50,19 +50,19 @@ class ResultController extends Controller
             array_push($courseResults, $courseResult);
         }
 
-        $results = $this->getResults($id, $courselist);
-        if(sizeof($results) == 0) {
-            abort(404);
-        }
-        return view('results.detail', ['trial' => $trial, 'courseResults' => $courseResults, 'courses' => $courses]);
+        $nonStarters = DB::table('entries')
+            ->where('trial_id', $id)
+            ->where('resultStatus', 2)
+            ->orderBy('name')
+            ->get('name');
+        return view('results.detail', ['trial' => $trial, 'courseResults' => $courseResults, 'courses' => $courses, 'nonStarters' => $nonStarters]);
     }
 
     private function getCourseResult($id, string $course)
     {
         $query = "SELECT id AS entryID, DATE_FORMAT(created_at, '%d/%m/%Y %h:%i%p') AS created_at, 
-RANK() OVER (
-        ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos,
-id AS id, ridingNumber  AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores as sectionScores, sequentialScores AS sequentialScores, trial_id FROM tme_entries WHERE trial_id = $id AND resultStatus < 2 AND course = '" . $course . "'";
+RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos,
+id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id FROM tme_entries WHERE trial_id = $id AND ridingNumber > 0 AND resultStatus < 2 AND course = '" . $course . "'";
         $courseResult = DB::select($query);
         return $courseResult;
     }
@@ -82,7 +82,7 @@ id AS id, ridingNumber  AS rider, course AS course, name, class AS class, CONCAT
 	course AS course, 
 	name, 
 	class AS class, CONCAT(make,' ',size) AS machine, 
-	total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores as sectionScores, sequentialScores AS sequentialScores, trial_id 
+	total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id 
 	FROM tme_entries 
 	WHERE trial_id = $id AND resultStatus < 2";
 

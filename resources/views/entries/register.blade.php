@@ -29,7 +29,7 @@ $userID = Auth::user()->id;
 @enderror
     @if(sizeof($entries) > 0)
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">To be confirmed once payment is complete</div>
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Unconfirmed Entries</div>
 
             <table class="w-full ml-4 mr-4">
                 <tr>
@@ -62,13 +62,11 @@ $userID = Auth::user()->id;
             </table>
         </div>
 
-        <form action="/entries/checkout" method="post">
-            @csrf
-            <button type="submit" class="mt-4 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Checkout</button>
-            <input type="hidden" id="trial_id" name="trial_id" value="{{$trial_id}}">
-            <input type="hidden" id="entryID[]" name = "entryID[]" value="{{$entryIDstring}}">
+{{--        <form action="/entries/checkout" method="post">--}}
 
-        </form>
+            <div class="mt-4" id="buttons">
+            <a href="/user/entries" class="mt-4 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Completed</a>
+            </div>
     @endif
 
 

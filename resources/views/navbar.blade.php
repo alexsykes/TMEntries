@@ -8,27 +8,32 @@
                 <div class="hidden sm:block sm:ml-6">
                     <div class="flex space-x-4">
                         @auth
+                            @if(Auth::user()->isClubUser)
+                                <a href="/clubaccess"
+                                   class="text-white bg-blue-700 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Club Admin</a>
+                            @endif
+
                             <a href="/user/entries"
-                               class="text-white bg-blue-700 border-white border  hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My
+                               class="text-white bg-blue-700 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">My
                                 Entries</a>
                         @endauth
                         <a href="/"
-                           class="text-white bg-blue-700 border-white border  hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Coming
+                           class="text-white bg-blue-700 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Coming
                             up…</a>
                         <a href="/results/list"
-                           class="text-white bg-blue-700 border-white border hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Results</a>
+                           class="text-white bg-blue-700 border-white border hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Results</a>
                         @auth
                             <form method="POST" action="/logout">
                                 @csrf
                                 <button type="submit"
-                                        class="text-white bg-blue-700 border-white border hover:bg-blue-30tme_subscription_items0 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                                        class="text-white bg-blue-700 border-white border hover:bg-blue-30tme_subscription_items0 hover:text-white px-3 py-1 rounded-md text-sm font-medium">
                                     Log out
                                 </button>
                             </form>
                         @endauth
                         @guest
                             <a href="/login"
-                               class="text-white bg-blue-700 border-white border hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
+                               class="text-white bg-blue-700 border-white border hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Login</a>
                         @endguest
                     </div>
                 </div>

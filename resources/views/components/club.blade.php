@@ -111,15 +111,15 @@
 
     {{--    @php $heading = "Welcome" @endphp--}}
     <header class="bg-violet-800 drop-shadow-md">
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8  sm:flex sm:justify-between">
-            <h1 class="text-m sm:text-2xl  font-bold tracking-tight text-white">{{ $heading }}</h1>
+        <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8  sm:flex sm:justify-between">
+            <h1 class="text-m sm:text-lg  font-bold tracking-tight text-white">{{ $heading }}</h1>
 
 
             {{--        Hidden for small screens --}}
             <div class="hidden sm:block">
                 <div class="ml-4 flex space-x-4 items-center m-auto px md:ml-6" >
+                    <x-nav-link href="/" :active="request()->is('/')">Public site</x-nav-link>
                     <x-nav-link href="/clubaccess" :active="request()->is('/clubaccess')">Trials</x-nav-link>
-                    <x-nav-link href="/pastresults" :active="request()->is('/pastresults')">Results</x-nav-link>
                     @guest
                         <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>
                         {{--                        <x-nav-link href="/register" :active="request()->is('register')">Register</x-nav-link>--}}

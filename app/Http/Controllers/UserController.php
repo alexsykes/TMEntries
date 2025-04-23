@@ -24,19 +24,28 @@ class UserController extends Controller
         foreach ($futureTrials as $futureTrial) {
             array_push($futureTrialsArray, $futureTrial->id);
         }
-        $entries = DB::table('entries')
+        $toPays = DB::table('entries')
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
             ->where('entries.created_by', $userID)
-            ->whereIn('entries.status', [0, 1, 2, 3, 4, 5])
+            ->where('entries.status', 0)
             ->whereIn('entries.trial_id', $futureTrialsArray)
             ->orderBy('entries.status')
             ->select('entries.id', 'entries.status', 'entries.name', 'entries.class', 'entries.course', 'trials.name as trial')
             ->get();
 
-        $query = DB::select('SELECT COUNT(e.id) AS numToPays FROM tme_entries AS e LEFT JOIN tme_trials AS t ON e.trial_id = t.id WHERE e.created_by = 1 AND e.status = 0 AND t.`date` > NOW()');
-    $numToPays = $query[0]->numToPays;
+        $entries = DB::table('entries')
+            ->join('trials', 'entries.trial_id', '=', 'trials.id')
+            ->where('entries.created_by', $userID)
+            ->whereIn('entries.status', [1, 2, 3, 4, 5, 7, 8, 9])
+            ->whereIn('entries.trial_id', $futureTrialsArray)
+            ->orderBy('entries.status')
+            ->select('entries.id', 'entries.status', 'entries.name', 'entries.class', 'entries.course', 'trials.name as trial')
+            ->get();
 
-        return view('user.entry_list', compact('entries', 'numToPays'));
+//        $query = DB::select('SELECT COUNT(e.id) AS numToPays FROM tme_entries AS e LEFT JOIN tme_trials AS t ON e.trial_id = t.id WHERE e.created_by = 1 AND e.status = 0 AND t.`date` > NOW()');
+//    $numToPays = $query[0]->numToPays;
+
+        return view('user.entry_list', compact('entries', 'toPays'));
     }
 
     public function editEntry($id)
@@ -65,6 +74,7 @@ class UserController extends Controller
         $entry->course = $request->course;
         $entry->make = $request->make;
         $entry->type = $request->type;
+        $entry->size = $request->size;
         $entry->save();
 
 

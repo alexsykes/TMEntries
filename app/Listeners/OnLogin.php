@@ -24,6 +24,10 @@ class OnLogin
     public function handle(Login $event): void
     {
         //
-        Log::info("User with ID ".$event->user->id." successfully logged in.");
+        $user = $event->user;
+        Log::info("User with ID ".$user->id." successfully logged in.");
+        Log::info("Club admin ".$user->isClubUser);
+
+
     }
 }

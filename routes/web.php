@@ -33,7 +33,7 @@ Route::get('dashboard', [TrialController::class, 'showTrialList'])->name('dashbo
 
 
 // CLUB access
-Route::get('clubaccess', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified']);
+Route::get('clubaccess', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified'])->name('clubaccess');
 // ADMIN access
 Route::get('adminaccess', [\App\Http\Controllers\AdminController::class, 'userList'])->middleware(['auth', 'verified']);
 
@@ -105,9 +105,10 @@ Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->nam
 Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
 Route::post('/entries/saveRidingNumbers', [EntryController::class, 'saveRidingNumbers']);
+Route::post('/admin/entries/storeMultiple', [EntryController::class, 'storeMultiple'])->middleware(['auth', 'verified']);
 
-
-Route::post('/entries/createSession', [EntryController::class, 'createStripeSession']);
+// Check for usage
+//Route::post('/entries/createSession', [EntryController::class, 'createStripeSession']);
 
 /*
  * VENUE Routes

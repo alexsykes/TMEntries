@@ -27,8 +27,9 @@ class StripePaymentController extends Controller
         $stripe = new \Stripe\StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
-//        $cancelUrl = "https://dev.trialmonster.net/user/entries";
-        $cancelUrl = route('checkout-cancel');
+        $cancelUrl = config('app.url')."/user/entries";
+//        dd($cancelUrl);;
+//        $cancelUrl = route('checkout-cancel');
 
         $lineItems = array();
         foreach ($entries as $entry) {
