@@ -59,4 +59,17 @@ class AdminController extends Controller
             ->delete();
         return redirect('/adminaccess');
     }
+
+    public function editUser() {
+        $user = User::find(request('id'));
+        return view('admin.adminUserEdit',['user' => $user]);
+    }
+
+    public function updateUser() {
+        $user = User::find(request('id'));
+        $user->name = request('name');
+        $user->email = request('email');
+        $user->save();
+        return redirect('/adminaccess');
+    }
 }

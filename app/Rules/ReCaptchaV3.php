@@ -32,7 +32,6 @@ class ReCaptchaV3 implements ValidationRule
                 'response' => $value,
             ]);
 
-//        dd(request()->ip);
 
         // This happens if google denied our request with an error
         if ($siteVerify->failed()) {

@@ -32,7 +32,7 @@
         <td class="text-center table-cell  pl-4">{{$isClubUser}}</td>
         <td class="text-center table-cell pl-4">{{$isAdminUser}}</td>
         <td class="text-center table-cell pl-4">{{$isSuperUser}}</td>
-                <td class="font-semibold table-cell pl-4"><a class="underline" href="admin/user/change_password/{{$user->id}}">Change Password</a></td>
+                <td class="font-semibold table-cell pl-4"><a class="underline" href="admin/editUser/{{$user->id}}"><i class="text-blue-800 fa-solid fa-gear"></i></a></td>
                 <td class="font-semibold table-cell pl-4 pr-4"><a class="underline" href="admin/user/remove/{{$user->id}}">
                         @if(!$isSuperUser)
                             <i class="text-red-500 fa-solid fa-trash"></i>

@@ -472,12 +472,24 @@ class TrialController extends Controller
 
     public function adminEntryList($id)
     {
+//        SELECT ridingNumber FROM tme_entries
+//    WHERE trial_id = 137
+//    AND status IN (0,1,7, 8, 9)
+//    GROUP BY ridingNumber
+//    HAVING COUNT(*) > 1
+
+        $duplicates = Entry::where('trial_id', $id)
+            ->whereIn('status', [0, 1, 7, 8, 9 ])
+            ->groupBy('ridingNumber')
+            ->havingRaw('COUNT(ridingNumber) > 1')
+        ->get('ridingNumber');
+
         $entries = Entry::where('trial_id', $id)
             ->get()
             ->sortBy('status');
 
         $trial = Trial::where('id', $id)->first();
-        return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial]);
+        return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial, 'duplicates' => $duplicates]);;
     }
 
     public function store()
@@ -557,7 +569,7 @@ class TrialController extends Controller
         $attrs['entrySelectionBasis'] = request('entrySelectionBasis');
         $attrs['scoringMode'] = request('scoringMode');
 
-//        dd($attrs);
+        dd($attrs);
         $trial = Trial::create($attrs);
 //        $trialid = $trial->id;
 

@@ -5,6 +5,11 @@
 
     <div class="mx-auto max-w-7xl px-4  sm:px-6 lg:px-8">
         @php
+        $duplicateArray = array();
+        foreach($duplicates as $duplicate)
+            {
+                array_push($duplicateArray, $duplicate->ridingNumber);
+            }
             $statusOptions = array(    'Unconfirmed', 'Confirmed', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
             $manualStatusOptions = array(  'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
             $classes = explode(',',$trial->classlist);
@@ -19,7 +24,13 @@
             </div>
                 <table class="w-full text-sm">
                     @foreach($entries as $entry)
-                        <tr class="flex-auto odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+                        @if(in_array($entry->ridingNumber, $duplicateArray))
+                            <tr class="flex-auto text-red-500 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+
+                        @else
+
+                            <tr class="flex-auto odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+                        @endif
                             <td class="text-right pr-2 w-12 py-1">{{$entry->ridingNumber}}</td>
                             <td>{{$entry->name}}</td>
                             <td>{{$entry->class}}</td>

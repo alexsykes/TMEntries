@@ -6,6 +6,7 @@ use App\Mail\EntryChanged;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Trial;
+use App\Rules\NoDuplicates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -484,7 +485,10 @@ class EntryController extends Controller
     {
         $trialID = $request->trialID;
 
+
         $numbers = $request->input('ridingNumber');
+
+
         $entryIDs = $request->input('entryID');
         for ($i = 0; $i < count($numbers); $i++) {
             $entryID = $entryIDs[$i];
@@ -494,7 +498,6 @@ class EntryController extends Controller
                 ->where('id', $entryID)
                 ->update(['ridingNumber' => $number]);
         }
-
         return redirect("/trials/adminEntryList/{$trialID}");
     }
 
@@ -612,7 +615,7 @@ class EntryController extends Controller
                 if ($paid == 0 or $paid == 4 or $paid == 5 or $paid == 7) {
                     $name = "To pay - " . $name;
                 }
-                $id = $entry->id;
+                $id = $entry->licence;
                 $class = $entry->class;
 
                 if ($class == "Adult") {

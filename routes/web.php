@@ -148,6 +148,8 @@ Route::get('/stripe/usercheckout', [StripePaymentController::class, 'stripeUserC
 
 // ADMIN Routes
 Route::get('/admin/user/remove/{id}', [AdminController::class, 'adminRemove'])->middleware(['auth', 'verified'])->name('admin.remove');
+Route::get('/admin/editUser/{id}', [AdminController::class, 'editUser'])->middleware(['auth', 'verified'])->name('admin.editUser');
+Route::patch('/admin/updateUser', [AdminController::class, 'updateUser'])->middleware(['auth', 'verified'])->name('admin.updateUser');
 
 // RESULT Routes
 Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');
