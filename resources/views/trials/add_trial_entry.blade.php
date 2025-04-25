@@ -30,7 +30,9 @@
                                 <div class="mt-2 pl-2 pr-0">
                                     @foreach($entryMethodArray as $entryMethod)
                                         <div>
-                                            <input  name="entryMethod[]" type="checkbox" id="entryMethod[]" value="{{$entryMethod}}" />
+                                            <input  name="entryMethod[]" type="checkbox" id="entryMethod[]" value="{{$entryMethod}}"
+                                                    {{ (is_array(old('entryMethod')) and in_array($entryMethod, old('entryMethod'))) ? ' checked' : '' }}
+                                            />
                                             <label  class="pl-4 pr-0" for="entryMethod">{{$entryMethod}}
                                             </label>
                                         </div>

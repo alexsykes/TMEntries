@@ -15,6 +15,7 @@
     @endphp
 
 
+
     <form action="/trials/save" method="POST">
 
         @csrf
@@ -31,7 +32,9 @@
                                 <div class=" pl-2 pr-0">
                                     @foreach($courseArray as $course)
                                         <div>
-                                            <input  name="courselist[]" type="checkbox" id="courselist" value="{{$course}}"/>
+                                            <input  name="courselist[]" type="checkbox" id="courselist" value="{{$course}}"
+                                                    {{ (is_array(old('courselist')) and in_array($course, old('courselist'))) ? ' checked' : '' }}
+                                            />
                                             <label  class="pl-4 pr-0" for="courselist">{{$course}}
                                             </label>
                                         </div>
@@ -64,7 +67,10 @@
                                     @foreach($classArray as $class)
 
                                         <div>
-                                            <input  name="classlist[]" type="checkbox" id="classlist" value="{{$class}}"/>
+                                            <input  name="classlist[]" type="checkbox" id="classlist" value="{{$class}}"
+
+                                                    {{ (is_array(old('classlist')) and in_array($class, old('classlist'))) ? ' checked' : '' }}
+                                            />
                                             <label  class="pl-4 pr-2" for="classlist">{{$class}}</label>
                                         </div>
                                     @endforeach

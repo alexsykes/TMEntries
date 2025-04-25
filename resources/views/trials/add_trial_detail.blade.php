@@ -11,6 +11,8 @@
         $stopAllowedArray = array("Stop permitted", "Non-stop");
         $authorityArray = array("ACU", "AMCA", "Other");
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
+
+//        dump(old());
 //    dd($restrictionArray);
     @endphp
 
@@ -27,7 +29,7 @@
                             <x-form-label for="permit">Permit</x-form-label>
                             <div class="mt-2 col-span-2">
                                 <x-form-input name="permit" type="text" id="permit"
-                                              placeholder="Permit number" required/>
+                                              placeholder="Permit number" value="{{old('permit')}}" required/>
                                 <x-form-error name="permit"/>
                             </div>
                             @error('permit')
@@ -39,7 +41,9 @@
                             <x-form-label for="name">Event Name</x-form-label>
                             <div class="mt-2 col-span-2">
                                 <x-form-input name="name" type="text" id="name"
-                                              placeholder="Name" required/>
+                                              placeholder="Name"
+                                              value="{{old('name')}}"
+                                              required/>
                                 <x-form-error name="name"/>
                             </div>
                             @error('name')
@@ -51,6 +55,7 @@
                             <x-form-label for="club">Organising Club</x-form-label>
                             <div class="mt-2 col-span-2">
                                 <x-form-input name="club" type="text" id="club"
+                                              value="{{old('club')}}"
                                               placeholder="Club name" required/>
                                 <x-form-error name="club"/>
                             </div>
@@ -62,7 +67,9 @@
                         <x-form-field>
                             <x-form-label for="date">Date</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="date" type="date" min="{{date('Y-m-d')}}" id="date"  required/>
+                                <x-form-input name="date" type="date" min="{{date('Y-m-d')}}" id="date"
+                                              value="{{old('date')}}"
+                                              required/>
                                 <x-form-error name="date"/>
                             </div>
                             @error('date')
@@ -73,7 +80,8 @@
                         <x-form-field>
                             <x-form-label for="isMultiDay">Multi-day event</x-form-label>
                             <div class="mt-2">
-                                <input name="isMultiDay" type="checkbox" value="1" id="isMultiDay" />
+                                <input name="isMultiDay" type="checkbox" value="1" id="isMultiDay"
+                                       {{old('isMultiDay') != null ? 'checked' :''}}/>
                                 <x-form-error name="isMultiDay"/>
                             </div>
                             @error('isMultiDay')
@@ -85,19 +93,21 @@
                             <x-form-field id="" name="" class="">
                                 <x-form-label for="numDays">Number of days</x-form-label>
                                 <div class="mt-2 col-span-2">
-                                    <x-form-input name="numDays" type="number" id="numDays" value="1" min="1"/>
+                                    <x-form-input name="numDays" type="number" id="numDays"
+                                                  value="{{old('numDays')}}"
+                                                  min="1"/>
                                     <x-form-error name="numDays"/>
                                 </div>
-                                @error('numDays')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
                             </x-form-field>
                         </div>
 
                         <x-form-field>
                             <x-form-label for="startTime">Start time</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="startTime" type="text" id="startTime" placeholder="Trial starting time" required/>
+                                <x-form-input name="startTime" type="text" id="startTime" placeholder="Trial starting time"
+
+                                              value="{{old('startTime')}}"
+                                              required/>
                                 <x-form-error name="startTime"/>
                             </div>
                             @error('startTime')
@@ -108,7 +118,10 @@
                         <x-form-field>
                             <x-form-label for="contactName ">Organiser</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="contactName" type="text" id="contactName  " placeholder="Contact name " required/>
+                                <x-form-input name="contactName" type="text" id="contactName  " placeholder="Contact name "
+
+                                              value="{{old('contactName')}}"
+                                              required/>
                                 <x-form-error name="contactName"/>
                             </div>
                             @error('contactName')
@@ -119,7 +132,9 @@
                         <x-form-field>
                             <x-form-label for="email">Email</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="email" type="email" id="email" placeholder="Contact email" required/>
+                                <x-form-input name="email" type="email" id="email" placeholder="Contact email"
+                                            value="{{old('email')}}"
+                                              required/>
                                 <x-form-error name="email"/>
                             </div>
                             @error('email')
@@ -130,7 +145,7 @@
                         <x-form-field>
                             <x-form-label for="phone">Phone</x-form-label>
                             <div class="mt-2 col-span-2 ">
-                                <x-form-input name="phone" type="text" id="phone" placeholder="Contact phone" required/>
+                                <x-form-input name="phone" type="text" id="phone" placeholder="Contact phone" value="{{old('phone')}}" required/>
                                 <x-form-error name="phone"/>
                             </div>
                             @error('phone')
@@ -158,12 +173,10 @@
                         <x-form-field>
                             <x-form-label for="otherVenue">Venue if not listed</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="otherVenue" type="text" id="otherVenue" placeholder="Venue name" />
+                                <x-form-input name="otherVenue" type="text" id="otherVenue" placeholder="Venue name" value="{{old('otherVenue')}}"/>
                                 <x-form-error name="otherVenue"/>
                             </div>
-                            @error('otherVenue')
-                            <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                            @enderror
+
                         </x-form-field>
                     </div>
                 </div>

@@ -20,6 +20,7 @@ use Laravel\Cashier\Http\Controllers\WebhookController;
 use App\Models\User;
 use Laravel\Cashier\Cashier;
 
+//NOTE: wilcards {} should go at end!!!
 
 /*
     Front door - display list of trials currently taking entries

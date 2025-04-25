@@ -46,6 +46,14 @@ class TrialController extends Controller
         return view('trials.admin_trial_list', ['trials' => $trials]);
     }
 
+/**
+ *
+ *  First stage of new trial - present form
+ *  Form submitted to trials/save
+ *
+ *
+ * */
+
     public function add()
     {
         $prefix = config('database.connections.mysql.prefix');
@@ -104,7 +112,20 @@ class TrialController extends Controller
         return redirect('adminTrials')->with('trials', $trials);
     }
 
-
+    /**
+     * Handles different tasks related to saving trial information.
+     *
+     * Depending on the 'task' parameter in the request, this method processes
+     * trial details, trial data, entry data, scoring data, registration data, or fee data.
+     * Each task validates the required input fields and updates or creates a trial record
+     * in the database accordingly.
+     *
+     * 'detail' -
+     * Validates initial data then sets up an 'empty' trial in databse.
+     *
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function save()
     {
         $user = Auth::user();
@@ -122,6 +143,8 @@ class TrialController extends Controller
                     'contactName' => 'required',
                     'email' => ['required', 'email',],
                     'phone' => ['required',],
+                    'otherVenue' => Rule::requiredIf(request('venueID') == 0),
+                    'numDays' => Rule::requiredIf(request('isMultiDay') == 1),
                 ]);
 
                 $attrs['created_by'] = $user->id;
@@ -176,6 +199,8 @@ class TrialController extends Controller
 
                 $trial = Trial::create($attrs);
                 return redirect("trials/addTrialDetail/{$trial->id}");
+
+//
 
             case 'trialData':
                 $id = request('trialID');
