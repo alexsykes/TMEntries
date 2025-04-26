@@ -7,11 +7,14 @@
         $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
         $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
         $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
-        $scoringModeArray = array("Observer", "Electronic", "Punch Cards", "Other");
+        $scoringModeArray = array("Observer", "App", "Punch Cards", "Other");
         $stopAllowedArray = array("Stop permitted", "Non-stop");
         $authorityArray = array("ACU", "AMCA", "Other");
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
+//        dump($trial);
 
+    $savedEntryMethods = explode(',',$trial->entryMethod);
+//    dd($savedEntryMethods);
     @endphp
     @if ($errors->any())
         <div class="text-red-500">
@@ -327,10 +330,10 @@
                                     @foreach($entryMethodArray as $entryMethod)
                                         <div>
                                             <input
-                                                    <?php $entryMethodSaved = explode(",", $trial->entryMethod);
-                                            if(in_array($entryMethod, $entryMethodSaved)) { ?> checked <?php } ?>
+                                                    <?php
+                                            if(in_array($entryMethod, $savedEntryMethods)) { echo ' checked'; } ?>
 
-                                                    name="entryMethod[]" type="checkbox" id="entryMethod[]" value="{{$entryMethod}}" />
+                                                    name="entryMethod[]" type="checkbox" id="entryMethod[]"  value="{{$entryMethod}}" />
                                             <label  class="pl-4 pr-0" for="entryMethod">{{$entryMethod}}
                                             </label>
                                         </div>

@@ -7,6 +7,25 @@
 
     $classes = explode(',',$trial->classlist);
     $courses = explode(',',$trial->courselist);
+
+                    $allCourses = array();
+    $courses = $trial->courselist;
+    $customCourses = $trial->customCourses;
+
+    $allClasses = array();
+    $classes = $trial->classlist;
+    $customClasses = $trial->customClasses;
+
+    array_push($allCourses, $courses);
+    array_push($allCourses, $customCourses);
+    array_push($allClasses, $classes);
+    array_push($allClasses, $customClasses);
+    $classlist = str_replace(',',',',implode(',', $allClasses));
+    $courselist   = str_replace(',',',',implode(',', $allCourses));
+    $courseOptions = explode(',', $courselist);
+    $classOptions = explode(',', $classlist);
+
+
     $types = array("2 stroke", "4 stroke", "e-bike");
     @endphp
     @if ($errors->any())
@@ -95,7 +114,7 @@
                                         <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course"
                                                 required>
                                             <option value="">Select your course</option>
-                                            @foreach($courses as $course)
+                                            @foreach($courseOptions as $course)
                                                 <option value="{{$course}}" {{$course==$entry->course ? "selected" : ""}}>{{$course}}</option>
                                             @endforeach
                                         </select>
@@ -111,7 +130,7 @@
                                         <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class"
                                                 required>
                                             <option value="">Select your class</option>
-                                            @foreach($classes as $class)
+                                            @foreach($classOptions as $class)
                                                 <option value="{{$class}}" {{$class==$entry->class ? "selected" : ""}}>{{$class}}</option>
                                             @endforeach
                                         </select>

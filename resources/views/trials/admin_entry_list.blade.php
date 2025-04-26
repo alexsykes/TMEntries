@@ -17,6 +17,24 @@
             $authority = $trial->authority;
             $types = array("2 stroke", "4 stroke", "e-bike");
             $entryOptions = array( 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
+
+
+                $allCourses = array();
+    $courses = $trial->courselist;
+    $customCourses = $trial->customCourses;
+
+    $allClasses = array();
+    $classes = $trial->classlist;
+    $customClasses = $trial->customClasses;
+
+    array_push($allCourses, $courses);
+    array_push($allCourses, $customCourses);
+    array_push($allClasses, $classes);
+    array_push($allClasses, $customClasses);
+    $classlist = str_replace(',',',',implode(',', $allClasses));
+    $courselist   = str_replace(',',',',implode(',', $allCourses));
+    $courseOptions = explode(',', $courselist);
+    $classOptions = explode(',', $classlist);
         @endphp
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="flex justify-between font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
@@ -79,14 +97,14 @@
                             </td>
                             <td class="table-cell pl-2">
                                 <select class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1" id="class[]" name="class[]">
-                                    @foreach($classes as $class)
+                                    @foreach($classOptions as $class)
                                         <option value="{{$class}}">{{$class}}</option>
                                     @endforeach
                                 </select>
                             </td>
                             <td class="table-cell pl-2">
                                 <select class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1" id="course[]" name="course[]">
-                                    @foreach($courses as $course)
+                                    @foreach($courseOptions as $course)
                                         <option value="{{$course}}">{{$course}}</option>
                                     @endforeach
                                 </select>

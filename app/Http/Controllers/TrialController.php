@@ -30,7 +30,7 @@ class TrialController extends Controller
     public function showTrialList()
     {
         $trials = DB::table('trials')->where('published', 1)
-            ->where('date', '>', date('Y-m-d'))
+            ->whereTodayOrAfter('date', '>', date('Y-m-d'))
             ->orderBy('date')
             ->get();
         return view('trials.trial_list', ['trials' => $trials]);
@@ -128,6 +128,7 @@ class TrialController extends Controller
      */
     public function save()
     {
+//        dump(request('entryMethod'));
         $user = Auth::user();
         $task = request('task');
 //        dump($task);
@@ -161,7 +162,7 @@ class TrialController extends Controller
                 $attrs['hasEntryLimit'] = request('hasEntryLimit', 0);
                 $attrs['hasClosingDate'] = request('hasClosingDate', 0);
                 $attrs['hasOpeningDate'] = request('hasOpeningDate', 0);
-                $attrs['hasNotes'] = request('hasNotes', 0);
+//                $attrs['hasNotes'] = request('hasNotes', 0);
                 $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
                 $attrs['hasWaitingList'] = request('hasWaitingList', 0);
 
@@ -245,7 +246,11 @@ class TrialController extends Controller
                     'closingDate' => Rule::requiredIf(request('hasClosingDate') == 1),
                     'entrySelectionBasis' => Rule::requiredIf(request('hasEntryLimit') == 1),
                 ]);
-
+                $attrs['entryMethod'] = implode(',', request('entryMethod', 'TrialMonster'));
+                $attrs['hasEntryLimit'] = request('hasEntryLimit', 0);
+                $attrs['hasOpeningDate'] = request('hasOpeningDate', 0);
+                $attrs['hasClosingDate'] = request('hasClosingDate', 0);
+                $attrs['hasWaitingList'] = request('hasWaitingList', 0);
                 $trial->update($attrs);
 
                 return redirect("trials/addTrialScoring/{$trial->id}");
@@ -274,6 +279,7 @@ class TrialController extends Controller
                     'otherRestriction' => Rule::requiredIf(request('status') == "Other Restriction"),
                 ]);
 
+//                $trial->hasNotes = request('hasNotes', '');
                 $trial->update($attrs);
                 return redirect("trials/addTrialFees/{$trial->id}");
 
@@ -287,7 +293,8 @@ class TrialController extends Controller
                     'youthEntryFee' => 'required',
                     'eodSurcharge' => Rule::requiredIf(request('hasEodSurcharge') == 1),
                 ]);
-
+// Add fees to Stripe
+            $trial->hasEodSurcharge = request('hasEodSurcharge', 0);
                 $trial->update($attrs);
                 return redirect("adminTrials");
             default:
@@ -347,7 +354,6 @@ class TrialController extends Controller
         $attrs['hasEntryLimit'] = request('hasEntryLimit', 0);
         $attrs['hasClosingDate'] = request('hasClosingDate', 0);
         $attrs['hasOpeningDate'] = request('hasOpeningDate', 0);
-        $attrs['hasNotes'] = request('hasNotes', 0);
         $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
         $attrs['hasWaitingList'] = request('hasWaitingList', 0);
 
@@ -564,7 +570,7 @@ class TrialController extends Controller
         $attrs['hasEntryLimit'] = request('hasEntryLimit', 0);
         $attrs['hasClosingDate'] = request('hasClosingDate', 0);
         $attrs['hasOpeningDate'] = request('hasOpeningDate', 0);
-        $attrs['hasNotes'] = request('hasNotes', 0);
+//        $attrs['hasNotes'] = request('hasNotes', 0);
         $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
         $attrs['hasWaitingList'] = request('hasWaitingList', 0);
 
@@ -594,7 +600,7 @@ class TrialController extends Controller
         $attrs['entrySelectionBasis'] = request('entrySelectionBasis');
         $attrs['scoringMode'] = request('scoringMode');
 
-        dd($attrs);
+//        dd($attrs);
         $trial = Trial::create($attrs);
 //        $trialid = $trial->id;
 

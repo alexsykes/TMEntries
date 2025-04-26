@@ -84,8 +84,22 @@
     $entrySelectionBasis = $trial->entrySelectionBasis;
 
 //    Class and course options
-    $classlist = str_replace(',', ', ', $trial->classlist);
-    $courselist = str_replace(',', ', ', $trial->courselist);
+//     Get all courses / classes
+    $allCourses = array();
+    $courses = $trial->courselist;
+    $customCourses = $trial->customCourses;
+
+    $allClasses = array();
+    $classes = $trial->classlist;
+    $customClasses = $trial->customClasses;
+
+    array_push($allCourses, $courses);
+    array_push($allCourses, $customCourses);
+    array_push($allClasses, $classes);
+    array_push($allClasses, $customClasses);
+//    dd($allClasses);
+    $classlist = str_replace(',',', ',implode(',', $allClasses));
+    $courselist   = str_replace(',',', ',implode(',', $allCourses));
 
     switch ($trial->restriction) {
         case "Open":

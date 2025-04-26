@@ -7,13 +7,11 @@
         $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
         $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
         $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
-        $scoringModeArray = array("Observer", "Electronic", "Punch Cards", "Other");
+        $scoringModeArray = array("Observer", "App", "Punch Cards", "Other");
         $stopAllowedArray = array("Stop permitted", "Non-stop");
         $authorityArray = array("ACU", "AMCA", "Other");
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
 
-//        dump(old());
-//    dd($restrictionArray);
     @endphp
 
 
@@ -94,7 +92,7 @@
                                 <x-form-label for="numDays">Number of days</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="numDays" type="number" id="numDays"
-                                                  value="{{old('numDays')}}"
+                                                  value="{{old('numDays', 1)}}"
                                                   min="1"/>
                                     <x-form-error name="numDays"/>
                                 </div>

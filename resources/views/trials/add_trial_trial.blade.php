@@ -7,7 +7,7 @@
         $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
         $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
         $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
-        $scoringModeArray = array("Observer", "Electronic", "Punch Cards", "Other");
+        $scoringModeArray = array("Observer", "App", "Punch Cards", "Other");
         $stopAllowedArray = array("Stop permitted", "Non-stop");
         $authorityArray = array("ACU", "AMCA", "Other");
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
@@ -97,7 +97,9 @@
                             <x-form-field>
                                 <x-form-label for="hasTimePenalty">Time and Observation</x-form-label>
                                 <div class="mt-2 col-span-2">
-                                    <input name="hasTimePenalty" type="checkbox" id="hasTimePenalty" value="1" />
+                                    <input name="hasTimePenalty" type="checkbox" id="hasTimePenalty" value="1"
+                                            {{old('hasTimePenalty') != null ? 'checked' :''}}
+                                    />
                                 </div>
                                 @error('hasTimePenalty')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
