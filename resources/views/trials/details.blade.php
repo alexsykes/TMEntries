@@ -109,7 +109,7 @@
             $rest = "a Centre restricted ";
             break;
         case "Club":
-            $rest = "Closed to Club ";
+            $rest = "a Closed to Club ";
         case "Other":
             $rest = "Restricted ";
             $rest .= "The trial will be restricted to " . $trial->otherRestriction;

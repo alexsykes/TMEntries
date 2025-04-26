@@ -279,7 +279,7 @@ class TrialController extends Controller
                     'otherRestriction' => Rule::requiredIf(request('status') == "Other Restriction"),
                 ]);
 
-//                $trial->hasNotes = request('hasNotes', '');
+                $attrs['notes'] = request('notes',);
                 $trial->update($attrs);
                 return redirect("trials/addTrialFees/{$trial->id}");
 
@@ -296,6 +296,8 @@ class TrialController extends Controller
 // Add fees to Stripe
             $trial->hasEodSurcharge = request('hasEodSurcharge', 0);
                 $trial->update($attrs);
+                $this->addStripeProducts($trial, $attrs['youthEntryFee'], $attrs['adultEntryFee']);
+
                 return redirect("adminTrials");
             default:
                 break;

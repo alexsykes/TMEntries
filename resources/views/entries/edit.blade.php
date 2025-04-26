@@ -6,20 +6,37 @@
         $classes = explode(',',$trial->classlist);
         $courses = explode(',',$trial->courselist);
 
-        $id = $entry->id;
-        $selected_licence = $entry->licence;
-        $selected_isYouth = $entry->isYouth;
-        if($selected_isYouth == '1') { $isYouthCB = "checked"; } else { $isYouthCB = ""; };
-        $selected_name = $entry->name;
-        $selected_make = $entry->make;
-        $selected_type = $entry->type;
-        $selected_size = $entry->size;
-        $selected_dob = $entry->dob;
-        $selected_class = $entry->class;
-        $selected_course = $entry->course;
-        $authority = $trial->authority;
+                        $allCourses = array();
+        $courses = $trial->courselist;
+        $customCourses = $trial->customCourses;
 
-        $types = array("2 stroke", "4 stroke", "e-bike");
+        $allClasses = array();
+        $classes = $trial->classlist;
+        $customClasses = $trial->customClasses;
+
+        array_push($allCourses, $courses);
+        array_push($allCourses, $customCourses);
+        array_push($allClasses, $classes);
+        array_push($allClasses, $customClasses);
+        $classlist = str_replace(',',',',implode(',', $allClasses));
+        $courselist   = str_replace(',',',',implode(',', $allCourses));
+        $courseOptions = explode(',', $courselist);
+        $classOptions = explode(',', $classlist);
+
+            $id = $entry->id;
+            $selected_licence = $entry->licence;
+            $selected_isYouth = $entry->isYouth;
+            if($selected_isYouth == '1') { $isYouthCB = "checked"; } else { $isYouthCB = ""; };
+            $selected_name = $entry->name;
+            $selected_make = $entry->make;
+            $selected_type = $entry->type;
+            $selected_size = $entry->size;
+            $selected_dob = $entry->dob;
+            $selected_class = $entry->class;
+            $selected_course = $entry->course;
+            $authority = $trial->authority;
+
+            $types = array("2 stroke", "4 stroke", "e-bike");
     @endphp
 
     <script>
@@ -130,7 +147,7 @@
                                     <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course"
                                             required>
                                         <option value="">Select your course</option>
-                                        @foreach($courses as $course)
+                                        @foreach($courseOptions as $course)
                                             <option value="{{$course}}" {{$course==$selected_course ? "selected" : ""}}>{{$course}}</option>
                                         @endforeach
                                     </select>
@@ -146,7 +163,7 @@
                                     <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class"
                                             required>
                                         <option value="">Select your class</option>
-                                        @foreach($classes as $class)
+                                        @foreach($classOptions as $class)
                                             <option value="{{$class}}" {{$class==$selected_class ? "selected" : ""}}>{{$class}}</option>
                                         @endforeach
                                     </select>
