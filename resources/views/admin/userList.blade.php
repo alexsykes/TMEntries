@@ -25,7 +25,7 @@
             $isSuperUser = $user->isSuperUser == 1 ? "Y" : "";
 
         @endphp
-            <tr class="pr-4 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+            <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
         <td class="text-right table-cell pl-4  pt-1  pb-1   hidden  md:table-cell">{{$user->id}}</td>
         <td class="table-cell pl-4">{{$user->name}}</td>
         <td class="table-cell pl-4">{{$user->email}}</td>

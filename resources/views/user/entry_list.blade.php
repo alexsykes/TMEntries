@@ -19,7 +19,7 @@ $email = Auth::user()->email;
                             array_push($entryIDs, $entry->id);
                             }
                     @endphp
-                    <tr class="pr-4 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+                    <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
                         <td class="pl-2 table-cell">{{$entry->name}}</td>
                         <td class="table-cell">{{$entry->course}}</td>
                         <td class="table-cell">{{$entry->class}}</td>
@@ -40,7 +40,7 @@ $email = Auth::user()->email;
                         array_push($entryIDs, $entry->id);
                         }
                 @endphp
-                <tr class="pr-4 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+                <tr class="pr-4 odd:bg-white  even:bg-gray-50 border-b ">
                     <td class="pl-2    table-cell">{{$entry->trial}}</td>
                     <td class="table-cell">{{$entry->name}}</td>
                     <td class="table-cell">{{$entry->course}}</td>
@@ -69,7 +69,7 @@ $email = Auth::user()->email;
                     array_push($entryIDs, $entry->id);
                     }
                 @endphp
-                <tr class="pr-4 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+                <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
                     <td class="pl-2    table-cell">{{$entry->trial}}</td>
                     <td class="table-cell">{{$entry->name}}</td>
                     <td class="table-cell">{{$entry->course}}</td>

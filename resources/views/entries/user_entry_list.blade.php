@@ -23,7 +23,7 @@
     <div class="px-4 py-0 pb-2 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
         <table class="text-sm">
         @foreach($entriesArray as $entryArray)
-                <tr class="flex-auto odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b " >
+                <tr class="flex-auto odd:bg-white  even:bg-gray-50  border-b " >
                     td class="pt-4 font-semibold text-blue-800 " colspan="4">{{$statusArray[$entryArray[0]->status]}}</td></tr>
                 @foreach($entryArray as $entry)
               <tr>

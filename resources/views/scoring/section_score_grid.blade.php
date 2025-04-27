@@ -29,7 +29,7 @@
             <table class=" w-full">
                 @for($row = 1; $row <= $numRows; $row++)
 
-                    <tr class="flex-auto even:bg-white odd:dark:bg-gray-900 odd:bg-gray-50 even:dark:bg-gray-800 border-b">
+                    <tr class="flex-auto even:bg-white  odd:bg-gray-50  border-b">
                         @for($column = 0; $column < $numColumns; $column++)
                             @php
                                 $index = $row + ($column * $numRows);

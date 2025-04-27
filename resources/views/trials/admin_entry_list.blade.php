@@ -55,11 +55,11 @@
                 <table class="w-full text-sm">
                     @foreach($entries as $entry)
                         @if(in_array($entry->ridingNumber, $duplicateArray))
-                            <tr class="flex-auto text-red-500 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+                            <tr class="flex-auto text-red-500 odd:bg-white  even:bg-gray-50  border-b ">
 
                         @else
 
-                            <tr class="flex-auto odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+                            <tr class="flex-auto odd:bg-white even:bg-gray-50  border-b ">
                         @endif
                             <td class="text-right pr-2 w-12 py-1">{{$entry->ridingNumber}}</td>
                             <td>{{$entry->name}}</td>

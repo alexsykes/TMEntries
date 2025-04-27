@@ -20,7 +20,7 @@
                         $class = $entry->class;
                     }
                 @endphp
-                <tr class="flex-auto odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+                <tr class="flex-auto odd:bg-white even:bg-gray-50  border-b ">
                     <td class="pl-2 pr-2 w-12 text-right table-cell">{{$entry->ridingNumber}}</td>
                     <td class="table-cell">{{$entry->name}}</td>
                     <td class="table-cell">{{$entry->course}}</td>

@@ -8,7 +8,7 @@
             <table class="w-full">
 
                 @foreach($trials as $trial)
-                   <tr class="flex-auto odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+                   <tr class="flex-auto odd:bg-white  even:bg-gray-50  border-b ">
                         <td class="pl-2 text-sm hidden md:table-cell"><a href="/trial/details/{{$trial->id}}">{{$trial->date}}</a></td>
                         <td class="text-sm hidden md:table-cell"><a href="/trial/details/{{$trial->id}}">{{$trial->club}}</a></td>
                         <td class="text-sm pl-2 table-cell"><a href="/trial/details/{{$trial->id}}">{{$trial->name}}</a></td>
