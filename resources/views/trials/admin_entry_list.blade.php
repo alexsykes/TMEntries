@@ -4,178 +4,153 @@
     </x-slot:heading>
 
     <div class="mx-auto max-w-7xl px-4  sm:px-6 lg:px-8">
-    @php
-        $statusOptions = array(    'Unconfirmed', 'Confirmed', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
-        $manualStatusOptions = array(  'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
-        $classes = explode(',',$trial->classlist);
-        $courses = explode(',',$trial->courselist);
-        $authority = $trial->authority;
-        $types = array("2 stroke", "4 stroke", "e-bike");
-    @endphp
-    <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-        <div class="flex justify-between font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
-            <div>Entry list</div>
-            <div class="flex space-x-4">
-                <div><a href="/admin/entries/editRidingNumbers/{{$trial->id}}">Edit Riding Numbers</a></div>
-                {{--            <div><a href="/admin/entries/addManualEntries">Add Entries</a></div>--}}
-                <div><a href="/admin/entries/printSignOnSheets/{{$trial->id}}">Signing-on Sheets</a></div>
+        @php
+        $duplicateArray = array();
+        foreach($duplicates as $duplicate)
+            {
+                array_push($duplicateArray, $duplicate->ridingNumber);
+            }
+            $statusOptions = array(    'Unconfirmed', 'Confirmed', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
+            $manualStatusOptions = array(  'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
+            $classes = explode(',',$trial->classlist);
+            $courses = explode(',',$trial->courselist);
+            $authority = $trial->authority;
+            $types = array("2 stroke", "4 stroke", "e-bike");
+            $entryOptions = array( 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
+
+
+                    $allCourses = array();
+    $courses = $trial->courselist;
+    $customCourses = $trial->customCourses;
+
+    $allClasses = array();
+    $classes = $trial->classlist;
+    $customClasses = $trial->customClasses;
+
+    if($courses !='') {
+    array_push($allCourses, $courses);
+    }
+
+    if($customCourses !='') {
+    array_push($allCourses, $customCourses);
+    }
+
+    if($classes !='') {
+    array_push($allClasses, $classes);
+    }
+
+    if($customClasses !='') {
+    array_push($allClasses, $customClasses);
+    }
+
+    $classlist = str_replace(',',',',implode(',', $allClasses));
+    $courselist   = str_replace(',',',',implode(',', $allCourses));
+    $courseOptions = explode(',', $courselist);
+    $classOptions = explode(',', $classlist);
+        @endphp
+        <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+            <div class="flex justify-between font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
+                <div>Entry list</div>
             </div>
+                <table class="w-full text-sm">
+                    @foreach($entries as $entry)
+                        @if(in_array($entry->ridingNumber, $duplicateArray))
+                            <tr class="flex-auto text-red-500 odd:bg-white  even:bg-gray-50  border-b ">
+
+                        @else
+
+                            <tr class="flex-auto odd:bg-white even:bg-gray-50  border-b ">
+                        @endif
+                            <td class="text-right pr-2 w-12 py-1">{{$entry->ridingNumber}}</td>
+                            <td>{{$entry->name}}</td>
+                            <td>{{$entry->class}}</td>
+                            <td>{{$entry->course}}</td>
+                            <td>{{$statusOptions[$entry->status]}}</td>
+                            <td><a href="/admin/entry/edit/{{$entry->id}}"><span><i class="fa-solid fa-gear"></i></span></a>
+                            </td>
+                            <td><a href="/admin/entry/cancel/{{$entry->id}}"><span><i
+                                                class="fa-solid fa-ban"></i></span></a></td>
+                        </tr>
+                    @endforeach
+                </table>
+            {{--    <a href="{{ route('stripe.index') }}" class="btn mt-5 bg">Continue Shopping</a>--}}
         </div>
-        <div class="pl-4">
-            <table class="w-full">
-                @foreach($entries as $entry)
-                    <tr>
-                        <td class="text-right pr-2 w-12">{{$entry->ridingNumber}}</td>
-                        <td>{{$entry->name}}</td>
-                        <td>{{$entry->class}}</td>
-                        <td>{{$entry->course}}</td>
-                        <td>{{$statusOptions[$entry->status]}}</td>
-                        <td><a href="/admin/entry/edit/{{$entry->id}}"><span><i class="fa-solid fa-gear"></i></span></a>
-                        </td>
-                        <td><a href="/admin/entry/cancel/{{$entry->id}}"><span><i
-                                            class="fa-solid fa-ban"></i></span></a></td>
-                    </tr>
-                @endforeach
-            </table>
+        <div class="mt-4 ml-0" id="buttons1">
+
+            <a href="/admin/entries/editRidingNumbers/{{$trial->id}}"
+               class="rounded-md ml-2 bg-violet-600 px-3 py-2 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Edit Riding Numbers</a>
+            <a href="/admin/entries/printSignOnSheets/{{$trial->id}}"
+               class="rounded-md ml-2 bg-violet-600 px-3 py-2 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Signing-on Sheets</a>
         </div>
-        {{--    <a href="{{ route('stripe.index') }}" class="btn mt-5 bg">Continue Shopping</a>--}}
-    </div>
 
-    <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-        <div class=" font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">New Entry</div>
+        <form action="/admin/entries/storeMultiple" method="POST">
+        <div class="mt-4   bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+            <div class=" font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Add Manual Entries</div>
 
-        <form action="/admin/entries/store" method="POST">
-            <input type="hidden" id="trialID" name="trialID" value="{{$trial->id}}">
-            @csrf
+                <input type="hidden" id="trialID" name="trialID" value="{{$trial->id}}">
+                @csrf
 
-                <div class="mt-2 px-4 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                <table class="w-full text-sm pt-0" style="padding: 0px;">
 
-                    <x-form-field>
-                        <x-form-label class="pb-2" for="class">Status</x-form-label>
 
-                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
-                            <div class="pb-2 pt-2 bg-white sm:col-span-2">
-                                <select class="ml-2  bg-white  space-x-4 border-none" name="status" id="status"
-                                        required>
-                                    @foreach($manualStatusOptions as $key => $status)
-                                        <option value="{{$key}}" >{{$status}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </x-form-field>
+                    @for($i=0; $i<10; $i++)
+                        <tr class="flex-auto">
+                            <td class="table-cell pl-2 py-1"><input class="m-1  w-12 bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="text" id="ridingNumber[]" name="ridingNumber[]"/></td>
+                            <td class="table-cell py-1"><input class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="text" id="name[]" name="name[]" placeholder="Rider"/></td>
 
-                    <x-form-field>
-                        <x-form-label for="name">Name</x-form-label>
-                        <div class="mt-2 ">
-                            <x-form-input class="" name="name" type="text" id="name" :value="old('name')"
-                                          placeholder="Rider's name" required/>
-                            <x-form-error name="name"/>
-                        </div>
-                        @error('name')
-                        <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                        @enderror
-                    </x-form-field>
-
-                    <x-form-field>
-                        <x-form-label for="licence">{{$authority}} Licence</x-form-label>
-                        <div class="mt-2 col-span-2">
-                            <x-form-input name="licence" type="text" id="licence" :value="old('licence')"
-                                          placeholder="Licence number - leave blank if no licence"/>
-                            <x-form-error name="licence"/>
-                        </div>
-                    </x-form-field>
-
-                    <x-form-field>
-                        <x-form-label for="isYouth">Under-18</x-form-label>
-                        <div class="ml-2 mt-2 col-span-full">
-                            <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth"/>
-                            <x-form-error name="isYouth"/>
-                        </div>
-                    </x-form-field>
-
-                    <div id="dateInput" class=" col-span-full">
-                        <x-form-field>
-                            <x-form-label for="dob">Date of Birth</x-form-label>
-                            <div class="mt-2  max-w-40 col-span-full">
-                                <x-form-input type="date" name="dob" id="dob" :value="old('dob')"/>
-                            </div>
-                        </x-form-field>
-                    </div>
-
-                    <x-form-field>
-                        <x-form-label for="make">Make</x-form-label>
-                        <div class="mt-2 col-span-2">
-                            <x-form-input name="make" type="text" id="make" :value="old('make')"
-                                          placeholder="Bike make/model" required/>
-                            <x-form-error name="make"/>
-                        </div>
-                        @error('make')
-                        <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                        @enderror
-                    </x-form-field>
-
-                    <x-form-field>
-                        <x-form-label for="size">Capacity</x-form-label>
-                        <div class="mt-2">
-                            <x-form-input name="size" type="text" id="size" :value="old('size')"
-                                          placeholder="Bike engine size - leave empty for e-Bike"/>
-                            <x-form-error name="size"/>
-                        </div>
-                    </x-form-field>
-
-                    <x-form-field>
-                        <x-form-label class="pb-2" for="course">Type</x-form-label>
-
-                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-violet-700 ">
-                            <div class="pb-2 pt-2    sm:col-span-2">
-                                <select class="ml-2 bg-white  space-x-4 border-none" name="type" id="type" required>
+                            <td class="table-cell py-1"><input class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="text" id="make[]" name="make[]" placeholder="Make"/></td>
+                            <td class="table-cell py-1"><input class="m-1  w-12 bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="text" id="size[]" name="size[]" placeholder="Size"/></td>
+                            <td class="table-cell">
+                                <select class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1" id="type[]" name="type[]">
                                     @foreach($types as $type)
                                         <option value="{{$type}}">{{$type}}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                        </div>
-                    </x-form-field>
+                            </td>
 
-                    <x-form-field>
-
-                        <x-form-label class="pb-2" for="course">Course</x-form-label>
-                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-violet-700 ">
-                            <div class="pb-2 pt-2    sm:col-span-2">
-                                <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course" required>
-                                    @foreach($courses as $course)
+                            <td class="table-cell pl-2">
+                                <select class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1" id="course[]" name="course[]">
+                                    @foreach($courseOptions as $course)
                                         <option value="{{$course}}">{{$course}}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                        </div>
-                    </x-form-field>
+                            </td>
 
-                    <x-form-field>
-                        <x-form-label class="pb-2" for="class">Class</x-form-label>
-
-                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-violet-700 ">
-                            <div class="pb-2 pt-2 bg-white sm:col-span-2">
-                                <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class" required>
-                                    @foreach($classes as $class)
+                            <td class="table-cell pl-2">
+                                <select class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1" id="class[]" name="class[]">
+                                    @foreach($classOptions as $class)
                                         <option value="{{$class}}">{{$class}}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                        </div>
-                    </x-form-field>
-                </div>
+                            </td>
 
-                <div class="mt-2 pl-2 mb-2" id="buttons">
+                            <td class="table-cell">
+                                <select class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1" id="status[]" name="status[]">
+                                    <option value="8">Cash</option>
+                                    <option value="7">Pay on day</option>
+                                    <option value="9">FoC</option>
+                                </select>
+                            </td>
+
+                            <td class="table-cell"><label for="isYouth">Under 18</label>
+                                <input class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="checkbox" id="isYouth[]" name="isYouth[]" value="1">
+                            </td>
+
+                        </tr>
+
+                    @endfor
+                </table>
+        </div>
+                <div class="mt-4" id="buttons">
 
                     <button type="submit"
                             class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
-                        Register
+                        Add Entries
                     </button>
                 </div>
 
-        </form>
-    </div>
+            </form>
+
+
     </div>
 </x-club>

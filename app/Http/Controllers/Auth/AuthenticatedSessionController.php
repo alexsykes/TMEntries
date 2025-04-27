@@ -25,8 +25,12 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
+
+//        dd(Auth::user()->isClubUser);
+        if(Auth::user()->isClubUser) {
+            return redirect()->intended(route('clubaccess', absolute: false));
+        }
 
         return redirect()->intended(route('triallist', absolute: false));
     }

@@ -5,8 +5,39 @@
     @php
     $statusOptions = array(    'Unconfirmed', 'Confirmed', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
 
-    $classes = explode(',',$trial->classlist);
-    $courses = explode(',',$trial->courselist);
+//    $classes = explode(',',$trial->classlist);
+//    $courses = explode(',',$trial->courselist);
+
+    $allCourses = array();
+    $courses = $trial->courselist;
+    $customCourses = $trial->customCourses;
+
+    $allClasses = array();
+    $classes = $trial->classlist;
+    $customClasses = $trial->customClasses;
+
+    if($courses !='') {
+    array_push($allCourses, $courses);
+    }
+
+    if($customCourses !='') {
+    array_push($allCourses, $customCourses);
+    }
+
+    if($classes !='') {
+    array_push($allClasses, $classes);
+    }
+
+    if($customClasses !='') {
+    array_push($allClasses, $customClasses);
+    }
+
+    $classlist = str_replace(',',',',implode(',', $allClasses));
+    $courselist   = str_replace(',',',',implode(',', $allCourses));
+    $courseOptions = explode(',', $courselist);
+    $classOptions = explode(',', $classlist);
+
+
     $types = array("2 stroke", "4 stroke", "e-bike");
     @endphp
     @if ($errors->any())
@@ -95,7 +126,7 @@
                                         <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course"
                                                 required>
                                             <option value="">Select your course</option>
-                                            @foreach($courses as $course)
+                                            @foreach($courseOptions as $course)
                                                 <option value="{{$course}}" {{$course==$entry->course ? "selected" : ""}}>{{$course}}</option>
                                             @endforeach
                                         </select>
@@ -111,7 +142,7 @@
                                         <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class"
                                                 required>
                                             <option value="">Select your class</option>
-                                            @foreach($classes as $class)
+                                            @foreach($classOptions as $class)
                                                 <option value="{{$class}}" {{$class==$entry->class ? "selected" : ""}}>{{$class}}</option>
                                             @endforeach
                                         </select>
@@ -138,8 +169,8 @@
 
 
                     <div class="mt-4" id="buttons">
-                        <a href="/entries/userdata"
-                           class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
+                        <a href="/trials/adminEntryList/{{$trial->id}}"
+                           class="rounded-md bg-white px-3 py-2 text-sm font-light  text-blue-600 border border-blue-800 drop-shadow-xl hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
 
                         <button type="submit"
                                 class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">

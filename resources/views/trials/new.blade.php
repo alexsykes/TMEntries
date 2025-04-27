@@ -92,8 +92,7 @@
                         <x-form-field>
                             <x-form-label for="isMultiDay">Multi-day event</x-form-label>
                             <div class="mt-2">
-                                <input name="isMultiDay" type="checkbox" value="1" id="isMultiDay" onchange="toggle(checked, 'numDaysDiv')" />
-                                <x-form-error name="isMultiDay"/>
+                                <input name="isMultiDay" type="checkbox" value="1" id="isMultiDay">                              <x-form-error name="isMultiDay"/>
                             </div>
                             @error('date')
                             <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -339,7 +338,7 @@
                             <x-form-field>
                                 <x-form-label for="hasEntryLimit">Has entry limit</x-form-label>
                                 <div class="mt-2">
-                                    <input name="hasEntryLimit" type="checkbox" value="1" id="hasEntryLimit" onchange="toggle(checked, 'entryLimitDiv')" />
+                                    <input name="hasEntryLimit" type="checkbox" value="1" id="hasEntryLimit">
                                     <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasEntryLimit')
@@ -397,8 +396,7 @@
                             <x-form-field>
                                 <x-form-label for="hasOpeningDate">Has opening date/time for entries</x-form-label>
                                 <div class="mt-2">
-                                    <input name="hasOpeningDate" type="checkbox" value="1" id="hasOpeningDate" onchange="toggle(checked, 'openingDate')" />
-                                    <x-form-error name="openingDate"/>
+                                    <input name="hasOpeningDate" type="checkbox" value="1" id="hasOpeningDate">                                   <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasOpeningDate')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -423,8 +421,7 @@
                             <x-form-field>
                                 <x-form-label for="hasClosingDate">Has closing date/time for entries</x-form-label>
                                 <div class="mt-2">
-                                    <input name="hasClosingDate" type="checkbox" value="1" id="hasClosingDate" onchange="toggle(checked, 'closingDate')" />
-                                    <x-form-error name="openingDate"/>
+                                    <input name="hasClosingDate" type="checkbox" value="1" id="hasClosingDate">                                   <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasClosingDate')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -692,7 +689,7 @@
                             <x-form-field>
                                 <x-form-label for="hasEodSurcharge">Surcharge for Entry on the Day</x-form-label>
                                 <div class="mt-2 col-span-3">
-                                    <input name="hasEodSurcharge" type="checkbox" value="1" id="hasEodSurcharge" onchange="toggle(checked, 'eodSurchargeDiv')" />
+                                    <input name="hasEodSurcharge" type="checkbox" value="1" id="hasEodSurcharge"/>
                                     <x-form-error name="hasEodSurcharge"/>
                                 </div>
                                 @error('hasEodSurcharge')

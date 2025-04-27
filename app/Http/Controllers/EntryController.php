@@ -6,9 +6,11 @@ use App\Mail\EntryChanged;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Trial;
+use App\Rules\NoDuplicates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 use PDF;
 
 
@@ -95,6 +97,7 @@ class EntryController extends Controller
             'course' => 'required',
             'make' => 'required',
             'type' => 'required',
+            'dob' => Rule::requiredIf(isset($request->isYouth)),
         ]);
 
 
@@ -123,7 +126,7 @@ class EntryController extends Controller
             ->where('isYouth', false)
             ->value('stripe_price_id');
 
-        $entry->name = $request->name;
+        $entry->name = $this->nameize($request->name);
         $entry->class = $request->class;
         $entry->course = $request->course;
         $entry->licence = $request->licence;
@@ -299,10 +302,19 @@ class EntryController extends Controller
             ->where('id', $id)
             ->where('status', 1)
             ->where('token', $token)->first();
-        if ($entry) {
+
+        $trial = Trial::select('date')
+            ->where('id', $entry->trial_id)
+            ->get();
+
+        $trial_date =   date_create($trial[0]->date);
+        $today = date_create(date('Y-m-d'));
+
+//      In time / Too late to edit entry
+        if($trial_date > $today) {
             return view('entries.useredit', ['entry' => $entry]);
         } else {
-            return redirect('404');
+            return view('entries.noChanges');
         }
     }
 
@@ -328,13 +340,6 @@ class EntryController extends Controller
 
         return view('entries.checkout', ['entries' => $entries, 'trial' => $trial, 'trial_id' => $trial_id]);
     }
-
-//    public function create_another() {
-//        $IPaddress = request()->ip();
-//        $id = session('trial_id');
-//        $trial = Trial::findOrFail($id);
-//        return view('entries.create_another', ['trial' => $trial]);
-//    }
 
 
 //    Store first record then pass email and trial_id to create_another view
@@ -379,8 +384,10 @@ class EntryController extends Controller
             'course' => 'required',
             'make' => 'required',
             'type' => 'required',
+            'dob' => Rule::requiredIf(isset($request->isYouth)),
         ]);
 
+        $attributes['name'] = $this->nameize($request->name);
         $attributes['IPaddress'] = $IPaddress;
         $attributes['size'] = $request->size;
         $attributes['licence'] = $request->licence;
@@ -406,6 +413,7 @@ class EntryController extends Controller
         $trial = Trial::findOrFail($attributes['trial_id']);
         $entries = Entry::all()
             ->where('trial_id', $trial_id)
+            ->where('status', 0)
             ->where('created_by', $attributes['created_by']);
 
 //        $entries = Entry::all()->where('IPaddress', $IPaddress)->where('trial_id', session('trial_id'))->where('email', $attributes['email']);
@@ -465,66 +473,6 @@ class EntryController extends Controller
         return view('entries.edit', ['entry' => $entry, 'trial' => $trial]);
     }
 
-    public function createStripeSession(Request $request)
-    {
-        require('../vendor/autoload.php');
-        require('../vendor/stripe/stripe-php/lib/StripeClient.php');
-
-        $stripe = new \Stripe\StripeClient(config('stripe.stripe_secret_key'));
-
-        $email = $request->input('email');
-        $trial_id = $request->input('trial_id');
-        $trial_id = session('trial_id');
-        $phone = $request->input('phone');
-        $entryIDs = $request->input('entryIDs');
-        $entryIDArray = explode(',', $request->input('entryIDs'));
-
-
-        $entryData = Entry::all()->whereIn('id', $entryIDArray);
-
-        $lineItems = array();
-
-        foreach ($entryData as $entry) {
-//            dump($index);
-            $entryID = $entry['id'];
-            $isYouth = $entry['isYouth'];
-            $stripe_price_id = $entry['stripe_price_id'];
-            $stripe_product_id = $entry['stripe_product_id'];
-
-            $name = $entry['name'];
-            $entryid = $trial_id . "/" . $entryID;
-
-
-            $line = [
-                'product' => $stripe_product_id,
-                'quantity' => 1,
-            ];
-            // Add to lineItems
-
-//            dump($line);
-            array_push($lineItems, $line);
-//            array_push($ids, $id);
-//            array_push($entryPriceIds, $stripe_product_id);
-        }
-
-        $data = [
-            'metadata' => [
-                'entryids' => $entryIDs,
-                'payment_type' => 'session',
-                'trialid' => $trial_id,
-                'category' => 'entry fee',
-            ],
-            'line_items' => $lineItems,
-//            'mode' => 'payment',
-            'success_url' => "https://trialmonster.uk",
-            'cancel_url' => "https://trialmonster.uk/entries/checkout",
-//            'phone_number_collection' => ['enabled' => true],
-        ];
-        dd("lineitems: ", $lineItems, "data: ", $data);
-        $checkout_session = $stripe->checkout->sessions->create($data);
-        $url = $checkout_session->url;
-    }
-
     public function editRidingNumbers(Request $request)
     {
         $trialid = $request->id;
@@ -546,7 +494,10 @@ class EntryController extends Controller
     {
         $trialID = $request->trialID;
 
+
         $numbers = $request->input('ridingNumber');
+
+
         $entryIDs = $request->input('entryID');
         for ($i = 0; $i < count($numbers); $i++) {
             $entryID = $entryIDs[$i];
@@ -556,144 +507,53 @@ class EntryController extends Controller
                 ->where('id', $entryID)
                 ->update(['ridingNumber' => $number]);
         }
-
         return redirect("/trials/adminEntryList/{$trialID}");
     }
 
 
     public function printSignOnSheets($id)
-    {   $id=119;
+    {
+//        $id = 119;
         $trialDetails = DB::table('trials')->where('id', $id)->first();
         $startList = DB::table('entries')
             ->where('trial_id', $trialDetails->id)
             ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
             ->orderBy('name')
             ->get();
-
-
-        $filename= "Sign-on $trialDetails->name.pdf";
-
+        if (sizeof($startList) == 0) {
+            exit("No entries to print");
+        }
+        $filename = "Sign-on $trialDetails->name.pdf";
+//        dd($startList, $trialDetails);
         $img_file = storage_path('app/public/images/acu.jpg');
 //        PDF::setPageOrientation('L');
         MYPDF::SetCreator('TM UK');
+
+
         PDF::SetAuthor('TrialMonster.uk');
-        PDF::SetTitle('AMCA Sign-on sheet');
+        PDF::SetTitle('Sign-on sheet');
         PDF::SetImageScale(PDF_IMAGE_SCALE_RATIO);
         PDF::AddPage();
-        $lineHeight = 8;
-        // set background image
-        PDF::Image($img_file, 0, 0, 40 , 60, '', '', '', true, 300, '', false, false, 0);
-        PDF::SetPageMark();
-//        PDF::Write(0, "What's next?");
-        $index = 0;
-        foreach ($startList as $entry) {
-            PDF::SetX(0);
-            PDF::Write(0, $entry->ridingNumber);
-            PDF::SetX(10);
-            PDF::Write(0, $entry->name);
-            $y = PDF::getY();
-            PDF::SetY($y + $lineHeight);
-        }
-
-        PDF::Output(public_path($filename), 'F');
-        PDF::reset();
-
-    }
-
-    public function printSignOnSheets_($trialid)
-    {
-        // create new PDF document
-        $pdf = new PDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-        // set document information
-        PDF::SetCreator('TrialMonster');
-        PDF::SetAuthor('TrialMonster.uk');
-        PDF::SetTitle('AMCA Sign-on sheet');
-
-        // set header and footer fonts
-        PDF::setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-
-        // set default monospaced font
+        $bMargin = PDF::GetBreakMargin();
+        PDF::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
         PDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
-        // set margins
-//     PDF::SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
         PDF::SetHeaderMargin(0);
         PDF::SetFooterMargin(0);
+        PDF::SetPrintFooter(false);
+        PDF::SetAutoPageBreak(TRUE, 0);
 
-        // remove default footer
-        PDF::setPrintFooter(false);
+        PDF::SetMargins(0, 0, 0);
 
-        // set auto page breaks
-        PDF::SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $lineHeight = 8;
+        // set background image
 
-        // set image scale factor
-//        PDF::setImageScale(PDF_IMAGE_SCALE_RATIO);
+//        PDF::SetPageMark();
 
-//     // set some language-dependent strings (optional)
-//     if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-//     require_once(dirname(__FILE__).'/lang/eng.php');
-//     PDF::setLanguageArray($l);
-//     }
-// get the current page break margin
-//        $bMargin = PDF::getBreakMargin();
-//// get current auto-page-break mode
-//        $auto_page_break = PDF::getAutoPageBreak();
-//// disable auto-page-break
-//        PDF::SetAutoPageBreak(false, 0);
-// set bacground image
-//        $img_file = storage_path('app/public/images/acu.jpg');
-//        PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
-// restore auto-page-break status
-//        PDF::SetAutoPageBreak($auto_page_break, $bMargin);
-// set the starting point for the page content
-//        PDF::setPageMark();
-        // ---------------------------------------------------------
-
-
-        // remove default header
-        PDF::setPrintHeader(false);
-
-        PDF::Close();
-        // close and output PDF document
-        PDF::Output("Sign on sheet", "I");
-        PDF::Output();
-    }
-
-    public function printSignOnSheetsDev($trialid)
-    {
-// Include the main TCPDF library (search for installation path).
-        $trialid = 119;
-        $img_file = storage_path('app/public/images/acu.jpg');
-//        dd($img_file);
-//        Get trial data
-        $trialDataArray = DB::table('trials')
-            ->where('id', $trialid)
-            ->get();
-
-        $trialData = $trialDataArray[0];
-//        Get entry list
-        $entryList = DB::table('entries')
-            ->where('trial_id', $trialid)
-            ->get();
-
-        $entryCount = sizeof($entryList);
-        $numPages = floor(1 + ($entryCount / 22));
-
-        $date = $trialData->date;
-        $club = $trialData->club;
-        $venuename = $trialData->venueID;
-        $authority = $trialData->authority;
-        $eventname = $trialData->name;
-        $permit = $trialData->permit;
-        $scoringmode = $trialData->scoringMode;
-//dd($authority, $eventname, $permit, $scoringmode);
-
-
-        // Set up dimensions for different authorities
+        $authority = $trialDetails->authority;
+//        info("Authority: $authority");
         switch ($authority) {
-            case "ACU":
-//                $img_file = JPATH_COMPONENT.'/assets/images/amca.jpg';
+            case 'AMCA':
+                $img_file = storage_path('app/public/images/amca.jpg');
                 $topMargin = 97;
                 $bottomMargin = 24;
                 $rowHeight = 7.95;
@@ -706,9 +566,24 @@ class EntryController extends Controller
                 $nameWidth = 46;
                 $linesPerPage = 22;
                 break;
-            case "AMCA" :
-//                $img_file = JPATH_COMPONENT.'/assets/images/acu.jpg';
-                $topMargin = 152;
+            case 'ACU' :
+                $img_file = storage_path('app/public/images/ACU_2025.png');
+                $topMargin = 158;
+                $bottomMargin = 10;
+                $rowHeight = 6.65;
+                $numberIndent = 15;
+                $nameIndent = 18;
+                $idIndent = 132;
+                $idWidth = 19;
+                $classIndent = 177;
+                $numberWidth = 3;
+                $nameWidth = 33;
+                $linesPerPage = 19;
+                break;
+
+            default:
+                $img_file = storage_path('app/public/images/grid.jpg');
+                $topMargin = 10;
                 $bottomMargin = 10;
                 $rowHeight = 6.65;
                 $numberIndent = 15;
@@ -721,154 +596,143 @@ class EntryController extends Controller
                 $linesPerPage = 20;
                 break;
         }
-
-        // create new PDF document
-        $pdf = new PDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-        // set document information
-        PDF::SetCreator(PDF_CREATOR);
-        PDF::SetAuthor('TrialMonster.uk');
-        PDF::SetTitle('AMCA Sign-on sheet');
-
-        // set header and footer fonts
-        PDF::setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-
-        // set default monospaced font
-        PDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
-        // set margins
-//     PDF::SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-        PDF::SetHeaderMargin(0);
-        PDF::SetFooterMargin(0);
-
-        // remove default footer
-        PDF::setPrintFooter(false);
-
-        // set auto page breaks
-        PDF::SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-
-        // set image scale factor
-        PDF::setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-//     // set some language-dependent strings (optional)
-//     if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-//     require_once(dirname(__FILE__).'/lang/eng.php');
-//     PDF::setLanguageArray($l);
-//     }
-
-        // ---------------------------------------------------------
-
-
-        // remove default header
-        PDF::setPrintHeader(false);
-
-        //  for($page = 0; $page < $numPages; $page++) {
-        // add a page
-        PDF::AddPage();
-
-
-        // get the current page break margin
-        $bMargin = PDF::getBreakMargin();
-        // get current auto-page-break mode
-        $auto_page_break = PDF::getAutoPageBreak();
-        // disable auto-page-break
-        PDF::SetAutoPageBreak(false, 0);
-        // set bacground image
         PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
-//dd($img_file);
-        switch ($authority) {
-            case 0:
-                PDF::setLeftMargin(21);
-                PDF::setY(43);
-                PDF::Cell(0, 0, $eventname, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::setY(51);
-                PDF::Cell(0, 0, $venuename, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::setY(59);
-                PDF::setLeftMargin(29);
-                PDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::setY(67);
-                PDF::setLeftMargin(29);
-                PDF::Cell(0, 0, $permit, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                break;
 
-            case 1:
-                PDF::setLeftMargin(26);
-                PDF::setY(75);
-                PDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::Cell(0, 0, $venuename, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                break;
-        }
-        // restore auto-page-break status
-        PDF::SetAutoPageBreak($auto_page_break, $bMargin);
+//        $file = Image::fromFile($img_file);
+//
+//        dd($file);
+//        PDF::SetAutoPageBreak($auto_page_break, $bMargin);
 
         // set the starting point for the page content
-        PDF::setPageMark();
-        PDF::setFontSize(10, true);
-//        PDF::setTopMargin($topMargin);
-//        PDF::setAutoPageBreak(false, $bottomMargin);
+        PDF::SetPageMark();
+        PDF::SetFontSize(10, true);
+        PDF::SetTopMargin($topMargin);
+        PDF::SetAutoPageBreak(false, $bottomMargin);
 
-
+//        PDF::Write(0, "What's next?");
+        $index = 0;
         $lineNumber = 1;
-        // Paid entries
-        for ($index = 0; $index < $entryCount; $index++) {
-            $entry = $entryList[$index];
-            if ($scoringmode == 5) {
+        if (sizeof($startList) > 0) {
+            foreach ($startList as $entry) {
+//            if($trialDetails-> == 5) {
 //                $number = $rrCodes[$entry[0]];
-            } else {
+//            } else {
                 $number = $entry->ridingNumber;
-            }
-            $name = ucwords(strtolower($entry->name), " \t\r\n\f\v'");
-            $paid = $entry->status;
-            if ($paid == 0 or $paid == 4 or $paid == 5 or $paid == 7) {
-                $name = "To pay - " . $name;
-            }
-            $id = $entry->id;
-            $class = $entry->class;
-            if ($class == "Adult") $class = "";
-
-            // Number cell
-            if ($number != 0) {
-                PDF::setX($numberIndent);
-                PDF::Cell($numberWidth, $rowHeight, $number, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
-            }
-            // AMCA
-            if ($authority == 1) {
-                // Name cell
-                PDF::setX($nameIndent);
-                PDF::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
-
-                // ID cell
-                if ($id != 0) {
-                    PDF::setX($idIndent);
-                    PDF::Cell($idWidth, $rowHeight, $id, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+//            }
+                $name = ucwords(strtolower($entry->name), " \t\r\n\f\v'");
+                $paid = $entry->status;
+                if ($paid == 0 or $paid == 4 or $paid == 5 or $paid == 7) {
+                    $name = "To pay - " . $name;
                 }
-                // Class cell
-                PDF::setX($classIndent);
-                PDF::Cell(17, $rowHeight, $class, 0, 1, 'L', false, null, 1, 0, 'C' . 'M');
-            } // ACU
-            else if ($authority == 0) {
-                // Name cell
-                PDF::setX($nameIndent);
-                PDF::Cell($nameWidth, $rowHeight, $name, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
-            }
+                $id = $entry->licence;
+                $class = $entry->class;
 
-            if ($lineNumber % $linesPerPage == 0) {
-                PDF::addPage();
-                PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+                if ($class == "Adult") {
+                    $class = "";
+                }
+
+                // Number cell
+                if ($number != 0) {
+                    PDF::setX($numberIndent);
+                    PDF::Cell($numberWidth, $rowHeight, $number, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                }
+                // AMCA
+                if ($authority == 'AMCA') {
+                    // Name cell
+                    PDF::setX($nameIndent);
+                    PDF::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+
+                    // ID cell
+                    if ($id != 0) {
+                        PDF::setX($idIndent);
+                        PDF::Cell($idWidth, $rowHeight, $id, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                    }
+                    // Class cell
+                    PDF::setX($classIndent);
+                    PDF::Cell(17, $rowHeight, $class, 0, 1, 'L', false, null, 1, 0, 'C' . 'M');
+                } // ACU
+                else if ($authority == 'ACU') {
+                    // Name cell
+                    PDF::setX($nameIndent);
+                    PDF::Cell($nameWidth, $rowHeight, $name, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
+                }
+
+                if ($lineNumber % $linesPerPage == 0) {
+                    PDF::addPage();
+                    PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+                }
+                $lineNumber++;
+
             }
-            $lineNumber++;
+        }
+        PDF::Close();
+        PDF::Output(public_path($filename), 'F');
+        PDF::reset();
+        return response()->download($filename);
+    }
+
+    function nameize($str, $a_char = array("'", "-", " "))
+    {
+        //$str contains the complete raw name string
+        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
+        $string = strtolower($str);
+        foreach ($a_char as $temp) {
+            $pos = strpos($string, $temp);
+            if ($pos) {
+                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
+                $mend = '';
+                $a_split = explode($temp, $string);
+                foreach ($a_split as $temp2) {
+                    //capitalize each portion of the string which was separated at a special character
+                    $mend .= ucfirst($temp2) . $temp;
+                }
+                $string = substr($mend, 0, -1);
+            }
+        }
+        return ucfirst($string);
+    }
+
+
+    public function storeMultiple(Request $request)
+    {
+//        dd(request()->all());
+        $trial_id = $request->input('trialID');
+        $ridingNumbers = $request->input('ridingNumber', null);
+        $names = $request->input('name');
+        $makes = $request->input('make');
+        $sizes = $request->input('size');
+        $types = $request->input('type');
+        $courses = $request->input('course');
+        $classs = $request->input('class');
+        $isYouths = $request->input('isYouth');
+        $statuss = $request->input('status');
+
+        for($i = 0; $i < sizeof($names); $i++) {
+            if(isset($names[$i]) && $names[$i] != "") {
+            if(!isset($isYouths[$i])) {
+                $isYouths[$i] = 0;
+            }
+                DB::table('entries')->insert([
+                    'name' => $this->nameize($names[$i]),
+                    'ridingNumber' => $ridingNumbers[$i],
+                    'make' => $makes[$i],
+                    'size' => $sizes[$i],
+                    'type' => $types[$i],
+                    'course' => $courses[$i],
+                    'class' => $classs[$i],
+                    'isYouth' => $isYouths[$i],
+                    'status' => $statuss[$i],
+                    'created_by' => \Auth::user()->id,
+                    'ipaddress' => $request->ip(),
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'trial_id' => $trial_id,
+                ]);
+            }
         }
 
-        PDF::Close();
-        // close and output PDF document
-        PDF::Output("Sign on sheet", "I");
-        PDF::Output();
+        return redirect("/trials/adminEntryList/{$trial_id}");
     }
 }
-
-
 class MYPDF extends PDF {
     //Page header
     public function Header() {

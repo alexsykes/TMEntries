@@ -151,55 +151,7 @@
     <title>TrialMonster UK</title>
 </head>
 <body class="h-full bg-blue-800 text-white">
-
-<header class="bg-blue-800 drop-shadow-md">
-    {{--    @php $heading = "Welcome" @endphp--}}
-    <header class="bg-blue-800 drop-shadow-md">
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8  sm:flex sm:justify-between">
-            <h1 class="text-m sm:text-2xl  font-bold tracking-tight text-white">{{ $heading }}</h1>
-
-
-            {{--        Hidden for small screens --}}
-            <div class="hidden sm:block">
-                <div class="ml-4 flex space-x-4 items-center m-auto px md:ml-6">
-                    <x-nav-link href="/" :active="request()->is('/')">Coming up</x-nav-link>
-                    <x-nav-link href="/results/list" :active="request()->is('/results/list')">Results</x-nav-link>
-                    @guest
-                        <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>
-                        {{--                        <x-nav-link href="/register" :active="request()->is('register')">Register</x-nav-link>--}}
-                    @endguest
-
-                    @auth
-                        <form method="POST" action="/logout">
-                            @csrf
-                            <button type="submit"
-                                    class="rounded-md ml-0 bg-blue-500 px-2 py-1 text-sm font-light  border border-white text-white drop-shadow-xl hover:bg-blue-500 focus-visible:outline focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600">
-                                Log out
-                            </button>
-                        </form>
-                    @endauth
-                </div>
-            </div>
-
-
-            {{--        So - for small screens --}}
-            <div class="topnav " id="myTopnav">
-                @guest
-                    <a href="/register" class="text-white"><i class="text-xl fa-solid fa-user-plus"></i></a>
-                    <a href="/login" class="text-white "><i class="text-xl fa-solid fa-right-to-bracket"></i></a>
-                @endguest
-                @auth
-                    <a href="/auth/profile" class="text-white"><i class="text-xl fa-solid fa-user"></i></a>
-                    <form method="POST" action="/logout">
-                        @csrf
-                        <button class="topnav"><i class="text-xl fa-solid fa-right-from-bracket"></i></button>
-                    </form>
-                @endauth
-                <a href="/" class="text-white"><i class="text-xl  fa-solid fa-house"></i></a>
-            </div>
-        </div>
-    </header>
-</header>
+@include('navbar')
 <main class="bg-blue-100 text-black">
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {{ $slot }}
@@ -224,5 +176,16 @@
         <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - Oldgit UK</div>
     </div>
 </main>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const button = document.querySelector('button[aria-controls="mobile-menu"]');
+        const menu = document.getElementById('mobile-menu');
+
+        button.addEventListener('click', function () {
+            menu.classList.toggle('hidden');
+        });
+    });
+</script>
+
 </body>
 </html>

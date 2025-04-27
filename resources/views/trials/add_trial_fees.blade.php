@@ -7,7 +7,7 @@
         $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
         $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
         $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
-        $scoringModeArray = array("Observer", "Electronic", "Punch Cards", "Other");
+        $scoringModeArray = array("Observer", "App", "Punch Cards", "Other");
         $stopAllowedArray = array("Stop permitted", "Non-stop");
         $authorityArray = array("ACU", "AMCA", "Other");
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
@@ -29,6 +29,7 @@
                                 <x-form-label for="adultEntryFee">Adult entry fee</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="adultEntryFee" type="text" id="adultEntryFee" required
+                                                  value="{{old('adultEntryFee', 0)}}"
                                                   placeholder="Omit £ signs eg. 25.00" />
                                 </div>
                                 @error('adultEntryFee')
@@ -42,6 +43,7 @@
                                 <x-form-label for="youthEntryFee">Youth entry fee</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="youthEntryFee" type="text" id="youthEntryFee" required
+                                                  value="{{old('youthEntryFee', 0)}}"
                                                   placeholder="Omit £ signs eg. 25.00" />
                                 </div>
                                 @error('youthEntryFee')
@@ -55,7 +57,9 @@
                             <x-form-field>
                                 <x-form-label for="hasEodSurcharge">Surcharge for Entry on the Day</x-form-label>
                                 <div class="mt-2 col-span-3">
-                                    <input name="hasEodSurcharge" type="checkbox" value="1" id="hasEodSurcharge"  />
+                                    <input name="hasEodSurcharge" type="checkbox" value="1" id="hasEodSurcharge"
+                                            {{old('hasEodSurcharge') != null ? 'checked' :''}}
+                                    />
                                 </div>
                                 @error('hasEodSurcharge')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -68,6 +72,7 @@
                                 <x-form-label for="eodSurcharge">Surcharge</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="eodSurcharge" type="text" id="eodSurcharge"
+                                                  value="{{old('eodSurcharge', 0)}}"
                                                   placeholder="Omit £ signs eg. 5.00" />
                                 </div>
                                 @error('eodSurcharge')

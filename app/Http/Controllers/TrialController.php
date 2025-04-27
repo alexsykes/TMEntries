@@ -30,7 +30,7 @@ class TrialController extends Controller
     public function showTrialList()
     {
         $trials = DB::table('trials')->where('published', 1)
-            ->where('date', '>', date('Y-m-d'))
+            ->whereTodayOrAfter('date', '>', date('Y-m-d'))
             ->orderBy('date')
             ->get();
         return view('trials.trial_list', ['trials' => $trials]);
@@ -45,6 +45,14 @@ class TrialController extends Controller
             ->sortByDesc('date');
         return view('trials.admin_trial_list', ['trials' => $trials]);
     }
+
+/**
+ *
+ *  First stage of new trial - present form
+ *  Form submitted to trials/save
+ *
+ *
+ * */
 
     public function add()
     {
@@ -104,9 +112,23 @@ class TrialController extends Controller
         return redirect('adminTrials')->with('trials', $trials);
     }
 
-
+    /**
+     * Handles different tasks related to saving trial information.
+     *
+     * Depending on the 'task' parameter in the request, this method processes
+     * trial details, trial data, entry data, scoring data, registration data, or fee data.
+     * Each task validates the required input fields and updates or creates a trial record
+     * in the database accordingly.
+     *
+     * 'detail' -
+     * Validates initial data then sets up an 'empty' trial in databse.
+     *
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function save()
     {
+//        dump(request('entryMethod'));
         $user = Auth::user();
         $task = request('task');
 //        dump($task);
@@ -122,6 +144,8 @@ class TrialController extends Controller
                     'contactName' => 'required',
                     'email' => ['required', 'email',],
                     'phone' => ['required',],
+                    'otherVenue' => Rule::requiredIf(request('venueID') == 0),
+                    'numDays' => Rule::requiredIf(request('isMultiDay') == 1),
                 ]);
 
                 $attrs['created_by'] = $user->id;
@@ -138,7 +162,7 @@ class TrialController extends Controller
                 $attrs['hasEntryLimit'] = request('hasEntryLimit', 0);
                 $attrs['hasClosingDate'] = request('hasClosingDate', 0);
                 $attrs['hasOpeningDate'] = request('hasOpeningDate', 0);
-                $attrs['hasNotes'] = request('hasNotes', 0);
+//                $attrs['hasNotes'] = request('hasNotes', 0);
                 $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
                 $attrs['hasWaitingList'] = request('hasWaitingList', 0);
 
@@ -176,7 +200,8 @@ class TrialController extends Controller
 
                 $trial = Trial::create($attrs);
                 return redirect("trials/addTrialDetail/{$trial->id}");
-                break;
+
+//
 
             case 'trialData':
                 $id = request('trialID');
@@ -209,7 +234,6 @@ class TrialController extends Controller
                 $trial->update($attrs);
 
                 return redirect("trials/addTrialEntry/{$trial->id}");
-                break;
             case 'entryData':
                 $id = request('trialID');
                 $trial = Trial::findorfail($id);
@@ -221,13 +245,17 @@ class TrialController extends Controller
                     'openingDate' => Rule::requiredIf(request('hasOpeningDate') == 1),
                     'closingDate' => Rule::requiredIf(request('hasClosingDate') == 1),
                     'entrySelectionBasis' => Rule::requiredIf(request('hasEntryLimit') == 1),
+                    'notes' => Rule::requiredIf(request('hasNotes') == 1),
                 ]);
-
+                $attrs['entryMethod'] = implode(',', request('entryMethod', 'TrialMonster'));
+                $attrs['hasEntryLimit'] = request('hasEntryLimit', 0);
+                $attrs['hasOpeningDate'] = request('hasOpeningDate', 0);
+                $attrs['hasClosingDate'] = request('hasClosingDate', 0);
+                $attrs['hasWaitingList'] = request('hasWaitingList', 0);
+                $attrs['hasNotes'] = request('hasNotes', 0);
                 $trial->update($attrs);
 
                 return redirect("trials/addTrialScoring/{$trial->id}");
-
-                break;
             case 'scoringData':
                 $id = request('trialID');
                 $trial = Trial::findorfail($id);
@@ -241,8 +269,6 @@ class TrialController extends Controller
 
                 return redirect("trials/addTrialRegs/{$trial->id}");
 
-                break;
-
             case 'regData':
                 $id = request('trialID');
                 $trial = Trial::findorfail($id);
@@ -255,10 +281,10 @@ class TrialController extends Controller
                     'otherRestriction' => Rule::requiredIf(request('status') == "Other Restriction"),
                 ]);
 
+                $attrs['notes'] = request('notes',);
                 $trial->update($attrs);
                 return redirect("trials/addTrialFees/{$trial->id}");
 
-                break;
             case 'feeData':
 //                dd(request('adultEntryFee'));
                 $id = request('trialID');
@@ -269,21 +295,23 @@ class TrialController extends Controller
                     'youthEntryFee' => 'required',
                     'eodSurcharge' => Rule::requiredIf(request('hasEodSurcharge') == 1),
                 ]);
-
+// Add fees to Stripe
+            $trial->hasEodSurcharge = request('hasEodSurcharge', 0);
                 $trial->update($attrs);
+                $this->addStripeProducts($trial, $attrs['youthEntryFee'], $attrs['adultEntryFee']);
+
                 return redirect("adminTrials");
-                break;
             default:
                 break;
         }
-
-
+        return redirect('/adminTrials');
     }
 
     public function update()
     {
         $user = Auth::user();
         $userid = $user->id;
+
 
         $trialid = request('trialid');
         $attrs = request()->validate([
@@ -331,9 +359,9 @@ class TrialController extends Controller
         $attrs['hasEntryLimit'] = request('hasEntryLimit', 0);
         $attrs['hasClosingDate'] = request('hasClosingDate', 0);
         $attrs['hasOpeningDate'] = request('hasOpeningDate', 0);
-        $attrs['hasNotes'] = request('hasNotes', 0);
         $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
         $attrs['hasWaitingList'] = request('hasWaitingList', 0);
+        $attrs['hasNotes'] = request('hasNotes', 0);
 
         $attrs['isMultiDay'] = request('isMultiDay', 0);
         $attrs['numDays'] = request('numDays', 1);
@@ -460,8 +488,13 @@ class TrialController extends Controller
 
     public function entrylist($id)
     {
+//        $entries = Entry::where('trial_id', $id)
+//            ->where('status', 1)
+//            ->get()
+//            ->sortBy('name');
+
         $entries = Entry::where('trial_id', $id)
-            ->where('status', 1)
+            ->whereIn('status', [1, 7,8,9 ])
             ->get()
             ->sortBy('name');
 
@@ -476,12 +509,24 @@ class TrialController extends Controller
 
     public function adminEntryList($id)
     {
+//        SELECT ridingNumber FROM tme_entries
+//    WHERE trial_id = 137
+//    AND status IN (0,1,7, 8, 9)
+//    GROUP BY ridingNumber
+//    HAVING COUNT(*) > 1
+
+        $duplicates = Entry::where('trial_id', $id)
+            ->whereIn('status', [0, 1, 7, 8, 9 ])
+            ->groupBy('ridingNumber')
+            ->havingRaw('COUNT(ridingNumber) > 1')
+        ->get('ridingNumber');
+
         $entries = Entry::where('trial_id', $id)
             ->get()
             ->sortBy('status');
 
         $trial = Trial::where('id', $id)->first();
-        return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial]);
+        return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial, 'duplicates' => $duplicates]);;
     }
 
     public function store()
@@ -531,7 +576,7 @@ class TrialController extends Controller
         $attrs['hasEntryLimit'] = request('hasEntryLimit', 0);
         $attrs['hasClosingDate'] = request('hasClosingDate', 0);
         $attrs['hasOpeningDate'] = request('hasOpeningDate', 0);
-        $attrs['hasNotes'] = request('hasNotes', 0);
+//        $attrs['hasNotes'] = request('hasNotes', 0);
         $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
         $attrs['hasWaitingList'] = request('hasWaitingList', 0);
 

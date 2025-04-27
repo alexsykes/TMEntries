@@ -14,7 +14,8 @@
             <th class="table-cell pl-4">Club User</th>
             <th class="table-cell pl-4">Admin User</th>
             <th class="table-cell pl-4">Super User</th>
-            <th class="font-semibold table-cell pl-4">&nbsp;</th>
+            <th class="table-cell pl-4">&nbsp;</th>
+            <th class="table-cell pl-4">&nbsp;</th>
 
         </tr>
     @foreach($users as $user)
@@ -24,14 +25,20 @@
             $isSuperUser = $user->isSuperUser == 1 ? "Y" : "";
 
         @endphp
-            <tr class="pr-4 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+            <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
         <td class="text-right table-cell pl-4  pt-1  pb-1   hidden  md:table-cell">{{$user->id}}</td>
         <td class="table-cell pl-4">{{$user->name}}</td>
         <td class="table-cell pl-4">{{$user->email}}</td>
         <td class="text-center table-cell  pl-4">{{$isClubUser}}</td>
         <td class="text-center table-cell pl-4">{{$isAdminUser}}</td>
         <td class="text-center table-cell pl-4">{{$isSuperUser}}</td>
-                <td class="font-semibold table-cell pl-4"><a class="underline"href="admin/user/remove/{{$user->id}}">Remove</a></td>
+                <td class="font-semibold table-cell pl-4"><a class="underline" href="admin/editUser/{{$user->id}}"><i class="text-blue-800 fa-solid fa-gear"></i></a></td>
+                <td class="font-semibold table-cell pl-4 pr-4"><a class="underline" href="admin/user/remove/{{$user->id}}">
+                        @if(!$isSuperUser)
+                            <i class="text-red-500 fa-solid fa-trash"></i>
+                        @endif
+
+                    </a></td>
         </tr>
     @endforeach
     </table>

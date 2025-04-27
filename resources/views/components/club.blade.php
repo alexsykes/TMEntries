@@ -2,8 +2,9 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  class="h-full bg-violet-900">
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com"></script>
+{{--    <script src="https://cdn.tailwindcss.com"></script>--}}
     <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>
+    <x-head.tinymce-config/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         html,
@@ -109,18 +110,17 @@
 </head>
 <body class="h-full bg-violet-800 text-white">
 
-<header class="bg-violet-800 drop-shadow-md">
     {{--    @php $heading = "Welcome" @endphp--}}
     <header class="bg-violet-800 drop-shadow-md">
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8  sm:flex sm:justify-between">
-            <h1 class="text-m sm:text-2xl  font-bold tracking-tight text-white">{{ $heading }}</h1>
+        <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8  sm:flex sm:justify-between">
+            <h1 class="text-m sm:text-lg  font-bold tracking-tight text-white">{{ $heading }}</h1>
 
 
             {{--        Hidden for small screens --}}
             <div class="hidden sm:block">
                 <div class="ml-4 flex space-x-4 items-center m-auto px md:ml-6" >
+                    <x-nav-link href="/" :active="request()->is('/')">Public site</x-nav-link>
                     <x-nav-link href="/clubaccess" :active="request()->is('/clubaccess')">Trials</x-nav-link>
-                    <x-nav-link href="/pastresults" :active="request()->is('/pastresults')">Results</x-nav-link>
                     @guest
                         <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>
                         {{--                        <x-nav-link href="/register" :active="request()->is('register')">Register</x-nav-link>--}}
@@ -155,7 +155,6 @@
             </div>
         </div>
     </header>
-</header>
 <main class="bg-violet-100 text-black">
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {{ $slot }}

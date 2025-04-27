@@ -7,11 +7,14 @@
         $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
         $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
         $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
-        $scoringModeArray = array("Observer", "Electronic", "Punch Cards", "Other");
+        $scoringModeArray = array("Observer", "App", "Punch Cards", "Other");
         $stopAllowedArray = array("Stop permitted", "Non-stop");
         $authorityArray = array("ACU", "AMCA", "Other");
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
+//        dump($trial);
 
+    $savedEntryMethods = explode(',',$trial->entryMethod);
+//    dd($savedEntryMethods);
     @endphp
     @if ($errors->any())
         <div class="text-red-500">
@@ -91,7 +94,7 @@
                                 <div class="mt-2">
                                     <input @php if ($trial->isMultiDay== 1){echo "checked"; } @endphp
 
-                                           name="isMultiDay" type="checkbox" value="1" id="isMultiDay" onchange="toggle(checked, 'numDaysDiv')" />
+                                           name="isMultiDay" type="checkbox" value="1" id="isMultiDay"  />
                                     <x-form-error name="isMultiDay"/>
                                 </div>
                                 @error('date')
@@ -160,11 +163,11 @@
                             <x-form-field class="mt-2 col-span-2 sm:col-span-3">
                                 <x-form-label for="venue">Venue</x-form-label>
                                 <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-violet-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-violet-600 sm:max-w-md" >
-                                    <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0" name="venueID" id="venueID">
+                                    <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 " name="venueID" id="venueID">
                                         <option value="0">Other</option>
                                         @foreach($venues as $venue)
                                             <option
-                                                    <?php if($trial->venueID == $venue->id ) { ?>selected = "selected"<?php } ?>
+                                                    <?php if($trial->venueID == $venue->id ) { ?> selected = "selected"<?php } ?>
 
                                             value="{{$venue->id}}">{{$venue->name}}
 
@@ -327,10 +330,10 @@
                                     @foreach($entryMethodArray as $entryMethod)
                                         <div>
                                             <input
-                                                    <?php $entryMethodSaved = explode(",", $trial->entryMethod);
-                                            if(in_array($entryMethod, $entryMethodSaved)) { ?> checked <?php } ?>
+                                                    <?php
+                                            if(in_array($entryMethod, $savedEntryMethods)) { echo ' checked'; } ?>
 
-                                                    name="entryMethod[]" type="checkbox" id="entryMethod[]" value="{{$entryMethod}}" />
+                                                    name="entryMethod[]" type="checkbox" id="entryMethod[]"  value="{{$entryMethod}}" />
                                             <label  class="pl-4 pr-0" for="entryMethod">{{$entryMethod}}
                                             </label>
                                         </div>
@@ -368,7 +371,7 @@
                                 <div class="mt-2">
                                     <input
                                             @php if ($trial->hasEntryLimit== 1){echo "checked"; } @endphp
-                                            name="hasEntryLimit" type="checkbox" value="1" id="hasEntryLimit" onchange="toggle(checked, 'entryLimitDiv')" />
+                                            name="hasEntryLimit" type="checkbox" value="1" id="hasEntryLimit"/>
                                     <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasEntryLimit')
@@ -440,8 +443,7 @@
                                 <div class="mt-2">
                                     <input
                                             @php if ($trial->hasOpeningDate == 1){echo "checked"; } @endphp
-                                            name="hasOpeningDate" type="checkbox" value="1" id="hasOpeningDate" onchange="toggle(checked, 'openingDate')" />
-                                    <x-form-error name="openingDate"/>
+                                            name="hasOpeningDate" type="checkbox" value="1" id="hasOpeningDate" >                                  <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasOpeningDate')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -470,7 +472,7 @@
                                 <div class="mt-2">
                                     <input
                                             @php if ($trial->hasClosingDate== 1){ echo "checked"; } @endphp
-                                            name="hasClosingDate" type="checkbox" value="1" id="hasClosingDate" onchange="toggle(checked, 'closingDate')" />
+                                            name="hasClosingDate" type="checkbox" value="1" id="hasClosingDate"   >
                                     <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasClosingDate')
@@ -697,11 +699,24 @@
 
 
 
-                            <div id="notesDiv" class="mt-4 col-span-full">
+                            <x-form-field>
+                                <x-form-label for="hasNotes">Additional notes</x-form-label>
+                                <div class="mt-2">
+                                    <input @php if ($trial->hasNotes== 1){echo "checked"; } @endphp
+
+                                           name="hasNotes" type="checkbox" value="1" id="hasNotes"  />
+                                    <x-form-error name="hasNotes"/>
+                                </div>
+                                @error('hasNotes')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
+                            </x-form-field>
+
+                            <div id="notesDiv" class="mt-2 col-span-full">
                                 <x-form-field>
-                                    <x-form-label for="notes">Additional notes</x-form-label>
+                                    <x-form-label for="notes">Notes</x-form-label>
                                     <div class="mt-2 ">
-                                        <textarea name="notes" type="text" id="notes" placeholder="Add any additional notes">{{$trial->notes}}</textarea>
+                                        <textarea name="notes" type="text" id="notes" >{{$trial->notes}}</textarea>
                                     </div>
                                     @error('notes')
                                     <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -754,7 +769,7 @@
                                     <div class="mt-2">
                                         <input
                                                 @php if ($trial->hasEodSurcharge == 1){echo "checked"; } @endphp
-                                                name="hasEodSurcharge" type="checkbox" value="1" id="hasEodSurcharge" onchange="toggle(checked, 'eodSurchargeDiv')" />
+                                                name="hasEodSurcharge" type="checkbox" value="1" id="hasEodSurcharge" />
                                         <x-form-error name="hasEodSurcharge"/>
                                     </div>
                                     @error('hasEodSurcharge')

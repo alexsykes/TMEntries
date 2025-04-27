@@ -7,7 +7,7 @@
         $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
         $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
         $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
-        $scoringModeArray = array("Observer", "Electronic", "Punch Cards", "Other");
+        $scoringModeArray = array("Observer", "App", "Punch Cards", "Other");
         $stopAllowedArray = array("Stop permitted", "Non-stop");
         $authorityArray = array("ACU", "AMCA", "Other");
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
@@ -31,7 +31,9 @@
                                 <x-form-label for="scoringMode">Scoring mode</x-form-label>
                                 <div class="mt-2">
                                     @foreach($scoringModeArray as $option)
-                                        <input name="scoringMode" type="radio" id="scoringMode" value="{{$option}}" required>
+                                        <input name="scoringMode" type="radio" id="scoringMode" value="{{$option}}"
+                                               {{ (old('scoringMode') == $option) ? ' checked' : '' }}
+                                               required>
                                         <label class="pl-1 pr-4" for="scoringMode">{{$option}}</label>
                                     @endforeach
 
@@ -47,7 +49,9 @@
                                 <x-form-label for="stopNonStop">Stop permitted/Non-stop</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     @foreach($stopAllowedArray as $option)
-                                        <input name="stopNonStop" type="radio" id="stopNonStop" value="{{$option}}" required>
+                                        <input name="stopNonStop" type="radio" id="stopNonStop" value="{{$option}}"
+                                               {{ (old('stopNonStop') == $option) ? ' checked' : '' }}
+                                               required>
                                         <label class="pl-1 pr-4" for="{{$option}}">{{$option}}</label>
                                     @endforeach
 

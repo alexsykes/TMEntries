@@ -2,11 +2,13 @@
 
 require __DIR__ . '/auth.php';
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ScoringController;
+use \App\Http\Controllers\UserController;
 
 //use App\Http\Controllers\WebhookEndpointController;
 use App\Http\Controllers\StripePaymentController;
@@ -18,6 +20,7 @@ use Laravel\Cashier\Http\Controllers\WebhookController;
 use App\Models\User;
 use Laravel\Cashier\Cashier;
 
+//NOTE: wilcards {} should go at end!!!
 
 /*
     Front door - display list of trials currently taking entries
@@ -31,7 +34,7 @@ Route::get('dashboard', [TrialController::class, 'showTrialList'])->name('dashbo
 
 
 // CLUB access
-Route::get('clubaccess', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified']);
+Route::get('clubaccess', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified'])->name('clubaccess');
 // ADMIN access
 Route::get('adminaccess', [\App\Http\Controllers\AdminController::class, 'userList'])->middleware(['auth', 'verified']);
 
@@ -49,6 +52,7 @@ Route::patch('/admin/entries/update', [EntryController::class, 'adminEntryUpdate
 Route::post('/admin/entries/store', [EntryController::class, 'adminEntryStore'])->middleware(['auth', 'verified']);
 Route::get('/admin/entries/delete/{id}', [EntryController::class, 'adminEntryDelete'])->middleware(['auth', 'verified']);
 Route::get('admin/entries/printSignOnSheets/{id}', [EntryController::class, 'printSignOnSheets'])->middleware(['auth', 'verified']);
+Route::get('/admin/sendMail', [AdminController::class, 'sendMail'])->middleware(['auth', 'verified']);
 //
 
 Route::get('/trials/edit/{id}', [TrialController::class, 'edit'])->middleware(['auth', 'verified'])->name('edit');
@@ -90,8 +94,7 @@ Route::get('/entries/delete/{id}', [EntryController::class, 'delete'])->middlewa
 Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails']);
 Route::get('/adminEntries', [EntryController::class, 'adminEntries'])->middleware(['auth', 'verified'])->name('adminEntries');
 
-Route::get('/entry/useredit', [EntryController::class, 'useredit']);
-
+//Route::get('/entry/useredit', [EntryController::class, 'useredit']);
 Route::post('entries/userdata', [EntryController::class, 'showUserData']);
 
 Route::patch('/entries/update/{id}', [EntryController::class, 'updateEntry']);
@@ -102,9 +105,10 @@ Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->nam
 Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
 Route::post('/entries/saveRidingNumbers', [EntryController::class, 'saveRidingNumbers']);
+Route::post('/admin/entries/storeMultiple', [EntryController::class, 'storeMultiple'])->middleware(['auth', 'verified']);
 
-
-Route::post('/entries/createSession', [EntryController::class, 'createStripeSession']);
+// Check for usage
+//Route::post('/entries/createSession', [EntryController::class, 'createStripeSession']);
 
 /*
  * VENUE Routes
@@ -118,7 +122,7 @@ Route::post('/venues/update', [VenueController::class, 'update']);
 // Stripe Routes
 Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeCheckout']);
 Route::get('/checkout/success', [StripePaymentController::class, 'checkoutSuccess'])->name('checkout-success');
-Route::view('/checkout/cancel', 'checkout.cancel')->name('checkout-cancel');
+Route::view('/checkout/cancel', [UserController::class, 'entryList'])->name('checkout-cancel');
 Route::post('/entries/checkout', [EntryController::class, 'checkout']);
 
 // SCORING routes
@@ -131,6 +135,21 @@ Route::get('/scores/sectionScores/{id}/{section}', [ScoringController::class, 's
 
 Route::patch('/scores/updateSectionScores', [ScoringController::class, 'updateSectionScores'])->name('scores.updateSectionScores');
 Route::post('/scores/updateSectionScoreForRider', [ScoringController::class, 'updateSectionScoreForRider'])->name('scores.updateSectionScoreForRider');
+Route::post('/scores/confirmPublish', [ScoringController::class, 'confirmPublish'])->name('scores.confirmPublish');
+Route::post('/scores/publish', [ScoringController::class, 'publish'])->name('scores.publish');
+
+// USER Routes
+Route::post('/user/checkout',[UserController::class, 'checkout']);
+Route::get('/close-my-account/{id}/{email}', [AdminController::class, 'closeMyAccount']);
+Route::get('/user/entries', [UserController::class, 'entryList'])->middleware(['auth', 'verified']);
+Route::get('/users/entry/edit/{id}', [UserController::class, 'editEntry'])->middleware(['auth', 'verified']);
+Route::patch('/user/entry/update', [UserController::class, 'updateEntry'])->middleware(['auth', 'verified']);
+Route::get('/stripe/usercheckout', [StripePaymentController::class, 'stripeUserCheckout']);
+
+// ADMIN Routes
+Route::get('/admin/user/remove/{id}', [AdminController::class, 'adminRemove'])->middleware(['auth', 'verified'])->name('admin.remove');
+Route::get('/admin/editUser/{id}', [AdminController::class, 'editUser'])->middleware(['auth', 'verified'])->name('admin.editUser');
+Route::patch('/admin/updateUser', [AdminController::class, 'updateUser'])->middleware(['auth', 'verified'])->name('admin.updateUser');
 
 // RESULT Routes
 Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');

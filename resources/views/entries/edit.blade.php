@@ -3,8 +3,34 @@
         Editing entry id: {{$entry->id}}
     </x-slot:heading>
     @php
-        $classes = explode(',',$trial->classlist);
-        $courses = explode(',',$trial->courselist);
+        $allCourses = array();
+$courses = $trial->courselist;
+$customCourses = $trial->customCourses;
+
+$allClasses = array();
+$classes = $trial->classlist;
+$customClasses = $trial->customClasses;
+
+if($courses !='') {
+array_push($allCourses, $courses);
+}
+
+if($customCourses !='') {
+array_push($allCourses, $customCourses);
+}
+
+if($classes !='') {
+array_push($allClasses, $classes);
+}
+
+if($customClasses !='') {
+array_push($allClasses, $customClasses);
+}
+
+$classlist = str_replace(',',',',implode(',', $allClasses));
+$courselist   = str_replace(',',',',implode(',', $allCourses));
+$courseOptions = explode(',', $courselist);
+$classOptions = explode(',', $classlist);
 
         $id = $entry->id;
         $selected_licence = $entry->licence;
@@ -21,6 +47,7 @@
 
         $types = array("2 stroke", "4 stroke", "e-bike");
     @endphp
+
     <script>
         function toggle(checked) {
             var x = document.getElementById("dateInput");
@@ -79,6 +106,9 @@
                                 <div class="mt-2  max-w-40 col-span-full">
                                     <x-form-input type="date" name="dob" id="dob" value="{{$selected_dob}}"/>
                                 </div>
+                                @error('dob')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
                             </x-form-field>
                         </div>
 
@@ -126,7 +156,7 @@
                                     <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course"
                                             required>
                                         <option value="">Select your course</option>
-                                        @foreach($courses as $course)
+                                        @foreach($courseOptions as $course)
                                             <option value="{{$course}}" {{$course==$selected_course ? "selected" : ""}}>{{$course}}</option>
                                         @endforeach
                                     </select>
@@ -142,7 +172,7 @@
                                     <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class"
                                             required>
                                         <option value="">Select your class</option>
-                                        @foreach($classes as $class)
+                                        @foreach($classOptions as $class)
                                             <option value="{{$class}}" {{$class==$selected_class ? "selected" : ""}}>{{$class}}</option>
                                         @endforeach
                                     </select>

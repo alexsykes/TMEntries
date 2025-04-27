@@ -7,7 +7,7 @@
         <table class="w-full">
             @foreach($venues  as $venue)
                 <div id="triallist" class="flex-auto">
-                    <tr class="pr-4 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+                    <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
                         <td class="pl-2 md:table-cell">{{$venue->name}}</td>
                         <td class="hidden md:table-cell">{{$venue->landowner}}</td>
                         <td class="hidden md:table-cell">{{$venue->phone}}</td>

@@ -7,12 +7,13 @@
         $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
         $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
         $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
-        $scoringModeArray = array("Observer", "Electronic", "Punch Cards", "Other");
+        $scoringModeArray = array("Observer", "App", "Punch Cards", "Other");
         $stopAllowedArray = array("Stop permitted", "Non-stop");
         $authorityArray = array("ACU", "AMCA", "Other");
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
 
     @endphp
+
 
 
     <form action="/trials/save" method="POST">
@@ -31,7 +32,9 @@
                                 <div class=" pl-2 pr-0">
                                     @foreach($courseArray as $course)
                                         <div>
-                                            <input  name="courselist[]" type="checkbox" id="courselist" value="{{$course}}"/>
+                                            <input  name="courselist[]" type="checkbox" id="courselist" value="{{$course}}"
+                                                    {{ (is_array(old('courselist')) and in_array($course, old('courselist'))) ? ' checked' : '' }}
+                                            />
                                             <label  class="pl-4 pr-0" for="courselist">{{$course}}
                                             </label>
                                         </div>
@@ -64,7 +67,10 @@
                                     @foreach($classArray as $class)
 
                                         <div>
-                                            <input  name="classlist[]" type="checkbox" id="classlist" value="{{$class}}"/>
+                                            <input  name="classlist[]" type="checkbox" id="classlist" value="{{$class}}"
+
+                                                    {{ (is_array(old('classlist')) and in_array($class, old('classlist'))) ? ' checked' : '' }}
+                                            />
                                             <label  class="pl-4 pr-2" for="classlist">{{$class}}</label>
                                         </div>
                                     @endforeach
@@ -91,7 +97,9 @@
                             <x-form-field>
                                 <x-form-label for="hasTimePenalty">Time and Observation</x-form-label>
                                 <div class="mt-2 col-span-2">
-                                    <input name="hasTimePenalty" type="checkbox" id="hasTimePenalty" value="1" />
+                                    <input name="hasTimePenalty" type="checkbox" id="hasTimePenalty" value="1"
+                                            {{old('hasTimePenalty') != null ? 'checked' :''}}
+                                    />
                                 </div>
                                 @error('hasTimePenalty')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

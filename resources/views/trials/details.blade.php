@@ -84,8 +84,35 @@
     $entrySelectionBasis = $trial->entrySelectionBasis;
 
 //    Class and course options
-    $classlist = str_replace(',', ', ', $trial->classlist);
-    $courselist = str_replace(',', ', ', $trial->courselist);
+//     Get all courses / classes
+    $allCourses = array();
+    $courses = $trial->courselist;
+    $customCourses = $trial->customCourses;
+
+    $allClasses = array();
+    $classes = $trial->classlist;
+    $customClasses = $trial->customClasses;
+
+    if($courses !='') {
+        array_push($allCourses, $courses);
+    }
+
+    if($customCourses !='') {
+        array_push($allCourses, $customCourses);
+    }
+
+    if($classes !='') {
+        array_push($allClasses, $classes);
+    }
+
+    if($customClasses !='') {
+        array_push($allClasses, $customClasses);
+    }
+
+    $classlist = str_replace(',',',',implode(',', $allClasses));
+    $courselist   = str_replace(',',',',implode(',', $allCourses));
+    $courseOptions = explode(',', $courselist);
+    $classOptions = explode(',', $classlist);
 
     switch ($trial->restriction) {
         case "Open":
@@ -95,7 +122,7 @@
             $rest = "a Centre restricted ";
             break;
         case "Club":
-            $rest = "Closed to Club ";
+            $rest = "a Closed to Club ";
         case "Other":
             $rest = "Restricted ";
             $rest .= "The trial will be restricted to " . $trial->otherRestriction;
@@ -206,7 +233,7 @@
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">ENTRY LIMIT: </span>This trial has a limited entry of {{$trial->entryLimit}}.
             In the event of the limit being exceeded, acceptance will be determined
-            by <?php echo $entrySelectionBasis; ?>. Entrants will be informed by email once their entry is confirmed.
+            by <?php echo $entrySelectionBasis; ?>. Entrants will be informed by email once payment is received and their entry is confirmed.
         </div>
 
         <?php } ?>
@@ -225,6 +252,12 @@
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">METHOD OF MARKING & TIES: </span><?php echo "$stopNonStop $methodOfMarking"; ?>
         </div>
+@if($trial->hasNotes)
+
+        <div class="ml-4 mr-4 pt-2  text-black text-left "><span
+                    class="font-semibold">NOTES: </span><?php echo "$trial->notes"; ?>
+        </div>
+    @endif
     </div>
 
 </x-main>

@@ -26,16 +26,16 @@
                     Save
                 </button>
             </div>
-            <table class="m-4 w-full">
+            <table class=" w-full">
                 @for($row = 1; $row <= $numRows; $row++)
 
-                    <tr>
+                    <tr class="flex-auto even:bg-white  odd:bg-gray-50  border-b">
                         @for($column = 0; $column < $numColumns; $column++)
                             @php
                                 $index = $row + ($column * $numRows);
                             @endphp
-                            <td class="font-semibold text-violet-800">{{$index}}</td>
-                            <td><input name="scores[]"
+                            <td class="pl-2 font-semibold text-violet-800">{{$index}}</td>
+                            <td><input class="border w-24 p-1" name="scores[]"
                                        pattern="[Xox01235]{0,<?php echo $numLaps; ?>}"
                                        id="scores[]"
                                        tabIndex="{{$index}}"
