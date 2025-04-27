@@ -19,7 +19,7 @@
             $entryOptions = array( 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
 
 
-                $allCourses = array();
+                    $allCourses = array();
     $courses = $trial->courselist;
     $customCourses = $trial->customCourses;
 
@@ -27,10 +27,22 @@
     $classes = $trial->classlist;
     $customClasses = $trial->customClasses;
 
+    if($courses !='') {
     array_push($allCourses, $courses);
+    }
+
+    if($customCourses !='') {
     array_push($allCourses, $customCourses);
+    }
+
+    if($classes !='') {
     array_push($allClasses, $classes);
+    }
+
+    if($customClasses !='') {
     array_push($allClasses, $customClasses);
+    }
+
     $classlist = str_replace(',',',',implode(',', $allClasses));
     $courselist   = str_replace(',',',',implode(',', $allCourses));
     $courseOptions = explode(',', $courselist);
@@ -95,17 +107,19 @@
                                     @endforeach
                                 </select>
                             </td>
-                            <td class="table-cell pl-2">
-                                <select class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1" id="class[]" name="class[]">
-                                    @foreach($classOptions as $class)
-                                        <option value="{{$class}}">{{$class}}</option>
-                                    @endforeach
-                                </select>
-                            </td>
+
                             <td class="table-cell pl-2">
                                 <select class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1" id="course[]" name="course[]">
                                     @foreach($courseOptions as $course)
                                         <option value="{{$course}}">{{$course}}</option>
+                                    @endforeach
+                                </select>
+                            </td>
+
+                            <td class="table-cell pl-2">
+                                <select class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1" id="class[]" name="class[]">
+                                    @foreach($classOptions as $class)
+                                        <option value="{{$class}}">{{$class}}</option>
                                     @endforeach
                                 </select>
                             </td>

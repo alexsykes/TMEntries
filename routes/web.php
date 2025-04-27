@@ -94,8 +94,7 @@ Route::get('/entries/delete/{id}', [EntryController::class, 'delete'])->middlewa
 Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails']);
 Route::get('/adminEntries', [EntryController::class, 'adminEntries'])->middleware(['auth', 'verified'])->name('adminEntries');
 
-Route::get('/entry/useredit', [EntryController::class, 'useredit']);
-
+//Route::get('/entry/useredit', [EntryController::class, 'useredit']);
 Route::post('entries/userdata', [EntryController::class, 'showUserData']);
 
 Route::patch('/entries/update/{id}', [EntryController::class, 'updateEntry']);

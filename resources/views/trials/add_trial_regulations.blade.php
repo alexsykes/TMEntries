@@ -116,12 +116,25 @@
                         </div>
 
 
+                        <x-form-field>
+                            <x-form-label for="hasNotes">Additional notes</x-form-label>
+                            <div class="mt-2">
+                                <input @php if ($trial->hasNotes== 1){echo "checked"; } @endphp
 
-                        <div id="notesDiv" class="mt-4 col-span-full">
+                                       name="hasNotes" type="checkbox" value="1" id="hasNotes"  />
+                                <x-form-error name="hasNotes"/>
+                            </div>
+                            @error('hasNotes')
+                            <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                            @enderror
+                        </x-form-field>
+
+
+                        <div id="notesDiv" class=" col-span-full">
                             <x-form-field>
-                                <x-form-label for="notes">Additional notes</x-form-label>
+                                <x-form-label for="notes">Notes</x-form-label>
                                 <div class="mt-2 ">
-                                    <textarea name="notes" type="text" id="notes" placeholder="Add any additional notes">{{old('notes')}}</textarea>
+                                    <textarea name="notes" type="text" id="notes">{{old('notes', 'Add any notes here')}}</textarea>
                                 </div>
                                 @error('notes')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

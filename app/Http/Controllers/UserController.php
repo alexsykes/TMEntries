@@ -20,6 +20,16 @@ class UserController extends Controller
             ->whereAfterToday('date')
             ->get('id');
 
+        $todaysTrials = DB::table('trials')
+            ->where('published', 1)
+            ->whereToday('date')
+            ->get('id');
+
+        $todaysEntries = DB::table('entries')
+            ->where('created_by', $userID)
+            ->whereIn('trial_id', $todaysTrials->pluck('id'))
+        ->get();
+
         $futureTrialsArray = array();
         foreach ($futureTrials as $futureTrial) {
             array_push($futureTrialsArray, $futureTrial->id);
@@ -41,11 +51,9 @@ class UserController extends Controller
             ->orderBy('entries.status')
             ->select('entries.id', 'entries.status', 'entries.name', 'entries.class', 'entries.course', 'trials.name as trial')
             ->get();
+//    dd($entries, $toPays, $todaysEntries);;
 
-//        $query = DB::select('SELECT COUNT(e.id) AS numToPays FROM tme_entries AS e LEFT JOIN tme_trials AS t ON e.trial_id = t.id WHERE e.created_by = 1 AND e.status = 0 AND t.`date` > NOW()');
-//    $numToPays = $query[0]->numToPays;
-
-        return view('user.entry_list', compact('entries', 'toPays'));
+        return view('user.entry_list', compact('entries', 'toPays', 'todaysEntries'));;
     }
 
     public function editEntry($id)
@@ -53,7 +61,7 @@ class UserController extends Controller
         $entryArray = DB::table('entries')
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
             ->where('entries.id', $id)
-            ->get(['entries.*', 'trials.name as trial_name', 'trials.club as club', 'trials.classlist', 'trials.courselist']);
+            ->get(['entries.*', 'trials.name as trial_name', 'trials.club as club', 'trials.classlist', 'trials.courselist', 'trials.customClasses', 'trials.customCourses']);
         $entry = $entryArray[0];
 
         return view('user.edit_entry', ['entry' => $entry]);

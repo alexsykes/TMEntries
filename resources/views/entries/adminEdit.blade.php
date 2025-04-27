@@ -5,10 +5,10 @@
     @php
     $statusOptions = array(    'Unconfirmed', 'Confirmed', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
 
-    $classes = explode(',',$trial->classlist);
-    $courses = explode(',',$trial->courselist);
+//    $classes = explode(',',$trial->classlist);
+//    $courses = explode(',',$trial->courselist);
 
-                    $allCourses = array();
+    $allCourses = array();
     $courses = $trial->courselist;
     $customCourses = $trial->customCourses;
 
@@ -16,10 +16,22 @@
     $classes = $trial->classlist;
     $customClasses = $trial->customClasses;
 
+    if($courses !='') {
     array_push($allCourses, $courses);
+    }
+
+    if($customCourses !='') {
     array_push($allCourses, $customCourses);
+    }
+
+    if($classes !='') {
     array_push($allClasses, $classes);
+    }
+
+    if($customClasses !='') {
     array_push($allClasses, $customClasses);
+    }
+
     $classlist = str_replace(',',',',implode(',', $allClasses));
     $courselist   = str_replace(',',',',implode(',', $allCourses));
     $courseOptions = explode(',', $courselist);

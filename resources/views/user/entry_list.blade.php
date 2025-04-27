@@ -7,6 +7,29 @@ $email = Auth::user()->email;
 //        dd($entries, $toPays);
     @endphp
     <x-slot:heading>Entries for {{$email}}</x-slot:heading>
+
+
+    @if(sizeof($todaysEntries) > 0)
+        <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Today's Entries</div>
+            <table class="w-full">
+                @foreach($todaysEntries as $entry)
+                    @php
+                        if($entry->status == 0) {
+                            array_push($entryIDs, $entry->id);
+                            }
+                    @endphp
+                    <tr class="pr-4 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b ">
+                        <td class="pl-2 table-cell">{{$entry->name}}</td>
+                        <td class="table-cell">{{$entry->course}}</td>
+                        <td class="table-cell">{{$entry->class}}</td>
+                        <td class="table-cell">{{$statusOptions[$entry->status]}}</td>
+                    </tr>
+                @endforeach
+                <td class="pl-2 table-cell text-center text-blue-800 font-semibold" colspan="4">Requests for changes should be made with the organiser at Sign-on</td>
+            </table>
+        </div>
+    @endif
     @if(sizeof($toPays) > 0)
     <div class=" mt-0 mb-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Unconfirmed Entries</div>

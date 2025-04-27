@@ -242,9 +242,17 @@ class ScoringController extends Controller
                     'resultStatus' => $resultStatus
                 ]);
         }
+
+        $this->lockTrial($trialID);
         return redirect("/results/display/{$trialID}");
     }
 
+
+    public function locktrial($trialID){
+        DB::table('trials')
+            ->where('id', $trialID)
+            ->update(['isEntryLocked' => 1, 'isScoringLocked' => 1, 'isLocked' => 1,  'isResultPublished' => 1]);
+    }
         public function confirmPublish(Request $request)
         {
         return view('scoring.confirmPublish', ['trialID' => $request->trialID]);;

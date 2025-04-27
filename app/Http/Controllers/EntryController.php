@@ -302,10 +302,19 @@ class EntryController extends Controller
             ->where('id', $id)
             ->where('status', 1)
             ->where('token', $token)->first();
-        if ($entry) {
+
+        $trial = Trial::select('date')
+            ->where('id', $entry->trial_id)
+            ->get();
+
+        $trial_date =   date_create($trial[0]->date);
+        $today = date_create(date('Y-m-d'));
+
+//      In time / Too late to edit entry
+        if($trial_date > $today) {
             return view('entries.useredit', ['entry' => $entry]);
         } else {
-            return redirect('404');
+            return view('entries.noChanges');
         }
     }
 

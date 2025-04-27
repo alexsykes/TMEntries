@@ -93,13 +93,26 @@
     $classes = $trial->classlist;
     $customClasses = $trial->customClasses;
 
-    array_push($allCourses, $courses);
-    array_push($allCourses, $customCourses);
-    array_push($allClasses, $classes);
-    array_push($allClasses, $customClasses);
-//    dd($allClasses);
-    $classlist = str_replace(',',', ',implode(',', $allClasses));
-    $courselist   = str_replace(',',', ',implode(',', $allCourses));
+    if($courses !='') {
+        array_push($allCourses, $courses);
+    }
+
+    if($customCourses !='') {
+        array_push($allCourses, $customCourses);
+    }
+
+    if($classes !='') {
+        array_push($allClasses, $classes);
+    }
+
+    if($customClasses !='') {
+        array_push($allClasses, $customClasses);
+    }
+
+    $classlist = str_replace(',',',',implode(',', $allClasses));
+    $courselist   = str_replace(',',',',implode(',', $allCourses));
+    $courseOptions = explode(',', $courselist);
+    $classOptions = explode(',', $classlist);
 
     switch ($trial->restriction) {
         case "Open":
@@ -239,6 +252,12 @@
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">METHOD OF MARKING & TIES: </span><?php echo "$stopNonStop $methodOfMarking"; ?>
         </div>
+@if($trial->hasNotes)
+
+        <div class="ml-4 mr-4 pt-2  text-black text-left "><span
+                    class="font-semibold">NOTES: </span><?php echo "$trial->notes"; ?>
+        </div>
+    @endif
     </div>
 
 </x-main>

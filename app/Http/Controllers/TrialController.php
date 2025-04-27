@@ -245,12 +245,14 @@ class TrialController extends Controller
                     'openingDate' => Rule::requiredIf(request('hasOpeningDate') == 1),
                     'closingDate' => Rule::requiredIf(request('hasClosingDate') == 1),
                     'entrySelectionBasis' => Rule::requiredIf(request('hasEntryLimit') == 1),
+                    'notes' => Rule::requiredIf(request('hasNotes') == 1),
                 ]);
                 $attrs['entryMethod'] = implode(',', request('entryMethod', 'TrialMonster'));
                 $attrs['hasEntryLimit'] = request('hasEntryLimit', 0);
                 $attrs['hasOpeningDate'] = request('hasOpeningDate', 0);
                 $attrs['hasClosingDate'] = request('hasClosingDate', 0);
                 $attrs['hasWaitingList'] = request('hasWaitingList', 0);
+                $attrs['hasNotes'] = request('hasNotes', 0);
                 $trial->update($attrs);
 
                 return redirect("trials/addTrialScoring/{$trial->id}");
@@ -310,6 +312,7 @@ class TrialController extends Controller
         $user = Auth::user();
         $userid = $user->id;
 
+
         $trialid = request('trialid');
         $attrs = request()->validate([
             'name' => 'required',
@@ -358,6 +361,7 @@ class TrialController extends Controller
         $attrs['hasOpeningDate'] = request('hasOpeningDate', 0);
         $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
         $attrs['hasWaitingList'] = request('hasWaitingList', 0);
+        $attrs['hasNotes'] = request('hasNotes', 0);
 
         $attrs['isMultiDay'] = request('isMultiDay', 0);
         $attrs['numDays'] = request('numDays', 1);

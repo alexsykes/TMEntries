@@ -3,40 +3,49 @@
         Editing entry id: {{$entry->id}}
     </x-slot:heading>
     @php
-        $classes = explode(',',$trial->classlist);
-        $courses = explode(',',$trial->courselist);
+        $allCourses = array();
+$courses = $trial->courselist;
+$customCourses = $trial->customCourses;
 
-                        $allCourses = array();
-        $courses = $trial->courselist;
-        $customCourses = $trial->customCourses;
+$allClasses = array();
+$classes = $trial->classlist;
+$customClasses = $trial->customClasses;
 
-        $allClasses = array();
-        $classes = $trial->classlist;
-        $customClasses = $trial->customClasses;
+if($courses !='') {
+array_push($allCourses, $courses);
+}
 
-        array_push($allCourses, $courses);
-        array_push($allCourses, $customCourses);
-        array_push($allClasses, $classes);
-        array_push($allClasses, $customClasses);
-        $classlist = str_replace(',',',',implode(',', $allClasses));
-        $courselist   = str_replace(',',',',implode(',', $allCourses));
-        $courseOptions = explode(',', $courselist);
-        $classOptions = explode(',', $classlist);
+if($customCourses !='') {
+array_push($allCourses, $customCourses);
+}
 
-            $id = $entry->id;
-            $selected_licence = $entry->licence;
-            $selected_isYouth = $entry->isYouth;
-            if($selected_isYouth == '1') { $isYouthCB = "checked"; } else { $isYouthCB = ""; };
-            $selected_name = $entry->name;
-            $selected_make = $entry->make;
-            $selected_type = $entry->type;
-            $selected_size = $entry->size;
-            $selected_dob = $entry->dob;
-            $selected_class = $entry->class;
-            $selected_course = $entry->course;
-            $authority = $trial->authority;
+if($classes !='') {
+array_push($allClasses, $classes);
+}
 
-            $types = array("2 stroke", "4 stroke", "e-bike");
+if($customClasses !='') {
+array_push($allClasses, $customClasses);
+}
+
+$classlist = str_replace(',',',',implode(',', $allClasses));
+$courselist   = str_replace(',',',',implode(',', $allCourses));
+$courseOptions = explode(',', $courselist);
+$classOptions = explode(',', $classlist);
+
+        $id = $entry->id;
+        $selected_licence = $entry->licence;
+        $selected_isYouth = $entry->isYouth;
+        if($selected_isYouth == '1') { $isYouthCB = "checked"; } else { $isYouthCB = ""; };
+        $selected_name = $entry->name;
+        $selected_make = $entry->make;
+        $selected_type = $entry->type;
+        $selected_size = $entry->size;
+        $selected_dob = $entry->dob;
+        $selected_class = $entry->class;
+        $selected_course = $entry->course;
+        $authority = $trial->authority;
+
+        $types = array("2 stroke", "4 stroke", "e-bike");
     @endphp
 
     <script>

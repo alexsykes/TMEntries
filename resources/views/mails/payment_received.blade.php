@@ -17,7 +17,7 @@
 <ul>
     <li>Changes may be made to the Course, Class or Bike details.</li>
     <li>No changes may be made to the rider.</li>
-    <li>Refunds may be requested until the day preceding the event and will be subject to an administration charge of £3</li>
+    <li>Changes and refunds may be requested until the day preceding the event. Refunds will be subject to an administration charge of £3</li>
 </ul>
 <p>You will receive an email acknowledgement following any change or request.</p>
 <p>In case of any other enquiries, please reply to this email quoting the Entry Reference.</p>

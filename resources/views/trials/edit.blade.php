@@ -33,7 +33,6 @@
         <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Regulations')">Regulations</button>
         <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Fees')">Fees</button>
     </div>
-        <x-head.tinymce-config/>
     <form action="/trials/update" method="POST">
         <input type="hidden" value="{{$trial->id}}" id="trialid" name="trialid">
         @method('PATCH')
@@ -698,9 +697,24 @@
                                 </x-form-field>
                             </div>
 
-                            <div id="notesDiv" class="mt-4 col-span-full">
+
+
+                            <x-form-field>
+                                <x-form-label for="hasNotes">Additional notes</x-form-label>
+                                <div class="mt-2">
+                                    <input @php if ($trial->hasNotes== 1){echo "checked"; } @endphp
+
+                                           name="hasNotes" type="checkbox" value="1" id="hasNotes"  />
+                                    <x-form-error name="hasNotes"/>
+                                </div>
+                                @error('hasNotes')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
+                            </x-form-field>
+
+                            <div id="notesDiv" class="mt-2 col-span-full">
                                 <x-form-field>
-                                    <x-form-label for="notes">Additional notes</x-form-label>
+                                    <x-form-label for="notes">Notes</x-form-label>
                                     <div class="mt-2 ">
                                         <textarea name="notes" type="text" id="notes" >{{$trial->notes}}</textarea>
                                     </div>
