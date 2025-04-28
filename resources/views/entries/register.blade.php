@@ -11,8 +11,7 @@
     </script>
     @php
         $trial_id = $trial->id;
-//    Class and course options
-//     Get all courses / classes
+
     $allCourses = array();
     $courses = $trial->courselist;
     $customCourses = $trial->customCourses;
@@ -21,14 +20,27 @@
     $classes = $trial->classlist;
     $customClasses = $trial->customClasses;
 
+    if($courses !='') {
     array_push($allCourses, $courses);
+    }
+
+    if($customCourses !='') {
     array_push($allCourses, $customCourses);
+    }
+
+    if($classes !='') {
     array_push($allClasses, $classes);
+    }
+
+    if($customClasses !='') {
     array_push($allClasses, $customClasses);
+    }
+
     $classlist = str_replace(',',',',implode(',', $allClasses));
     $courselist   = str_replace(',',',',implode(',', $allCourses));
     $courseOptions = explode(',', $courselist);
     $classOptions = explode(',', $classlist);
+
 
             $authority = $trial->authority;
             $types = array("2 stroke", "4 stroke", "e-bike");
