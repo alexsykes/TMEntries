@@ -2,9 +2,10 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-blue-900">
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com"></script>
+{{--    <script src="https://cdn.tailwindcss.com"></script>--}}
     <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <style>
         html,
         body {
@@ -74,40 +75,42 @@
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Motorcycle trials management system.">
+    <meta name="keywords" content="Motorcycle trials management system, trials scoring, trials results, trials registration">
 
-    <style>
-        /* Style the tab */
-        .tab {
-            overflow: hidden;
-        }
+{{--    <style>--}}
+{{--        /* Style the tab */--}}
+{{--        .tab {--}}
+{{--            overflow: hidden;--}}
+{{--        }--}}
 
-        /* Style the buttons that are used to open the tab content */
-        .tab button {
-            /*background-color: inherit;*/
-            float: left;
-            /*border: black;*/
-            outline: none;
-            cursor: pointer;
-            /*padding: 14px 16px;*/
-            transition: 0.3s;
-        }
+{{--        /* Style the buttons that are used to open the tab content */--}}
+{{--        .tab button {--}}
+{{--            /*background-color: inherit;*/--}}
+{{--            float: left;--}}
+{{--            /*border: black;*/--}}
+{{--            outline: none;--}}
+{{--            cursor: pointer;--}}
+{{--            /*padding: 14px 16px;*/--}}
+{{--            transition: 0.3s;--}}
+{{--        }--}}
 
-        /* Change background color of buttons on hover */
-        .tab button:hover {
-            /*background-color: #ddd;*/
-        }
+{{--        /* Change background color of buttons on hover */--}}
+{{--        .tab button:hover {--}}
+{{--            /*background-color: #ddd;*/--}}
+{{--        }--}}
 
-        /* Create an active/current tablink class */
-        .tab button.active {
-            background-color: #fff;
-        }
+{{--        /* Create an active/current tablink class */--}}
+{{--        .tab button.active {--}}
+{{--            background-color: #fff;--}}
+{{--        }--}}
 
-        /* Style the tab content */
-        .tabcontent {
-            display: none;
-            padding: 6px 12px;
-        }
-    </style>
+{{--        /* Style the tab content */--}}
+{{--        .tabcontent {--}}
+{{--            display: none;--}}
+{{--            padding: 6px 12px;--}}
+{{--        }--}}
+{{--    </style>--}}
     <script>
 
         function openSection(evt, tabName) {

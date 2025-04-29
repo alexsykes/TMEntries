@@ -52,10 +52,8 @@ function onProductCreated($productObject)
         $isEntryFee = true;
     }
     $email = 'monster@trialmonster.uk';
-    Mail::to($email)
-        ->send(new ProductCreated());
 
-    info("Product created");
+//    info("Product created");
 
     $product = Product::create([
         'stripe_product_id' => $stripe_product_id,
@@ -71,7 +69,8 @@ function onProductCreated($productObject)
         'purchases' => 0,
         'version' => 1,
     ]);
-
+info("Product created" . $product->product_name);
+    Mail::to($email)->send(new ProductCreated($product));
 
 }
 

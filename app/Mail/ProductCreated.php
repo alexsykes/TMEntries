@@ -15,7 +15,7 @@ class ProductCreated extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(public $product)
     {
         //
     }
@@ -37,6 +37,7 @@ class ProductCreated extends Mailable
     {
         return new Content(
             view: 'mails.product_created',
+            with: ['product' => $this->product,],
         );
     }
 

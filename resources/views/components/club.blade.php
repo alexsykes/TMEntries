@@ -6,67 +6,7 @@
     <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>
     <x-head.tinymce-config/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <style>
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
 
-        /*#map {*/
-        /*    height: 600px;*/
-        /*    width: 100%;*/
-        /*}*/
-
-        /* Hide display on large screens */
-        .topnav {
-            display: none;
-            overflow: hidden;
-            color: white;
-            position: absolute;
-            top: 1.1rem;
-            right: 1rem;
-        }
-
-        .topnav a {
-            float: left;
-            display: inline;
-            text-align: left;
-            padding: 8px 6px;
-            text-decoration: none;
-            font-size: 15px;
-        }
-
-        .topnav button {
-            position: relative;
-            top: 0;
-            right: 0;
-            padding: 8px 6px;
-            text-align: left;
-            font-size: 15px
-        }
-
-        .topnav button:hover {
-            color:lavender;
-        }
-
-        .topnav a:hover {
-            color:lavender;
-        }
-
-        .topnav a.active {
-        }
-
-        @media screen and (max-width: 600px) {
-            .topnav {
-                display: inline-flex;
-            }
-            .topnav a {display: inline-block;}
-            .topnav button {display: inline-block;}
-        }
-
-    </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script>
