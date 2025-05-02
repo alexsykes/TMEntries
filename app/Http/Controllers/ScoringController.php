@@ -255,7 +255,7 @@ class ScoringController extends Controller
     }
         public function confirmPublish(Request $request)
         {
-        return view('scoring.confirmPublish', ['trialID' => $request->trialID]);;
+        return view('scoring.confirmPublish', ['trialID' => $request->trialID]);
         }
 
 }

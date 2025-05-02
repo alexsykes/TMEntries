@@ -5,7 +5,7 @@
         <input type="hidden" name="id" value="{{$user->id}}">
         @csrf
         <div class=" mt-0 mb-4  bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">&nbsp;</div>
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">&nbsp;</div>
 
             <div class="pl-4 space-y-4">
                 <x-form-field>

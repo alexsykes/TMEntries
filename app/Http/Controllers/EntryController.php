@@ -7,11 +7,13 @@ use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Trial;
 use App\Rules\NoDuplicates;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use PDF;
+use Stripe\StripeClient;
 
 
 class EntryController extends Controller
@@ -34,7 +36,7 @@ class EntryController extends Controller
         $email = session('email');
         $phone = session('phone');
         $trial_id = session('trial_id');
-        $user_id = \Auth::user()->id;
+        $user_id = Auth::user()->id;
         $entries = Entry::all()
             ->where('created_by', $user_id)
             ->where('trial_id', $trial_id)
@@ -49,7 +51,7 @@ class EntryController extends Controller
 
     public function userEntryList(Request $request)
     {
-        $user = \Auth::user();
+        $user = Auth::user();
         $userID = $user->id;
         $usedStatus = DB::table('entries')
             ->distinct('status')
@@ -66,7 +68,7 @@ class EntryController extends Controller
                 ->where('created_by', $userID)
                 ->orderBy('name', 'asc')
                 ->get();
-            array_push($entriesArray, $entries);;
+            array_push($entriesArray, $entries);
         }
         return view('entries.user_entry_list', ['entriesArray' => $entriesArray, 'user' => $user]);
     }
@@ -74,7 +76,7 @@ class EntryController extends Controller
     public function register(Request $request)
     {
         $trial_id = $request->trialid;
-        $user_id = \Auth::user()->id;
+        $user_id = Auth::user()->id;
 
         $trial = Trial::findorfail($trial_id);
 
@@ -200,7 +202,7 @@ class EntryController extends Controller
         $attributes['licence'] = $request->licence;
         $attributes['token'] = $token;
         $attributes['accept'] = false;
-        $attributes['created_by'] = \Auth::user()->id;
+        $attributes['created_by'] = Auth::user()->id;
 
         if (isset($request->isYouth)) {
             $attributes['isYouth'] = 1;
@@ -229,7 +231,7 @@ class EntryController extends Controller
 //        Request request
             require('../vendor/autoload.php');
             require('../vendor/stripe/stripe-php/lib/StripeClient.php');
-            $stripe = new \Stripe\StripeClient(config('stripe.stripe_secret_key'));
+            $stripe = new StripeClient(config('stripe.stripe_secret_key'));
 
             $stripe->refunds->create
             ([
@@ -328,7 +330,7 @@ class EntryController extends Controller
 
     public function checkout(Request $request)
     {
-        $user_id = \Auth::user()->id;
+        $user_id = Auth::user()->id;
         $trial_id = $request->trial_id;
 
         $trial = Trial::findorfail($trial_id);
@@ -393,7 +395,7 @@ class EntryController extends Controller
         $attributes['licence'] = $request->licence;
         $attributes['token'] = $token;
         $attributes['accept'] = $accept;
-        $attributes['created_by'] = \Auth::user()->id;
+        $attributes['created_by'] = Auth::user()->id;
 
         if (isset($request->isYouth)) {
             $attributes['isYouth'] = 1;
@@ -722,7 +724,7 @@ class EntryController extends Controller
                     'class' => $classs[$i],
                     'isYouth' => $isYouths[$i],
                     'status' => $statuss[$i],
-                    'created_by' => \Auth::user()->id,
+                    'created_by' => Auth::user()->id,
                     'ipaddress' => $request->ip(),
                     'created_at' => date('Y-m-d H:i:s'),
                     'trial_id' => $trial_id,

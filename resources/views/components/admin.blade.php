@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  class="h-full bg-blue-900">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  class="h-full">
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com"></script>
+{{--    <script src="https://cdn.tailwindcss.com"></script>--}}
     <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
@@ -141,19 +141,16 @@
     {{--            echo env('APP_NAME');--}}
     {{--        }  else { echo "Admin area"; } ?></title>--}}
 </head>
-<body class="h-full bg-blue-800 text-white">
+<body class="h-full bg-red-600 text-white">
 @include('nav.admin_navbar')
 
-<header class="bg-blue-800 drop-shadow-md">
+<header class="bg-red-800 drop-shadow-md">
 
 
 
             {{--        So - for small screens --}}
             <div class="topnav " id="myTopnav">
-                @guest
-                    <a href="/register"  class="text-white" ><i class="text-xl fa-solid fa-user-plus"></i></a>
-                    <a href="/login"  class="text-white " ><i class="text-xl fa-solid fa-right-to-bracket"></i></a>
-                @endguest
+
                 @auth
                     <a href="/auth/profile"  class="text-white" ><i class="text-xl fa-solid fa-user"></i></a>
                     <form method="POST" action="/logout">
@@ -164,21 +161,13 @@
                 <a href="/" class="text-white"><i class="text-xl  fa-solid fa-house"></i></a>
             </div>
 </header>
-<main class="bg-blue-100 text-black">
+<main class="bg-red-50 text-black">
     <div class="mx-auto max-w-7xl px-2 py-6 sm:px-6 lg:px-8">
         {{ $slot }}
     </div>
-    <div class = "bg-blue-800 text-white">
-        <x-footer-link>
-            <div class="text-center mx-auto  text-white">
-                <a href="/adminTrials" class="inline-block mt-1 mx-3 hover:underline">Admin</a>
-                <a href="/terms" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
-                <a href="/clubaccess" class="inline-block mt-1 mx-3 hover:underline">Clubs</a>
-                <a href="/privacy"  class="inline-block mt-1 mx-3 hover:underline">Privacy Policy</a>
-                <a href="/contact"  class="inline-block mt-1 mx-3 hover:underline">Contact</a>
-            </div>
-        </x-footer-link>
-        <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - Oldgit UK</div></div>
+    <div class = "bg-red-600">
+        <div class="text-sm mt-1 p-2 text-white font-semibold text-center">©{{date("Y")}} - Oldgit UK</div>
+    </div>
 </main>
 </body>
 </html>

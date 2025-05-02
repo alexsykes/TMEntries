@@ -23,7 +23,11 @@ $email = Auth::user()->email;
                         <td class="pl-2 table-cell">{{$entry->name}}</td>
                         <td class="table-cell">{{$entry->course}}</td>
                         <td class="table-cell">{{$entry->class}}</td>
-                        <td class="table-cell">{{$statusOptions[$entry->status]}}</td>
+                        @if($entry->isEntryLocked == 1)
+                            <td class="table-cell">Locked</td>
+                        @else
+                            <td class="table-cell">{{$statusOptions[$entry->status]}}</td>
+                        @endif
                     </tr>
                 @endforeach
                 <td class="pl-2 table-cell text-center text-blue-800 font-semibold" colspan="4">Requests for changes should be made with the organiser at Sign-on</td>
@@ -45,7 +49,11 @@ $email = Auth::user()->email;
                     <td class="table-cell">{{$entry->name}}</td>
                     <td class="table-cell">{{$entry->course}}</td>
                     <td class="table-cell">{{$entry->class}}</td>
-                    <td class="table-cell">{{$statusOptions[$entry->status]}}</td>
+                    @if($entry->isEntryLocked == 1)
+                        <td class="table-cell">Locked</td>
+                    @else
+                        <td class="table-cell">{{$statusOptions[$entry->status]}}</td>
+                    @endif
                     <td class="table-cell"><a href="/users/entry/edit/{{$entry->id}}">Edit</a></td>
                 </tr>
             @endforeach
@@ -75,10 +83,15 @@ $email = Auth::user()->email;
                     <td class="table-cell">{{$entry->course}}</td>
                     <td class="table-cell">{{$entry->class}}</td>
                     <td class="table-cell">{{$statusOptions[$entry->status]}}</td>
-                    <td class="table-cell"><a href="/users/entry/edit/{{$entry->id}}">Edit</a></td>
+                    @if($entry->isEntryLocked == 1)
+                        <td class="table-cell"><i class="fa-solid fa-lock"></i></td>
+                    @else
+                        <td class="table-cell"><a href="/users/entry/edit/{{$entry->id}}"><i class="fa-solid fa-pencil"></i></a></td>
+                    @endif
                 </tr>
             @endforeach
         </table>
+        <div class="text-center pt-2 text-blue-800 font-semibold">Click on the pencil to makes changes or cancel an entry</div>
     </div>
         @endif
 

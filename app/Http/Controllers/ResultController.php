@@ -16,12 +16,12 @@ class ResultController extends Controller
     public function list()
     {
         $pastTrials = DB::table('trials')
+            ->join('venues', 'trials.venueID', '=', 'venues.id')
             ->where('published', 1)
             ->where('isResultPublished', 1)
 //            ->whereBeforeToday('date')
             ->orderBy('date', 'desc')
-            ->get(['name', 'club', 'date', 'id']);
-// dd($pastTrials);
+            ->get(['trials.name', 'trials.club', 'date', 'trials.id', 'venues.name as venue']);
         return view('results.list', ['pastTrials' => $pastTrials]);
     }
 

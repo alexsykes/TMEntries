@@ -1,7 +1,5 @@
 <x-main>
     @php
-
-
         $statusOptions = array(    'Unconfirmed - will be confirmed when payment is completed', 'Confirmed', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
 
         $allCourses = array();
@@ -35,7 +33,11 @@ if($customClasses != "") {
     @endphp
     <x-slot:heading>{{$entry->club}} {{$entry->trial_name}}</x-slot:heading>
 
-    <div class="mb-2 ml-4 col-span-4">Entry status: {{$statusOptions[$entry->status]}}</div>
+@if($entry->isEntryLocked)
+        <div class=" mt-0 mb-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+            <div class="text-blue-800 font-semibold col-span-4 ml-4 pt-2">This entry is locked. No changes can be made.</div>
+        </div>
+@else
     <form action="/user/entry/update" method="post">
         @csrf
         @method('PATCH')
@@ -45,7 +47,7 @@ if($customClasses != "") {
                 for {{$entry->name}}</div>
 
             <div class="mt-6    mb-2 ml-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-
+                <div class="text-blue-800 font-semibold col-span-4">Entry status: {{$statusOptions[$entry->status]}}</div>
                 <x-form-field>
                     <x-form-label for="make">Make</x-form-label>
                     <div class="mt-2 col-span-2">
@@ -129,4 +131,5 @@ if($customClasses != "") {
         </div>
 
     </form>
+    @endif
 </x-main>

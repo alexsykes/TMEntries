@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ScoringController;
-use \App\Http\Controllers\UserController;
+use App\Http\Controllers\UserController;
 
 //use App\Http\Controllers\WebhookEndpointController;
 use App\Http\Controllers\StripePaymentController;
@@ -36,7 +36,10 @@ Route::get('dashboard', [TrialController::class, 'showTrialList'])->name('dashbo
 // CLUB access
 Route::get('clubaccess', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified'])->name('clubaccess');
 // ADMIN access
-Route::get('adminaccess', [\App\Http\Controllers\AdminController::class, 'userList'])->middleware(['auth', 'verified']);
+Route::get('/adminaccess', [AdminController::class, 'userList'])->middleware(['auth', 'verified']);
+Route::get('/admin/users', [AdminController::class, 'userList'])->middleware(['auth', 'verified']);
+Route::get('/admin/trials', [AdminController::class, 'trialList'])->middleware(['auth', 'verified']);
+Route::get('/admin/results', [AdminController::class, 'resultList'])->middleware(['auth', 'verified']);
 
 /*
  * TRIAL Routes
@@ -53,6 +56,11 @@ Route::post('/admin/entries/store', [EntryController::class, 'adminEntryStore'])
 Route::get('/admin/entries/delete/{id}', [EntryController::class, 'adminEntryDelete'])->middleware(['auth', 'verified']);
 Route::get('admin/entries/printSignOnSheets/{id}', [EntryController::class, 'printSignOnSheets'])->middleware(['auth', 'verified']);
 Route::get('/admin/sendMail', [AdminController::class, 'sendMail'])->middleware(['auth', 'verified']);
+
+Route::get('/admin/trial/toggleLock/{id}', [AdminController::class, 'toggleLock'])->middleware(['auth', 'verified']);
+Route::get('/admin/trial/toggleEntry/{id}', [AdminController::class, 'toggleEntry'])->middleware(['auth', 'verified']);
+Route::get('/admin/trial/toggleScoring/{id}', [AdminController::class, 'toggleScoring'])->middleware(['auth', 'verified']);
+Route::get('/admin/trial/toggleResultPublished/{id}', [AdminController::class, 'toggleResultPublished'])->middleware(['auth', 'verified']);
 //
 
 Route::get('/trials/edit/{id}', [TrialController::class, 'edit'])->middleware(['auth', 'verified'])->name('edit');

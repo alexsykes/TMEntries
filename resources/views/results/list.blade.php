@@ -9,6 +9,7 @@
                     <td class="text-sm hidden md:table-cell  pl-4 pt-1 pb-1"><a href="/results/display/{{$trial->id}}">{{$trial->date}}</a></td>
                     <td class="table-cell text-sm  pl-4"><a href="/results/display/{{$trial->id}}">{{$trial->club}}</a></td>
                     <td class="table-cell text-sm  pl-4"><a href="/results/display/{{$trial->id}}">{{$trial->name}}</a></td>
+                    <td class="table-cell text-sm  pl-4"><a href="/results/display/{{$trial->id}}">{{$trial->venue}}</a></td>
                     </tr>
                 @endforeach
         </table>

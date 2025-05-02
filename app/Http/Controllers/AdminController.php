@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Mail\TMLogin;
+use App\Models\Trial;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -15,6 +17,23 @@ class AdminController extends Controller
 
         return view('admin.userList', ['users' => $users]);
 
+    }
+
+    public function trialList()
+    {
+        $trials = DB::table('trials')
+            ->orderBy('date', 'desc')
+        ->get();
+        return view('admin.trialList', ['trials' => $trials]);
+    }
+
+    public function resultList()
+    {
+        $results = DB::table('trials')
+            ->where('isResultPublished', 1)
+            ->orderBy('date', 'desc')
+        ->get();
+        return view('admin.resultList', ['results' => $results]);
     }
 
     public function sendMail()
@@ -60,16 +79,43 @@ class AdminController extends Controller
         return redirect('/adminaccess');
     }
 
-    public function editUser() {
+    public function editUser()
+    {
         $user = User::find(request('id'));
-        return view('admin.adminUserEdit',['user' => $user]);
+        return view('admin.adminUserEdit', ['user' => $user]);
     }
 
-    public function updateUser() {
+    public function updateUser()
+    {
         $user = User::find(request('id'));
         $user->name = request('name');
         $user->email = request('email');
         $user->save();
         return redirect('/adminaccess');
+    }
+
+    public function toggleResultPublished() {
+        $trial = Trial::find(request('id'));
+        $trial->isResultPublished = !$trial->isResultPublished;
+        $trial->save();
+        return redirect('/admin/trials');;
+    }
+    public function toggleEntry() {
+        $trial = Trial::find(request('id'));
+        $trial->isEntryLocked = !$trial->isEntryLocked;
+        $trial->save();
+        return redirect('/admin/trials');;
+    }
+    public function toggleScoring() {
+        $trial = Trial::find(request('id'));
+        $trial->isScoringLocked = !$trial->isScoringLocked;
+        $trial->save();
+        return redirect('/admin/trials');;
+    }
+    public function toggleLock() {
+        $trial = Trial::find(request('id'));
+        $trial->isLocked = !$trial->isLocked;
+        $trial->save();
+        return redirect('/admin/trials');;
     }
 }

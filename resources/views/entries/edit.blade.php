@@ -35,8 +35,8 @@ $classOptions = explode(',', $classlist);
         $id = $entry->id;
         $selected_licence = $entry->licence;
         $selected_isYouth = $entry->isYouth;
-        if($selected_isYouth == '1') { $isYouthCB = "checked"; } else { $isYouthCB = ""; };
-        $selected_name = $entry->name;
+        if($selected_isYouth == '1') { $isYouthCB = "checked"; } else { $isYouthCB = ""; }
+$selected_name = $entry->name;
         $selected_make = $entry->make;
         $selected_type = $entry->type;
         $selected_size = $entry->size;

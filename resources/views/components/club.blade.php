@@ -10,7 +10,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script>
-
         function openSection(evt, tabName) {
             // Declare all variables
             var i, tabcontent, tablinks;
@@ -31,8 +30,6 @@
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }
-
-
         function toggle(checked, divName) {
             console.log("toggle called")
             var x = document.getElementById(divName);
@@ -43,6 +40,67 @@
             }
         }
     </script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /*#map {*/
+        /*    height: 600px;*/
+        /*    width: 100%;*/
+        /*}*/
+
+        /* Hide display on large screens */
+        .topnav {
+            display: none;
+            overflow: hidden;
+            color: white;
+            position: absolute;
+            top: 1.1rem;
+            right: 1rem;
+        }
+
+        .topnav a {
+            float: left;
+            display: inline;
+            text-align: left;
+            padding: 8px 6px;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .topnav button {
+            position: relative;
+            top: 0;
+            right: 0;
+            padding: 8px 6px;
+            text-align: left;
+            font-size: 15px
+        }
+
+        .topnav button:hover {
+            color:lavender;
+        }
+
+        .topnav a:hover {
+            color:lavender;
+        }
+
+        .topnav a.active {
+        }
+
+        @media screen and (max-width: 600px) {
+            .topnav {
+                display: inline-flex;
+            }
+            .topnav a {display: inline-block;}
+            .topnav button {display: inline-block;}
+        }
+
+    </style>
 
     <title><?php if (config('APP_NAME') != ''){
             echo env('APP_NAME');

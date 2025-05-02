@@ -27,7 +27,7 @@ return new class extends Migration
 
             $table->string('postcode')->nullable()  ;
 
-            $table->decimal('latitude',10, 6)->nullable();;
+            $table->decimal('latitude',10, 6)->nullable();
             $table->decimal('longitude',10, 6)->nullable();
         });
     }

@@ -45,7 +45,7 @@ function onProductCreated($productObject)
         $youth = true;
     } else {
         $youth = false;
-    };
+    }
 
 
     if ($product_category == 'entry fee') {
@@ -92,7 +92,7 @@ function onProductUpdated($productObject)
         $youth = true;
     } else {
         $youth = false;
-    };
+    }
 
     if ($product_category == 'entry fee') {
         $isEntryFee = true;
