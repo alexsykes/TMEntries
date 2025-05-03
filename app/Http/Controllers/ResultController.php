@@ -28,8 +28,9 @@ class ResultController extends Controller
     public function display($id)
     {
         $trials = DB::table('trials')
-            ->where('id', $id)
-            ->get();
+            ->join('venues', 'trials.venueID', '=', 'venues.id')
+            ->where('trials.id', $id)
+            ->get(['trials.*','venues.name as venue']);
 
         if ($trials->isEmpty()) {
             abort(404);

@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Venue extends Model
 {
-    //
+    protected $guarded = ['id'];
 }

@@ -1,19 +1,24 @@
 <x-main>
     <x-slot:heading>{{$trial->name}}</x-slot:heading>
 @php
+//dd($trial)  ;
     $courselist = $trial->courselist;
     $classlist = $trial->classlist;
     $numsections = $trial->numSections;
     $numlaps = $trial->numLaps;
-
+                $rawDate = new DateTime($trial->date);
+                $date  = date_format($rawDate, "jS F, Y");
+                $rawDate = new DateTime($trial->updated_at);
+                $updated  = date_format($rawDate, "H:ia jS F, Y");
     $nonStarterArray = array();
 foreach($nonStarters as $notStarter) {
     array_push($nonStarterArray, $notStarter->name);
 }
     $nonStarterList = implode(', ', $nonStarterArray);
 
-    //    dd($courseResults);
+//        dump($trial);
 @endphp
+
     <div class="tab pl-8">
         <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-1" id="defaultOpen" onclick="openSection(event, 'Results')">
             Results
@@ -122,6 +127,12 @@ foreach($nonStarters as $notStarter) {
         @php
             }
         @endphp
+    </div>
+    <div class="text-black  pt-0 text-sm">
+        <div>{{$trial->club}}</div>
+        <div>{{$trial->venue}}</div>
+        <div>Permit: {{$trial->permit}}</div>
+        <div>Last updated: {{$updated}}</div>
     </div>
     <script>
         // Get the element with id="defaultOpen" and click on it

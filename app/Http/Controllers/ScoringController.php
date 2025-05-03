@@ -244,6 +244,7 @@ class ScoringController extends Controller
         }
 
         $this->lockTrial($trialID);
+        $this->updateTrial($trialID);
         return redirect("/results/display/{$trialID}");
     }
 
@@ -252,6 +253,11 @@ class ScoringController extends Controller
         DB::table('trials')
             ->where('id', $trialID)
             ->update(['isEntryLocked' => 1, 'isScoringLocked' => 1, 'isLocked' => 1,  'isResultPublished' => 1]);
+    }
+    public function updateTrial($trialID){
+        DB::table('trials')
+            ->where('id', $trialID)
+            ->update(['updated_at' => NOW()]);
     }
         public function confirmPublish(Request $request)
         {

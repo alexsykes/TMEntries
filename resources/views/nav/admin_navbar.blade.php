@@ -7,16 +7,17 @@
                 </div>
                 <div class="hidden sm:block sm:ml-6">
                     <div class="flex space-x-4">
-                        <a href="/" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Public site</a>
-                        <a href="/admin/trials" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Trials</a>
-                        <a href="/admin/results" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Results</a>
-                        <a href="/admin/users" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Users</a>
-{{--                        <a href="/admin/sendMailDelete" class="text-white bg-red-600 border-white border hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Email</a>--}}
+                        <a href="/" class="text-white bg-blue-800 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Public site</a>
+                        <a href="/admin/venues" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Venues</a>
+                        <a href="/admin/trials" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Trials</a>
+                        <a href="/admin/results" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Results</a>
+                        <a href="/admin/users" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Users</a>
+{{--                        <a href="/admin/sendMailDelete" class="text-white bg-red-600 border-white border hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Email</a>--}}
                         @auth
                             <form method="POST" action="/logout">
                                 @csrf
                                 <button type="submit"
-                                        class="text-white bg-red-600 border-white border hover:bg-blue-30tme_subscription_items0 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                                        class="text-white bg-red-600 border-white border hover:bg-blue-30tme_subscription_items0 hover:text-white px-3 py-1 rounded-md text-sm font-medium">
                                     Log out
                                 </button>
                             </form>

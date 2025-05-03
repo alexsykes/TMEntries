@@ -121,11 +121,13 @@ Route::post('/admin/entries/storeMultiple', [EntryController::class, 'storeMulti
 /*
  * VENUE Routes
  */
-Route::get('/venues', [VenueController::class, 'list'])->name('venues');
+Route::get('/admin/venues', [VenueController::class, 'list'])->name('venues');
 Route::get('/venues/add', [VenueController::class, 'add']);
-Route::get('/venues/edit/{$venueID}', [VenueController::class, 'edit']);
+//Route::get('/venues/edit/{$venueID}', [VenueController::class, 'edit']);
+Route::get('/venues/edit/{id}', [VenueController::class, 'edit'])->middleware('auth', 'verified')->name('venues.edit');
 Route::post('/venues/add', [VenueController::class, 'store']);
 Route::post('/venues/update', [VenueController::class, 'update']);
+Route::patch('/venues/save', [VenueController::class, 'save'])->middleware('auth', 'verified')->name('venues.save');
 
 // Stripe Routes
 Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeCheckout']);

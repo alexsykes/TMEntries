@@ -466,7 +466,7 @@
                             </div>
 
 
-                            <div id="hasClosingDateDiv" class=" col-span-3 mt-2">
+                            <div id="hasClosingDateDiv" class=" col-span-2 mt-2">
                             <x-form-field>
                                 <x-form-label for="hasClosingDate">Has closing date/time for entries</x-form-label>
                                 <div class="mt-2">
@@ -482,7 +482,7 @@
                             </div>
 
 
-                            <div id="closingDateDiv" class=" col-span-3 mt-2">
+                            <div id="closingDateDiv" class=" col-span-2 mt-2">
                                 <x-form-field>
                                     <x-form-label for="closingDate">Closing date/time for entries</x-form-label>
                                     <div class="mt-2 col-span-2">
