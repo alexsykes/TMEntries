@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-blue-900">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full ">
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 {{--    <script src="https://cdn.tailwindcss.com"></script>--}}
@@ -75,44 +75,10 @@
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Motorcycle trials management system.">
+    <meta name="description" content="Motorcycle trials entry, scoring and results management system.">
     <meta name="keywords" content="Motorcycle trials management system, trials scoring, trials results, trials registration">
 
-{{--    <style>--}}
-{{--        /* Style the tab */--}}
-{{--        .tab {--}}
-{{--            overflow: hidden;--}}
-{{--        }--}}
-
-{{--        /* Style the buttons that are used to open the tab content */--}}
-{{--        .tab button {--}}
-{{--            /*background-color: inherit;*/--}}
-{{--            float: left;--}}
-{{--            /*border: black;*/--}}
-{{--            outline: none;--}}
-{{--            cursor: pointer;--}}
-{{--            /*padding: 14px 16px;*/--}}
-{{--            transition: 0.3s;--}}
-{{--        }--}}
-
-{{--        /* Change background color of buttons on hover */--}}
-{{--        .tab button:hover {--}}
-{{--            /*background-color: #ddd;*/--}}
-{{--        }--}}
-
-{{--        /* Create an active/current tablink class */--}}
-{{--        .tab button.active {--}}
-{{--            background-color: #fff;--}}
-{{--        }--}}
-
-{{--        /* Style the tab content */--}}
-{{--        .tabcontent {--}}
-{{--            display: none;--}}
-{{--            padding: 6px 12px;--}}
-{{--        }--}}
-{{--    </style>--}}
     <script>
-
         function openSection(evt, tabName) {
             // Declare all variables
             var i, tabcontent, tablinks;
@@ -133,7 +99,6 @@
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }
-
 
         function toggle(checked, divName) {
             console.log("toggle called")
@@ -189,6 +154,5 @@
         });
     });
 </script>
-
 </body>
 </html>

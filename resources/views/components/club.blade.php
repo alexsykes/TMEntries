@@ -142,7 +142,7 @@
                 @endguest
                 @auth
 
-                        <a href="adminTrials" class="text-white"><i class="text-xl  fa-solid fa-house"></i></a>
+                        <a href="/adminTrials" class="text-white"><i class="text-xl  fa-solid fa-house"></i></a>
                 @endauth
             </div>
         </div>

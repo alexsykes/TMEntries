@@ -42,8 +42,16 @@
 
     <div class="hidden sm:hidden" id="mobile-menu">
         <div class="px-2 pt-2 pb-3 space-y-1 text-right">
-            <a href="/" class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Coming up…</a>
-            <a href="/results/list" class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Results</a>
+            <a href="/" class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Public site</a>
+
+            <a href="/admin/venues" class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Venues</a>
+
+            <a href="/admin/trials" class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Trials</a>
+
+            <a href="/admin/results" class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Results</a>
+
+            <a href="/admin/users" class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Users</a>
+            
             @auth
                 <form method="POST" action="/logout">
                     @csrf
@@ -56,7 +64,7 @@
                 </form>
             @endauth
             @guest
-                <a href="/login" class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Login</a>
+                <a href="/login" class="text-white hover:bg-red-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Login</a>
             @endguest
         </div>
     </div>
