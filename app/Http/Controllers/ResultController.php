@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Entry;
+use App\Models\Trial;
 use Illuminate\Support\Facades\DB;
 
 class ResultController extends Controller
@@ -90,4 +92,80 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
         $results = DB::select($query);
         return $results;
     }
+
+    public function edit($id){
+        $entry = DB::table('entries')
+            ->join('trials', 'entries.trial_id', '=', 'trials.id')
+            ->where('entries.id', $id)
+            ->get(['entries.*', 'trials.numSections', 'trials.numLaps', 'trials.classlist', 'trials.courselist', 'trials.customClasses', 'trials.customCourses', 'trials.isEntryLocked'])
+        ->first();
+
+        return view('results.edit', ['entry' => $entry]);
+    }
+
+    public function update (){
+        $entryID = request('id');
+        $entry = Entry::findOrFail($entryID);
+        $trialID = $entry->trial_id;
+
+        $trial = Trial::findOrFail($trialID);
+
+        $sectionScores = request('scores');
+        $numLaps = $trial->numLaps;
+        $numSections = $trial->numSections;
+        $numPossibleScores = $numLaps * $numSections;
+        $cutoff = $numPossibleScores * 0.25;
+
+        $scoreString = "";
+        foreach ($sectionScores as $sectionScore) {
+            $score = str_pad($sectionScore, $numLaps ,'x');
+            $scoreString .= $score;
+        }
+        dump($scoreString);
+
+        $scores = str_split( $scoreString, 1);
+    $sequentialScores = "";
+        for($lap = 0; $lap < $numLaps; $lap++) {
+            for ($section = 0; $section < $numSections; $section++) {
+                $offset =  $lap + ($numLaps * $section);
+                $sequentialScores .= $scores[$offset];
+            }
+        }
+
+
+        $entry->sequentialScores = $sequentialScores;
+        $entry->sectionScores = $scoreString;
+        $entry->course = request('course');
+        $entry->class = request('class');
+        $entry->make = request('make');
+        $entry->type = request('type');
+        $entry->size = request('size');
+        $entry->name = request('name');
+
+        $entry->cleans = substr_count($scoreString, '0', 0);
+        $entry->ones = substr_count($scoreString, '1', 0);
+        $entry->twos = substr_count($scoreString, '2', 0);
+        $entry->threes = substr_count($scoreString, '3', 0);
+        $entry->fives = substr_count($scoreString, '5', 0);
+        $entry->missed = substr_count($scoreString, 'x', 0);
+
+        $entry->total = $entry->ones + 2 * ($entry->twos) + 3 * ($entry->threes) + 5 * ($entry->fives) + 5 * ($entry->missed);
+        $resultStatus = 0;
+
+        if ($entry->missed > $cutoff) {
+            $resultStatus = 1;
+        }
+        if ($entry->missed == $numPossibleScores) {
+            $resultStatus = 2;
+        }
+        $entry->resultStatus = $resultStatus;
+
+        $entry->save();
+
+        $trial->updated_at = now();
+        $trial->save();
+
+        return redirect("/results/display/$trialID");
+    }
+
 }

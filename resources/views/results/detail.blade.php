@@ -2,6 +2,11 @@
     <x-slot:heading>{{$trial->name}}</x-slot:heading>
 @php
 //dd($trial)  ;
+$owner = (Auth::id());
+    $canEdit = false;
+if(($owner == $trial->created_by)  && ($trial->isResultPublished)) {
+    $canEdit = true;
+}
     $courselist = $trial->courselist;
     $classlist = $trial->classlist;
     $numsections = $trial->numSections;
@@ -46,6 +51,9 @@ foreach($nonStarters as $notStarter) {
                         <th class="w-10 text-center table-cell">3</th>
                         <th class="w-10 text-center table-cell">5</th>
                         <th class="pr-4 w-14 text-center table-cell">M</th>
+                        @if($canEdit)
+                            <th class="table-cell">&nbsp;</th>
+                        @endif
                     </tr>
                     @foreach($courseResults[$course] as $courseResult)
                         {{--                    {{dd($courseResult)}}--}}
@@ -71,6 +79,9 @@ foreach($nonStarters as $notStarter) {
                             <td class="w-10 text-center table-cell">{{$courseResult->threes}}</td>
                             <td class="w-10 text-center table-cell">{{$courseResult->fives}}</td>
                             <td class="pr-4 w-14 text-center table-cell">{{$courseResult->missed}}</td>
+                            @if($canEdit)
+                                <td class=" table-cell"><span><a href="/result/edit/{{$courseResult->entryID}}"><i class=" fa-solid fa-pencil "/></a></span></td>
+                            @endif
                         </tr>
                     @endforeach
                 </table>

@@ -165,6 +165,8 @@ Route::patch('/admin/updateUser', [AdminController::class, 'updateUser'])->middl
 // RESULT Routes
 Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');
 Route::get('/results/display/{id}', [ResultController::class, 'display'])->name('results.display.id');
+Route::get('/result/edit/{id}', [ResultController::class, 'edit']);
+Route::patch('/results/update', [ResultController::class, 'update']);
 
 // MIDDLEWARE
 Route::middleware('auth')->group(function () {

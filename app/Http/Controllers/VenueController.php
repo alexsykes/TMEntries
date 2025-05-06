@@ -68,7 +68,7 @@ class VenueController extends Controller
         $attrs['postcode'] = request('postcode', '');
 
         $venue = Venue::create($attrs);
-        dd($venue);
+//        dd($venue);
         return redirect()->route('venues');
     }
 }
