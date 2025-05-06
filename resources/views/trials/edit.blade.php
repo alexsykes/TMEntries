@@ -14,6 +14,7 @@
 //        dump($trial);
 
     $savedEntryMethods = explode(',',$trial->entryMethod);
+    $isLocked = $trial->isLocked;
 //    dd($savedEntryMethods);
     @endphp
     @if ($errors->any())
@@ -793,22 +794,23 @@
                                 </x-form-field>
                             </div>
 
-                            <div class="text-gray-500 font-semibold col-span-full">Additional items for purchase such as T-shirts, Pub Supper or Camping can be added. Please contact TrialMonster - admin@trialmonster.uk - with details.</div>
+                            <div class="text-violet-800 font-semibold col-span-full">Additional items for purchase such as T-shirts, Pub Supper or Camping can be added. Please contact TrialMonster - monster@trialmonster.uk - with details.</div>
 
                         </div>
                     </div>
                 </div>
         </div>
 
-        <div class="flex ml-4 mr-4  mt-2 justify-between" id="buttons">
+        <div class="flex ml-4 mr-4  mt-4 justify-between" id="buttons">
             <div>
             <a href="/adminTrials"
                class="rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-900 shadow-sm hover:bg-violet-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-900">Cancel</a>
-
+@if(!$isLocked)
             <button type="submit" name="submitbutton" value="apply"
                     class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
                 Update
             </button>
+    @endif
             </div>
 <div>
     <button type="submit" name="submitbutton" value="saveasnew"
