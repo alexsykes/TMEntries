@@ -84,6 +84,7 @@ Route::get('trials/addTrialEntry/{id}', [TrialController::class, 'addTrialEntry'
 Route::get('trials/addTrialScoring/{id}', [TrialController::class, 'addTrialScoring'])->middleware(['auth', 'verified']);
 Route::get('trials/addTrialRegs/{id}', [TrialController::class, 'addTrialRegs'])->middleware(['auth', 'verified']);
 Route::get('trials/addTrialFees/{id}', [TrialController::class, 'addTrialFees'])->middleware(['auth', 'verified']);
+Route::get('trials/info/{id}', [TrialController::class, 'info'])->middleware(['auth', 'verified']);
 
 
 /*
@@ -100,7 +101,7 @@ Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->middlewar
 Route::get('/entries/delete/{id}', [EntryController::class, 'delete'])->middleware('auth', 'verified')->name('entries.delete');
 
 Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails']);
-Route::get('/adminEntries', [EntryController::class, 'adminEntries'])->middleware(['auth', 'verified'])->name('adminEntries');
+
 
 //Route::get('/entry/useredit', [EntryController::class, 'useredit']);
 Route::post('entries/userdata', [EntryController::class, 'showUserData']);

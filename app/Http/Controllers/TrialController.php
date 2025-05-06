@@ -624,4 +624,21 @@ class TrialController extends Controller
         return redirect('/adminTrials');
     }
 
+    public function info($id){
+        $entries = DB::table('entries')
+            ->where('trial_id', $id)
+            ->orderBy('status')
+            ->orderBy('course')
+            ->orderBy('name')
+            ->get();
+
+        $purchases = DB::table('products')
+            ->leftJoin('prices', 'products.stripe_price_id', '=', 'prices.stripe_price_id')
+            ->where('trial_id', $id)
+            ->select('products.product_name', 'products.purchases', 'prices.stripe_price')
+        ->get();
+
+        return view('trials.info', ['entries'=>$entries, 'purchases'=> $purchases]);
+    }
+
 }

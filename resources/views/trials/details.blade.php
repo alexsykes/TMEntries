@@ -35,27 +35,46 @@
     $openingDateFormatted = date_format($openingDate, "g:ia  F jS, Y");
     $entryStatus = "";
     $showButton = "";
-    if (($hasOpeningDate == 1) && ($now < $openingDate)) {
-        $entryStatus .= "Registration will open at $openingDateFormatted";
-        $showButton="hidden";
-    } elseif ($now > $closingDate) {
-        $entryStatus .= "Registration is now closed";
-        $showButton="hidden";
-    }
-    else if(($hasClosingDate == 1) && ($closingDate > $now)) {
-        $entryStatus .= "Entries are open until $closingDateFormatted";
-        $showButton="";
+
+//  Neither start nor finish
+    if (($hasClosingDate == false) && ($hasOpeningDate == false)) {
+        $showButton = "";
     }
 
-
-
-
-//    dd($date, $openingDate, $closingDate);
-
-    if ($openingDate > $now) {
-//        dd("Entries open on $openingDateFormatted");
+//    Start date and finish
+    if (($hasClosingDate == true) && ($hasOpeningDate == true)) {
+//       Within range
+        if (($openingDate < $now) && ($closingDate > $now)) {
+            $showButton = "";
+            $entryStatus .= "Entries are open until $closingDateFormatted";
+        } //        Not open yet
+        else if ($openingDate > $now) {
+            $showButton = "hidden";
+            $entryStatus .= "Registration will open at $openingDateFormatted";
+        } //        Now closed
+        else {
+            $showButton = "hidden";
+            $entryStatus .= "Registration is now closed";
+        }
     }
 
+//    Start time only
+    if (($hasClosingDate == false) && ($hasOpeningDate == true)) {
+//        Not open yet
+        if ($openingDate > $now) {
+            $showButton = "hidden";
+            $entryStatus .= "Registration will open at $openingDateFormatted";
+        }
+    }
+
+//    Closing time only
+    if (($hasClosingDate == true) && ($hasOpeningDate == false)) {
+//        Not open yet
+        if ($closingDate < $now) {
+            $showButton = "hidden";
+            $entryStatus .= "Registration is now closed";
+        }
+    }
 
     if ($trial->stopNonStop == "Stop permitted") {
         $stopNonStop = "This trial will be a Stop Permitted trial.<br>";
@@ -93,24 +112,24 @@
     $classes = $trial->classlist;
     $customClasses = $trial->customClasses;
 
-    if($courses !='') {
+    if ($courses != '') {
         array_push($allCourses, $courses);
     }
 
-    if($customCourses !='') {
+    if ($customCourses != '') {
         array_push($allCourses, $customCourses);
     }
 
-    if($classes !='') {
+    if ($classes != '') {
         array_push($allClasses, $classes);
     }
 
-    if($customClasses !='') {
+    if ($customClasses != '') {
         array_push($allClasses, $customClasses);
     }
 
-    $classlist = str_replace(',',',',implode(',', $allClasses));
-    $courselist   = str_replace(',',',',implode(',', $allCourses));
+    $classlist = str_replace(',', ',', implode(',', $allClasses));
+    $courselist = str_replace(',', ',', implode(',', $allCourses));
     $courseOptions = explode(',', $courselist);
     $classOptions = explode(',', $classlist);
 
@@ -210,7 +229,8 @@
                     class="font-semibold">COURSES: </span>{{$courselist}}
         </div>
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
-                    class="font-semibold">OFFICIALS: </span>Clerk of the Course: {{$trial->coc}}<br>Secretary of the Meeting (To whom all correspondence
+                    class="font-semibold">OFFICIALS: </span>Clerk of the Course: {{$trial->coc}}<br>Secretary of the
+            Meeting (To whom all correspondence
             regarding this event shall be addressed): {{$trial->contactName}} <br><i class="fa-solid fa-envelope"></i>&nbsp;<a
                     href="mailto:{{$trial->email}}">{{$trial->email}}</a><br><i
                     class="fa-solid fa-phone"></i>&nbsp; {{$trial->phone}}<br>Point of Contact for Child Protection
@@ -233,7 +253,8 @@
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">ENTRY LIMIT: </span>This trial has a limited entry of {{$trial->entryLimit}}.
             In the event of the limit being exceeded, acceptance will be determined
-            by <?php echo $entrySelectionBasis; ?>. Entrants will be informed by email once payment is received and their entry is confirmed.
+            by <?php echo $entrySelectionBasis; ?>. Entrants will be informed by email once payment is received and
+            their entry is confirmed.
         </div>
 
         <?php } ?>
@@ -252,12 +273,12 @@
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">METHOD OF MARKING & TIES: </span><?php echo "$stopNonStop $methodOfMarking"; ?>
         </div>
-@if($trial->hasNotes)
+        @if($trial->hasNotes)
 
-        <div class="ml-4 mr-4 pt-2  text-black text-left "><span
-                    class="font-semibold">NOTES: </span><?php echo "$trial->notes"; ?>
-        </div>
-    @endif
+            <div class="ml-4 mr-4 pt-2  text-black text-left "><span
+                        class="font-semibold">NOTES: </span><?php echo "$trial->notes"; ?>
+            </div>
+        @endif
     </div>
 
 </x-main>

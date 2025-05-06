@@ -202,6 +202,11 @@ function onRefundUpdated(mixed $object)
     info("Refund Confirmed: $entryID");
 }
 
+function onPaymentIntentSucceeded()
+{
+    info("Payment intent succeeded");
+}
+
 class StripeEventListener
 {
     /**
@@ -254,6 +259,10 @@ class StripeEventListener
                 break;
             case 'invoice.created':
                 onInvoiceCreated($event);
+                break;
+            case 'payment_intent.succeeded':
+//                onInvoiceCreated($event);
+                onPaymentIntentSucceeded();
                 break;
             default:
                 echo 'Received unknown event type ' . $eventType;

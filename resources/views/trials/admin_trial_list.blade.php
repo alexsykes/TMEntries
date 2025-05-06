@@ -1,21 +1,26 @@
 <x-club>
+
     <x-slot:heading>
        Club Control Panel
     </x-slot:heading>
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <div class="flex justify-between  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
             <div class="font-bold">Trial List</div>
-            <div class="flex">
-                <div class="text-sm">Scoring <span><i
-                                class="ml-1 mr-3 fa-solid fa-pencil text-white"></i></span></div>
-                <div class="text-sm">Entries <span><i
-                                class="ml-1 mr-3 fa-solid fa-list-ol text-white"></i></span></div>
-                <div class="text-sm">Show/Hide<span><i
-                                class="ml-1 mr-3 fa-solid fa-eye text-white"></i></span></div>
-                <div class="text-sm">Trial Setup<span><i
-                                class="ml-1 mr-3 fa-solid fa-gear text-white"></i></span></div>
+
+            <div class="flex justify-between">
+                <div class=" pl-4 pr-4 text-sm">Scoring <span><i
+                                class="ml-1 mr-3 fa-solid fa-pencil "></i></span></div>
+                <div class=" pl-4 pr-4 text-sm">Entries <span><i
+                                class="ml-1 mr-3 fa-solid fa-list-ol "></i></span></div>
+                <div class=" pl-4 pr-4 text-sm">Show/Hide<span><i
+                                class="ml-1 mr-3 fa-solid fa-eye "></i></span></div>
+                <div class=" pl-4 pr-4 text-sm">Trial Setup<span><i
+                                class="ml-1 mr-3 fa-solid fa-gear "></i></span></div>
+                <div class=" pl-4 pr-4 text-sm">Info<span><i
+                                class="ml-1 mr-3 fa-solid fa-circle-info"></i></span></div>
+
             </div>
-        </div>
+            </div>
         <table class="w-full text-sm">
             @foreach($trials as $trial)
                 @php
@@ -52,6 +57,7 @@
                                             class="{{$publishIMG}}"></i></span></a></td>
                         <td class="pl-2 table-cell"><a href="/trials/edit/{{$trial->id}}"><span><i
                                             class="fa-solid fa-gear"></i></span></a></td>
+                        <td class="pl-2 table-cell"><a href="/trials/info/{{$trial->id}}"><span><i class="fa-solid fa-circle-info"></i></span></a></td>
 
                 </tr>
             @endforeach

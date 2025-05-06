@@ -58,10 +58,18 @@
     </div>
 
     <div class="hidden sm:hidden" id="mobile-menu">
-        <div class="px-2 pt-2 pb-3 space-y-1 text-right">
+        <div class="px-2 pt-2 pb-2 text-right">
             @auth
+                @if(Auth::user()->isAdminUser)
+                    <a href="/adminaccess"
+                       class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Admin Access</a>
+                @endif
+                @if(Auth::user()->isClubUser)
+                    <a href="/clubaccess"
+                       class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Club Access</a>
+                @endif
                 <a href="/user/entries"
-                   class="text-white  hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-base font-medium">My
+                   class="text-white  hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My
                     Entries</a>
             @endauth
             <a href="/"
@@ -72,12 +80,10 @@
             @auth
                 <form method="POST" action="/logout">
                     @csrf
-                    <div class="flex justify-end">
                         <button type="submit"
-                                class="text-white hover:bg-blue-300  hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                                class="w-full text-end text-white hover:bg-blue-300  hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                             Log out
                         </button>
-                    </div>
                 </form>
             @endauth
             @guest

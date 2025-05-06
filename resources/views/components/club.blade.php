@@ -107,8 +107,6 @@
         }  else { echo "Club admin"; } ?></title>
 </head>
 <body class="h-full bg-violet-800 text-white">
-
-    {{--    @php $heading = "Welcome" @endphp--}}
     <header class="bg-violet-800 drop-shadow-md">
         <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8  sm:flex sm:justify-between">
             <h1 class="text-m sm:text-lg  font-bold tracking-tight text-white">{{ $heading }}</h1>
@@ -143,13 +141,9 @@
                     <a href="/login"  class="text-white " ><i class="text-xl fa-solid fa-right-to-bracket"></i></a>
                 @endguest
                 @auth
-                    <a href="/auth/profile"  class="text-white" ><i class="text-xl fa-solid fa-user"></i></a>
-                    <form method="POST" action="/logout">
-                        @csrf
-                        <button class="topnav"><i class="text-xl fa-solid fa-right-from-bracket"></i></button>
-                    </form>
+
+                        <a href="adminTrials" class="text-white"><i class="text-xl  fa-solid fa-house"></i></a>
                 @endauth
-                <a href="/" class="text-white"><i class="text-xl  fa-solid fa-house"></i></a>
             </div>
         </div>
     </header>
@@ -166,7 +160,7 @@
                     @endif
 
                     @if (Auth::user()->isClubUser == 1)
-                        <a href="/clubaccess" class="inline-block mt-1 mx-3 hover:underline">Club access</a>
+                        <a href="/results/list" class="inline-block mt-1 mx-3 hover:underline">Public access</a>
                     @endif
                 @endauth
             </div>
