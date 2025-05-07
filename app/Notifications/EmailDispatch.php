@@ -2,11 +2,12 @@
 
 namespace App\Notifications;
 
+use App\Http\Middleware\EmailRateLimit;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Http\Middleware\EmailRateLimit;
+
 class EmailDispatch extends Notification implements ShouldQueue
 {
     use Queueable;

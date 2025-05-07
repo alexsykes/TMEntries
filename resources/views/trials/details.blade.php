@@ -203,9 +203,9 @@
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">ELIGIBILITY: </span>This trial will be {{$rest}} trial. {{$entryConditions}}
         </div>
-        <div class="ml-4 mr-4 pt-2  text-black text-left "><span
-                    class="font-semibold">MACHINES: </span>{{$machines}}
-        </div>
+{{--        <div class="ml-4 mr-4 pt-2  text-black text-left "><span--}}
+{{--                    class="font-semibold">MACHINES: </span>{{$machines}}--}}
+{{--        </div>--}}
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">START / VENUE: </span>{{$trial->startTime}} at {{$trial->venue->name}}
             , {{$trial->venue->postcode}}

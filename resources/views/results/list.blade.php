@@ -5,8 +5,11 @@
             <table class="w-full">
             @foreach($pastTrials as $trial)
 
+                    @php
+                        $date = date_format(date_create($trial->date), "M jS, Y");
+                    @endphp
                 <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
-                    <td class="text-sm hidden md:table-cell  pl-4 pt-1 pb-1"><a href="/results/display/{{$trial->id}}">{{$trial->date}}</a></td>
+                    <td class="text-sm hidden md:table-cell  pl-4 pt-1 pb-1"><a href="/results/display/{{$trial->id}}">{{$date}}</a></td>
                     <td class="table-cell text-sm  pl-4"><a href="/results/display/{{$trial->id}}">{{$trial->club}}</a></td>
                     <td class="table-cell text-sm  pl-4"><a href="/results/display/{{$trial->id}}">{{$trial->name}}</a></td>
                     <td class="table-cell text-sm  pl-4"><a href="/results/display/{{$trial->id}}">{{$trial->venue}}</a></td>

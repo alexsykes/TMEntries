@@ -638,7 +638,15 @@ class TrialController extends Controller
             ->select('products.product_name', 'products.purchases', 'prices.stripe_price')
         ->get();
 
-        return view('trials.info', ['entries'=>$entries, 'purchases'=> $purchases]);
+        $trial = DB::table('trials')
+            ->where('id', $id)
+            ->first();
+
+        $venue = DB::table('venues')
+            ->where('id', $trial->venueID)
+            ->first();
+
+        return view('trials.info', ['entries'=>$entries, 'purchases'=> $purchases, 'trial' => $trial,'venue' =>$venue]);
     }
 
 }
