@@ -141,7 +141,7 @@
                 <a href="mailto:monster@trialmonster.uk?subject=Web Enquiry" class="inline-block mt-1 mx-3 hover:underline">Contact</a>
             </div>
         </x-footer-link>
-        <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - Oldgit UK</div>
+        <div class="text-sm text-center  bg-blue-800 text-white"><a href="https://oldgit.uk">©2018 - {{date("Y")}} Development by Oldgit UK</a><br>&nbsp;</div>
     </div>
 </main>
 <script>

@@ -165,7 +165,7 @@
                 @endauth
             </div>
         </x-footer-link>
-        <div class="text-sm mt-1 text-center bg-violet-800 text-white">©{{date("Y")}} - Oldgit UK</div></div>
+        <div class="text-sm text-center  text-white"><a href="https://oldgit.uk">©2018 - {{date("Y")}} Development by Oldgit UK</a><br>&nbsp;</div>
 </main>
 </body>
 </html>

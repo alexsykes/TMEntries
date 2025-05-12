@@ -116,7 +116,7 @@
         {{ $slot }}
     </div>
     <div class = "bg-red-600">
-        <div class="text-sm mt-1 p-2 text-white font-semibold text-center">©{{date("Y")}} - Oldgit UK</div>
+        <div class="text-sm text-center   text-white"><a href="https://oldgit.uk">©2018 - {{date("Y")}} Development by Oldgit UK</a><br>&nbsp;</div>
     </div>
 </main><script>
     document.addEventListener('DOMContentLoaded', function () {
