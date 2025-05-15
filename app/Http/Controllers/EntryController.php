@@ -305,6 +305,11 @@ class EntryController extends Controller
             ->where('status', 1)
             ->where('token', $token)->first();
 
+
+        if($entry == null) {
+            return view('entries.expiredLink');
+        }
+
         $trial = Trial::select('date')
             ->where('id', $entry->trial_id)
             ->get();

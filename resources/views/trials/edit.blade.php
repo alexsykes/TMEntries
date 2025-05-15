@@ -62,9 +62,9 @@
                                                   placeholder="Name" required/>
                                     <x-form-error name="name"/>
                                 </div>
-                                @error('name')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
+{{--                                @error('name')--}}
+{{--                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
+{{--                                @enderror--}}
                             </x-form-field>
 
                             <x-form-field>
@@ -74,9 +74,9 @@
                                                   placeholder="Club name" required/>
                                     <x-form-error name="club"/>
                                 </div>
-                                @error('club')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
+{{--                                @error('club')--}}
+{{--                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
+{{--                                @enderror--}}
                             </x-form-field>
 
                             <x-form-field>
@@ -85,9 +85,9 @@
                                     <x-form-input name="date" type="date" min="{{date('Y-m-d')}}" id="date" value="{{$trial->date}}" required/>
                                     <x-form-error name="date"/>
                                 </div>
-                                @error('date')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
+{{--                                @error('date')--}}
+{{--                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
+{{--                                @enderror--}}
                             </x-form-field>
 
                             <x-form-field>
@@ -98,9 +98,9 @@
                                            name="isMultiDay" type="checkbox" value="1" id="isMultiDay"  />
                                     <x-form-error name="isMultiDay"/>
                                 </div>
-                                @error('date')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
+{{--                                @error('date')--}}
+{{--                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
+{{--                                @enderror--}}
                             </x-form-field>
 
                             <div id="numDaysDiv" class=" col-span-full">
@@ -110,9 +110,9 @@
                                         <x-form-input name="numDays" type="number" id="numDays" value="{{$trial->numDays}}" min="1"/>
                                         <x-form-error name="numDays"/>
                                     </div>
-                                    @error('email')
-                                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                    @enderror
+{{--                                    @error('email')--}}
+{{--                                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
+{{--                                    @enderror--}}
                                 </x-form-field>
                             </div>
 
@@ -717,7 +717,7 @@
                                 <x-form-field>
                                     <x-form-label for="notes">Notes</x-form-label>
                                     <div class="mt-2 ">
-                                        <textarea name="notes" type="text" id="notes" >{{$trial->notes}}</textarea>
+                                        <textarea class="tinyMce" name="notes" type="text" id="notes" >{{$trial->notes}}</textarea>
                                     </div>
                                     @error('notes')
                                     <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

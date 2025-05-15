@@ -9,6 +9,8 @@
     </x-slot:heading>
     <?php
     session(['trial_id' => $trial->id]);
+
+
     $latitude = $trial->venue->latitude;
     $longitude = $trial->venue->longitude;
     $markerArray = array();
@@ -23,6 +25,11 @@
     $hasEodSurcharge = $trial->hasEodSurcharge;
     $hasWaitingList = $trial->hasWaitingList;
     $hasTimePenalty = $trial->hasTimePenalty;
+
+    if($hasEntryLimit) {
+        $entryLimit = $trial->entryLimit;
+        $entriesLeft = $entryLimit - $numEntries;
+    }
 
 //  Entry opening and closing dates
     $date = date_create($trial->date);
@@ -39,6 +46,7 @@
 //  Neither start nor finish
     if (($hasClosingDate == false) && ($hasOpeningDate == false)) {
         $showButton = "";
+        $entriesOpen = true;
     }
 
 //    Start date and finish
@@ -75,6 +83,22 @@
             $entryStatus .= "Registration is now closed";
         }
     }
+
+//    Entry limit
+    if ($hasEntryLimit && $entriesLeft == 1) {
+        $entryStatus .= " - Final entry remaining!";
+    }   elseif($hasEntryLimit && $entriesLeft <= 5) {
+        $entryStatus .= " - Final $entriesLeft entries remaining!";
+    }
+
+    if($hasEntryLimit && $entriesLeft == 0) {
+        $showButton = "hidden";
+        $entryStatus .= "Registration is now closed as the entry limit has been reached";
+    }
+
+
+
+
 
     if ($trial->stopNonStop == "Stop permitted") {
         $stopNonStop = "This trial will be a Stop Permitted trial.<br>";
