@@ -47,6 +47,7 @@
     if (($hasClosingDate == false) && ($hasOpeningDate == false)) {
         $showButton = "";
         $entriesOpen = true;
+        $entryStatus .= "Entries are open until $formattedDate";
     }
 
 //    Start date and finish

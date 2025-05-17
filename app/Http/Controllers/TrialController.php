@@ -219,6 +219,18 @@ class TrialController extends Controller
                 $attrs['startInterval'] = request('startInterval', 60);
                 $attrs['penaltyDelta'] = request('penaltyDelta', 60);
 
+                if(request('customClasses')){
+                    $array = explode(',', request('customClasses'));
+                    $trimmedarray = array_map('trim', $array);
+                    $attrs['customClasses'] = implode(',', $trimmedarray);
+                }
+
+                if(request('customCourses')){
+                    $array = explode(',', request('customCourses'));
+                    $trimmedarray = array_map('trim', $array);
+                    $attrs['customCourses'] = implode(',', $trimmedarray);
+                }
+
                 if (request('classlist')) {
                     $attrs['classlist'] = implode(',', request('classlist'));
                 } else {
@@ -353,7 +365,22 @@ class TrialController extends Controller
         $attrs['notes'] = request('notes');
         $attrs['options'] = request('options');
         $attrs['customCourses'] = request('customCourses');
+
         $attrs['customClasses'] = request('customClasses');
+
+
+
+        if(request('customClasses')){
+            $array = explode(',', request('customClasses'));
+            $trimmedarray = array_map('trim', $array);
+            $attrs['customClasses'] = implode(',', $trimmedarray);
+        }
+        if(request('customCourses')){
+            $array = explode(',', request('customCourses'));
+            $trimmedarray = array_map('trim', $array);
+            $attrs['customCourses'] = implode(',', $trimmedarray);
+        }
+
         $attrs['entryMethod'] = implode(',', request('entryMethod', 'TrialMonster'));
         $attrs['onlineEntryLink'] = request('onlineEntryLink');
         $attrs['hasEodSurcharge'] = request('hasEodSurcharge', 0);

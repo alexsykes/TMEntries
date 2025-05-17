@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schedule;
 use App\Models\Trial;
 
 Artisan::command('inspire', function () {
@@ -42,3 +43,7 @@ Artisan::command('getTrialList', function () {
         }
     }
 });
+
+//Not running on server - replaced by cron job
+//Schedule::command('backup:clean')->daily()->at('08:45');
+//Schedule::command('backup:run')->daily()->at('09:25');

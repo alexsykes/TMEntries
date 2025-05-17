@@ -1,0 +1,13 @@
+17-05-25
+Daily backup added - via crontab
+
+Clean Custom Course and CustomClass trimming whitespace
+Edited save and update / TrialController.php
+
+Class results added
+
+TODO
+Entry
+Names - correct cpitalisation on Entry
+
+YCMCC - results tie-break by riderAge == DoB

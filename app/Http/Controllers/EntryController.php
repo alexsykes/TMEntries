@@ -25,7 +25,6 @@ class EntryController extends Controller
     {
         $trial_id = request('id');
         session(['trial_id' => $trial_id]);
-
         return view('entries.get_user_details');
     }
 

@@ -32,7 +32,7 @@ class ResultController extends Controller
         $trials = DB::table('trials')
             ->join('venues', 'trials.venueID', '=', 'venues.id')
             ->where('trials.id', $id)
-            ->get(['trials.*','venues.name as venue']);
+            ->get(['trials.*', 'venues.name as venue']);
 
         if ($trials->isEmpty()) {
             abort(404);
@@ -45,6 +45,10 @@ class ResultController extends Controller
         $numlaps = $trial->numLaps;
 
         $courses = explode(",", $courselist);
+        $classes = explode(",", $classlist);
+
+//        dd($classlist);
+        $resultsByClass = $this->getResultsByClass($id, $courselist, $classlist);
 
         $courseResults = array();
 
@@ -58,52 +62,50 @@ class ResultController extends Controller
             ->where('resultStatus', 2)
             ->orderBy('name')
             ->get('name');
-        return view('results.detail', ['trial' => $trial, 'courseResults' => $courseResults, 'courses' => $courses, 'nonStarters' => $nonStarters]);
+        return view('results.detail', ['trial' => $trial, 'courseResults' => $courseResults, 'courses' => $courses, 'nonStarters' => $nonStarters, 'resultsByClass' => $resultsByClass]);
+    }
+
+    private function getResultsByClass($id, $courselist, $classlist)
+    {
+        $classes = explode(',', $classlist);
+        $courses = explode(',', $courselist);
+        $resultsArray = array();
+
+        foreach ($courses as $course) {
+            foreach ($classes as $class) {
+                $resultArray = array();
+                array_push($resultArray, $course);
+                array_push($resultArray, $class);
+                $sql = "SELECT id AS resultID, RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus FROM tme_entries WHERE trial_id = $id AND course = '$course' AND class = '$class' AND resultStatus < 2 AND ridingNumber > 0 ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores";
+                $results = DB::select($sql);
+                array_push($resultArray, $results);
+                array_push($resultsArray, $resultArray);
+            }
+        }
+        return $resultsArray;
     }
 
     private function getCourseResult($id, string $course)
     {
-        $query = "SELECT id AS entryID, DATE_FORMAT(created_at, '%d/%m/%Y %h:%i%p') AS created_at, 
-RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos,
+        $query = "SELECT id AS entryID, DATE_FORMAT(created_at, '%d/%m/%Y %h:%i%p') AS created_at, RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos,
 id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id FROM tme_entries WHERE trial_id = $id AND ridingNumber > 0 AND resultStatus < 2 AND course = '" . $course . "'";
         $courseResult = DB::select($query);
         return $courseResult;
     }
 
-    private function getResults($id, $courselist)
+    public function edit($id)
     {
-
-        $courseArray = explode(',', $courselist);
-        $courselist = implode("','", $courseArray);
-
-        $query = "SELECT id AS resultID, 
-    RANK() OVER (
-	PARTITION BY FIELD(course,'$courselist')
-	ORDER BY FIELD(course,'$courselist'), resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores
-	) AS pos,
-	id AS id, ridingNumber  AS rider, 
-	course AS course, 
-	name, 
-	class AS class, CONCAT(make,' ',size) AS machine, 
-	total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id 
-	FROM tme_entries 
-	WHERE trial_id = $id AND resultStatus < 2";
-
-        $results = DB::select($query);
-        return $results;
-    }
-
-    public function edit($id){
         $entry = DB::table('entries')
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
             ->where('entries.id', $id)
             ->get(['entries.*', 'trials.numSections', 'trials.numLaps', 'trials.classlist', 'trials.courselist', 'trials.customClasses', 'trials.customCourses', 'trials.isEntryLocked'])
-        ->first();
+            ->first();
 
         return view('results.edit', ['entry' => $entry]);
     }
 
-    public function update (){
+    public function update()
+    {
         $entryID = request('id');
         $entry = Entry::findOrFail($entryID);
         $trialID = $entry->trial_id;
@@ -118,16 +120,16 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
 
         $scoreString = "";
         foreach ($sectionScores as $sectionScore) {
-            $score = str_pad($sectionScore, $numLaps ,'x');
+            $score = str_pad($sectionScore, $numLaps, 'x');
             $scoreString .= $score;
         }
         dump($scoreString);
 
-        $scores = str_split( $scoreString, 1);
-    $sequentialScores = "";
-        for($lap = 0; $lap < $numLaps; $lap++) {
+        $scores = str_split($scoreString, 1);
+        $sequentialScores = "";
+        for ($lap = 0; $lap < $numLaps; $lap++) {
             for ($section = 0; $section < $numSections; $section++) {
-                $offset =  $lap + ($numLaps * $section);
+                $offset = $lap + ($numLaps * $section);
                 $sequentialScores .= $scores[$offset];
             }
         }
@@ -166,6 +168,29 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
         $trial->save();
 
         return redirect("/results/display/$trialID");
+    }
+
+    private function getResults($id, $courselist)
+    {
+
+        $courseArray = explode(',', $courselist);
+        $courselist = implode("','", $courseArray);
+
+        $query = "SELECT id AS resultID, 
+    RANK() OVER (
+	PARTITION BY FIELD(course,'$courselist')
+	ORDER BY FIELD(course,'$courselist'), resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores
+	) AS pos,
+	id AS id, ridingNumber  AS rider, 
+	course AS course, 
+	name, 
+	class AS class, CONCAT(make,' ',size) AS machine, 
+	total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id 
+	FROM tme_entries 
+	WHERE trial_id = $id AND resultStatus < 2";
+
+        $results = DB::select($query);
+        return $results;
     }
 
 }
