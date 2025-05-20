@@ -32,46 +32,48 @@ function onProductCreated($productObject)
     $metadata = $productObject['metadata'];
 
     $stripe_product_id = $productObject['id'];
-    $stripe_price_id = $productObject['default_price'];
     $stripe_product_description = $productObject['description'];
     $isLive = $productObject['livemode'];
     $isEntryFee = false;
     $hasQuantity = false;
     $product_name = $productObject['name'];
-    $product_category = $metadata['category'];
-    $trial_id = $metadata['trialid'];
-    $isYouth = $metadata['isYouth'];
-    if ($isYouth == 'true') {
-        $youth = true;
-    } else {
-        $youth = false;
+
+    $youth = false;
+    if(isset($metadata['isYouth'])) {
+        $isYouth = $metadata['isYouth'];
+        if ($isYouth == 'true') {
+            $youth = true;
+        }
     }
 
-
-    if ($product_category == 'entry fee') {
-        $isEntryFee = true;
+    $product_category = '';
+    if(isset($metadata['category'])) {
+        $product_category = $metadata['category'];
     }
-    $email = 'monster@trialmonster.uk';
 
-//    info("Product created");
+    $trialid = 0;
+    if(isset($metadata['trialid'])) {
+        $trialid = $metadata['trialid'];
+    }
+
 
     $product = Product::create([
         'stripe_product_id' => $stripe_product_id,
-        'stripe_price_id' => $stripe_price_id,
         'stripe_product_description' => $stripe_product_description,
         'isLive' => $isLive,
         'isEntryFee' => $isEntryFee,
         'hasQuantity' => $hasQuantity,
         'product_name' => $product_name,
         'product_category' => $product_category,
-        'trial_id' => $trial_id,
+        'trial_id' => $trialid,
         'isYouth' => $youth,
         'purchases' => 0,
         'version' => 1,
     ]);
-info("Product created" . $product->product_name);
-    Mail::to($email)->send(new ProductCreated($product));
+    info("Product created" . $product->product_name);
 
+    $email = 'monster@trialmonster.uk';
+    Mail::to($email)->send(new ProductCreated($product));
 }
 
 function onProductUpdated($productObject)
@@ -79,37 +81,42 @@ function onProductUpdated($productObject)
     $metadata = $productObject['metadata'];
 
     $stripe_product_id = $productObject['id'];
-    $stripe_price_id = $productObject['default_price'];
     $stripe_product_description = $productObject['description'];
     $isLive = $productObject['livemode'];
     $isEntryFee = false;
     $hasQuantity = false;
     $product_name = $productObject['name'];
-    $product_category = $metadata['category'];
-    $trial_id = $metadata['trialid'];
-    $isYouth = $metadata['isYouth'];
-    if ($isYouth == 'true') {
-        $youth = true;
-    } else {
-        $youth = false;
+
+
+    $youth = false;
+    if(isset($metadata['isYouth'])) {
+        $isYouth = $metadata['isYouth'];
+        if ($isYouth == 'true') {
+            $youth = true;
+        }
     }
 
-    if ($product_category == 'entry fee') {
-        $isEntryFee = true;
+    $product_category = '';
+    if(isset($metadata['category'])) {
+        $product_category = $metadata['category'];
+    }
+
+    $trialid = 0;
+    if(isset($metadata['trialid'])) {
+        $trialid = $metadata['trialid'];
     }
 
     $product = DB::table('products')
         ->where('stripe_product_id', '=', $stripe_product_id)
         ->update([
             'stripe_product_id' => $stripe_product_id,
-            'stripe_price_id' => $stripe_price_id,
             'stripe_product_description' => $stripe_product_description,
             'isLive' => $isLive,
             'isEntryFee' => $isEntryFee,
             'hasQuantity' => $hasQuantity,
             'product_name' => $product_name,
             'product_category' => $product_category,
-            'trial_id' => $trial_id,
+            'trial_id' => $trialid,
             'isYouth' => $youth,
             'purchases' => 0,
             'updated_at' => now(),

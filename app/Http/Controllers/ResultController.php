@@ -45,7 +45,6 @@ class ResultController extends Controller
         $numlaps = $trial->numLaps;
 
         $courses = explode(",", $courselist);
-        $classes = explode(",", $classlist);
 
 //        dd($classlist);
         $resultsByClass = $this->getResultsByClass($id, $courselist, $classlist);

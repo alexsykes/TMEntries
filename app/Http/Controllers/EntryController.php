@@ -8,6 +8,7 @@ use App\Models\Price;
 use App\Models\Trial;
 use App\Rules\NoDuplicates;
 use Auth;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -371,14 +372,12 @@ class EntryController extends Controller
             ->value('stripe_product_id');
 
 
-        $youthPriceID = DB::table('products')
-            ->where('trial_id', $request->trial_id)
-            ->where('isYouth', true)
+        $youthPriceID = DB::table('prices')
+            ->where('stripe_product_id', $youthProductID)
             ->value('stripe_price_id');
 
-        $adultPriceID = DB::table('products')
-            ->where('trial_id', $request->trial_id)
-            ->where('isYouth', false)
+        $adultPriceID = DB::table('prices')
+            ->where('stripe_product_id', $adultProductID)
             ->value('stripe_price_id');
 
         $token = bin2hex(random_bytes(16));
@@ -521,6 +520,14 @@ class EntryController extends Controller
     {
 //        $id = 119;
         $trialDetails = DB::table('trials')->where('id', $id)->first();
+        $venueID = $trialDetails->venueID;
+        $venue = DB::table('venues')->where('id', $venueID)->first();
+        $venueName = $venue->name;
+
+        $rawDate = new DateTime($trialDetails->date);
+        $date  = date_format($rawDate, "jS M, Y");
+        $club = $trialDetails->club;
+
         $startList = DB::table('entries')
             ->where('trial_id', $trialDetails->id)
             ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
@@ -530,11 +537,8 @@ class EntryController extends Controller
             exit("No entries to print");
         }
         $filename = "Sign-on $trialDetails->name.pdf";
-//        dd($startList, $trialDetails);
-        $img_file = storage_path('app/public/images/acu.jpg');
-//        PDF::setPageOrientation('L');
-        MYPDF::SetCreator('TM UK');
 
+        MYPDF::SetCreator('TM UK');
 
         PDF::SetAuthor('TrialMonster.uk');
         PDF::SetTitle('Sign-on sheet');
@@ -550,10 +554,6 @@ class EntryController extends Controller
 
         PDF::SetMargins(0, 0, 0);
 
-        $lineHeight = 8;
-        // set background image
-
-//        PDF::SetPageMark();
 
         $authority = $trialDetails->authority;
 //        info("Authority: $authority");
@@ -604,12 +604,33 @@ class EntryController extends Controller
         }
         PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
 
-//        $file = Image::fromFile($img_file);
-//
-//        dd($file);
-//        PDF::SetAutoPageBreak($auto_page_break, $bMargin);
-
         // set the starting point for the page content
+        //        Add trial details
+        switch ($trialDetails->authority) {
+            case 'ACU':
+                PDF::setLeftMargin(21);
+                PDF::setY(38);
+                PDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C'. 'M');
+                PDF::setY(46);
+                PDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C'. 'M');
+                PDF::setY(54);
+                PDF::setLeftMargin(29);
+                PDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                PDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                PDF::setY(62);
+                PDF::setLeftMargin(29);
+                PDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                break;
+
+            case 'AMCA':
+                PDF::setLeftMargin(26);
+                PDF::setY(75);
+                PDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                PDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                PDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                break;
+        }
+
         PDF::SetPageMark();
         PDF::SetFontSize(10, true);
         PDF::SetTopMargin($topMargin);
@@ -617,6 +638,9 @@ class EntryController extends Controller
 
 //        PDF::Write(0, "What's next?");
         $index = 0;
+
+
+
         $lineNumber = 1;
         if (sizeof($startList) > 0) {
             foreach ($startList as $entry) {
@@ -666,6 +690,32 @@ class EntryController extends Controller
                 if ($lineNumber % $linesPerPage == 0) {
                     PDF::addPage();
                     PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+                    switch ($trialDetails->authority) {
+                        case 'ACU':
+                            PDF::setLeftMargin(21);
+                            PDF::setY(38);
+                            PDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C'. 'M');
+                            PDF::setY(46);
+                            PDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C'. 'M');
+                            PDF::setY(54);
+                            PDF::setLeftMargin(29);
+                            PDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                            PDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                            PDF::setY(62);
+                            PDF::setLeftMargin(29);
+                            PDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                            break;
+
+                        case 'AMCA':
+                            PDF::setLeftMargin(26);
+                            PDF::setY(75);
+                            PDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                            PDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                            PDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                            break;
+                    }
+
+                    PDF::setY($topMargin);
                 }
                 $lineNumber++;
 
@@ -752,7 +802,7 @@ class MYPDF extends PDF {
         $this->SetAutoPageBreak(false, 0);
         // set bacground image
         $img_file = storage_path('app/public/images/acu.jpg');
-        $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+//        $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
         // restore auto-page-break status
         $this->SetAutoPageBreak($auto_page_break, $bMargin);
         // set the starting point for the page content
