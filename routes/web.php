@@ -10,7 +10,7 @@ use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ScoringController;
 use App\Http\Controllers\UserController;
 
-//use App\Http\Controllers\WebhookEndpointController;
+use App\Http\Controllers\ClubController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\TrialController;
 use App\Http\Controllers\VenueController;
@@ -171,9 +171,11 @@ Route::patch('/results/update', [ResultController::class, 'update']);
 
 // CLUB Routes
 Route::get('/clubs/list', [ClubController::class, 'list']);
-Route::get('/club/detail/{id}', [ClubController::class, 'detail'])->middleware(['auth', 'verified']);
-Route::get('/clubs/new', [ClubController::class, 'add'])->middleware(['auth', 'verified']);
-Route::post('/club/store', [ClubController::class, 'store'])->middleware(['auth', 'verified']);
+Route::get('/clublist', [ClubController::class, 'clublist']);
+Route::get('/club/detail/{id}', [ClubController::class, 'detail']);
+Route::get('/clubs/add', [ClubController::class, 'add'])->middleware(['auth', 'verified']);
+Route::get('/club/edit/{id}', [ClubController::class, 'edit'])->middleware(['auth', 'verified']);
+Route::post('/club/store', [ClubController::class, 'store'])->middleware(['auth', 'verified'])->name('club.store');
 Route::patch('/club/update', [ClubController::class, 'update'])->middleware(['auth', 'verified']);
 
 // MIDDLEWARE

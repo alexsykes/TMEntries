@@ -1,3 +1,3 @@
 <x-main>
-    <x-slot:heading>Club detail</x-slot:heading>
+    <x-slot:heading>{{$club->name}}</x-slot:heading>
 </x-main>
