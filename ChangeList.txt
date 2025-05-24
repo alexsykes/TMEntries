@@ -13,3 +13,8 @@ Auto-capitalization of riders' names.
 TODO
 YCMCC - results tie-break by riderAge == DoB
 TinyMCE - integrate local
+
+Permissions
+sudo chmod -R 775 TMEntries - should this be 755?
+sudo chmod -R 775 storage
+sudo chmod -R 775 bootstrap/cache

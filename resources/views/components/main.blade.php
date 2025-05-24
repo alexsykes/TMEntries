@@ -116,7 +116,7 @@
 
 @endphp
 
-    <title>TrialMonster UK</title>
+    <title>{{config('app.name')}}</title>
 </head>
 <body class="h-full bg-blue-800 text-white">
 @include('navbar')

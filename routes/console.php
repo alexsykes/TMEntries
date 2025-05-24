@@ -10,40 +10,6 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Artisan::command('getTrialList', function () {
-    $url = 'https://batarfi.org/data/getTrialList.php';
-    $rawData = (file_get_contents($url, 'r'));
-    $trials = json_decode($rawData, true);
 
-    foreach ($trials as $trial) {
-        if (DB::table("trials")->where("id", $trial["id"])->exists()) {
-            $trialToUpdate = Trial::findOrFail($trial["id"]);
-
-            $attrs = [
-                'name' => $trial["name"],
-                'classlist' => $trial["classlist"],
-                'courselist' => $trial["courselist"],
-                'date' => $trial["date"],
-                'club' => $trial["club"],
-                'authority' => $trial["authority"],
-                'updated_at' => NOW(),
-            ];
-            $trialToUpdate->update($attrs);
-
-        } else {
-            Trial::create([
-                'id' => $trial["id"],
-                'name' => $trial["name"],
-                'classlist' => $trial["classlist"],
-                'courselist' => $trial["courselist"],
-                'date' => $trial["date"],
-                'club' => $trial["club"],
-                'authority' => $trial["authority"],
-            ]);
-        }
-    }
-});
-
-//Not running on server - replaced by cron job
-//Schedule::command('backup:clean')->daily()->at('08:45');
-//Schedule::command('backup:run')->daily()->at('09:25');
+Schedule::command('backup:run')->dailyAt('01:01');
+//Schedule::command('backup:run')->everyMinute();

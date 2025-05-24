@@ -515,7 +515,6 @@ class EntryController extends Controller
         return redirect("/trials/adminEntryList/{$trialID}");
     }
 
-
     public function printSignOnSheets($id)
     {
 //        $id = 119;
