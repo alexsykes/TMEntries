@@ -10,6 +10,20 @@
         }
 
 
+        document.addEventListener("DOMContentLoaded", function(event) {
+            // Your code to run since DOM is loaded and ready
+            const input = document.querySelector('input[name="name"]');
+
+            input.addEventListener('invalid', function (event) {
+                if (event.target.validity.patternMismatch) {
+                    event.target.setCustomValidity('Please enter your firstname and surname.');
+                }
+            })
+            input.addEventListener('change', function (event) {
+                event.target.setCustomValidity('');
+            })
+        });
+
     </script>
     @php
         $trial_id = $trial->id;
@@ -122,7 +136,7 @@
                             <x-form-label for="name">Name</x-form-label>
                             <div class="mt-2 ">
                                 <x-form-input class="" name="name" type="text" id="name" :value="old('name')"
-                                              pattern="^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{1,}\s?([a-zA-Z]{1,})?)"
+                                              pattern="^([a-zA-Z\-]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{1,}\s?([a-zA-Z]{1,})?)"
                                               placeholder="Rider's name" required/>
                                 <x-form-error name="name"/>
                             </div>
@@ -242,16 +256,4 @@
             </div>
         </div>
     </form>
-    <script>
-        const input = document.querySelector('input[name="name"]');
-
-        input.addEventListener('invalid', function (event) {
-            if (event.target.validity.patternMismatch) {
-                event.target.setCustomValidity('Please enter your firstname and surname.');
-            }
-        })
-        input.addEventListener('change', function (event) {
-            event.target.setCustomValidity('');
-        })
-    </script>
 </x-main>

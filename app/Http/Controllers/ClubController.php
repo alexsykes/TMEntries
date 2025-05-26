@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Club;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClubController extends Controller
 {
@@ -18,6 +19,13 @@ class ClubController extends Controller
     public function clublist(){
         $clubs = Club::all()
         ->sortBy('name');
+
+        foreach ($clubs as $club) {
+            $club->series = DB::table('series')
+            ->where('clubID', $club->id)
+            ->get();
+        }
+
         return view('clubs.clublist', ['clubs' => $clubs]);
     }
 

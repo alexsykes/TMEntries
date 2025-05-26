@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ScoringController;
+use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\ClubController;
@@ -177,6 +178,15 @@ Route::get('/clubs/add', [ClubController::class, 'add'])->middleware(['auth', 'v
 Route::get('/club/edit/{id}', [ClubController::class, 'edit'])->middleware(['auth', 'verified']);
 Route::post('/club/store', [ClubController::class, 'store'])->middleware(['auth', 'verified'])->name('club.store');
 Route::patch('/club/update', [ClubController::class, 'update'])->middleware(['auth', 'verified']);
+
+// SERIES Routes
+Route::get('/series/list', [SeriesController::class, 'list']);
+Route::get('/series/detail/{id}', [SeriesController::class, 'detail']);
+Route::get('/series/add', [SeriesController::class, 'add'])->middleware(['auth', 'verified']);
+Route::get('/series/edit/{id}', [SeriesController::class, 'edit'])->middleware(['auth', 'verified']);
+Route::post('/series/store', [SeriesController::class, 'store'])->middleware(['auth', 'verified']);
+Route::patch('/series/update', [SeriesController::class, 'update'])->middleware(['auth', 'verified']);
+
 
 // MIDDLEWARE
 Route::middleware('auth')->group(function () {

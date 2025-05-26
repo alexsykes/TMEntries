@@ -88,6 +88,7 @@ class EntryController extends Controller
         return view('entries.register', ['entries' => $entries, 'trial' => $trial]);
     }
 
+//     From editing from list on register page
     public function updateEntry(Request $request)
     {
 //        $accept = session('accept');
@@ -106,6 +107,7 @@ class EntryController extends Controller
         $entry = Entry::find($request->id);
         $trial_id = $entry->trial_id;
 
+//        Get product/price IDs
         $youthProductID = DB::table('products')
             ->where('trial_id', $trial_id)
             ->where('isYouth', true)
@@ -118,16 +120,15 @@ class EntryController extends Controller
             ->value('stripe_product_id');
 
 
-        $youthPriceID = DB::table('products')
-            ->where('trial_id', $trial_id)
-            ->where('isYouth', true)
+        $youthPriceID = DB::table('prices')
+            ->where('stripe_product_id', $youthProductID)
             ->value('stripe_price_id');
 
-        $adultPriceID = DB::table('products')
-            ->where('trial_id', $trial_id)
-            ->where('isYouth', false)
+        $adultPriceID = DB::table('prices')
+            ->where('stripe_product_id', $adultProductID)
             ->value('stripe_price_id');
 
+//        dd($trial_id, $adultProductID, $adultPriceID, $youthProductID, $youthPriceID);
         $entry->name = $this->nameize($request->name);
         $entry->class = $request->class;
         $entry->course = $request->course;
@@ -135,6 +136,7 @@ class EntryController extends Controller
 
         $entry->make = $request->make;
         $entry->type = $request->type;
+
         $entry->size = $request->size;
 //        $entry->accept = $accept;
         $entry->dob = $request->dob;
@@ -150,6 +152,7 @@ class EntryController extends Controller
         }
 
         $entry->save();
+//        dd($entry);
         return redirect("/entries/register/{$trial_id}");
     }
 
@@ -247,7 +250,7 @@ class EntryController extends Controller
         return redirect("/");
     }
 
-    /*   User updates entry
+    /*   User updates entry - from email
         Show screen for entry with form for updated fields
         Limited changes can be made
     */
@@ -348,7 +351,7 @@ class EntryController extends Controller
         return view('entries.checkout', ['entries' => $entries, 'trial' => $trial, 'trial_id' => $trial_id]);
     }
 
-
+//  Store from Register page
 //    Store first record then pass email and trial_id to create_another view
     public function store(Request $request)
     {

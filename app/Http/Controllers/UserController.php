@@ -69,8 +69,9 @@ class UserController extends Controller
         return view('user.edit_entry', ['entry' => $entry]);
     }
 
+//    Update entry from My Entries page
     public function updateEntry(Request $request) {
-//dd(request()->all());
+
         $id = $request->entryID;
         $entry = Entry::findorfail($id);
         $request->validate([
