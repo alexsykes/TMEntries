@@ -1,5 +1,5 @@
 <x-club >
-    <x-slot:heading>Add a new Series</x-slot:heading>
+    <x-slot:heading>Updating {{$series->name}}</x-slot:heading>
     @php
         //dd($clubs);
     @endphp
@@ -68,7 +68,7 @@
                     <x-form-label for="notes">Notes</x-form-label>
                     <div class="text-sm">Please give full details of the series - machine eligibiity, number of rounds, how scores are awarded etc.</div>
                     <div class="mt-2 ">
-                        <textarea class="" name="notes" type="text" id="notes" >{{$series->notes}}</textarea>
+                        <textarea class="withEditor" name="notes" type="text" id="notes" >{{$series->notes}}</textarea>
                     </div>
                     @error('notes')
                     <p class="text-xs text-violet-500 font-semibold mt-1">{{ $message }}</p>

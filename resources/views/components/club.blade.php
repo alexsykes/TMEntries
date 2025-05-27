@@ -116,8 +116,9 @@
             <div class="hidden sm:block">
                 <div class="ml-4 flex space-x-4 items-center m-auto px md:ml-6" >
                     <x-nav-link href="/" :active="request()->is('/')">Public site</x-nav-link>
+                    <x-nav-link href="/club/profile" :active="request()->is('/clubaccess')">Profile</x-nav-link>
                     <x-nav-link href="/clubaccess" :active="request()->is('/clubaccess')">Trials</x-nav-link>
-                    <x-nav-link href="/series/list" :active="request()->is('/series/list')">Series</x-nav-link>
+                    <x-nav-link href="/series/list" :active="request()->is('/series/list')">Competitions</x-nav-link>
                     @guest
                         <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>
                         {{--                        <x-nav-link href="/register" :active="request()->is('register')">Register</x-nav-link>--}}
@@ -167,6 +168,7 @@
             </div>
         </x-footer-link>
         <div class="text-sm text-center  text-white"><a href="https://oldgit.uk">©2018 - {{date("Y")}} Development by Oldgit UK</a><br>&nbsp;</div>
+    </div>
 </main>
 </body>
 </html>

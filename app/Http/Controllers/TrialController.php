@@ -44,6 +44,7 @@ class TrialController extends Controller
         $trials = Trial::all()
             ->where('created_by', $userID)
             ->sortByDesc('date');
+
         return view('trials.admin_trial_list', ['trials' => $trials]);
     }
 

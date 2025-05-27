@@ -11,7 +11,8 @@ Auto-capitalization of riders' names.
 Pattern check added on name field in register and edit views
 
 TODO
-Checl permissions!!!
+Check permissions!!!
+Club access - check small screen menu
 
 TODO
 YCMCC - results tie-break by riderAge == DoB

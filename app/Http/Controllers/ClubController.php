@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Club;
+use App\Models\Series;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ClubController extends Controller
 {
@@ -14,6 +16,18 @@ class ClubController extends Controller
         $clubs = Club::all()
         ->sortBy('name');
         return view('clubs.list', compact('clubs'));
+    }
+
+    public function profile(Request $request) {
+        $user = Auth::user();
+        $clubID = $user->club_id;
+
+        $club = Club::find($clubID);
+        $series = Series::where('clubID', $clubID)
+        ->get();
+//        dd($series);
+
+        return view('clubs.profile', ['club' => $club, 'series' => $series]);
     }
 
     public function clublist(){
@@ -54,6 +68,7 @@ class ClubController extends Controller
         $attributes['website'] = request('website', '');
         $attributes['facebook'] = request('facebook', '');
         $attributes['description'] = request('description', '');
+        $attributes['section_markers'] = request('section_markers', '');
 
         $club = Club::create($attributes);
 //        dd($club);
@@ -71,11 +86,40 @@ class ClubController extends Controller
         $attributes['website'] = request('website', '');
         $attributes['facebook'] = request('facebook', '');
         $attributes['description'] = request('description', '');
-
+        $attributes['section_markers'] = request('section_markers', '');
         $club = Club::find(request('id'));
+
         $club->update($attributes);
         $club->save();
 
         return redirect('/clubs/list');
+    }
+    public function clubUpdate(Request $request) {
+        $attributes = $request->validate([
+            'name' => ['required', 'min:5', 'max:255'],
+            'email' => 'required',
+            'phone' => 'required',
+            'area' => 'required',
+        ]);
+
+        $attributes['website'] = request('website', '');
+        $attributes['facebook'] = request('facebook', '');
+        $attributes['description'] = request('description', '');
+        $attributes['section_markers'] = request('section_markers', '');
+        $club = Club::find(request('id'));
+
+        $club->update($attributes);
+        $club->save();
+
+        return redirect('/club/profile');
+    }
+
+    public function editProfile(Request $request) {
+        $user = Auth::user();
+        $clubID = $user->club_id;
+
+        $club = Club::find($clubID);
+
+        return view('clubs.editprofile', ['club' => $club]);
     }
 }

@@ -136,7 +136,7 @@
                         <a href="/clubaccess" class="inline-block mt-1 mx-3 hover:underline">Club access</a>
                     @endif
                 @endauth
-                <a href="/clublist" class="inline-block mt-1 mx-3 hover:underline">Clubs</a>
+                <a href="/clublist" class="inline-block mt-1 mx-3 hover:underline">Club Profiles</a>
                 <a href="{{$tandc}}" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
                 <a href="{{$privacy}}" class="inline-block mt-1 mx-3 hover:underline">Privacy Policy</a>
                 <a href="mailto:monster@trialmonster.uk?subject=Web Enquiry" class="inline-block mt-1 mx-3 hover:underline">Contact</a>

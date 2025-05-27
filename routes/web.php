@@ -174,10 +174,13 @@ Route::patch('/results/update', [ResultController::class, 'update']);
 Route::get('/clubs/list', [ClubController::class, 'list']);
 Route::get('/clublist', [ClubController::class, 'clublist']);
 Route::get('/club/detail/{id}', [ClubController::class, 'detail']);
+Route::get('/club/profile', [ClubController::class, 'profile'])->middleware(['auth', 'verified']);
+Route::get('/club/profile/edit/{id}', [ClubController::class, 'editProfile'])->middleware(['auth', 'verified']);
 Route::get('/clubs/add', [ClubController::class, 'add'])->middleware(['auth', 'verified']);
 Route::get('/club/edit/{id}', [ClubController::class, 'edit'])->middleware(['auth', 'verified']);
 Route::post('/club/store', [ClubController::class, 'store'])->middleware(['auth', 'verified'])->name('club.store');
 Route::patch('/club/update', [ClubController::class, 'update'])->middleware(['auth', 'verified']);
+Route::patch('/club/clubUpdate', [ClubController::class, 'clubUpdate'])->middleware(['auth', 'verified']);
 
 // SERIES Routes
 Route::get('/series/list', [SeriesController::class, 'list']);

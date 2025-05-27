@@ -13,6 +13,7 @@ class Club extends Model
         'area',
         'description',
         'facebook',
-        'website'
+        'website',
+        'section_markers',
     ];
 }

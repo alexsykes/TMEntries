@@ -1,5 +1,4 @@
 <x-club>
-
     <x-slot:heading>
         Club Control Panel
     </x-slot:heading>

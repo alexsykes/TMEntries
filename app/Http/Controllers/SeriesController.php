@@ -11,13 +11,20 @@ class SeriesController extends Controller
 {
     //
     public function list() {
+        $user = auth()->user();
+        $clubID = $user->club_id;
+
+        $club = Club::find($clubID);
+        $clubName = $club->name;
+
         $allSeries = DB::table('series')
             ->join('clubs', 'series.clubID', '=', 'clubs.id')
             ->select('series.*', 'clubs.name as club')
+            ->where('clubs.id', $clubID)
         ->orderBy('clubs.name')
         ->get();
 
-        return view('series.list', ['series' => $allSeries]);
+        return view('series.list', ['series' => $allSeries, 'clubName' => $clubName]);
     }
 
     public function detail(Request $request) {
@@ -41,10 +48,13 @@ class SeriesController extends Controller
     }
 
     public function add() {
-        $clubs = Club::all()
-        ->select('id', 'name');
+        $user = auth()->user();
+        $clubID = $user->club_id;
 
-        return view('series.add', ['clubs' => $clubs, 'series' => '']);
+        $club = Club::find($clubID);
+        $clubName = $club->name;
+
+        return view('series.add', ['club' => $club]);
     }
 
     public function store() {

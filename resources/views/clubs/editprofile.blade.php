@@ -1,10 +1,10 @@
-<x-admin>
+<x-club>
     <x-slot:heading>Add a new Club</x-slot:heading>
-    <form action="/club/update" method="POST">
+    <form action="/club/clubUpdate" method="POST">
         @method('PATCH')
         @csrf
         <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Clubs</div>
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Clubs</div>
             <div class="grid grid-cols-2 gap-4 px-4">
                 <input type="hidden" name="id" value="{{ $club->id }}">
                 <x-form-field>
@@ -107,13 +107,13 @@
         </div>
 
         <div id="buttons" class="py-2">
-            <a href="/clubs/list"
-               class=" rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-red-900 shadow-sm hover:bg-red-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900">Cancel</a>
+            <a href="/club/profile"
+               class=" rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-900 shadow-sm hover:bg-violet-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-900">Cancel</a>
             <button type="submit"
-                    class="rounded-md ml-2 bg-red-600 px-3 py-1 text-sm font-light  border border-red-800 text-white drop-shadow-lg hover:bg-red-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                    class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
                 Update
             </button>
         </div>
     </form>
 
-</x-admin>
+</x-club>
