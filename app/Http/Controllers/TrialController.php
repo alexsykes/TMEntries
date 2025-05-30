@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Club;
 use App\Models\Entry;
+use App\Models\Series;
 use App\Models\Trial;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -58,6 +60,20 @@ class TrialController extends Controller
 
     public function add()
     {
+        $user = Auth::user();
+
+        $isClubAdmin = $user->isClubUser;
+        if(!$isClubAdmin){
+            return redirect('home');
+        }
+
+        $clubID = $user->club_id;
+        $club = Club::find($clubID);
+
+        $series = Series::where('clubID', $clubID)
+            ->orderBy('name')
+            ->get();
+
         $prefix = config('database.connections.mysql.prefix');
         $venues = DB::select('select id, name from ' . $prefix . 'venues order by name');
         $authorities = array("ACU", "AMCA", "Other");
@@ -73,6 +89,8 @@ class TrialController extends Controller
             'scoring' => $scoring,
             'stopAllowed' => $stopAllowed,
             'entryRestrictions' => $entryRestrictions,
+            'club' => $club,
+            'series' => $series,
         ]);
     }
 
@@ -199,6 +217,8 @@ class TrialController extends Controller
                 $attrs['authority'] = "AMCA";
                 $attrs['classlist'] = "";
                 $attrs['courselist'] = "";
+
+                $attrs['series_id'] = request('series_id', '');
 
                 $trial = Trial::create($attrs);
                 return redirect("trials/addTrialDetail/{$trial->id}");
@@ -487,7 +507,8 @@ class TrialController extends Controller
     public function addTrialTrial($id)
     {
         $trial = Trial::findOrFail($id);
-        return view('trials/add_trial_trial', ['trial' => $trial]);
+        $series = Series::where('id', $trial->series_id)->first();
+        return view('trials/add_trial_trial', ['trial' => $trial, 'series' => $series]);;
     }
 
     public function addTrialEntry($id)

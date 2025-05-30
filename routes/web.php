@@ -54,7 +54,7 @@ Route::get('/admin/entry/cancel/{id}', [EntryController::class, 'adminCancel'])-
 Route::get('/admin/entries/editRidingNumbers/{id}', [EntryController::class, 'editRidingNumbers'])->middleware(['auth', 'verified']);
 Route::patch('/admin/entries/update', [EntryController::class, 'adminEntryUpdate'])->middleware(['auth', 'verified']);
 Route::post('/admin/entries/store', [EntryController::class, 'adminEntryStore'])->middleware(['auth', 'verified']);
-Route::get('/admin/entries/delete/{id}', [EntryController::class, 'adminEntryDelete'])->middleware(['auth', 'verified']);
+//Route::get('/admin/entries/delete/{id}', [EntryController::class, 'adminEntryDelete'])->middleware(['auth', 'verified']);
 Route::get('admin/entries/printSignOnSheets/{id}', [EntryController::class, 'printSignOnSheets'])->middleware(['auth', 'verified']);
 Route::get('/admin/sendMail', [AdminController::class, 'sendMail'])->middleware(['auth', 'verified']);
 
@@ -108,7 +108,7 @@ Route::get('/entry/useredit', [EntryController::class, 'useredit']);
 Route::post('entries/userdata', [EntryController::class, 'showUserData']);
 
 Route::patch('/entries/update/{id}', [EntryController::class, 'updateEntry']);
-Route::get('entries/saveddata', [EntryController::class, 'showSavedData']);
+//Route::get('entries/saveddata', [EntryController::class, 'showSavedData']);
 Route::get('/entries/entrylist', [EntryController::class, 'list']);
 Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->name('entries.create');
 //Route::get('/entries/create_another', [EntryController::class, 'create_another'])->name('entries.create_another');
@@ -128,7 +128,7 @@ Route::get('/venues/add', [VenueController::class, 'add']);
 //Route::get('/venues/edit/{$venueID}', [VenueController::class, 'edit']);
 Route::get('/venues/edit/{id}', [VenueController::class, 'edit'])->middleware('auth', 'verified')->name('venues.edit');
 Route::post('/venues/add', [VenueController::class, 'store']);
-Route::post('/venues/update', [VenueController::class, 'update']);
+//Route::post('/venues/update', [VenueController::class, 'update']);
 Route::patch('/venues/save', [VenueController::class, 'save'])->middleware('auth', 'verified')->name('venues.save');
 
 // Stripe Routes
@@ -141,7 +141,7 @@ Route::post('/entries/checkout', [EntryController::class, 'checkout']);
 Route::get('/scores/setup/{id}', [ScoringController::class, 'setup'])->name('scores.setup');
 Route::post('/scores/setup', [ScoringController::class, 'setupscoregrid'])->name('scores.setupgrid');
 Route::get('/scores/grid/{id}', [ScoringController::class, 'grid'])->name('scores.grid');
-Route::get('/scores/section/{id}', [ScoringController::class, 'section'])->name('scores.section');
+//Route::get('/scores/section/{id}', [ScoringController::class, 'section'])->name('scores.section');
 Route::get('/scores/sectionScoresForRider/{trialid}/{rider}/{section}', [ScoringController::class, 'sectionScoresForRider'])->name('scores.sectionScoreForRider');
 Route::get('/scores/sectionScores/{id}/{section}', [ScoringController::class, 'sectionScores'])->name('scores.sectionScores');
 

@@ -14,6 +14,8 @@ TODO
 Check permissions!!!
 Club access - check small screen menu
 
+DoB - mandatory - rework Youth entru
+
 TODO
 YCMCC - results tie-break by riderAge == DoB
 TinyMCE - integrate local

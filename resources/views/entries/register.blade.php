@@ -154,19 +154,19 @@
                             </div>
                         </x-form-field>
 
-                        <x-form-field>
-                            <x-form-label for="isYouth">Under-18</x-form-label>
-                            <div class="ml-2 mt-2 col-span-full">
-                                <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth"/>
-                                <x-form-error name="isYouth"/>
-                            </div>
-                        </x-form-field>
+{{--                        <x-form-field>--}}
+{{--                            <x-form-label for="isYouth">Under-18</x-form-label>--}}
+{{--                            <div class="ml-2 mt-2 col-span-full">--}}
+{{--                                <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth"/>--}}
+{{--                                <x-form-error name="isYouth"/>--}}
+{{--                            </div>--}}
+{{--                        </x-form-field>--}}
 
                         <div id="dateInput" class=" col-span-full">
                             <x-form-field>
                                 <x-form-label for="dob">Date of Birth</x-form-label>
                                 <div class="mt-2  max-w-40 col-span-full">
-                                    <x-form-input type="date" name="dob" id="dob" :value="old('dob')"/>
+                                    <x-form-input type="date" required name="dob" id="dob" :value="old('dob')"/>
                                 </div>
                                 @error('dob')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

@@ -106,6 +106,8 @@ class EntryController extends Controller
 
         $entry = Entry::find($request->id);
         $trial_id = $entry->trial_id;
+        $trial = Trial::findOrFail($trial_id);
+        $trial_date = date_create($trial->date);
 
 //        Get product/price IDs
         $youthProductID = DB::table('products')
@@ -141,7 +143,12 @@ class EntryController extends Controller
 //        $entry->accept = $accept;
         $entry->dob = $request->dob;
 
-        if (isset($request->isYouth)) {
+        $birthDate = date_create($request->dob);
+
+        $interval = $trial_date->diff($birthDate);
+//dump($interval->y);
+//        Calculation for yout goes here
+        if ($interval->y < 18) {
             $entry->isYouth = 1;
             $entry->stripe_price_id = $youthPriceID;
             $entry->stripe_product_id = $youthProductID;
@@ -154,6 +161,27 @@ class EntryController extends Controller
         $entry->save();
 //        dd($entry);
         return redirect("/entries/register/{$trial_id}");
+    }
+
+    function nameize($str, $a_char = array("'", "-", " "))
+    {
+        //$str contains the complete raw name string
+        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
+        $string = strtolower($str);
+        foreach ($a_char as $temp) {
+            $pos = strpos($string, $temp);
+            if ($pos) {
+                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
+                $mend = '';
+                $a_split = explode($temp, $string);
+                foreach ($a_split as $temp2) {
+                    //capitalize each portion of the string which was separated at a special character
+                    $mend .= ucfirst($temp2) . $temp;
+                }
+                $string = substr($mend, 0, -1);
+            }
+        }
+        return ucfirst($string);
     }
 
     public function adminEntryUpdate(Request $request)
@@ -217,6 +245,22 @@ class EntryController extends Controller
         return redirect("/trials/adminEntryList/{$trialID}");
     }
 
+    /*   User updates entry - from email
+        Show screen for entry with form for updated fields
+        Limited changes can be made
+    */
+
+    public function create($id)
+    {
+        session(['trial_id' => $id]);
+        $trial = Trial::findOrFail($id);
+        return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry()]);
+    }
+
+    /*
+     * Email confirmation of entry changes
+     */
+
     public function withdraw(Request $request)
     {
         $id = $request->id;
@@ -250,10 +294,10 @@ class EntryController extends Controller
         return redirect("/");
     }
 
-    /*   User updates entry - from email
-        Show screen for entry with form for updated fields
-        Limited changes can be made
-    */
+    /*
+     * Entry is loaded based on entry ID and token emailed in link on entry confirmation
+     */
+
     public function userupdate(Request $request)
     {
         $id = $request->id;
@@ -278,9 +322,8 @@ class EntryController extends Controller
         return redirect("/");
     }
 
-    /*
-     * Email confirmation of entry changes
-     */
+//  Not sure if currently used
+
     public function emailConfirmation($id, $newToken)
     {
         $entry = DB::table('entries')->where('id', $id)->first();
@@ -294,9 +337,6 @@ class EntryController extends Controller
         return redirect("/");
     }
 
-    /*
-     * Entry is loaded based on entry ID and token emailed in link on entry confirmation
-     */
     public function useredit(Request $request)
     {
 //        dd($request->all());
@@ -309,7 +349,7 @@ class EntryController extends Controller
             ->where('token', $token)->first();
 
 
-        if($entry == null) {
+        if ($entry == null) {
             return view('entries.expiredLink');
         }
 
@@ -317,24 +357,21 @@ class EntryController extends Controller
             ->where('id', $entry->trial_id)
             ->get();
 
-        $trial_date =   date_create($trial[0]->date);
+        $trial_date = date_create($trial[0]->date);
         $today = date_create(date('Y-m-d'));
 
 //      In time / Too late to edit entry
-        if($trial_date > $today) {
+        if ($trial_date > $today) {
+            $trial = Trial::findOrFail($entry->trial_id);
+//            dd($trial);
             return view('entries.useredit', ['entry' => $entry]);
         } else {
             return view('entries.noChanges');
         }
     }
 
-//  Not sure if currently used
-    public function create($id)
-    {
-        session(['trial_id' => $id]);
-        $trial = Trial::findOrFail($id);
-        return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry()]);
-    }
+//  Store from Register page
+//    Store first record then pass email and trial_id to create_another view
 
     public function checkout(Request $request)
     {
@@ -351,12 +388,12 @@ class EntryController extends Controller
         return view('entries.checkout', ['entries' => $entries, 'trial' => $trial, 'trial_id' => $trial_id]);
     }
 
-//  Store from Register page
-//    Store first record then pass email and trial_id to create_another view
     public function store(Request $request)
     {
 
         $trial_id = session('trial_id');
+        $trial = Trial::findOrFail($trial_id);
+        $trial_date = date_create($trial->date);
 
         $IPaddress = $request->ip();
         $request->session()->put('trial_id', $request->trial_id);
@@ -392,7 +429,7 @@ class EntryController extends Controller
             'course' => 'required',
             'make' => 'required',
             'type' => 'required',
-            'dob' => Rule::requiredIf(isset($request->isYouth)),
+            'dob' => 'required',
         ]);
 
         $attributes['name'] = $this->nameize($request->name);
@@ -403,7 +440,12 @@ class EntryController extends Controller
         $attributes['accept'] = $accept;
         $attributes['created_by'] = Auth::user()->id;
 
-        if (isset($request->isYouth)) {
+        $birthDate = date_create($request->dob);
+
+        $interval = $trial_date->diff($birthDate);
+
+//        Calculation for yout goes here
+        if ($interval->y < 18) {
             $attributes['isYouth'] = 1;
             $attributes['stripe_price_id'] = $youthPriceID;
             $attributes['stripe_product_id'] = $youthProductID;
@@ -444,7 +486,6 @@ class EntryController extends Controller
 //        dd($entries);
         return view('entries.userdata', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
     }
-
 
     public function adminEntries(Request $request)
     {
@@ -527,7 +568,7 @@ class EntryController extends Controller
         $venueName = $venue->name;
 
         $rawDate = new DateTime($trialDetails->date);
-        $date  = date_format($rawDate, "jS M, Y");
+        $date = date_format($rawDate, "jS M, Y");
         $club = $trialDetails->club;
 
         $startList = DB::table('entries')
@@ -612,24 +653,24 @@ class EntryController extends Controller
             case 'ACU':
                 PDF::setLeftMargin(21);
                 PDF::setY(38);
-                PDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C'. 'M');
+                PDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
                 PDF::setY(46);
-                PDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C'. 'M');
+                PDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
                 PDF::setY(54);
                 PDF::setLeftMargin(29);
-                PDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
-                PDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                PDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                PDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                 PDF::setY(62);
                 PDF::setLeftMargin(29);
-                PDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                PDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                 break;
 
             case 'AMCA':
                 PDF::setLeftMargin(26);
                 PDF::setY(75);
-                PDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
-                PDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
-                PDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                PDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                PDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                PDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                 break;
         }
 
@@ -640,7 +681,6 @@ class EntryController extends Controller
 
 //        PDF::Write(0, "What's next?");
         $index = 0;
-
 
 
         $lineNumber = 1;
@@ -696,24 +736,24 @@ class EntryController extends Controller
                         case 'ACU':
                             PDF::setLeftMargin(21);
                             PDF::setY(38);
-                            PDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C'. 'M');
+                            PDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
                             PDF::setY(46);
-                            PDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C'. 'M');
+                            PDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
                             PDF::setY(54);
                             PDF::setLeftMargin(29);
-                            PDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
-                            PDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                            PDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                            PDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                             PDF::setY(62);
                             PDF::setLeftMargin(29);
-                            PDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                            PDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                             break;
 
                         case 'AMCA':
                             PDF::setLeftMargin(26);
                             PDF::setY(75);
-                            PDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
-                            PDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
-                            PDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C'. 'M');
+                            PDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                            PDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                            PDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                             break;
                     }
 
@@ -729,28 +769,6 @@ class EntryController extends Controller
         return response()->download($filename);
     }
 
-    function nameize($str, $a_char = array("'", "-", " "))
-    {
-        //$str contains the complete raw name string
-        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
-        $string = strtolower($str);
-        foreach ($a_char as $temp) {
-            $pos = strpos($string, $temp);
-            if ($pos) {
-                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
-                $mend = '';
-                $a_split = explode($temp, $string);
-                foreach ($a_split as $temp2) {
-                    //capitalize each portion of the string which was separated at a special character
-                    $mend .= ucfirst($temp2) . $temp;
-                }
-                $string = substr($mend, 0, -1);
-            }
-        }
-        return ucfirst($string);
-    }
-
-
     public function storeMultiple(Request $request)
     {
 //        dd(request()->all());
@@ -765,11 +783,11 @@ class EntryController extends Controller
         $isYouths = $request->input('isYouth');
         $statuss = $request->input('status');
 
-        for($i = 0; $i < sizeof($names); $i++) {
-            if(isset($names[$i]) && $names[$i] != "") {
-            if(!isset($isYouths[$i])) {
-                $isYouths[$i] = 0;
-            }
+        for ($i = 0; $i < sizeof($names); $i++) {
+            if (isset($names[$i]) && $names[$i] != "") {
+                if (!isset($isYouths[$i])) {
+                    $isYouths[$i] = 0;
+                }
                 DB::table('entries')->insert([
                     'name' => $this->nameize($names[$i]),
                     'ridingNumber' => $ridingNumbers[$i],
@@ -791,9 +809,12 @@ class EntryController extends Controller
         return redirect("/trials/adminEntryList/{$trial_id}");
     }
 }
-class MYPDF extends PDF {
+
+class MYPDF extends PDF
+{
     //Page header
-    public function Header() {
+    public function Header()
+    {
         // get the current page break margin
 
         info("Header \App\Http\Controllers\MYPDF");

@@ -13,7 +13,7 @@
 {{--                <x-form-field class="mt-2 col-span-2 sm:col-span-3">--}}
 {{--                    <x-form-label for="venue">Club</x-form-label>--}}
 {{--                    <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-blue-600 sm:max-w-md" >--}}
-{{--                        <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0" name="clubID" id="clubID">--}}
+{{--                        <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus " name="clubID" id="clubID">--}}
 {{--                            @foreach($clubs as $club)--}}
 {{--                                <option value="{{$club['id']}}">{{$club['name']}}</option>--}}
 {{--                            @endforeach--}}

@@ -12,6 +12,9 @@
         $authorityArray = array("ACU", "AMCA", "Other");
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
 
+        $classes = $series->classes;
+        $courses = $series->courses;
+
     @endphp
 
 
@@ -27,30 +30,31 @@
                     <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
                         <div id="courseDataDiv" class="col-span-3">
-                            <x-form-field>
-                                <x-form-label class="pr-0" for="courselist">Courses</x-form-label>
-                                <div class=" pl-2 pr-0">
-                                    @foreach($courseArray as $course)
-                                        <div>
-                                            <input  name="courselist[]" type="checkbox" id="courselist" value="{{$course}}"
-                                                    {{ (is_array(old('courselist')) and in_array($course, old('courselist'))) ? ' checked' : '' }}
-                                            />
-                                            <label  class="pl-4 pr-0" for="courselist">{{$course}}
-                                            </label>
-                                        </div>
-                                    @endforeach
+{{--                            <x-form-field>--}}
+{{--                                <x-form-label class="pr-0" for="courselist">Courses</x-form-label>--}}
+{{--                                <div class=" pl-2 pr-0">--}}
+{{--                                    @foreach($courseArray as $course)--}}
+{{--                                        <div>--}}
+{{--                                            <input  name="courselist[]" type="checkbox" id="courselist" value="{{$course}}"--}}
+{{--                                                    {{ (is_array(old('courselist')) and in_array($course, old('courselist'))) ? ' checked' : '' }}--}}
+{{--                                            />--}}
+{{--                                            <label  class="pl-4 pr-0" for="courselist">{{$course}}--}}
+{{--                                            </label>--}}
+{{--                                        </div>--}}
+{{--                                    @endforeach--}}
 {{--                                    <x-form-error name="courselist"/>--}}
-                                </div>
-                                @error('courselist')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
-                            </x-form-field>
+{{--                                </div>--}}
+{{--                                @error('courselist')--}}
+{{--                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
+{{--                                @enderror--}}
+{{--                            </x-form-field>--}}
 
 
                             <x-form-field>
-                                <x-form-label for="customCourses">Custom courses</x-form-label>
+                                <x-form-label for="customCourses">Courses</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="customCourses" type="text" id="customCourses"
+                                                  value="{{$courses}}"
                                                   placeholder="List of courses separated by commas" />
 {{--                                    <x-form-error name="customCourses"/>--}}
                                 </div>
@@ -61,30 +65,31 @@
                         </div>
 
                         <div id="classDataDiv" class="col-span-3">
-                            <x-form-field>
-                                <x-form-label for="classlist">Classes</x-form-label>
-                                <div class=" pl-2 pr-2">
-                                    @foreach($classArray as $class)
+{{--                            <x-form-field>--}}
+{{--                                <x-form-label for="classlist">Classes</x-form-label>--}}
+{{--                                <div class=" pl-2 pr-2">--}}
+{{--                                    @foreach($classArray as $class)--}}
 
-                                        <div>
-                                            <input  name="classlist[]" type="checkbox" id="classlist" value="{{$class}}"
+{{--                                        <div>--}}
+{{--                                            <input  name="classlist[]" type="checkbox" id="classlist" value="{{$class}}"--}}
 
-                                                    {{ (is_array(old('classlist')) and in_array($class, old('classlist'))) ? ' checked' : '' }}
-                                            />
-                                            <label  class="pl-4 pr-2" for="classlist">{{$class}}</label>
-                                        </div>
-                                    @endforeach
+{{--                                                    {{ (is_array(old('classlist')) and in_array($class, old('classlist'))) ? ' checked' : '' }}--}}
+{{--                                            />--}}
+{{--                                            <label  class="pl-4 pr-2" for="classlist">{{$class}}</label>--}}
+{{--                                        </div>--}}
+{{--                                    @endforeach--}}
 {{--                                    <x-form-error name="classlist"/>--}}
-                                </div>
-                                @error('classlist')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
-                            </x-form-field>
+{{--                                </div>--}}
+{{--                                @error('classlist')--}}
+{{--                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
+{{--                                @enderror--}}
+{{--                            </x-form-field>--}}
 
                             <x-form-field>
-                                <x-form-label for="customClasses">Custom classes</x-form-label>
+                                <x-form-label for="customClasses">Classes</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="customClasses" type="text" id="customClasses"
+                                                  value="{{$classes}}"
                                                   placeholder="List of classes separated by commas" />
 {{--                                    <x-form-error name="customClasses"/>--}}
                                 </div>

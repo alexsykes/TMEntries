@@ -14,13 +14,11 @@
             <div class="pt-2 text-violet-800 font-bold">Connections</div>
             @if($club->website)
                 <div class="
-                      text-sm">Website: <a href="https://{{$club->website}}" target="_blank"
-                    @endphp">{{$club->website}}</a>
+                      text-sm">Website: <a href="https://{{$club->website}}" target="_blank">{{$club->website}}</a>
                 </div>
             @endif
             @if($club->facebook)
-                <div class="  text-sm">Facebook: <a href="https://{{$club->facebook}}" target="_blank"
-                    @endphp">{{$club->facebook}}</a>
+                <div class="  text-sm">Facebook: <a href="https://{{$club->facebook}}" target="_blank">{{$club->facebook}}</a>
                 </div>
             @endif
 

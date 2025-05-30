@@ -43,11 +43,11 @@ class ClubController extends Controller
         return view('clubs.clublist', ['clubs' => $clubs]);
     }
 
-    public function detail(Request $request) {
-        $club = Club::find(request('id'));
-//        dd($club);
-        return view('clubs.detail', ['club' => $club]);
-    }
+//    public function detail(Request $request) {
+//        $club = Club::find(request('id'));
+////        dd($club);
+//        return view('clubs.detail', ['club' => $club]);
+//    }
     public function edit(Request $request) {
         $club = Club::find(request('id'));
         return view('clubs.edit', ['club' => $club]);

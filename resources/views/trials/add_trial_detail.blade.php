@@ -1,7 +1,17 @@
 <x-club>
     <x-slot:heading>
-        Create a new trial
+        Create a new trial for {{$club->name}}
     </x-slot:heading>
+    <script>
+        function competitionSelected() {
+            if (series_id.options[series_id.selectedIndex].text != "Other") {
+                console.log(series_id.options[series_id.selectedIndex].text);
+                document.getElementById("name").value = series_id.options[series_id.selectedIndex].text;
+            } else {
+                document.getElementById("name").value = "";
+            }
+        }
+    </script>
     @php
         $courseArray = array("Expert", "Intermediate", "Hard Novice", "Novice", "50/50", "Easy", "Clubman", "Clubman A", "Clubman B");
         $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
@@ -16,7 +26,8 @@
 
 
     <form action="/trials/save" method="POST">
-    <input type="hidden" value="detail" id="task" name="task">
+        <input type="hidden" value="detail" id="task" name="task">
+        <input type="hidden" name="club" id="club" value="{{$club->name}}">
         @csrf
 
         <div id="Details" class="tabcontent pt-0">
@@ -35,6 +46,36 @@
                             @enderror
                         </x-form-field>
 
+                        {{--                        <x-form-field>--}}
+                        {{--                            <x-form-label for="club">Organising Club</x-form-label>--}}
+                        {{--                            <div class="mt-2 col-span-2">--}}
+                        {{--                                <x-form-input name="club" type="text" id="club"--}}
+                        {{--                                              value="{{$club->name}}"--}}
+                        {{--                                              placeholder="Club name" required/>--}}
+                        {{--                                <x-form-error name="club"/>--}}
+                        {{--                            </div>--}}
+                        {{--                            @error('club')--}}
+                        {{--                            <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
+                        {{--                            @enderror--}}
+                        {{--                        </x-form-field>--}}
+
+                        <x-form-field class="mt-2 col-span-2 sm:col-span-3">
+                            <x-form-label for="venue">Trial / Series</x-form-label>
+                            <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-blue-600 sm:max-w-md" >
+                                <select onchange="competitionSelected()" class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0" name="series_id" id="series_id">
+                                    @foreach($series as $item)
+                                        <option value="{{$item->id}}">{{$item->name}}</option>
+                                    @endforeach
+                                    <option value="0">Other</option>
+                                </select>
+                            </div>
+                            @error('venue')
+                            <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                            @enderror
+                        </x-form-field>
+
+
+
                         <x-form-field>
                             <x-form-label for="name">Event Name</x-form-label>
                             <div class="mt-2 col-span-2">
@@ -45,19 +86,6 @@
                                 <x-form-error name="name"/>
                             </div>
                             @error('name')
-                            <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                            @enderror
-                        </x-form-field>
-
-                        <x-form-field>
-                            <x-form-label for="club">Organising Club</x-form-label>
-                            <div class="mt-2 col-span-2">
-                                <x-form-input name="club" type="text" id="club"
-                                              value="{{old('club')}}"
-                                              placeholder="Club name" required/>
-                                <x-form-error name="club"/>
-                            </div>
-                            @error('club')
                             <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                             @enderror
                         </x-form-field>
@@ -79,7 +107,7 @@
                             <x-form-label for="isMultiDay">Multi-day event</x-form-label>
                             <div class="mt-2">
                                 <input name="isMultiDay" type="checkbox" value="1" id="isMultiDay"
-                                       {{old('isMultiDay') != null ? 'checked' :''}}/>
+                                        {{old('isMultiDay') != null ? 'checked' :''}}/>
                                 <x-form-error name="isMultiDay"/>
                             </div>
                             @error('isMultiDay')
@@ -131,7 +159,7 @@
                             <x-form-label for="email">Email</x-form-label>
                             <div class="mt-2 col-span-2">
                                 <x-form-input name="email" type="email" id="email" placeholder="Contact email"
-                                            value="{{old('email')}}"
+                                              value="{{old('email')}}"
                                               required/>
                                 <x-form-error name="email"/>
                             </div>
