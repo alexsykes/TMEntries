@@ -717,7 +717,7 @@
                                 <x-form-field>
                                     <x-form-label for="notes">Notes</x-form-label>
                                     <div class="mt-2 ">
-                                        <textarea class="tinyMce" name="notes" type="text" id="notes" >{{$trial->notes}}</textarea>
+                                        <textarea class="withEditor" name="notes" type="text" id="notes" >{{$trial->notes}}</textarea>
                                     </div>
                                     @error('notes')
                                     <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

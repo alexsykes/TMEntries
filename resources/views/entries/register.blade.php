@@ -28,6 +28,10 @@
     @php
         $trial_id = $trial->id;
 
+        $trial_date = date_create($trial->date);
+        $offset = DateInterval::createFromDateString('4 years');
+        $maxDob = $trial_date->sub($offset)->format("Y-m-d");
+
     $allCourses = array();
     $courses = $trial->courselist;
     $customCourses = $trial->customCourses;
@@ -166,7 +170,7 @@
                             <x-form-field>
                                 <x-form-label for="dob">Date of Birth</x-form-label>
                                 <div class="mt-2  max-w-40 col-span-full">
-                                    <x-form-input type="date" required name="dob" id="dob" :value="old('dob')"/>
+                                    <x-form-input type="date" max="{{$maxDob}}"  required name="dob" id="dob" :value="old('dob')"/>
                                 </div>
                                 @error('dob')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

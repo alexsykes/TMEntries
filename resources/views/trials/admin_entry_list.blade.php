@@ -109,9 +109,11 @@ $classOptions = explode(',', $classlist);
                     @for($i=0; $i<10; $i++)
                         <tr class="flex-auto">
                             <td class="table-cell pl-2 py-1"><input class="m-1  w-12 bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="text" id="ridingNumber[]" name="ridingNumber[]"/></td>
+
                             <td class="table-cell py-1"><input class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="text" id="name[]" name="name[]" placeholder="Rider"/></td>
 
-                            <td class="table-cell py-1"><input class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="text" id="make[]" name="make[]" placeholder="Make"/></td>
+                            <td class="table-cell py-1"><input class="m-1  w-24  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="text" id="make[]" name="make[]" placeholder="Make"/></td>
+
                             <td class="table-cell py-1"><input class="m-1  w-12 bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="text" id="size[]" name="size[]" placeholder="Size"/></td>
                             <td class="table-cell">
                                 <select class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1" id="type[]" name="type[]">
@@ -145,8 +147,10 @@ $classOptions = explode(',', $classlist);
                                 </select>
                             </td>
 
-                            <td class="table-cell"><label for="isYouth">Under 18</label>
-                                <input class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="checkbox" id="isYouth[]" name="isYouth[]" value="1">
+
+
+                            <td class="table-cell">
+                                <input class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="date" id="dob[]" name="dob[]" value="1">
                             </td>
 
                         </tr>

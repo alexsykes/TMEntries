@@ -46,6 +46,10 @@ $selected_name = $entry->name;
         $authority = $trial->authority;
 
         $types = array("2 stroke", "4 stroke", "e-bike");
+
+        $trial_date = date_create($trial->date);
+        $offset = DateInterval::createFromDateString('4 years');
+        $maxDob = $trial_date->sub($offset)->format("Y-m-d");
     @endphp
 
     <script>
@@ -118,7 +122,7 @@ $selected_name = $entry->name;
                             <x-form-field>
                                 <x-form-label for="dob">Date of Birth</x-form-label>
                                 <div class="mt-2  max-w-40 col-span-full">
-                                    <x-form-input type="date" name="dob" id="dob" value="{{$selected_dob}}"/>
+                                    <x-form-input type="date" name="dob" id="dob" max={{$maxDob}} value="{{$selected_dob}}" required />
                                 </div>
                                 @error('dob')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

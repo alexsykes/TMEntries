@@ -100,7 +100,7 @@ class EntryController extends Controller
             'course' => 'required',
             'make' => 'required',
             'type' => 'required',
-            'dob' => Rule::requiredIf(isset($request->isYouth)),
+            'dob' => 'required',
         ]);
 
 
@@ -579,6 +579,8 @@ class EntryController extends Controller
         if (sizeof($startList) == 0) {
             exit("No entries to print");
         }
+
+//        dump($startList);
         $filename = "Sign-on $trialDetails->name.pdf";
 
         MYPDF::SetCreator('TM UK');
@@ -611,6 +613,7 @@ class EntryController extends Controller
                 $idIndent = 132;
                 $idWidth = 19;
                 $classIndent = 177;
+                $parentIndent = 85;
                 $numberWidth = 3;
                 $nameWidth = 46;
                 $linesPerPage = 22;
@@ -622,6 +625,8 @@ class EntryController extends Controller
                 $rowHeight = 6.65;
                 $numberIndent = 15;
                 $nameIndent = 18;
+                $parentIndent = 68;
+                $parentSignIndent = 103;
                 $idIndent = 132;
                 $idWidth = 19;
                 $classIndent = 177;
@@ -691,7 +696,12 @@ class EntryController extends Controller
 //            } else {
                 $number = $entry->ridingNumber;
 //            }
-                $name = ucwords(strtolower($entry->name), " \t\r\n\f\v'");
+                if($entry->isYouth == 1) {
+                    $name = $entry->name."*";
+                } else {
+                    $name = $entry->name;
+                }
+                $name = ucwords(strtolower($name), " \t\r\n\f\v'");
                 $paid = $entry->status;
                 if ($paid == 0 or $paid == 4 or $paid == 5 or $paid == 7) {
                     $name = "To pay - " . $name;
@@ -715,6 +725,11 @@ class EntryController extends Controller
                     PDF::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
 
                     // ID cell
+                    if ($entry->isYouth != 0) {
+                        PDF::setX($parentIndent);
+                        PDF::Cell($idWidth, $rowHeight, "*", 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                    }
+                    // ID cell
                     if ($id != 0) {
                         PDF::setX($idIndent);
                         PDF::Cell($idWidth, $rowHeight, $id, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
@@ -727,7 +742,16 @@ class EntryController extends Controller
                     // Name cell
                     PDF::setX($nameIndent);
                     PDF::Cell($nameWidth, $rowHeight, $name, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
+                    if ($entry->isYouth != 0) {
+                        PDF::setX($parentIndent);
+                        PDF::Cell($idWidth, $rowHeight, "*", 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                        PDF::setX($parentSignIndent);
+                        PDF::Cell($idWidth, $rowHeight, "*", 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                    }
                 }
+
+                // ID cell
+
 
                 if ($lineNumber % $linesPerPage == 0) {
                     PDF::addPage();
@@ -773,6 +797,8 @@ class EntryController extends Controller
     {
 //        dd(request()->all());
         $trial_id = $request->input('trialID');
+        $trial = Trial::findOrFail($trial_id);
+        $trial_date = date_create($trial->date);
         $ridingNumbers = $request->input('ridingNumber', null);
         $names = $request->input('name');
         $makes = $request->input('make');
@@ -780,13 +806,23 @@ class EntryController extends Controller
         $types = $request->input('type');
         $courses = $request->input('course');
         $classs = $request->input('class');
-        $isYouths = $request->input('isYouth');
+        $birthDates = $request->input('dob');
         $statuss = $request->input('status');
 
         for ($i = 0; $i < sizeof($names); $i++) {
             if (isset($names[$i]) && $names[$i] != "") {
-                if (!isset($isYouths[$i])) {
-                    $isYouths[$i] = 0;
+
+
+                $birthDate = date_create($birthDates[$i]);;
+
+                $interval = $trial_date->diff($birthDate);
+
+//        Calculation for yout goes here
+                if ($interval->y < 18) {
+                    $isYouth =  true;
+//                    $classs[$i] = "Youth";
+                } else {
+                    $isYouth =  false;
                 }
                 DB::table('entries')->insert([
                     'name' => $this->nameize($names[$i]),
@@ -796,11 +832,12 @@ class EntryController extends Controller
                     'type' => $types[$i],
                     'course' => $courses[$i],
                     'class' => $classs[$i],
-                    'isYouth' => $isYouths[$i],
+                    'isYouth' => $isYouth,
                     'status' => $statuss[$i],
                     'created_by' => Auth::user()->id,
                     'ipaddress' => $request->ip(),
                     'created_at' => date('Y-m-d H:i:s'),
+                    'dob' => $birthDates[$i],
                     'trial_id' => $trial_id,
                 ]);
             }

@@ -175,38 +175,44 @@ function onCheckoutSessionCompleted($sessionObject)
 
 function onRefundCreated(mixed $object)
 {
-    $entryID = $object['metadata']['id'];
+//    Get the entryID from the metadata
+    if (isset($object['metadata']['id'])) {
+        $entryID = $object['metadata']['id'];
 
-    $entry = DB::table('entries')
-        ->where('id', $entryID)
-        ->update(['status' => 2]);
+        $entry = DB::table('entries')
+            ->where('id', $entryID)
+            ->update(['status' => 2]);
 
-    $bcc = 'admin@trialmonster.uk';
+        $bcc = 'admin@trialmonster.uk';
 
-    $entry = DB::table('entries')->find($entryID);
-    $email = $entry->email;
-    Mail::to($email)
-        ->bcc($bcc)
-        ->send(new RefundRequested($entry));
-    info("Refund Requested: $entryID");
+        $entry = DB::table('entries')->find($entryID);
+        $email = $entry->email;
+        Mail::to($email)
+            ->bcc($bcc)
+            ->send(new RefundRequested($entry));
+        info("Refund Requested: $entryID");
+    }
 }
 
 function onRefundUpdated(mixed $object)
 {
-    $entryID = $object['metadata']['id'];
 
-    $entry = DB::table('entries')
-        ->where('id', $entryID)
-        ->update(['status' => 3]);
+    if (isset($object['metadata']['id'])) {
+        $entryID = $object['metadata']['id'];
 
-    $bcc = 'admin@trialmonster.uk';
+        $entry = DB::table('entries')
+            ->where('id', $entryID)
+            ->update(['status' => 3]);
 
-    $entry = DB::table('entries')->find($entryID);
-    $email = $entry->email;
-    Mail::to($email)
-        ->bcc($bcc)
-        ->send(new RefundConfirmed($entry));
-    info("Refund Confirmed: $entryID");
+        $bcc = 'admin@trialmonster.uk';
+
+        $entry = DB::table('entries')->find($entryID);
+        $email = $entry->email;
+        Mail::to($email)
+            ->bcc($bcc)
+            ->send(new RefundConfirmed($entry));
+        info("Refund Confirmed: $entryID");
+    }
 }
 
 function onPaymentIntentSucceeded()

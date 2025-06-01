@@ -21,13 +21,20 @@ class TrialController extends Controller
         $gmap_key = config('gmap.gmap_key');
 //        dd($gmap_key);
         $trial = Trial::findorfail($trial_id);
+
+        if($trial->published == 0){
+            abort(404);
+        }
+
+        $seriesID = $trial->series_id;
+        $series = Series::where('id', $seriesID)->first();
         $numEntries = Entry::all()
             ->where('trial_id', $trial_id)
             ->whereIn('status', [1, 2, 4, 5, 7, 8, 9])
             ->count();
 
         $venue = $trial->venue();
-        return view('trials.details', compact('trial_id', 'gmap_key', 'venue', 'trial', 'numEntries'));
+        return view('trials.details', compact('trial_id', 'gmap_key', 'venue', 'trial', 'numEntries', 'series'));
     }
 
     public function showTrialList()
@@ -682,7 +689,7 @@ class TrialController extends Controller
             ->get();
 
         $purchases = DB::table('products')
-            ->leftJoin('prices', 'products.stripe_price_id', '=', 'prices.stripe_price_id')
+            ->leftJoin('prices', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
             ->where('trial_id', $id)
             ->select('products.product_name', 'products.purchases', 'prices.stripe_price')
         ->get();

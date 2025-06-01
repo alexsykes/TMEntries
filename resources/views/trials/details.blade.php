@@ -213,7 +213,9 @@
 
 
         <div class="ml-4 mr-4 pt-0  text-black text-center ">Supplementary Regulations for the {{$trial->name}}</div>
-
+    @if($series != null )
+        <div class="ml-4 mr-4 mt-2 font-semibold">@php echo $series->notes; @endphp</div>
+    @endif
         <div class="ml-4 mr-4 pt-2  text-black text-left ">{{$trial->club}} will organise
             {{$rest}} trial for solo motorcycles, held under the Rules of the {{$trial->authority}}, the following
             Supplementary Regulations and any Final Instructions issued for the meeting.
