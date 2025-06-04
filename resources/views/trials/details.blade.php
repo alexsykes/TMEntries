@@ -184,12 +184,16 @@
         case "ACU":
             $entryConditions = "All riders and passengers must hold a current ACU/SACU Trials Registration Card or ACU/SACU Competition Licence. Any rider or passenger from another FMN must produce a licence issued by their FMN, together with start permission and proof of personal accident insurance.";
             $machines = "Motorcycles as per NSC Appendix D Category 1, Group A1 Solos and TSR 8";
+            $methodOfMarking = "A machine will be deemed to be in an Observed Section or Sub-Section when the front wheel spindle has passed the
+‘Section Begins’ Card and until the front wheel spindle has passed the ‘Section Ends’ Card. Further information can be obtained from the ACU Handbook.";
         case "Other":
             $methodOfMarking = "A machine will be deemed to be in an Observed Section or Sub-Section when the front wheel spindle has passed the
 ‘Section Begins’ Card and until the front wheel spindle has passed the ‘Section Ends’ Card. Further information can be obtained from the ACU Handbook.";
             $entryConditions = "Restricted ";
             break;
         default:
+            $entryConditions = "";
+            $methodOfMarking="";
             break;
     }
     ?>

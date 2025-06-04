@@ -116,6 +116,8 @@ Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
 Route::post('/entries/saveRidingNumbers', [EntryController::class, 'saveRidingNumbers']);
 Route::post('/admin/entries/storeMultiple', [EntryController::class, 'storeMultiple'])->middleware(['auth', 'verified']);
+Route::get('/otd/{id}', [EntryController::class, 'otd_form'])->middleware(['auth', 'verified']);
+Route::post('/otdCreate', [EntryController::class, 'otdCreate'])->middleware(['auth', 'verified']);
 
 // Check for usage
 //Route::post('/entries/createSession', [EntryController::class, 'createStripeSession']);

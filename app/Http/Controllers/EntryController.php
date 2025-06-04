@@ -530,7 +530,7 @@ class EntryController extends Controller
             ->where('trial_id', $trialid)
             ->whereIn('status', [1, 4, 5, 7, 8, 9])
             ->orderBy('course')
-            ->orderBy('class')
+            ->orderBy('ridingNumber')
             ->orderBy('id')
             ->get();
 
@@ -696,8 +696,8 @@ class EntryController extends Controller
 //            } else {
                 $number = $entry->ridingNumber;
 //            }
-                if($entry->isYouth == 1) {
-                    $name = $entry->name."*";
+                if ($entry->isYouth == 1) {
+                    $name = $entry->name . "*";
                 } else {
                     $name = $entry->name;
                 }
@@ -819,10 +819,10 @@ class EntryController extends Controller
 
 //        Calculation for yout goes here
                 if ($interval->y < 18) {
-                    $isYouth =  true;
+                    $isYouth = true;
 //                    $classs[$i] = "Youth";
                 } else {
-                    $isYouth =  false;
+                    $isYouth = false;
                 }
                 DB::table('entries')->insert([
                     'name' => $this->nameize($names[$i]),
@@ -844,6 +844,72 @@ class EntryController extends Controller
         }
 
         return redirect("/trials/adminEntryList/{$trial_id}");
+    }
+
+
+    public function otdCreate(Request $request){
+        $trial_id = $request->trial_id;
+        $trial = Trial::findOrFail($trial_id);
+        $trial_date = date_create($trial->date);
+
+        $IPaddress = $request->ip();
+//        $request->session()->put('trial_id', $request->trial_id);
+//        $accept = session('accept');
+
+//        Get product/price IDs
+        $youthProductID = "OTD ";
+        $adultProductID = "OTD";
+        $youthPriceID = "OTD";
+        $adultPriceID = "OTD";
+
+        $attributes = $request->validate([
+            'name' => ['required', 'min:5', 'max:255'],
+            'trial_id' => 'required',
+            'class' => 'required',
+            'course' => 'required',
+            'make' => 'required',
+            'type' => 'required',
+            'dob' => 'required',
+        ]);
+
+        $attributes['name'] = $this->nameize($request->name);
+        $attributes['IPaddress'] = $IPaddress;
+        $attributes['size'] = $request->size;
+        $attributes['licence'] = $request->licence;
+        $attributes['token'] = "OTD";
+        $attributes['accept'] = false;
+        $attributes['created_by'] = Auth::user()->id;
+
+        $birthDate = date_create($request->dob);
+
+        $interval = $trial_date->diff($birthDate);
+
+//        Calculation for yout goes here
+        if ($interval->y < 18) {
+            $attributes['isYouth'] = 1;
+            $attributes['stripe_price_id'] = "Youth EoD";
+            $attributes['stripe_product_id'] = "Youth EoD";
+        } else {
+            $attributes['isYouth'] = 0;
+            $attributes['stripe_price_id'] = "Adult EoD";
+            $attributes['stripe_product_id'] = "Adult EoD";
+        }
+        $attributes['status'] = 8;
+        $attributes['dob'] = $request->dob;
+        $entry = Entry::create($attributes);
+        $url = "/otd/$trial_id";
+        return redirect($url);
+    }
+
+    public function otd_form(Request $request)
+    {
+//        dd(request()->all());
+        $id = $request->id;
+        $trial = DB::table('trials')
+            ->where('id', $id)
+            ->whereToday('date')
+        ->first();
+        return view('entries.otd_entry', ['trial' => $trial]);
     }
 }
 

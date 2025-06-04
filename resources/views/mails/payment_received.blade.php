@@ -1,7 +1,7 @@
 
 
 
-<p>Your Stripe payment has been processed and I am pleased to confirm that your entry or entries listed below are now confirmed.</p>
+<p>Your Stripe payment has been processed and I am pleased to confirm that your entry or entries listed below are now confirmed.<br><b>Please remember to sign-in on arrival at the event.</b></p>
 <table>
     @foreach ($entryData as $entry)
         <tr>

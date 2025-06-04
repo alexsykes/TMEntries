@@ -64,8 +64,10 @@ class UserController extends Controller
             ->where('entries.created_by', $userID)
             ->get(['entries.*', 'trials.name as trial_name', 'trials.club as club', 'trials.classlist', 'trials.courselist', 'trials.customClasses', 'trials.customCourses', 'trials.isEntryLocked'])
         ->first();
-//        $entry = $entryArray[0];
 
+        if($entry == null) {
+                abort(404);
+        }
         return view('user.edit_entry', ['entry' => $entry]);
     }
 
