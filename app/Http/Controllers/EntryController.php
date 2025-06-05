@@ -878,7 +878,7 @@ class EntryController extends Controller
         $attributes['licence'] = $request->licence;
         $attributes['token'] = "OTD";
         $attributes['accept'] = false;
-        $attributes['created_by'] = Auth::user()->id;
+        $attributes['created_by'] = 0;
 
         $birthDate = date_create($request->dob);
 
@@ -901,14 +901,16 @@ class EntryController extends Controller
         return redirect($url);
     }
 
-    public function otd_form(Request $request)
+    public function otd_form($id)
     {
-//        dd(request()->all());
-        $id = $request->id;
         $trial = DB::table('trials')
             ->where('id', $id)
-            ->whereToday('date')
+            ->whereTodayOrAfter('date')
         ->first();
+
+        if($trial == null){
+            abort(404);
+        }
         return view('entries.otd_entry', ['trial' => $trial]);
     }
 }

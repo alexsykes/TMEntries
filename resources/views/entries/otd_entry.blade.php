@@ -23,7 +23,6 @@
                 event.target.setCustomValidity('');
             })
         });
-
     </script>
     @php
         $trial_id = $trial->id;
@@ -66,22 +65,22 @@
             $types = array("2 stroke", "4 stroke", "e-bike");
     $entryIDs = array();
 
-    $userID = Auth::user()->id;
+//    $userID = Auth::user()->id;
     //dump($entries);
     @endphp
     <x-slot:heading>
         Registration for {{$trial->name}}
     </x-slot:heading>
 
-    @error('')
-    {{ $message }}
-    @enderror
+{{--    @error('')--}}
+{{--    {{ $message }}--}}
+{{--    @enderror--}}
 
 
     <form action="/otdCreate" method="POST">
         @csrf
         <input type="hidden" id="trial_id" name="trial_id" value="{{$trial_id}}">
-        <input type="hidden" id="created_by" name="created_by" value="{{$userID}}">
+        <input type="hidden" id="created_by" name="created_by" value="0">
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
                 <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
@@ -112,14 +111,6 @@
                                 <x-form-error name="licence"/>
                             </div>
                         </x-form-field>
-
-                        {{--                        <x-form-field>--}}
-                        {{--                            <x-form-label for="isYouth">Under-18</x-form-label>--}}
-                        {{--                            <div class="ml-2 mt-2 col-span-full">--}}
-                        {{--                                <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth"/>--}}
-                        {{--                                <x-form-error name="isYouth"/>--}}
-                        {{--                            </div>--}}
-                        {{--                        </x-form-field>--}}
 
                         <div id="dateInput" class=" col-span-full">
                             <x-form-field>
