@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Entry;
 use App\Models\Trial;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ResultController extends Controller
 {
@@ -29,6 +30,8 @@ class ResultController extends Controller
 
     public function display($id)
     {
+        Log::info("Results trialID:$id");
+
         $trials = DB::table('trials')
             ->join('venues', 'trials.venueID', '=', 'venues.id')
             ->where('trials.id', $id)

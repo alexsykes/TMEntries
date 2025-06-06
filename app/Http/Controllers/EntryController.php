@@ -17,6 +17,15 @@ use PDF;
 use Stripe\StripeClient;
 
 
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Label\LabelAlignment;
+use Endroid\QrCode\Label\Font\OpenSans;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Writer\PngWriter;
+
+
 class EntryController extends Controller
 {
     //
@@ -894,7 +903,7 @@ class EntryController extends Controller
             $attributes['stripe_price_id'] = "Adult EoD";
             $attributes['stripe_product_id'] = "Adult EoD";
         }
-        $attributes['status'] = 8;
+        $attributes['status'] = 7;
         $attributes['dob'] = $request->dob;
         $entry = Entry::create($attributes);
         $url = "/otd/$trial_id";
@@ -912,6 +921,49 @@ class EntryController extends Controller
             abort(404);
         }
         return view('entries.otd_entry', ['trial' => $trial]);
+    }
+
+    public function generate($id) {
+//        dd($id);
+        $liveSite = config('app.url');
+        $data = "$liveSite/otd/$id";
+        $trial = DB::table('trials')
+            ->where('id', $id)
+        ->first();
+
+        if($trial == null){
+            abort(404);
+        }
+
+        $name = $trial->name;
+
+        $builder = new Builder(
+            writer: new PngWriter(),
+            writerOptions: [],
+            validateResult: false,
+            data: $data,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::High,
+            size: 600,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+//            logoPath: __DIR__.'/assets/bender.png',
+//            logoResizeToWidth: 50,
+//            logoPunchoutBackground: true,
+            labelText: $name,
+            labelFont: new OpenSans(20),
+            labelAlignment: LabelAlignment::Center
+        );
+
+
+        $result = $builder->build();
+        $filename = "data_$id.png";
+        $dir = 'images/qr/'.$filename;
+        $result->saveToFile($dir);
+
+
+
+        return redirect("/trials/adminEntryList/$id");
     }
 }
 
