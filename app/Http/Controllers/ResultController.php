@@ -30,7 +30,11 @@ class ResultController extends Controller
 
     public function display($id)
     {
-        Log::info("Results trialID:$id");
+        $ip = request()->ip();
+        Log::info("Results trialID:$id - IP: $ip");
+        if($id==0){
+            abort(404);
+        }
 
         $trials = DB::table('trials')
             ->join('venues', 'trials.venueID', '=', 'venues.id')

@@ -578,9 +578,15 @@ class TrialController extends Controller
             ->havingRaw('COUNT(ridingNumber) > 1')
         ->get('ridingNumber');
 
-        $entries = Entry::where('trial_id', $id)
-            ->get()
-            ->sortBy('status');
+//        $entries = Entry::where('trial_id', $id)
+//            ->get()
+//            ->sortBy('status');
+
+        $entries = DB::table('entries')
+            ->where('trial_id', $id)
+            ->orderBy('status')
+            ->orderBy('name')
+            ->get();
 
         $trial = Trial::where('id', $id)->first();
         return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial, 'duplicates' => $duplicates]);
@@ -683,8 +689,6 @@ class TrialController extends Controller
     public function info($id){
         $entries = DB::table('entries')
             ->where('trial_id', $id)
-            ->orderBy('status')
-            ->orderBy('course')
             ->orderBy('name')
             ->get();
 
