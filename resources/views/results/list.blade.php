@@ -6,7 +6,7 @@
             @foreach($pastTrials as $trial)
 
                     @php
-                        $date = date_format(date_create($trial->date), "M jS, Y");
+                        $date = date_format(date_create($trial->date), "M jS");
                     @endphp
                 <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
                     <td class="text-sm hidden md:table-cell  pl-4 pt-1 pb-1"><a href="/results/display/{{$trial->id}}">{{$date}}</a></td>

@@ -167,6 +167,15 @@ function onCheckoutSessionCompleted($sessionObject)
     $entries = Entry::all()
         ->whereIn('id', $entryIDArray);
 
+    $entries = DB::table('entries')
+        ->join('trials', 'entries.trial_id', '=', 'trials.id')
+        ->whereIn('entries.id', $entryIDArray)
+        ->get(['entries.*', 'trials.name as trial', 'trials.date as date']);
+
+//    $entriesWithTrialDetails = Entry::all()
+//        ->whereIn('id', $entryIDArray);
+//        ->join('trials','entries.trial_id', '=', 'trials.id');
+
     Mail::to($email)
         ->bcc($bcc)
         ->send(new PaymentReceived($entries));

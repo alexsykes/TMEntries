@@ -4,12 +4,16 @@
 <p>Your Stripe payment has been processed and I am pleased to confirm that your entry or entries listed below are now confirmed.<br><b>Please remember to sign-in on arrival at the event.</b></p>
 <table>
     @foreach ($entryData as $entry)
+        @php
+            $dateFormatted = date_format(date_create($entry->date), "M jS");
+        @endphp
         <tr>
-            <td>Ref: {{$entry->id}} </td>
+            <td><b>{{$dateFormatted}} - {{$entry->trial}}:</b></td>
             <td>{{$entry->name}}</td>
             <td>{{$entry->class}}</td>
             <td>{{$entry->course}}</td>
-            <td><a href="{{config('app.url')}}/entry/useredit/?id={{$entry->id}}&token={{$entry->token}}">Make changes</a></td>
+            <td><a href="{{config('app.url')}}/entry/useredit/?id={{$entry->id}}&token={{$entry->token}}">Change</a></td>
+            <td>Entry Ref: {{$entry->id}} </td>
         </tr>
     @endforeach
 </table>

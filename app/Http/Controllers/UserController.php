@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entry;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
@@ -29,6 +30,13 @@ class UserController extends Controller
             ->where('created_by', $userID)
             ->whereIn('trial_id', $todaysTrials->pluck('id'))
         ->get();
+//
+//
+//        $allEntries = DB::table('entries')
+//            ->join('trials', 'entries.trial_id', '=', 'trials.id')
+//            ->where('entries.created_by', Auth::user()->id)
+//            ->get(['entries.name', 'entries.class', 'entries.course', 'trials.name as trial', 'trials.date as date']);
+//        dump($allEntries);
 
         $futureTrialsArray = array();
         foreach ($futureTrials as $futureTrial) {
