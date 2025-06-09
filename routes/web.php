@@ -117,7 +117,9 @@ Route::post('/entry/store', [EntryController::class, 'store']);
 Route::post('/entries/saveRidingNumbers', [EntryController::class, 'saveRidingNumbers']);
 Route::post('/admin/entries/storeMultiple', [EntryController::class, 'storeMultiple'])->middleware(['auth', 'verified']);
 Route::get('/otd/{trialid}', [EntryController::class, 'otd_form']);
+Route::get('/otd/confirm/{entryid}', [EntryController::class, 'otd_confirm']);
 Route::post('/otdCreate', [EntryController::class, 'otdCreate']);
+Route::post('/otd/saveNumbers', [EntryController::class, 'otdSaveNumbers']);
 Route::get('generate/{trialid}', [EntryController::class, 'generate'])->middleware(['auth', 'verified']);
 
 // Check for usage

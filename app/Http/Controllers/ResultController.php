@@ -32,7 +32,10 @@ class ResultController extends Controller
     {
         $ip = request()->ip();
         Log::info("Results trialID:$id - IP: $ip");
-        if($id==0){
+        if($id<1){
+            abort(404);
+        }
+        if($id == null ){
             abort(404);
         }
 
@@ -57,12 +60,12 @@ class ResultController extends Controller
         $resultsByClass = $this->getResultsByClass($id, $courselist, $classlist);
 
         $courseResults = array();
-
         foreach ($courses as $course) {
             $courseResult = $this->getCourseResult($id, $course);
             array_push($courseResults, $courseResult);
         }
 
+//        dd($courseResults);
         $nonStarters = DB::table('entries')
             ->where('trial_id', $id)
             ->where('resultStatus', 2)
@@ -82,7 +85,7 @@ class ResultController extends Controller
                 $resultArray = array();
                 array_push($resultArray, $course);
                 array_push($resultArray, $class);
-                $sql = "SELECT id AS resultID, RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus FROM tme_entries WHERE trial_id = $id AND course = '$course' AND class = '$class' AND resultStatus < 2 AND ridingNumber > 0 ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores";
+                $sql = "SELECT id AS entryID, RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus FROM tme_entries WHERE trial_id = $id AND course = '$course' AND class = '$class' AND resultStatus < 2 AND ridingNumber > 0 ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores";
                 $results = DB::select($sql);
                 array_push($resultArray, $results);
                 array_push($resultsArray, $resultArray);

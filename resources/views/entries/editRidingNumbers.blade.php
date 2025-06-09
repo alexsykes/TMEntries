@@ -20,7 +20,7 @@
             <td> {{$entry->course}}</td>
             <td> {{$entry->class}}</td>
             <td> {{$statusOptions[$entry->status]}}</td>
-            <td class="text-right pr-4"> <input class="w-24  text-right bg-white" type="text" name="ridingNumber[]" id="ridingNumber[]" value="{{$entry->ridingNumber}}"></td>
+            <td class="text-right pr-4"> <x-form-input class="w-8  text-right bg-white" type="text" name="ridingNumber[]" id="ridingNumber[]" value="{{$entry->ridingNumber}}"/></td>
         </tr>
     @endforeach
     </table>

@@ -906,7 +906,8 @@ class EntryController extends Controller
         $attributes['status'] = 7;
         $attributes['dob'] = $request->dob;
         $entry = Entry::create($attributes);
-        $url = "/otd/$trial_id";
+        $url = "/otd/confirm/$entry->id";
+
         return redirect($url);
     }
 
@@ -921,6 +922,46 @@ class EntryController extends Controller
             abort(404);
         }
         return view('entries.otd_entry', ['trial' => $trial]);
+    }
+
+    public function otdSaveNumbers(Request $request) {
+//        dd($request->all());
+        $trialid = $request->trialid;
+
+        $numEntries = sizeof($request->ridingNumber);
+
+        for ($i = 0; $i < $numEntries; $i++) {
+            $ridingNumber = $request->ridingNumber[$i];
+            if($ridingNumber != null) {
+                $entryID = $request->entryID[$i];
+                DB::table('entries')->where('id', $entryID)->update(['ridingNumber' => $ridingNumber, 'status' => 8, 'updated_at' => NOW()]);
+            }
+        }
+
+        return redirect("/trials/adminEntryList/$trialid");
+    }
+
+    public function otd_confirm(Request $request)
+    {
+        $entryid = $request->entryid;
+        $entry  = DB::table('entries')->where('id', $entryid)->first();
+
+        $trialid = $entry->trial_id;
+        $isYouth = $entry->isYouth;
+        $product_code = DB::table('products')
+            ->select('stripe_product_id')
+            ->where('trial_id', $trialid)
+            ->where('product_category', 'entry fee')
+            ->where('isYouth', $isYouth)
+            ->first();
+
+
+        $code = $product_code->stripe_product_id;
+        $price = DB::table('prices')->select('stripe_price')
+            ->where('stripe_product_id', $code)
+            ->first();
+        $cost = $price->stripe_price / 100;
+        return view('entries.otd_confirm', ['trialid' => $trialid, 'cost' => $cost]);
     }
 
     public function generate($id) {

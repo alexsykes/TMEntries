@@ -28,6 +28,7 @@
         $trial_id = $trial->id;
 
         $trial_date = date_create($trial->date);
+
         $offset = DateInterval::createFromDateString('4 years');
         $maxDob = $trial_date->sub($offset)->format("Y-m-d");
 

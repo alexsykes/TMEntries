@@ -17,9 +17,7 @@ class TrialController extends Controller
     //
     public function details($trial_id)
     {
-//    $trialid = $id;
         $gmap_key = config('gmap.gmap_key');
-//        dd($gmap_key);
         $trial = Trial::findorfail($trial_id);
 
         if($trial->published == 0){
@@ -566,11 +564,6 @@ class TrialController extends Controller
 
     public function adminEntryList($id)
     {
-//        SELECT ridingNumber FROM tme_entries
-//    WHERE trial_id = 137
-//    AND status IN (0,1,7, 8, 9)
-//    GROUP BY ridingNumber
-//    HAVING COUNT(*) > 1
 
         $duplicates = Entry::where('trial_id', $id)
             ->whereIn('status', [0, 1, 7, 8, 9 ])
@@ -584,12 +577,19 @@ class TrialController extends Controller
 
         $entries = DB::table('entries')
             ->where('trial_id', $id)
+            ->whereIn('status', [0, 1, 7, 8, 9 ])
             ->orderBy('status')
             ->orderBy('name')
             ->get();
 
+        $eod = DB::table('entries')->where('trial_id', $id)
+            ->where('token',  'OTD')
+            ->where('status', 7)
+            ->orderBy('created_at')
+            ->get();
+
         $trial = Trial::where('id', $id)->first();
-        return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial, 'duplicates' => $duplicates]);
+        return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial, 'duplicates' => $duplicates, 'eod' => $eod]);
     }
 
     public function store()

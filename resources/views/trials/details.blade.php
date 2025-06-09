@@ -97,10 +97,6 @@
         $entryStatus .= "Registration is now closed as the entry limit has been reached";
     }
 
-
-
-
-
     if ($trial->stopNonStop == "Stop permitted") {
         $stopNonStop = "This trial will be a Stop Permitted trial.<br>";
     } else {

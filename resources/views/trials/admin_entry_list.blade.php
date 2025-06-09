@@ -3,7 +3,6 @@
         {{$trial->name}}
     </x-slot:heading>
 
-    <div class="mx-auto max-w-7xl px-4  sm:px-6 lg:px-8">
         @php
 
             $isEntryLocked = $trial->isEntryLocked;
@@ -13,6 +12,7 @@
     } else {
         $lock = false;
     }
+
 
     $duplicateArray = array();
     foreach($duplicates as $duplicate)
@@ -57,6 +57,59 @@ $courselist   = str_replace(',',',',implode(',', $allCourses));
 $courseOptions = explode(',', $courselist);
 $classOptions = explode(',', $classlist);
         @endphp
+
+    <div class="mx-auto max-w-7xl px-4  sm:px-6 lg:px-8">
+        <div class="mt-2 ml-0" id="buttons1">
+            @if(!$lock)
+                <a href="/admin/entries/editRidingNumbers/{{$trial->id}}"
+                   class="rounded-md ml-2 bg-violet-600 px-3 py-2 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Edit Riding Numbers</a>
+
+            @endif
+            <a href="/admin/entries/printSignOnSheets/{{$trial->id}}"
+               class="rounded-md ml-2 bg-violet-600 px-3 py-2 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Signing-on Sheets</a>
+        </div>
+
+@if(sizeof($eod) > 0)
+    <form action="/otd/saveNumbers" method="post">
+        @csrf
+        <input type="hidden" id="trialid" name="trialid" value="{{$trial->id}}">
+        <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+            <div class="flex justify-between font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
+                <div>EOD entry list</div>
+            </div>
+
+                <table class="w-full text-sm">
+                    @foreach($eod as $entry)
+                        @php
+                        if($entry->isYouth) {
+                            $entryFee = "Youth entry fee";
+                        } else {
+                            $entryFee = "Adult entry fee";
+                        }
+                        @endphp
+                <tr class="flex-auto  ">
+                    <td class="table-cell pl-2 py-1"><input class="m-1  w-12 bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"  type="text" id="ridingNumber[]" name="ridingNumber[]"/>
+                        <input type="hidden" value="{{$entry->id}}" name="entryID[]" id="entryID[]"></td>
+                    <td>{{$entry->name}}</td>
+                    <td>{{$entryFee}}</td>
+                    <td>{{$entry->course}}</td>
+                    <td>{{$entry->class}}</td>
+                </tr>
+                @endforeach
+                </table>
+            <button type="submit"
+                    class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
+                Save
+            </button>
+        </div>
+    </form>
+        @endif
+
+        @if(sizeof($duplicateArray) > 0)
+            <div class="text-center w-full font-semibold mt-2 text-red-500">
+                You have duplicated riding numbers!
+            </div>
+        @endif
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="flex justify-between font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
                 <div>Entry list</div>
@@ -85,15 +138,6 @@ $classOptions = explode(',', $classlist);
                     @endforeach
                 </table>
             {{--    <a href="{{ route('stripe.index') }}" class="btn mt-5 bg">Continue Shopping</a>--}}
-        </div>
-        <div class="mt-4 ml-0" id="buttons1">
-            @if(!$lock)
-            <a href="/admin/entries/editRidingNumbers/{{$trial->id}}"
-               class="rounded-md ml-2 bg-violet-600 px-3 py-2 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Edit Riding Numbers</a>
-
-            @endif
-            <a href="/admin/entries/printSignOnSheets/{{$trial->id}}"
-               class="rounded-md ml-2 bg-violet-600 px-3 py-2 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">Signing-on Sheets</a>
         </div>
 @if(!$lock)
         <form action="/admin/entries/storeMultiple" method="POST">
