@@ -52,6 +52,10 @@ class ResultController extends Controller
         $courselist = $trial->courselist;
         $classlist = $trial->classlist;
 
+        $created_by = $trial->created_by;
+
+
+
         $allCourses = array();
         $courses = $trial->courselist;
         $customCourses = $trial->customCourses;
@@ -78,24 +82,30 @@ class ResultController extends Controller
             array_push($allClasses, $customClasses);
         }
 
-//    dd($allCourses, $allClasses);
         $classlist = str_replace(',',',',implode(',', $allClasses));
         $courselist   = str_replace(',',',',implode(',', $allCourses));
-
-
 
         $numsections = $trial->numSections;
         $numlaps = $trial->numLaps;
 
         $courses = explode(",", $courselist);
 
-//        dd($classlist);
-        $resultsByClass = $this->getResultsByClass($id, $courselist, $classlist);
+        if($created_by == 1926) {
+            $resultsByClass = $this->getYCResultsByClass($id, $courselist, $classlist);
+            $courseResults = array();
+            foreach ($courses as $course) {
+                $courseResult = $this->getYCCourseResult($id, $course);
+                array_push($courseResults, $courseResult);
+            }
 
-        $courseResults = array();
-        foreach ($courses as $course) {
-            $courseResult = $this->getCourseResult($id, $course);
-            array_push($courseResults, $courseResult);
+        } else {
+            $resultsByClass = $this->getResultsByClass($id, $courselist, $classlist);
+
+            $courseResults = array();
+            foreach ($courses as $course) {
+                $courseResult = $this->getCourseResult($id, $course);
+                array_push($courseResults, $courseResult);
+            }
         }
 
 //        dd($courseResults);
@@ -119,6 +129,33 @@ class ResultController extends Controller
                 array_push($resultArray, $course);
                 array_push($resultArray, $class);
                 $sql = "SELECT id AS entryID, RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus FROM tme_entries WHERE trial_id = $id AND course = '$course' AND class = '$class' AND resultStatus < 2 AND ridingNumber > 0 ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores";
+                $results = DB::select($sql);
+                array_push($resultArray, $results);
+                array_push($resultsArray, $resultArray);
+            }
+        }
+        return $resultsArray;
+    }
+
+    private function getYCCourseResult($id, string $course)
+    {
+        $query = "SELECT id AS entryID, DATE_FORMAT(created_at, '%d/%m/%Y %h:%i%p') AS created_at, RANK() OVER ( ORDER BY resultStatus ASC, total, dob DESC) AS pos,
+id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id FROM tme_entries WHERE trial_id = $id AND ridingNumber > 0 AND resultStatus < 2 AND course = '" . $course . "'";
+        $courseResult = DB::select($query);
+        return $courseResult;
+    }
+    private function getYCResultsByClass($id, $courselist, $classlist)
+    {
+        $classes = explode(',', $classlist);
+        $courses = explode(',', $courselist);
+        $resultsArray = array();
+
+        foreach ($courses as $course) {
+            foreach ($classes as $class) {
+                $resultArray = array();
+                array_push($resultArray, $course);
+                array_push($resultArray, $class);
+                $sql = "SELECT id AS entryID, RANK() OVER ( ORDER BY resultStatus ASC, total, dob DESC) AS pos, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus FROM tme_entries WHERE trial_id = $id AND course = '$course' AND class = '$class' AND resultStatus < 2 AND ridingNumber > 0 ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores";
                 $results = DB::select($sql);
                 array_push($resultArray, $results);
                 array_push($resultsArray, $resultArray);
