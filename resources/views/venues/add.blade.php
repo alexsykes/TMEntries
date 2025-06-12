@@ -128,7 +128,7 @@
                 <x-form-field>
                     <x-form-label for="directions">Directions</x-form-label>
                     <div class="mt-2 ">
-                        <textarea name="directions" type="text" id="notes" ></textarea>
+                        <textarea  class="withEditor"  name="directions" type="text" id="notes" ></textarea>
                     </div>
                     @error('directions')
                     <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -138,7 +138,7 @@
                 <x-form-field>
                     <x-form-label for="notes">Notes</x-form-label>
                     <div class="mt-2 ">
-                        <textarea name="notes" type="text" id="notes" ></textarea>
+                        <textarea  class="withEditor"  name="notes" type="text" id="notes" ></textarea>
                     </div>
                     @error('notes')
                     <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

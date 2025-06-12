@@ -63,7 +63,7 @@
         } //        Now closed
         else {
             $showButton = "hidden";
-            $entryStatus .= "Registration is now closed";
+            $entryStatus = "Registration is now closed";
         }
     }
 
@@ -81,20 +81,19 @@
 //        Not open yet
         if ($closingDate < $now) {
             $showButton = "hidden";
-            $entryStatus .= "Registration is now closed";
+            $entryStatus = "Registration is now closed";
         }
     }
 
 //    Entry limit
-    if ($hasEntryLimit && $entriesLeft == 1) {
-        $entryStatus .= " - Final entry remaining!";
-    }   elseif($hasEntryLimit && $entriesLeft <= 5) {
-        $entryStatus .= " - Final $entriesLeft entries remaining!";
-    }
-
     if($hasEntryLimit && $entriesLeft == 0) {
         $showButton = "hidden";
-        $entryStatus .= "Registration is now closed as the entry limit has been reached";
+        $entryStatus = "Registration is now closed as the entry limit has been reached ";
+    }
+    elseif ($hasEntryLimit && $entriesLeft == 1) {
+        $entryStatus = "Final entry remaining!";
+    }   elseif($hasEntryLimit && $entriesLeft <= 5) {
+        $entryStatus = "Final $entriesLeft entries remaining! ";
     }
 
     if ($trial->stopNonStop == "Stop permitted") {

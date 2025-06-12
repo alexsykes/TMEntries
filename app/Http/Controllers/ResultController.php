@@ -32,7 +32,7 @@ class ResultController extends Controller
     {
         $ip = request()->ip();
         Log::info("Results trialID:$id - IP: $ip");
-        if($id<1){
+        if($id<2){
             abort(404);
         }
         if($id == null ){
@@ -51,6 +51,39 @@ class ResultController extends Controller
         $trial = $trials[0];
         $courselist = $trial->courselist;
         $classlist = $trial->classlist;
+
+        $allCourses = array();
+        $courses = $trial->courselist;
+        $customCourses = $trial->customCourses;
+
+        $allClasses = array();
+        $classes = $trial->classlist;
+        $customClasses = $trial->customClasses;
+
+
+//    dump($courses, $customCourses, $classes, $customCourses);
+        if($courses !='') {
+            array_push($allCourses, $courses);
+        }
+
+        if($customCourses !='') {
+            array_push($allCourses, $customCourses);
+        }
+
+        if($classes !='') {
+            array_push($allClasses, $classes);
+        }
+
+        if($customClasses !='') {
+            array_push($allClasses, $customClasses);
+        }
+
+//    dd($allCourses, $allClasses);
+        $classlist = str_replace(',',',',implode(',', $allClasses));
+        $courselist   = str_replace(',',',',implode(',', $allCourses));
+
+
+
         $numsections = $trial->numSections;
         $numlaps = $trial->numLaps;
 

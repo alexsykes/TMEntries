@@ -571,6 +571,9 @@ class EntryController extends Controller
     public function printSignOnSheets($id)
     {
 //        $id = 119;
+        $this->generate($id);
+
+
         $trialDetails = DB::table('trials')->where('id', $id)->first();
         $venueID = $trialDetails->venueID;
         $venue = DB::table('venues')->where('id', $venueID)->first();
@@ -695,7 +698,8 @@ class EntryController extends Controller
 
 //        PDF::Write(0, "What's next?");
         $index = 0;
-
+// Remove the following line
+//        $startList = array();
 
         $lineNumber = 1;
         if (sizeof($startList) > 0) {
@@ -796,6 +800,29 @@ class EntryController extends Controller
 
             }
         }
+
+        PDF::addPage();
+// References storage/app/public/images
+        $tid = $trialDetails->id;
+
+    $ttext = "images/qr/data_$tid.png";
+//        PDF::Text('10','20',"TrialID:$trialDetails->id");
+//        $img_file = storage_path($ttext);
+
+//        $img_file = storage_path('app/public/images/qr/data_163.png');
+//        $img_file = public_path('images/qr/data_119.png');
+//        $img_file = storage_path('app/public/images/amca.jpg');
+        PDF::setFontSize(14, true);
+
+        $img_file = public_path($ttext);
+        PDF::Image($img_file, 40  , 20, 130, '', '', '', '', false, 300, '', false, false, 0);
+
+        PDF::Text(30, 170, '1 - Scan QR code on your phone', );
+        PDF::Text(30, 180, '2 - Complete details, click Register', );
+        PDF::Text(30, 190, '3 - Join queue. Correct entry fee(s), please', );
+        PDF::Text(30, 200, '4 - Complete Sign-on sheet', );
+        PDF::Text(30, 210, '5 - Enjoy your ride', );
+
         PDF::Close();
         PDF::Output(public_path($filename), 'F');
         PDF::reset();
@@ -992,7 +1019,7 @@ class EntryController extends Controller
 //            logoResizeToWidth: 50,
 //            logoPunchoutBackground: true,
             labelText: $name,
-            labelFont: new OpenSans(20),
+            labelFont: new OpenSans(28),
             labelAlignment: LabelAlignment::Center
         );
 
@@ -1002,9 +1029,7 @@ class EntryController extends Controller
         $dir = 'images/qr/'.$filename;
         $result->saveToFile($dir);
 
-
-
-        return redirect("/trials/adminEntryList/$id");
+//        return redirect("/trials/adminEntryList/$id");
     }
 }
 
