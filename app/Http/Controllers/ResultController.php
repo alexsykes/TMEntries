@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Entry;
+use App\Models\Trial;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ResultController extends Controller
 {
@@ -16,20 +19,30 @@ class ResultController extends Controller
     public function list()
     {
         $pastTrials = DB::table('trials')
+            ->join('venues', 'trials.venueID', '=', 'venues.id')
             ->where('published', 1)
             ->where('isResultPublished', 1)
 //            ->whereBeforeToday('date')
             ->orderBy('date', 'desc')
-            ->get(['name', 'club', 'date', 'id']);
-// dd($pastTrials);
+            ->get(['trials.name', 'trials.club', 'date', 'trials.id', 'venues.name as venue']);
         return view('results.list', ['pastTrials' => $pastTrials]);
     }
 
     public function display($id)
     {
+        $ip = request()->ip();
+        Log::info("Results trialID:$id - IP: $ip");
+        if($id<2){
+            abort(404);
+        }
+        if($id == null ){
+            abort(404);
+        }
+
         $trials = DB::table('trials')
-            ->where('id', $id)
-            ->get();
+            ->join('venues', 'trials.venueID', '=', 'venues.id')
+            ->where('trials.id', $id)
+            ->get(['trials.*', 'venues.name as venue']);
 
         if ($trials->isEmpty()) {
             abort(404);
@@ -38,33 +51,165 @@ class ResultController extends Controller
         $trial = $trials[0];
         $courselist = $trial->courselist;
         $classlist = $trial->classlist;
+
+        $allCourses = array();
+        $courses = $trial->courselist;
+        $customCourses = $trial->customCourses;
+
+        $allClasses = array();
+        $classes = $trial->classlist;
+        $customClasses = $trial->customClasses;
+
+
+//    dump($courses, $customCourses, $classes, $customCourses);
+        if($courses !='') {
+            array_push($allCourses, $courses);
+        }
+
+        if($customCourses !='') {
+            array_push($allCourses, $customCourses);
+        }
+
+        if($classes !='') {
+            array_push($allClasses, $classes);
+        }
+
+        if($customClasses !='') {
+            array_push($allClasses, $customClasses);
+        }
+
+//    dd($allCourses, $allClasses);
+        $classlist = str_replace(',',',',implode(',', $allClasses));
+        $courselist   = str_replace(',',',',implode(',', $allCourses));
+
+
+
         $numsections = $trial->numSections;
         $numlaps = $trial->numLaps;
 
         $courses = explode(",", $courselist);
 
-        $courseResults = array();
+//        dd($classlist);
+        $resultsByClass = $this->getResultsByClass($id, $courselist, $classlist);
 
+        $courseResults = array();
         foreach ($courses as $course) {
             $courseResult = $this->getCourseResult($id, $course);
             array_push($courseResults, $courseResult);
         }
 
+//        dd($courseResults);
         $nonStarters = DB::table('entries')
             ->where('trial_id', $id)
             ->where('resultStatus', 2)
             ->orderBy('name')
             ->get('name');
-        return view('results.detail', ['trial' => $trial, 'courseResults' => $courseResults, 'courses' => $courses, 'nonStarters' => $nonStarters]);
+        return view('results.detail', ['trial' => $trial, 'courseResults' => $courseResults, 'courses' => $courses, 'nonStarters' => $nonStarters, 'resultsByClass' => $resultsByClass]);
+    }
+
+    private function getResultsByClass($id, $courselist, $classlist)
+    {
+        $classes = explode(',', $classlist);
+        $courses = explode(',', $courselist);
+        $resultsArray = array();
+
+        foreach ($courses as $course) {
+            foreach ($classes as $class) {
+                $resultArray = array();
+                array_push($resultArray, $course);
+                array_push($resultArray, $class);
+                $sql = "SELECT id AS entryID, RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus FROM tme_entries WHERE trial_id = $id AND course = '$course' AND class = '$class' AND resultStatus < 2 AND ridingNumber > 0 ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores";
+                $results = DB::select($sql);
+                array_push($resultArray, $results);
+                array_push($resultsArray, $resultArray);
+            }
+        }
+        return $resultsArray;
     }
 
     private function getCourseResult($id, string $course)
     {
-        $query = "SELECT id AS entryID, DATE_FORMAT(created_at, '%d/%m/%Y %h:%i%p') AS created_at, 
-RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos,
+        $query = "SELECT id AS entryID, DATE_FORMAT(created_at, '%d/%m/%Y %h:%i%p') AS created_at, RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos,
 id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id FROM tme_entries WHERE trial_id = $id AND ridingNumber > 0 AND resultStatus < 2 AND course = '" . $course . "'";
         $courseResult = DB::select($query);
         return $courseResult;
+    }
+
+    public function edit($id)
+    {
+        $entry = DB::table('entries')
+            ->join('trials', 'entries.trial_id', '=', 'trials.id')
+            ->where('entries.id', $id)
+            ->get(['entries.*', 'trials.numSections', 'trials.numLaps', 'trials.classlist', 'trials.courselist', 'trials.customClasses', 'trials.customCourses', 'trials.isEntryLocked'])
+            ->first();
+
+        return view('results.edit', ['entry' => $entry]);
+    }
+
+    public function update()
+    {
+        $entryID = request('id');
+        $entry = Entry::findOrFail($entryID);
+        $trialID = $entry->trial_id;
+
+        $trial = Trial::findOrFail($trialID);
+
+        $sectionScores = request('scores');
+        $numLaps = $trial->numLaps;
+        $numSections = $trial->numSections;
+        $numPossibleScores = $numLaps * $numSections;
+        $cutoff = $numPossibleScores * 0.25;
+
+        $scoreString = "";
+        foreach ($sectionScores as $sectionScore) {
+            $score = str_pad($sectionScore, $numLaps, 'x');
+            $scoreString .= $score;
+        }
+        dump($scoreString);
+
+        $scores = str_split($scoreString, 1);
+        $sequentialScores = "";
+        for ($lap = 0; $lap < $numLaps; $lap++) {
+            for ($section = 0; $section < $numSections; $section++) {
+                $offset = $lap + ($numLaps * $section);
+                $sequentialScores .= $scores[$offset];
+            }
+        }
+
+
+        $entry->sequentialScores = $sequentialScores;
+        $entry->sectionScores = $scoreString;
+        $entry->course = request('course');
+        $entry->class = request('class');
+        $entry->make = request('make');
+        $entry->type = request('type');
+        $entry->size = request('size');
+        $entry->name = request('name');
+
+        $entry->cleans = substr_count($scoreString, '0', 0);
+        $entry->ones = substr_count($scoreString, '1', 0);
+        $entry->twos = substr_count($scoreString, '2', 0);
+        $entry->threes = substr_count($scoreString, '3', 0);
+        $entry->fives = substr_count($scoreString, '5', 0);
+        $entry->missed = substr_count($scoreString, 'x', 0);
+
+        $entry->total = $entry->ones + 2 * ($entry->twos) + 3 * ($entry->threes) + 5 * ($entry->fives) + 5 * ($entry->missed);
+        $resultStatus = 0;
+
+        if ($entry->missed > $cutoff) {
+            $resultStatus = 1;
+        }
+        if ($entry->missed == $numPossibleScores) {
+            $resultStatus = 2;
+        }
+        $entry->resultStatus = $resultStatus;
+
+        $entry->save();
+
+        $trial->updated_at = now();
+        $trial->save();
+
+        return redirect("/results/display/$trialID");
     }
 
     private function getResults($id, $courselist)
@@ -89,4 +234,5 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
         $results = DB::select($query);
         return $results;
     }
+
 }

@@ -32,47 +32,48 @@ function onProductCreated($productObject)
     $metadata = $productObject['metadata'];
 
     $stripe_product_id = $productObject['id'];
-    $stripe_price_id = $productObject['default_price'];
     $stripe_product_description = $productObject['description'];
     $isLive = $productObject['livemode'];
     $isEntryFee = false;
     $hasQuantity = false;
     $product_name = $productObject['name'];
-    $product_category = $metadata['category'];
-    $trial_id = $metadata['trialid'];
-    $isYouth = $metadata['isYouth'];
-    if ($isYouth == 'true') {
-        $youth = true;
-    } else {
-        $youth = false;
-    };
 
-
-    if ($product_category == 'entry fee') {
-        $isEntryFee = true;
+    $youth = false;
+    if(isset($metadata['isYouth'])) {
+        $isYouth = $metadata['isYouth'];
+        if ($isYouth == 'true') {
+            $youth = true;
+        }
     }
-    $email = 'monster@trialmonster.uk';
-    Mail::to($email)
-        ->send(new ProductCreated());
 
-    info("Product created");
+    $product_category = '';
+    if(isset($metadata['category'])) {
+        $product_category = $metadata['category'];
+    }
+
+    $trialid = 0;
+    if(isset($metadata['trialid'])) {
+        $trialid = $metadata['trialid'];
+    }
+
 
     $product = Product::create([
         'stripe_product_id' => $stripe_product_id,
-        'stripe_price_id' => $stripe_price_id,
         'stripe_product_description' => $stripe_product_description,
         'isLive' => $isLive,
         'isEntryFee' => $isEntryFee,
         'hasQuantity' => $hasQuantity,
         'product_name' => $product_name,
         'product_category' => $product_category,
-        'trial_id' => $trial_id,
+        'trial_id' => $trialid,
         'isYouth' => $youth,
         'purchases' => 0,
         'version' => 1,
     ]);
+    info("Product created" . $product->product_name);
 
-
+    $email = 'monster@trialmonster.uk';
+    Mail::to($email)->send(new ProductCreated($product));
 }
 
 function onProductUpdated($productObject)
@@ -80,37 +81,42 @@ function onProductUpdated($productObject)
     $metadata = $productObject['metadata'];
 
     $stripe_product_id = $productObject['id'];
-    $stripe_price_id = $productObject['default_price'];
     $stripe_product_description = $productObject['description'];
     $isLive = $productObject['livemode'];
     $isEntryFee = false;
     $hasQuantity = false;
     $product_name = $productObject['name'];
-    $product_category = $metadata['category'];
-    $trial_id = $metadata['trialid'];
-    $isYouth = $metadata['isYouth'];
-    if ($isYouth == 'true') {
-        $youth = true;
-    } else {
-        $youth = false;
-    };
 
-    if ($product_category == 'entry fee') {
-        $isEntryFee = true;
+
+    $youth = false;
+    if(isset($metadata['isYouth'])) {
+        $isYouth = $metadata['isYouth'];
+        if ($isYouth == 'true') {
+            $youth = true;
+        }
+    }
+
+    $product_category = '';
+    if(isset($metadata['category'])) {
+        $product_category = $metadata['category'];
+    }
+
+    $trialid = 0;
+    if(isset($metadata['trialid'])) {
+        $trialid = $metadata['trialid'];
     }
 
     $product = DB::table('products')
         ->where('stripe_product_id', '=', $stripe_product_id)
         ->update([
             'stripe_product_id' => $stripe_product_id,
-            'stripe_price_id' => $stripe_price_id,
             'stripe_product_description' => $stripe_product_description,
             'isLive' => $isLive,
             'isEntryFee' => $isEntryFee,
             'hasQuantity' => $hasQuantity,
             'product_name' => $product_name,
             'product_category' => $product_category,
-            'trial_id' => $trial_id,
+            'trial_id' => $trialid,
             'isYouth' => $youth,
             'purchases' => 0,
             'updated_at' => now(),
@@ -161,6 +167,15 @@ function onCheckoutSessionCompleted($sessionObject)
     $entries = Entry::all()
         ->whereIn('id', $entryIDArray);
 
+    $entries = DB::table('entries')
+        ->join('trials', 'entries.trial_id', '=', 'trials.id')
+        ->whereIn('entries.id', $entryIDArray)
+        ->get(['entries.*', 'trials.name as trial', 'trials.date as date']);
+
+//    $entriesWithTrialDetails = Entry::all()
+//        ->whereIn('id', $entryIDArray);
+//        ->join('trials','entries.trial_id', '=', 'trials.id');
+
     Mail::to($email)
         ->bcc($bcc)
         ->send(new PaymentReceived($entries));
@@ -169,38 +184,49 @@ function onCheckoutSessionCompleted($sessionObject)
 
 function onRefundCreated(mixed $object)
 {
-    $entryID = $object['metadata']['id'];
+//    Get the entryID from the metadata
+    if (isset($object['metadata']['id'])) {
+        $entryID = $object['metadata']['id'];
 
-    $entry = DB::table('entries')
-        ->where('id', $entryID)
-        ->update(['status' => 2]);
+        $entry = DB::table('entries')
+            ->where('id', $entryID)
+            ->update(['status' => 2]);
 
-    $bcc = 'admin@trialmonster.uk';
+        $bcc = 'admin@trialmonster.uk';
 
-    $entry = DB::table('entries')->find($entryID);
-    $email = $entry->email;
-    Mail::to($email)
-        ->bcc($bcc)
-        ->send(new RefundRequested($entry));
-    info("Refund Requested: $entryID");
+        $entry = DB::table('entries')->find($entryID);
+        $email = $entry->email;
+        Mail::to($email)
+            ->bcc($bcc)
+            ->send(new RefundRequested($entry));
+        info("Refund Requested: $entryID");
+    }
 }
 
 function onRefundUpdated(mixed $object)
 {
-    $entryID = $object['metadata']['id'];
 
-    $entry = DB::table('entries')
-        ->where('id', $entryID)
-        ->update(['status' => 3]);
+    if (isset($object['metadata']['id'])) {
+        $entryID = $object['metadata']['id'];
 
-    $bcc = 'admin@trialmonster.uk';
+        $entry = DB::table('entries')
+            ->where('id', $entryID)
+            ->update(['status' => 3]);
 
-    $entry = DB::table('entries')->find($entryID);
-    $email = $entry->email;
-    Mail::to($email)
-        ->bcc($bcc)
-        ->send(new RefundConfirmed($entry));
-    info("Refund Confirmed: $entryID");
+        $bcc = 'admin@trialmonster.uk';
+
+        $entry = DB::table('entries')->find($entryID);
+        $email = $entry->email;
+        Mail::to($email)
+            ->bcc($bcc)
+            ->send(new RefundConfirmed($entry));
+        info("Refund Confirmed: $entryID");
+    }
+}
+
+function onPaymentIntentSucceeded()
+{
+    info("Payment intent succeeded");
 }
 
 class StripeEventListener
@@ -255,6 +281,10 @@ class StripeEventListener
                 break;
             case 'invoice.created':
                 onInvoiceCreated($event);
+                break;
+            case 'payment_intent.succeeded':
+//                onInvoiceCreated($event);
+                onPaymentIntentSucceeded();
                 break;
             default:
                 echo 'Received unknown event type ' . $eventType;

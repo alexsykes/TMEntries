@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-blue-900">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full ">
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com"></script>
+{{--    <script src="https://cdn.tailwindcss.com"></script>--}}
     <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <style>
         html,
         body {
@@ -74,42 +75,10 @@
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Motorcycle trials entry, scoring and results management system.">
+    <meta name="keywords" content="Motorcycle trials management system, trials scoring, trials results, trials registration">
 
-    <style>
-        /* Style the tab */
-        .tab {
-            overflow: hidden;
-        }
-
-        /* Style the buttons that are used to open the tab content */
-        .tab button {
-            /*background-color: inherit;*/
-            float: left;
-            /*border: black;*/
-            outline: none;
-            cursor: pointer;
-            /*padding: 14px 16px;*/
-            transition: 0.3s;
-        }
-
-        /* Change background color of buttons on hover */
-        .tab button:hover {
-            /*background-color: #ddd;*/
-        }
-
-        /* Create an active/current tablink class */
-        .tab button.active {
-            background-color: #fff;
-        }
-
-        /* Style the tab content */
-        .tabcontent {
-            display: none;
-            padding: 6px 12px;
-        }
-    </style>
     <script>
-
         function openSection(evt, tabName) {
             // Declare all variables
             var i, tabcontent, tablinks;
@@ -131,7 +100,6 @@
             evt.currentTarget.className += " active";
         }
 
-
         function toggle(checked, divName) {
             console.log("toggle called")
             var x = document.getElementById(divName);
@@ -148,7 +116,7 @@
 
 @endphp
 
-    <title>TrialMonster UK</title>
+    <title>{{config('app.name')}}</title>
 </head>
 <body class="h-full bg-blue-800 text-white">
 @include('navbar')
@@ -168,12 +136,13 @@
                         <a href="/clubaccess" class="inline-block mt-1 mx-3 hover:underline">Club access</a>
                     @endif
                 @endauth
+                <a href="/clublist" class="inline-block mt-1 mx-3 hover:underline">Club Profiles</a>
                 <a href="{{$tandc}}" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
                 <a href="{{$privacy}}" class="inline-block mt-1 mx-3 hover:underline">Privacy Policy</a>
                 <a href="mailto:monster@trialmonster.uk?subject=Web Enquiry" class="inline-block mt-1 mx-3 hover:underline">Contact</a>
             </div>
         </x-footer-link>
-        <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - Oldgit UK</div>
+        <div class="text-sm text-center  bg-blue-800 text-white"><a href="https://oldgit.uk">©2018 - {{date("Y")}} Development by Oldgit UK</a></div>
     </div>
 </main>
 <script>
@@ -186,6 +155,5 @@
         });
     });
 </script>
-
 </body>
 </html>

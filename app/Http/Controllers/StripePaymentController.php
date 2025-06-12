@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Stripe\StripeClient;
 
 class StripePaymentController extends Controller
 {
@@ -24,7 +25,7 @@ class StripePaymentController extends Controller
             ->get();
 
 
-        $stripe = new \Stripe\StripeClient(Config::get('stripe.stripe_secret_key'));
+        $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
         $cancelUrl = config('app.url')."/user/entries";
@@ -82,10 +83,10 @@ class StripePaymentController extends Controller
     public function checkoutSuccess(Request $request)
     {
 //        dd($request->all());
-        $stripe = new \Stripe\StripeClient(Config::get('stripe.stripe_secret_key'));
+        $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $session = $stripe->checkout->sessions->retrieve($request->session_id);
-        $successMessage = "Your payment has been successfully processed! You should shortly received an email notification.";
+        $successMessage = "Your payment has been successfully processed! You should shortly receive an email notification.";
 
         return view('success', compact('successMessage'));
     }

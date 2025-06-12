@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Club;
 use App\Models\Entry;
+use App\Models\Series;
 use App\Models\Trial;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -14,17 +17,22 @@ class TrialController extends Controller
     //
     public function details($trial_id)
     {
-//    $trialid = $id;
         $gmap_key = config('gmap.gmap_key');
-//        dd($gmap_key);
         $trial = Trial::findorfail($trial_id);
+
+        if($trial->published == 0){
+            abort(404);
+        }
+
+        $seriesID = $trial->series_id;
+        $series = Series::where('id', $seriesID)->first();
         $numEntries = Entry::all()
             ->where('trial_id', $trial_id)
             ->whereIn('status', [1, 2, 4, 5, 7, 8, 9])
             ->count();
 
         $venue = $trial->venue();
-        return view('trials.details', compact('trial_id', 'gmap_key', 'venue', 'trial', 'numEntries'));
+        return view('trials.details', compact('trial_id', 'gmap_key', 'venue', 'trial', 'numEntries', 'series'));
     }
 
     public function showTrialList()
@@ -43,6 +51,7 @@ class TrialController extends Controller
         $trials = Trial::all()
             ->where('created_by', $userID)
             ->sortByDesc('date');
+
         return view('trials.admin_trial_list', ['trials' => $trials]);
     }
 
@@ -56,6 +65,20 @@ class TrialController extends Controller
 
     public function add()
     {
+        $user = Auth::user();
+
+        $isClubAdmin = $user->isClubUser;
+        if(!$isClubAdmin){
+            return redirect('home');
+        }
+
+        $clubID = $user->club_id;
+        $club = Club::find($clubID);
+
+        $series = Series::where('clubID', $clubID)
+            ->orderBy('name')
+            ->get();
+
         $prefix = config('database.connections.mysql.prefix');
         $venues = DB::select('select id, name from ' . $prefix . 'venues order by name');
         $authorities = array("ACU", "AMCA", "Other");
@@ -71,6 +94,8 @@ class TrialController extends Controller
             'scoring' => $scoring,
             'stopAllowed' => $stopAllowed,
             'entryRestrictions' => $entryRestrictions,
+            'club' => $club,
+            'series' => $series,
         ]);
     }
 
@@ -124,7 +149,7 @@ class TrialController extends Controller
      * Validates initial data then sets up an 'empty' trial in databse.
      *
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function save()
     {
@@ -198,6 +223,8 @@ class TrialController extends Controller
                 $attrs['classlist'] = "";
                 $attrs['courselist'] = "";
 
+                $attrs['series_id'] = request('series_id', '');
+
                 $trial = Trial::create($attrs);
                 return redirect("trials/addTrialDetail/{$trial->id}");
 
@@ -217,6 +244,18 @@ class TrialController extends Controller
                 $attrs['hasTimePenalty'] = request('hasTimePenalty', 0);
                 $attrs['startInterval'] = request('startInterval', 60);
                 $attrs['penaltyDelta'] = request('penaltyDelta', 60);
+
+                if(request('customClasses')){
+                    $array = explode(',', request('customClasses'));
+                    $trimmedarray = array_map('trim', $array);
+                    $attrs['customClasses'] = implode(',', $trimmedarray);
+                }
+
+                if(request('customCourses')){
+                    $array = explode(',', request('customCourses'));
+                    $trimmedarray = array_map('trim', $array);
+                    $attrs['customCourses'] = implode(',', $trimmedarray);
+                }
 
                 if (request('classlist')) {
                     $attrs['classlist'] = implode(',', request('classlist'));
@@ -317,7 +356,7 @@ class TrialController extends Controller
         $attrs = request()->validate([
             'name' => 'required',
             'contactName' => 'required',
-            'date' => ['required', Rule::date()->after(today()->addDays(1)),],
+            'date' => ['required', Rule::date()->todayOrAfter(),],
             'startTime' => 'required',
             'club' => 'required',
             'email' => ['required', 'email',],
@@ -352,7 +391,22 @@ class TrialController extends Controller
         $attrs['notes'] = request('notes');
         $attrs['options'] = request('options');
         $attrs['customCourses'] = request('customCourses');
+
         $attrs['customClasses'] = request('customClasses');
+
+
+
+        if(request('customClasses')){
+            $array = explode(',', request('customClasses'));
+            $trimmedarray = array_map('trim', $array);
+            $attrs['customClasses'] = implode(',', $trimmedarray);
+        }
+        if(request('customCourses')){
+            $array = explode(',', request('customCourses'));
+            $trimmedarray = array_map('trim', $array);
+            $attrs['customCourses'] = implode(',', $trimmedarray);
+        }
+
         $attrs['entryMethod'] = implode(',', request('entryMethod', 'TrialMonster'));
         $attrs['onlineEntryLink'] = request('onlineEntryLink');
         $attrs['hasEodSurcharge'] = request('hasEodSurcharge', 0);
@@ -458,7 +512,8 @@ class TrialController extends Controller
     public function addTrialTrial($id)
     {
         $trial = Trial::findOrFail($id);
-        return view('trials/add_trial_trial', ['trial' => $trial]);
+        $series = Series::where('id', $trial->series_id)->first();
+        return view('trials/add_trial_trial', ['trial' => $trial, 'series' => $series]);;
     }
 
     public function addTrialEntry($id)
@@ -509,11 +564,6 @@ class TrialController extends Controller
 
     public function adminEntryList($id)
     {
-//        SELECT ridingNumber FROM tme_entries
-//    WHERE trial_id = 137
-//    AND status IN (0,1,7, 8, 9)
-//    GROUP BY ridingNumber
-//    HAVING COUNT(*) > 1
 
         $duplicates = Entry::where('trial_id', $id)
             ->whereIn('status', [0, 1, 7, 8, 9 ])
@@ -521,12 +571,25 @@ class TrialController extends Controller
             ->havingRaw('COUNT(ridingNumber) > 1')
         ->get('ridingNumber');
 
-        $entries = Entry::where('trial_id', $id)
-            ->get()
-            ->sortBy('status');
+//        $entries = Entry::where('trial_id', $id)
+//            ->get()
+//            ->sortBy('status');
+
+        $entries = DB::table('entries')
+            ->where('trial_id', $id)
+            ->whereIn('status', [0, 1, 7, 8, 9 ])
+            ->orderBy('status')
+            ->orderBy('name')
+            ->get();
+
+        $eod = DB::table('entries')->where('trial_id', $id)
+            ->where('token',  'OTD')
+            ->where('status', 7)
+            ->orderBy('created_at')
+            ->get();
 
         $trial = Trial::where('id', $id)->first();
-        return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial, 'duplicates' => $duplicates]);;
+        return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial, 'duplicates' => $duplicates, 'eod' => $eod]);
     }
 
     public function store()
@@ -621,6 +684,29 @@ class TrialController extends Controller
     {
         Trial::destroy($id);
         return redirect('/adminTrials');
+    }
+
+    public function info($id){
+        $entries = DB::table('entries')
+            ->where('trial_id', $id)
+            ->orderBy('name')
+            ->get();
+
+        $purchases = DB::table('products')
+            ->leftJoin('prices', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
+            ->where('trial_id', $id)
+            ->select('products.product_name', 'products.purchases', 'prices.stripe_price')
+        ->get();
+
+        $trial = DB::table('trials')
+            ->where('id', $id)
+            ->first();
+
+        $venue = DB::table('venues')
+            ->where('id', $trial->venueID)
+            ->first();
+
+        return view('trials.info', ['entries'=>$entries, 'purchases'=> $purchases, 'trial' => $trial,'venue' =>$venue]);
     }
 
 }

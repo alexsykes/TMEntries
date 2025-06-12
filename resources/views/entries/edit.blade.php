@@ -35,8 +35,8 @@ $classOptions = explode(',', $classlist);
         $id = $entry->id;
         $selected_licence = $entry->licence;
         $selected_isYouth = $entry->isYouth;
-        if($selected_isYouth == '1') { $isYouthCB = "checked"; } else { $isYouthCB = ""; };
-        $selected_name = $entry->name;
+        if($selected_isYouth == '1') { $isYouthCB = "checked"; } else { $isYouthCB = ""; }
+$selected_name = $entry->name;
         $selected_make = $entry->make;
         $selected_type = $entry->type;
         $selected_size = $entry->size;
@@ -46,6 +46,10 @@ $classOptions = explode(',', $classlist);
         $authority = $trial->authority;
 
         $types = array("2 stroke", "4 stroke", "e-bike");
+
+        $trial_date = date_create($trial->date);
+        $offset = DateInterval::createFromDateString('4 years');
+        $maxDob = $trial_date->sub($offset)->format("Y-m-d");
     @endphp
 
     <script>
@@ -57,26 +61,40 @@ $classOptions = explode(',', $classlist);
                 x.style.display = "none";
             }
         }
+
+        document.addEventListener("DOMContentLoaded", function(event) {
+            // Your code to run since DOM is loaded and ready
+            const input = document.querySelector('input[name="name"]');
+
+            input.addEventListener('invalid', function (event) {
+                if (event.target.validity.patternMismatch) {
+                    event.target.setCustomValidity('Please enter your firstname and surname.');
+                }
+            })
+            input.addEventListener('change', function (event) {
+                event.target.setCustomValidity('');
+            })
+        });
     </script>
     <form action="/entries/update/{{$id}}" method="POST">
         <input type="hidden" name="id" id="id" value="{{$id}}"/>
         @csrf
         @method('PATCH')
-        <div class="space-y-12">
-            <div class="border-b border-gray-900/10 pb-12">
-                <div class="px-4 py-4 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                <div class="px-4 py-2 mt-2 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
 
-                    <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                    <div class="mt-2 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
 
                         <x-form-field>
                             <x-form-label for="name">Name</x-form-label>
                             <div class="mt-2 col-span-2">
                                 <x-form-input name="name" type="text" id="name" value="{{$selected_name}}"
+                                              pattern="^([a-zA-Z\-]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{1,}\s?([a-zA-Z]{1,})?)"
                                               placeholder="Rider's name" required/>
                                 <x-form-error name="name"/>
                             </div>
                             @error('name')
+
                             <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                             @enderror
                         </x-form-field>
@@ -104,7 +122,7 @@ $classOptions = explode(',', $classlist);
                             <x-form-field>
                                 <x-form-label for="dob">Date of Birth</x-form-label>
                                 <div class="mt-2  max-w-40 col-span-full">
-                                    <x-form-input type="date" name="dob" id="dob" value="{{$selected_dob}}"/>
+                                    <x-form-input type="date" name="dob" id="dob" max={{$maxDob}} value="{{$selected_dob}}" required />
                                 </div>
                                 @error('dob')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -181,8 +199,6 @@ $classOptions = explode(',', $classlist);
                         </x-form-field>
                     </div>
                 </div>
-
-
                 <div class="mt-4" id="buttons">
                     <a href="/entries/register/{{$trial->id}}"
                        class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
@@ -192,7 +208,5 @@ $classOptions = explode(',', $classlist);
                         Save
                     </button>
                 </div>
-            </div>
-        </div>
     </form>
 </x-main>

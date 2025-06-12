@@ -2,10 +2,42 @@
     <?php
     $trial = $entry->trial;
     $id = $entry->id;
-    $classlist = $trial->classlist;
-    $courselist = $trial->courselist;
-    $classes = explode(',',$classlist);
-    $courses = explode(',',$courselist);
+//    $classlist = $trial->classlist;
+//    $courselist = $trial->courselist;
+//    $classes = explode(',',$classlist);
+//    $courses = explode(',',$courselist);
+
+    $allCourses = array();
+    $courses = $trial->courselist;
+    $customCourses = $trial->customCourses;
+
+    $allClasses = array();
+    $classes = $trial->classlist;
+    $customClasses = $trial->customClasses;
+
+
+//    dump($courses, $customCourses, $classes, $customCourses);
+    if($courses !='') {
+        array_push($allCourses, $courses);
+    }
+
+    if($customCourses !='') {
+        array_push($allCourses, $customCourses);
+    }
+
+    if($classes !='') {
+        array_push($allClasses, $classes);
+    }
+
+    if($customClasses !='') {
+        array_push($allClasses, $customClasses);
+    }
+
+//    dd($allCourses, $allClasses);
+    $classlist = str_replace(',',',',implode(',', $allClasses));
+    $courselist   = str_replace(',',',',implode(',', $allCourses));
+    $courseOptions = explode(',', $courselist);
+    $classOptions = explode(',', $classlist);
 
     $types = array("2 stroke", "4 stroke", "e-bike");
 
@@ -69,7 +101,7 @@
                                         <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course"
                                                 required>
                                             <option value="">Select your course</option>
-                                            @foreach($courses as $course)
+                                            @foreach($courseOptions as $course)
                                                 <option value="{{$course}}" {{$course==$entry->course ? "selected" : ""}}>{{$course}}</option>
                                             @endforeach
                                         </select>
@@ -85,7 +117,7 @@
                                         <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class"
                                                 required>
                                             <option value="">Select your class</option>
-                                            @foreach($classes as $class)
+                                            @foreach($classOptions as $class)
                                                 <option value="{{$class}}" {{$class==$entry->class ? "selected" : ""}}>{{$class}}</option>
                                             @endforeach
                                         </select>
@@ -98,7 +130,7 @@
 
                     <div class="flex pl-0 pr-0 justify-between" id="buttons">
                         <div class="">
-                        <a href="/entries/userdata/{{$entry->created_by}}"
+                        <a href="/"
                            class="rounded-md bg-white px-3 py-2 text-sm font-light  text-blue-600 border border-blue-800 drop-shadow-xl hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
 
                         <button type="submit"

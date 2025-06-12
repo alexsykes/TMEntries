@@ -43,8 +43,7 @@
                 <button class="inline-flex items-center justify-center p-2 rounded-md border border-blue-100 bg-white text-blue-800 hover:text-white hover:bg-blue-300 "
                         aria-controls="mobile-menu" aria-expanded="false">
                     <span class="sr-only">Open main menu</span>
-                    <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor" aria-hidden="true">
+                    <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M4 6h16M4 12h16m-7 6h7"/>
                     </svg>
@@ -58,10 +57,18 @@
     </div>
 
     <div class="hidden sm:hidden" id="mobile-menu">
-        <div class="px-2 pt-2 pb-3 space-y-1 text-right">
+        <div class="px-2 pt-2 pb-2 text-right">
             @auth
+                @if(Auth::user()->isAdminUser)
+                    <a href="/adminaccess"
+                       class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Admin Access</a>
+                @endif
+                @if(Auth::user()->isClubUser)
+                    <a href="/clubaccess"
+                       class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Club Access</a>
+                @endif
                 <a href="/user/entries"
-                   class="text-white  hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-base font-medium">My
+                   class="text-white  hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My
                     Entries</a>
             @endauth
             <a href="/"
@@ -72,12 +79,10 @@
             @auth
                 <form method="POST" action="/logout">
                     @csrf
-                    <div class="flex justify-end">
                         <button type="submit"
-                                class="text-white hover:bg-blue-300  hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                                class="w-full text-end text-white hover:bg-blue-300  hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                             Log out
                         </button>
-                    </div>
                 </form>
             @endauth
             @guest

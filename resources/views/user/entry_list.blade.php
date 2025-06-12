@@ -32,7 +32,7 @@ $email = Auth::user()->email;
     @endif
     @if(sizeof($toPays) > 0)
     <div class=" mt-0 mb-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-        <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Unconfirmed Entries</div>
+        <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Unconfirmed Entries - your entry is not confirmed until payment is completed</div>
         <table class="w-full">
             @foreach($toPays as $entry)
                 @php
@@ -45,7 +45,11 @@ $email = Auth::user()->email;
                     <td class="table-cell">{{$entry->name}}</td>
                     <td class="table-cell">{{$entry->course}}</td>
                     <td class="table-cell">{{$entry->class}}</td>
-                    <td class="table-cell">{{$statusOptions[$entry->status]}}</td>
+                    @if($entry->isEntryLocked == 1)
+                        <td class="table-cell">Locked</td>
+                    @else
+                        <td class="table-cell">{{$statusOptions[$entry->status]}}</td>
+                    @endif
                     <td class="table-cell"><a href="/users/entry/edit/{{$entry->id}}">Edit</a></td>
                 </tr>
             @endforeach
@@ -75,10 +79,15 @@ $email = Auth::user()->email;
                     <td class="table-cell">{{$entry->course}}</td>
                     <td class="table-cell">{{$entry->class}}</td>
                     <td class="table-cell">{{$statusOptions[$entry->status]}}</td>
-                    <td class="table-cell"><a href="/users/entry/edit/{{$entry->id}}">Edit</a></td>
+                    @if($entry->isEntryLocked == 1)
+                        <td class="table-cell"><i class="fa-solid fa-lock"></i></td>
+                    @else
+                        <td class="table-cell"><a href="/users/entry/edit/{{$entry->id}}"><i class="fa-solid fa-pencil"></i></a></td>
+                    @endif
                 </tr>
             @endforeach
         </table>
+        <div class="text-center pt-2 text-blue-800 font-semibold">Click on the pencil to makes changes or cancel an entry</div>
     </div>
         @endif
 

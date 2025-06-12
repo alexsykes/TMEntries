@@ -8,11 +8,30 @@
                 x.style.display = "none";
             }
         }
+
+
+        document.addEventListener("DOMContentLoaded", function(event) {
+            // Your code to run since DOM is loaded and ready
+            const input = document.querySelector('input[name="name"]');
+
+            input.addEventListener('invalid', function (event) {
+                if (event.target.validity.patternMismatch) {
+                    event.target.setCustomValidity('Please enter your firstname and surname.');
+                }
+            })
+            input.addEventListener('change', function (event) {
+                event.target.setCustomValidity('');
+            })
+        });
+
     </script>
     @php
         $trial_id = $trial->id;
-//    Class and course options
-//     Get all courses / classes
+
+        $trial_date = date_create($trial->date);
+        $offset = DateInterval::createFromDateString('4 years');
+        $maxDob = $trial_date->sub($offset)->format("Y-m-d");
+
     $allCourses = array();
     $courses = $trial->courselist;
     $customCourses = $trial->customCourses;
@@ -21,14 +40,27 @@
     $classes = $trial->classlist;
     $customClasses = $trial->customClasses;
 
+    if($courses !='') {
     array_push($allCourses, $courses);
+    }
+
+    if($customCourses !='') {
     array_push($allCourses, $customCourses);
+    }
+
+    if($classes !='') {
     array_push($allClasses, $classes);
+    }
+
+    if($customClasses !='') {
     array_push($allClasses, $customClasses);
+    }
+
     $classlist = str_replace(',',',',implode(',', $allClasses));
     $courselist   = str_replace(',',',',implode(',', $allCourses));
     $courseOptions = explode(',', $courselist);
     $classOptions = explode(',', $classlist);
+
 
             $authority = $trial->authority;
             $types = array("2 stroke", "4 stroke", "e-bike");
@@ -108,6 +140,7 @@
                             <x-form-label for="name">Name</x-form-label>
                             <div class="mt-2 ">
                                 <x-form-input class="" name="name" type="text" id="name" :value="old('name')"
+                                              pattern="^([a-zA-Z\-]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{1,}\s?([a-zA-Z]{1,})?)"
                                               placeholder="Rider's name" required/>
                                 <x-form-error name="name"/>
                             </div>
@@ -125,19 +158,19 @@
                             </div>
                         </x-form-field>
 
-                        <x-form-field>
-                            <x-form-label for="isYouth">Under-18</x-form-label>
-                            <div class="ml-2 mt-2 col-span-full">
-                                <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth"/>
-                                <x-form-error name="isYouth"/>
-                            </div>
-                        </x-form-field>
+{{--                        <x-form-field>--}}
+{{--                            <x-form-label for="isYouth">Under-18</x-form-label>--}}
+{{--                            <div class="ml-2 mt-2 col-span-full">--}}
+{{--                                <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth"/>--}}
+{{--                                <x-form-error name="isYouth"/>--}}
+{{--                            </div>--}}
+{{--                        </x-form-field>--}}
 
                         <div id="dateInput" class=" col-span-full">
                             <x-form-field>
                                 <x-form-label for="dob">Date of Birth</x-form-label>
                                 <div class="mt-2  max-w-40 col-span-full">
-                                    <x-form-input type="date" name="dob" id="dob" :value="old('dob')"/>
+                                    <x-form-input type="date" max="{{$maxDob}}"  required name="dob" id="dob" :value="old('dob')"/>
                                 </div>
                                 @error('dob')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

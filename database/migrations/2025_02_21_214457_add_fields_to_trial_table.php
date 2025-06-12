@@ -45,7 +45,7 @@ return new class extends Migration
             $table->boolean('isEntryLocked')->default(false);
             $table->boolean('isScoringLocked')->default(false);
             $table->boolean('isLocked')->default(false);
-            $table->boolean('isMultiDay')->default(false);;
+            $table->boolean('isMultiDay')->default(false);
             $table->boolean('isResultPublished')->default(false);
 
             $table->unsignedTinyInteger('numDays')->default(1);

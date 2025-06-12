@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  class="h-full bg-blue-900">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  class="h-full">
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com"></script>
+    <x-head.tinymce-config/>
+{{--    <script src="https://cdn.tailwindcss.com"></script>--}}
     <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <style>
         html,
         body {
@@ -68,42 +70,10 @@
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Motorcycle trials entry, scoring and results management system.">
+    <meta name="keywords" content="Motorcycle trials management system, trials scoring, trials results, trials registration">
 
-    <style>
-        /* Style the tab */
-        .tab {
-            overflow: hidden;
-        }
-
-        /* Style the buttons that are used to open the tab content */
-        .tab button {
-            /*background-color: inherit;*/
-            float: left;
-            /*border: black;*/
-            outline: none;
-            cursor: pointer;
-            /*padding: 14px 16px;*/
-            transition: 0.3s;
-        }
-
-        /* Change background color of buttons on hover */
-        .tab button:hover {
-            /*background-color: #ddd;*/
-        }
-
-        /* Create an active/current tablink class */
-        .tab button.active {
-            background-color: #fff;
-        }
-
-        /* Style the tab content */
-        .tabcontent {
-            display: none;
-            padding: 6px 12px;
-        }
-    </style>
     <script>
-
         function openSection(evt, tabName) {
             // Declare all variables
             var i, tabcontent, tablinks;
@@ -125,7 +95,6 @@
             evt.currentTarget.className += " active";
         }
 
-
         function toggle(checked, divName) {
             console.log("toggle called")
             var x = document.getElementById(divName);
@@ -137,48 +106,27 @@
         }
     </script>
     <title>TM Club Admin</title>
-    {{--    <title><?php if (config('APP_NAME') != ''){--}}
-    {{--            echo env('APP_NAME');--}}
-    {{--        }  else { echo "Admin area"; } ?></title>--}}
 </head>
-<body class="h-full bg-blue-800 text-white">
+<body class="h-full bg-red-600 text-white">
 @include('nav.admin_navbar')
 
-<header class="bg-blue-800 drop-shadow-md">
 
-
-
-            {{--        So - for small screens --}}
-            <div class="topnav " id="myTopnav">
-                @guest
-                    <a href="/register"  class="text-white" ><i class="text-xl fa-solid fa-user-plus"></i></a>
-                    <a href="/login"  class="text-white " ><i class="text-xl fa-solid fa-right-to-bracket"></i></a>
-                @endguest
-                @auth
-                    <a href="/auth/profile"  class="text-white" ><i class="text-xl fa-solid fa-user"></i></a>
-                    <form method="POST" action="/logout">
-                        @csrf
-                        <button class="topnav"><i class="text-xl fa-solid fa-right-from-bracket"></i></button>
-                    </form>
-                @endauth
-                <a href="/" class="text-white"><i class="text-xl  fa-solid fa-house"></i></a>
-            </div>
-</header>
-<main class="bg-blue-100 text-black">
+<main class="bg-red-50 text-black">
     <div class="mx-auto max-w-7xl px-2 py-6 sm:px-6 lg:px-8">
         {{ $slot }}
     </div>
-    <div class = "bg-blue-800 text-white">
-        <x-footer-link>
-            <div class="text-center mx-auto  text-white">
-                <a href="/adminTrials" class="inline-block mt-1 mx-3 hover:underline">Admin</a>
-                <a href="/terms" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
-                <a href="/clubaccess" class="inline-block mt-1 mx-3 hover:underline">Clubs</a>
-                <a href="/privacy"  class="inline-block mt-1 mx-3 hover:underline">Privacy Policy</a>
-                <a href="/contact"  class="inline-block mt-1 mx-3 hover:underline">Contact</a>
-            </div>
-        </x-footer-link>
-        <div class="text-sm mt-1 text-center bg-blue-800 text-white">©{{date("Y")}} - Oldgit UK</div></div>
-</main>
+    <div class = "bg-red-600">
+        <div class="text-sm text-center   text-white"><a href="https://oldgit.uk">©2018 - {{date("Y")}} Development by Oldgit UK</a><br>&nbsp;</div>
+    </div>
+</main><script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const button = document.querySelector('button[aria-controls="mobile-menu"]');
+        const menu = document.getElementById('mobile-menu');
+
+        button.addEventListener('click', function () {
+            menu.classList.toggle('hidden');
+        });
+    });
+</script>
 </body>
 </html>

@@ -9,6 +9,8 @@
     </x-slot:heading>
     <?php
     session(['trial_id' => $trial->id]);
+
+
     $latitude = $trial->venue->latitude;
     $longitude = $trial->venue->longitude;
     $markerArray = array();
@@ -24,6 +26,11 @@
     $hasWaitingList = $trial->hasWaitingList;
     $hasTimePenalty = $trial->hasTimePenalty;
 
+    if($hasEntryLimit) {
+        $entryLimit = $trial->entryLimit;
+        $entriesLeft = $entryLimit - $numEntries;
+    }
+
 //  Entry opening and closing dates
     $date = date_create($trial->date);
     $formattedDate = date_format($date, "jS F, Y");
@@ -35,27 +42,59 @@
     $openingDateFormatted = date_format($openingDate, "g:ia  F jS, Y");
     $entryStatus = "";
     $showButton = "";
-    if (($hasOpeningDate == 1) && ($now < $openingDate)) {
-        $entryStatus .= "Registration will open at $openingDateFormatted";
-        $showButton="hidden";
-    } elseif ($now > $closingDate) {
-        $entryStatus .= "Registration is now closed";
-        $showButton="hidden";
-    }
-    else if(($hasClosingDate == 1) && ($closingDate > $now)) {
-        $entryStatus .= "Entries are open until $closingDateFormatted";
-        $showButton="";
+
+//  Neither start nor finish
+    if (($hasClosingDate == false) && ($hasOpeningDate == false)) {
+        $showButton = "";
+        $entriesOpen = true;
+        $entryStatus .= "Entries are open until $formattedDate";
     }
 
-
-
-
-//    dd($date, $openingDate, $closingDate);
-
-    if ($openingDate > $now) {
-//        dd("Entries open on $openingDateFormatted");
+//    Start date and finish
+    if (($hasClosingDate == true) && ($hasOpeningDate == true)) {
+//       Within range
+        if (($openingDate < $now) && ($closingDate > $now)) {
+            $showButton = "";
+            $entryStatus .= "Entries are open until $closingDateFormatted";
+        } //        Not open yet
+        else if ($openingDate > $now) {
+            $showButton = "hidden";
+            $entryStatus .= "Registration will open at $openingDateFormatted";
+        } //        Now closed
+        else {
+            $showButton = "hidden";
+            $entryStatus = "Registration is now closed";
+        }
     }
 
+//    Start time only
+    if (($hasClosingDate == false) && ($hasOpeningDate == true)) {
+//        Not open yet
+        if ($openingDate > $now) {
+            $showButton = "hidden";
+            $entryStatus .= "Registration will open at $openingDateFormatted";
+        }
+    }
+
+//    Closing time only
+    if (($hasClosingDate == true) && ($hasOpeningDate == false)) {
+//        Not open yet
+        if ($closingDate < $now) {
+            $showButton = "hidden";
+            $entryStatus = "Registration is now closed";
+        }
+    }
+
+//    Entry limit
+    if($hasEntryLimit && $entriesLeft == 0) {
+        $showButton = "hidden";
+        $entryStatus = "Registration is now closed as the entry limit has been reached ";
+    }
+    elseif ($hasEntryLimit && $entriesLeft == 1) {
+        $entryStatus = "Final entry remaining!";
+    }   elseif($hasEntryLimit && $entriesLeft <= 5) {
+        $entryStatus = "Final $entriesLeft entries remaining! ";
+    }
 
     if ($trial->stopNonStop == "Stop permitted") {
         $stopNonStop = "This trial will be a Stop Permitted trial.<br>";
@@ -93,24 +132,24 @@
     $classes = $trial->classlist;
     $customClasses = $trial->customClasses;
 
-    if($courses !='') {
+    if ($courses != '') {
         array_push($allCourses, $courses);
     }
 
-    if($customCourses !='') {
+    if ($customCourses != '') {
         array_push($allCourses, $customCourses);
     }
 
-    if($classes !='') {
+    if ($classes != '') {
         array_push($allClasses, $classes);
     }
 
-    if($customClasses !='') {
+    if ($customClasses != '') {
         array_push($allClasses, $customClasses);
     }
 
-    $classlist = str_replace(',',',',implode(',', $allClasses));
-    $courselist   = str_replace(',',',',implode(',', $allCourses));
+    $classlist = str_replace(',', ',', implode(',', $allClasses));
+    $courselist = str_replace(',', ',', implode(',', $allCourses));
     $courseOptions = explode(',', $courselist);
     $classOptions = explode(',', $classlist);
 
@@ -140,12 +179,16 @@
         case "ACU":
             $entryConditions = "All riders and passengers must hold a current ACU/SACU Trials Registration Card or ACU/SACU Competition Licence. Any rider or passenger from another FMN must produce a licence issued by their FMN, together with start permission and proof of personal accident insurance.";
             $machines = "Motorcycles as per NSC Appendix D Category 1, Group A1 Solos and TSR 8";
+            $methodOfMarking = "A machine will be deemed to be in an Observed Section or Sub-Section when the front wheel spindle has passed the
+‘Section Begins’ Card and until the front wheel spindle has passed the ‘Section Ends’ Card. Further information can be obtained from the ACU Handbook.";
         case "Other":
             $methodOfMarking = "A machine will be deemed to be in an Observed Section or Sub-Section when the front wheel spindle has passed the
 ‘Section Begins’ Card and until the front wheel spindle has passed the ‘Section Ends’ Card. Further information can be obtained from the ACU Handbook.";
             $entryConditions = "Restricted ";
             break;
         default:
+            $entryConditions = "";
+            $methodOfMarking="";
             break;
     }
     ?>
@@ -169,7 +212,9 @@
 
 
         <div class="ml-4 mr-4 pt-0  text-black text-center ">Supplementary Regulations for the {{$trial->name}}</div>
-
+    @if($series != null )
+        <div class="ml-4 mr-4 mt-2 font-semibold">@php echo $series->notes; @endphp</div>
+    @endif
         <div class="ml-4 mr-4 pt-2  text-black text-left ">{{$trial->club}} will organise
             {{$rest}} trial for solo motorcycles, held under the Rules of the {{$trial->authority}}, the following
             Supplementary Regulations and any Final Instructions issued for the meeting.
@@ -184,9 +229,9 @@
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">ELIGIBILITY: </span>This trial will be {{$rest}} trial. {{$entryConditions}}
         </div>
-        <div class="ml-4 mr-4 pt-2  text-black text-left "><span
-                    class="font-semibold">MACHINES: </span>{{$machines}}
-        </div>
+{{--        <div class="ml-4 mr-4 pt-2  text-black text-left "><span--}}
+{{--                    class="font-semibold">MACHINES: </span>{{$machines}}--}}
+{{--        </div>--}}
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">START / VENUE: </span>{{$trial->startTime}} at {{$trial->venue->name}}
             , {{$trial->venue->postcode}}
@@ -210,7 +255,8 @@
                     class="font-semibold">COURSES: </span>{{$courselist}}
         </div>
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
-                    class="font-semibold">OFFICIALS: </span>Clerk of the Course: {{$trial->coc}}<br>Secretary of the Meeting (To whom all correspondence
+                    class="font-semibold">OFFICIALS: </span>Clerk of the Course: {{$trial->coc}}<br>Secretary of the
+            Meeting (To whom all correspondence
             regarding this event shall be addressed): {{$trial->contactName}} <br><i class="fa-solid fa-envelope"></i>&nbsp;<a
                     href="mailto:{{$trial->email}}">{{$trial->email}}</a><br><i
                     class="fa-solid fa-phone"></i>&nbsp; {{$trial->phone}}<br>Point of Contact for Child Protection
@@ -233,7 +279,8 @@
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">ENTRY LIMIT: </span>This trial has a limited entry of {{$trial->entryLimit}}.
             In the event of the limit being exceeded, acceptance will be determined
-            by <?php echo $entrySelectionBasis; ?>. Entrants will be informed by email once payment is received and their entry is confirmed.
+            by <?php echo $entrySelectionBasis; ?>. Entrants will be informed by email once payment is received and
+            their entry is confirmed.
         </div>
 
         <?php } ?>
@@ -252,12 +299,12 @@
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">METHOD OF MARKING & TIES: </span><?php echo "$stopNonStop $methodOfMarking"; ?>
         </div>
-@if($trial->hasNotes)
+        @if($trial->hasNotes)
 
-        <div class="ml-4 mr-4 pt-2  text-black text-left "><span
-                    class="font-semibold">NOTES: </span><?php echo "$trial->notes"; ?>
-        </div>
-    @endif
+            <div class="ml-4 mr-4 pt-2  text-black text-left "><span
+                        class="font-semibold">NOTES: </span><?php echo "$trial->notes"; ?>
+            </div>
+        @endif
     </div>
 
 </x-main>
