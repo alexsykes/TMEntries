@@ -9,6 +9,7 @@ use App\Models\Trial;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Stripe\StripeClient;
 
@@ -17,6 +18,9 @@ class TrialController extends Controller
     //
     public function details($trial_id)
     {
+
+        $ip = request()->ip();
+        Log::info("Trial detail trialID:$trial_id - IP: $ip");
         $gmap_key = config('gmap.gmap_key');
         $trial = Trial::findorfail($trial_id);
 
