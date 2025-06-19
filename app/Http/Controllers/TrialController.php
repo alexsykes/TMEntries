@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Stripe\StripeClient;
+use PDF;
 
 class TrialController extends Controller
 {
@@ -713,4 +714,144 @@ class TrialController extends Controller
         return view('trials.info', ['entries'=>$entries, 'purchases'=> $purchases, 'trial' => $trial,'venue' =>$venue]);
     }
 
+    public function programme($id){
+
+        $trial = DB::table('trials')->where('id', $id)->first();
+        $allCourses = array();
+        $courses = $trial->courselist;
+        $customCourses = $trial->customCourses;
+
+        $allClasses = array();
+        $classes = $trial->classlist;
+        $customClasses = $trial->customClasses;
+
+        if($courses !='') {
+            array_push($allCourses, $courses);
+        }
+
+        if($customCourses !='') {
+            array_push($allCourses, $customCourses);
+        }
+
+        if($classes !='') {
+            array_push($allClasses, $classes);
+        }
+
+        if($customClasses !='') {
+            array_push($allClasses, $customClasses);
+        }
+
+        $classlist = str_replace(',',',',implode(',', $allClasses));
+        $courselist   = str_replace(',',',',implode(',', $allCourses));
+
+        $numsections = $trial->numSections;
+        $numlaps = $trial->numLaps;
+
+        $courses = explode(",", $courselist);
+        $classes = explode(",", $classlist);
+
+        $riderList = DB::table('entries')
+            ->where('trial_id', $id)
+            ->where('ridingNumber', '>', 0)
+            ->orderBy('ridingNumber')
+            ->get(['ridingNumber', 'name', 'class', 'course', 'make', 'size']);
+
+        $filename = "$trial->name.pdf";
+
+        MYPDF::SetCreator('TM UK');
+        MYPDF::SetAuthor('TrialMonster.uk');
+        MYPDF::SetTitle('Entry list');
+        MYPDF::SetImageScale(PDF_IMAGE_SCALE_RATIO);
+        MYPDF::AddPage();
+        $bMargin = MYPDF::GetBreakMargin();
+        MYPDF::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        MYPDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        MYPDF::SetHeaderMargin(30);
+        MYPDF::SetFooterMargin(30);
+        MYPDF::SetPrintFooter(true);
+        MYPDF::SetAutoPageBreak(TRUE, 15);
+
+        MYPDF::SetMargins(0, 0, 0);
+
+        $nameWidth = 40;
+        $indent = 10;
+        $rowHeight = 7;
+
+//        MYPDF::Cell(0, 0,"Entry list - $trial->name",  0, 0);
+        MYPDF::Cell(0, 0, "Entry list - $trial->name", 0, 1, 'C', false, null, 1, false, 'C' . 'M');
+
+        if(sizeof($riderList) > 0) {
+            foreach ($riderList as $rider) {
+                $name = $rider->name;
+                $ridingNumber = $rider->ridingNumber;
+                $class = $rider->class;
+                $course = $rider->course;
+                $make = trim($rider->make);
+                $size = trim($rider->size);
+
+                $bike = $make." ".$size;
+
+                MYPDF::setX($indent);
+                MYPDF::Cell(10, $rowHeight, $ridingNumber, 0, 0, 'R', false, null, 1, false, 'C' . 'M');
+                MYPDF::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+                MYPDF::Cell($nameWidth, $rowHeight, $course, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+                MYPDF::Cell($nameWidth, $rowHeight, $class, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+                MYPDF::Cell(0, $rowHeight, $bike, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
+
+            }
+        }
+
+        MYPDF::Close();
+        MYPDF::Output(public_path($filename), 'F');
+        MYPDF::reset();
+
+//        return view('trials.programme', ['trial' => $trial]);
+    }
+
 }
+
+class MYPDF extends PDF
+{
+    //Page header
+//    public function Header()
+//    {
+//        // get the current page break margin
+//
+//        info("Header \App\Http\Controllers\MYPDF");
+//        $bMargin = $this->getBreakMargin();
+//        // get current auto-page-break mode
+//        $auto_page_break = $this->AutoPageBreak;
+//        // disable auto-page-break
+//        $this->SetAutoPageBreak(false, 0);
+//        // set bacground image
+////        $img_file = storage_path('app/public/images/acu.jpg');
+////        $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+//        // restore auto-page-break status
+//        $this->SetAutoPageBreak($auto_page_break, $bMargin);
+//        // set the starting point for the page content
+//        $this->setPageMark();
+//    }
+    //Page header
+    public function Header() {
+        // Logo
+//        $image_file = K_PATH_IMAGES.'logo_example.jpg';
+//        $this->Image($image_file, 10, 10, 15, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+        // Set font
+        $this->SetFont('helvetica', 'B', 20);
+        // Title
+        $this->Cell(0, 15, '<< TCPDF Example 003 >>', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+    }
+
+    // Page footer
+    public function Footer() {
+        // Position at 15 mm from bottom
+        $this->SetY(-15);
+        // Set font
+        $this->SetFont('helvetica', 'I', 8);
+        // Page number
+        $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+    }
+
+
+}
+

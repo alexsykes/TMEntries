@@ -54,8 +54,6 @@ class ResultController extends Controller
 
         $created_by = $trial->created_by;
 
-
-
         $allCourses = array();
         $courses = $trial->courselist;
         $customCourses = $trial->customCourses;
