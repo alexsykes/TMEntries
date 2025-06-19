@@ -716,7 +716,11 @@ class TrialController extends Controller
 
     public function programme($id){
 
-        $trial = DB::table('trials')->where('id', $id)->first();
+        $trial = DB::table('trials')->where('trials.id', $id)
+            ->join('venues', 'trials.venueID', '=', 'venues.id')
+            ->select('trials.*', 'venues.name as venueName' )
+            ->first();
+//        dump($trial);
         $allCourses = array();
         $courses = $trial->courselist;
         $customCourses = $trial->customCourses;
@@ -761,24 +765,39 @@ class TrialController extends Controller
         MYPDF::SetCreator('TM UK');
         MYPDF::SetAuthor('TrialMonster.uk');
         MYPDF::SetTitle('Entry list');
-        MYPDF::SetImageScale(PDF_IMAGE_SCALE_RATIO);
+//        MYPDF::SetImageScale(PDF_IMAGE_SCALE_RATIO);
+//        MYPDF::SetHeaderData('',0,"Title", "other");
+//        MYPDF::SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' Hi there!', PDF_HEADER_STRING);
+        MYPDF::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', 48));
+        MYPDF::SetPrintHeader(true);
         MYPDF::AddPage();
-        $bMargin = MYPDF::GetBreakMargin();
-        MYPDF::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+
+// set some text to print
+        $txt = <<<EOD
+Entry list - $trial->name
+
+$trial->club are grateful to the landowners at $trial->venueName, observers, other officials and riders without whose support this trial could not go ahead.
+
+
+EOD;
+
+// print a block of text using Write()
+        MYPDF::Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
+
         MYPDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-        MYPDF::SetHeaderMargin(30);
+        MYPDF::SetHeaderMargin(130);
         MYPDF::SetFooterMargin(30);
-        MYPDF::SetPrintFooter(true);
         MYPDF::SetAutoPageBreak(TRUE, 15);
 
-        MYPDF::SetMargins(0, 0, 0);
+        MYPDF::SetMargins(0, 20,0);
+        MYPDF::SetFontSize(10);
 
         $nameWidth = 40;
         $indent = 10;
         $rowHeight = 7;
 
 //        MYPDF::Cell(0, 0,"Entry list - $trial->name",  0, 0);
-        MYPDF::Cell(0, 0, "Entry list - $trial->name", 0, 1, 'C', false, null, 1, false, 'C' . 'M');
+
 
         if(sizeof($riderList) > 0) {
             foreach ($riderList as $rider) {
@@ -801,9 +820,10 @@ class TrialController extends Controller
             }
         }
 
-        MYPDF::Close();
-        MYPDF::Output(public_path($filename), 'F');
-        MYPDF::reset();
+        PDF::Close();
+        PDF::Output(public_path($filename), 'F');
+        PDF::reset();
+        return response()->download($filename);
 
 //        return view('trials.programme', ['trial' => $trial]);
     }
@@ -813,33 +833,22 @@ class TrialController extends Controller
 class MYPDF extends PDF
 {
     //Page header
-//    public function Header()
-//    {
-//        // get the current page break margin
-//
-//        info("Header \App\Http\Controllers\MYPDF");
-//        $bMargin = $this->getBreakMargin();
-//        // get current auto-page-break mode
-//        $auto_page_break = $this->AutoPageBreak;
-//        // disable auto-page-break
-//        $this->SetAutoPageBreak(false, 0);
-//        // set bacground image
-////        $img_file = storage_path('app/public/images/acu.jpg');
-////        $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
-//        // restore auto-page-break status
-//        $this->SetAutoPageBreak($auto_page_break, $bMargin);
-//        // set the starting point for the page content
-//        $this->setPageMark();
-//    }
-    //Page header
-    public function Header() {
-        // Logo
-//        $image_file = K_PATH_IMAGES.'logo_example.jpg';
-//        $this->Image($image_file, 10, 10, 15, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+    public function Header()
+    {
+        $bMargin = $this->getBreakMargin();
+        // get current auto-page-break mode
+        $auto_page_break = $this->AutoPageBreak;
+        // disable auto-page-break
+        $this->SetAutoPageBreak(false, 0);
+
         // Set font
         $this->SetFont('helvetica', 'B', 20);
         // Title
         $this->Cell(0, 15, '<< TCPDF Example 003 >>', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+
+        $this->SetAutoPageBreak($auto_page_break, $bMargin);
+        // set the starting point for the page content
+        $this->setPageMark();
     }
 
     // Page footer
