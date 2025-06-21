@@ -593,7 +593,7 @@ class EntryController extends Controller
         }
 
 //        dump($startList);
-        $filename = "Sign-on $trialDetails->name.pdf";
+        $filename = "pdf/Sign-on $trialDetails->name.pdf";
 
         MYPDF::SetCreator('TM UK');
 
@@ -802,19 +802,16 @@ class EntryController extends Controller
         }
 
         PDF::addPage();
+        PDF::SetFontSize(18);
+        PDF::Text(0,10,"Registration",0,false, true,0,0,'C' );
 // References storage/app/public/images
         $tid = $trialDetails->id;
 
-    $ttext = "images/qr/data_$tid.png";
-//        PDF::Text('10','20',"TrialID:$trialDetails->id");
-//        $img_file = storage_path($ttext);
+    $qr1 = "images/qr/data_$tid.png";
+    $qr2 = "images/qr/programme_$tid.png";
 
-//        $img_file = storage_path('app/public/images/qr/data_163.png');
-//        $img_file = public_path('images/qr/data_119.png');
-//        $img_file = storage_path('app/public/images/amca.jpg');
-        PDF::setFontSize(14, true);
 
-        $img_file = public_path($ttext);
+        $img_file = public_path($qr1);
         PDF::Image($img_file, 40  , 20, 130, '', '', '', '', false, 300, '', false, false, 0);
 
         PDF::Text(30, 170, '1 - Scan QR code on your phone', );
@@ -822,6 +819,25 @@ class EntryController extends Controller
         PDF::Text(30, 190, '3 - Join queue. Correct entry fee(s), please', );
         PDF::Text(30, 200, '4 - Complete Sign-on sheet', );
         PDF::Text(30, 210, '5 - Enjoy your ride', );
+
+
+        PDF::addPage();
+        PDF::SetFontSize(18);
+        PDF::Text(0,10,"Entry List",0,false, true,0,0,'C' );
+
+        $img_file = public_path($qr2);
+        PDF::Image($img_file, 40  , 20, 130, '', '', '', '', false, 300, '', false, false, 0);
+
+        PDF::SetY(170);
+        PDF::SetX(0);
+        PDF::SetLeftMargin(20);
+        PDF::SetRightMargin(20);
+
+
+
+        PDF::MultiCell(0, 0, 'Scan the QR code on your phone. Entries are correct at the time of compilation.', 0, 'L', false);
+        PDF::SetY(190);
+        PDF::MultiCell(0, 0, "Although every effort is made to provide accurate and up-to-date information, late changes may sometimes be unavoidable due to entrants' changes of course or class.",0,'L', false);
 
         PDF::Close();
         PDF::Output(public_path($filename), 'F');
@@ -847,10 +863,7 @@ class EntryController extends Controller
 
         for ($i = 0; $i < sizeof($names); $i++) {
             if (isset($names[$i]) && $names[$i] != "") {
-
-
                 $birthDate = date_create($birthDates[$i]);;
-
                 $interval = $trial_date->diff($birthDate);
 
 //        Calculation for yout goes here
@@ -878,10 +891,8 @@ class EntryController extends Controller
                 ]);
             }
         }
-
         return redirect("/trials/adminEntryList/{$trial_id}");
     }
-
 
     public function otdCreate(Request $request){
         $trial_id = $request->trial_id;
@@ -995,6 +1006,7 @@ class EntryController extends Controller
 //        dd($id);
         $liveSite = config('app.url');
         $data = "$liveSite/otd/$id";
+        $data2 = "$liveSite/trial/programme/$id";
         $trial = DB::table('trials')
             ->where('id', $id)
         ->first();
@@ -1019,7 +1031,7 @@ class EntryController extends Controller
 //            logoResizeToWidth: 50,
 //            logoPunchoutBackground: true,
             labelText: $name,
-            labelFont: new OpenSans(28),
+            labelFont: new OpenSans(24),
             labelAlignment: LabelAlignment::Center
         );
 
@@ -1028,6 +1040,32 @@ class EntryController extends Controller
         $filename = "data_$id.png";
         $dir = 'images/qr/'.$filename;
         $result->saveToFile($dir);
+
+
+        $name = $trial->name;
+        $builder = new Builder(
+            writer: new PngWriter(),
+            writerOptions: [],
+            validateResult: false,
+            data: $data2,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::High,
+            size: 600,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+//            logoPath: __DIR__.'/assets/bender.png',
+//            logoResizeToWidth: 50,
+//            logoPunchoutBackground: true,
+            labelText: $name,
+            labelFont: new OpenSans(24),
+            labelAlignment: LabelAlignment::Center
+        );
+        $result = $builder->build();
+        $filename = "programme_$id.png";
+        $dir = 'images/qr/'.$filename;
+        $result->saveToFile($dir);
+
+
 
 //        return redirect("/trials/adminEntryList/$id");
     }

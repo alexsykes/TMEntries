@@ -49,6 +49,7 @@ Route::get('/admin/results', [AdminController::class, 'resultList'])->middleware
 Route::get('/trial/programme/{id}', [TrialController::class, 'programme']);
 Route::get('/trials/adminEntryList/{id}', [TrialController::class, 'adminEntryList'])->middleware(['auth', 'verified']);
 Route::get('/admin/entry/edit/{id}', [EntryController::class, 'adminEdit'])->middleware(['auth', 'verified']);
+Route::get('/admin/entry/edit/{id}', [EntryController::class, 'adminEdit'])->middleware(['auth', 'verified']);
 Route::get('/admin/entry/cancel/{id}', [EntryController::class, 'adminCancel'])->middleware(['auth', 'verified']);
 Route::get('/admin/entries/editRidingNumbers/{id}', [EntryController::class, 'editRidingNumbers'])->middleware(['auth', 'verified']);
 Route::patch('/admin/entries/update', [EntryController::class, 'adminEntryUpdate'])->middleware(['auth', 'verified']);

@@ -37,6 +37,8 @@ class ScoringController extends Controller
         $trial->numLaps = $request->numLaps;
         $trial->numColumns = $request->numColumns;
         $trial->numRows = $request->numRows;
+
+
         $trial->save();
 
         $numRiders = $trial->numRows * $trial->numColumns;

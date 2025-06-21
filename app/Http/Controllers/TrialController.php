@@ -583,9 +583,10 @@ class TrialController extends Controller
         $entries = DB::table('entries')
             ->where('trial_id', $id)
             ->whereIn('status', [0, 1, 7, 8, 9 ])
-            ->orderBy('status')
+//            ->orderBy('status')
             ->orderBy('name')
             ->get();
+
 
         $eod = DB::table('entries')->where('trial_id', $id)
             ->where('token',  'OTD')
@@ -782,6 +783,7 @@ $trial->club are grateful to the landowners at $trial->venueName, observers, oth
 EOD;
 
 // print a block of text using Write()
+        MYPDF::SetFontSize(14);
         MYPDF::Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
 
         MYPDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -790,7 +792,6 @@ EOD;
         MYPDF::SetAutoPageBreak(TRUE, 15);
 
         MYPDF::SetMargins(0, 20,0);
-        MYPDF::SetFontSize(10);
 
         $nameWidth = 40;
         $indent = 10;
