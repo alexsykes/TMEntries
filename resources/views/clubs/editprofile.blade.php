@@ -84,9 +84,9 @@
 
 
                 <x-form-field>
-                    <x-form-label for="section_markers">Section markers</x-form-label>
+                    <x-form-label for="section_markers">Scoring and section markers</x-form-label>
                     <div class="mt-2">
-                        <textarea name ="section_markers" id="section_markers" rows="5"  class=" block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"  required >{{ $club->section_markers }}</textarea>
+                        <textarea class="withEditor" name ="section_markers" id="section_markers" rows="5"  class=" block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"  required >{{ $club->section_markers }}</textarea>
                         <x-form-error name="section_markers" />
                     </div>
                 </x-form-field>
@@ -105,7 +105,6 @@
 
             </div>
         </div>
-
         <div id="buttons" class="py-2">
             <a href="/club/profile"
                class=" rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-900 shadow-sm hover:bg-violet-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-900">Cancel</a>
@@ -115,5 +114,4 @@
             </button>
         </div>
     </form>
-
 </x-club>

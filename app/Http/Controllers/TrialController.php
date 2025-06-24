@@ -29,6 +29,10 @@ class TrialController extends Controller
             abort(404);
         }
 
+        if($trial->isResultPublished == 1){
+            abort(404);
+        }
+
         $seriesID = $trial->series_id;
         $series = Series::where('id', $seriesID)->first();
         $numEntries = Entry::all()
@@ -37,7 +41,10 @@ class TrialController extends Controller
             ->count();
 
         $venue = $trial->venue();
-        return view('trials.details', compact('trial_id', 'gmap_key', 'venue', 'trial', 'numEntries', 'series'));
+        $clubID = $trial->club_id;
+        $clubData = Club::where('id', $clubID)->first();
+//        dd($clubData);
+        return view('trials.details', compact('trial_id', 'gmap_key', 'venue', 'trial', 'numEntries', 'series', 'clubData'));
     }
 
     public function showTrialList()
@@ -160,7 +167,15 @@ class TrialController extends Controller
     {
 //        dump(request('entryMethod'));
         $user = Auth::user();
+
+
+        $isClubAdmin = $user->isClubUser;
+        if(!$isClubAdmin){
+            return redirect('home');
+        }
+
         $task = request('task');
+        $clubID = $user->club_id;
 //        dump($task);
 
         switch ($task) {
@@ -178,6 +193,7 @@ class TrialController extends Controller
                     'numDays' => Rule::requiredIf(request('isMultiDay') == 1),
                 ]);
 
+                $attrs['club_id'] = $clubID;
                 $attrs['created_by'] = $user->id;
                 $attrs['status'] = request('status', "Open");
                 $attrs['centre'] = request('centre');
@@ -571,7 +587,8 @@ class TrialController extends Controller
     {
 
         $duplicates = Entry::where('trial_id', $id)
-            ->whereIn('status', [0, 1, 7, 8, 9 ])
+//            ->whereIn('status', [0, 1, 7, 8, 9 ])
+                ->where('ridingNumber', '!=', 0)
             ->groupBy('ridingNumber')
             ->havingRaw('COUNT(ridingNumber) > 1')
         ->get('ridingNumber');
@@ -588,14 +605,20 @@ class TrialController extends Controller
             ->get();
 
 
-        $eod = DB::table('entries')->where('trial_id', $id)
+        $eod = DB::table('entries')
+            ->where('trial_id', $id)
             ->where('token',  'OTD')
             ->where('status', 7)
             ->orderBy('created_at')
             ->get();
 
+        $cancelled = DB::table('entries')
+            ->where('trial_id', $id)
+            ->where('status',  6)
+            ->get();
+
         $trial = Trial::where('id', $id)->first();
-        return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial, 'duplicates' => $duplicates, 'eod' => $eod]);
+        return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial, 'duplicates' => $duplicates, 'eod' => $eod, 'cancelled' => $cancelled]);
     }
 
     public function store()

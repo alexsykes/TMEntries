@@ -12,9 +12,10 @@
             <td>{{$entry->name}}</td>
             <td>{{$entry->class}}</td>
             <td>{{$entry->course}}</td>
-            <td><a href="{{config('app.url')}}/entry/useredit/?id={{$entry->id}}&token={{$entry->token}}">Change</a></td>
             <td>Entry Ref: {{$entry->id}} </td>
         </tr>
+        <tr>
+            <td colspan="5"><a href="{{config('app.url')}}/entry/useredit/?id={{$entry->id}}&token={{$entry->token}}">Click here to change the entry above</a></td></tr>
     @endforeach
 </table>
 <p>If you need to make any changes or withdraw from the event, please click on the link shown following the entry.</p>

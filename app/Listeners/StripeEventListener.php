@@ -9,9 +9,11 @@ use App\Mail\RefundRequested;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Product;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Cashier\Events\WebhookReceived;
+use Stripe\StripeClient;
 
 
 function onPriceCreated($priceObject)
@@ -130,6 +132,20 @@ function onProductUpdated($productObject)
 
 function onCheckoutSessionCompleted($sessionObject)
 {
+//    New stuff starts
+//    var_dump($sessionObject['id']);
+    $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
+    $lineItems = $stripe->checkout->sessions->allLineItems(
+        $sessionObject['id'],
+        []
+    );
+    $numSuppers = 0;
+    foreach ($lineItems as $lineItem) {
+        echo $lineItem['price']['product'] ;
+        echo $lineItem['quantity'] ;
+    }
+
+//    New stuff ends
     $metadata = $sessionObject['metadata'];
     $email = $sessionObject['customer_details']['email'];
     $stripe_payment_intent = $sessionObject['payment_intent'];
@@ -229,6 +245,19 @@ function onPaymentIntentSucceeded()
     info("Payment intent succeeded");
 }
 
+function onPaymentIntentCreated($object)
+{
+    info("Payment intent created");
+
+//    $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
+//    $pi = $object['id'];
+//    $paymentIntent = $stripe->paymentIntents->retrieve(
+//        $pi,
+//        []
+//    );
+//    var_dump($paymentIntent);
+}
+
 class StripeEventListener
 {
     /**
@@ -285,6 +314,10 @@ class StripeEventListener
             case 'payment_intent.succeeded':
 //                onInvoiceCreated($event);
                 onPaymentIntentSucceeded();
+                break;
+            case 'payment_intent.created':
+             $object = $event->payload['data']['object'];
+                onPaymentIntentCreated($object);
                 break;
             default:
                 echo 'Received unknown event type ' . $eventType;

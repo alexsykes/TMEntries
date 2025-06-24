@@ -9,8 +9,9 @@
     </x-slot:heading>
     <?php
     session(['trial_id' => $trial->id]);
+//dump($clubData);
 
-
+$methodOfMarking = $clubData->section_markers;
     $latitude = $trial->venue->latitude;
     $longitude = $trial->venue->longitude;
     $markerArray = array();
@@ -174,16 +175,16 @@
         case "AMCA":
             $entryConditions = "";
             $machines = "Please see club website for machine specification and restrictions";
-            $methodOfMarking = "A machine will be deemed to be in the section when the front wheel has passed the Section Begins card and marks will be awarded until the back wheel has passed the Section Ends card. 0, 1, 2, 3, 5 system - Ties decided by most cleans, ones, twos, threes, furthest clean";
+//            $methodOfMarking = "A machine will be deemed to be in the section when the front wheel has passed the Section Begins card and marks will be awarded until the back wheel has passed the Section Ends card. 0, 1, 2, 3, 5 system - Ties decided by most cleans, ones, twos, threes, furthest clean";
             break;
         case "ACU":
             $entryConditions = "All riders and passengers must hold a current ACU/SACU Trials Registration Card or ACU/SACU Competition Licence. Any rider or passenger from another FMN must produce a licence issued by their FMN, together with start permission and proof of personal accident insurance.";
             $machines = "Motorcycles as per NSC Appendix D Category 1, Group A1 Solos and TSR 8";
-            $methodOfMarking = "A machine will be deemed to be in an Observed Section or Sub-Section when the front wheel spindle has passed the
-‘Section Begins’ Card and until the front wheel spindle has passed the ‘Section Ends’ Card. Further information can be obtained from the ACU Handbook.";
+//            $methodOfMarking = "A machine will be deemed to be in an Observed Section or Sub-Section when the front wheel spindle has passed the
+//‘Section Begins’ Card and until the front wheel spindle has passed the ‘Section Ends’ Card. Further information can be obtained from the ACU Handbook.";
         case "Other":
-            $methodOfMarking = "A machine will be deemed to be in an Observed Section or Sub-Section when the front wheel spindle has passed the
-‘Section Begins’ Card and until the front wheel spindle has passed the ‘Section Ends’ Card. Further information can be obtained from the ACU Handbook.";
+//            $methodOfMarking = "A machine will be deemed to be in an Observed Section or Sub-Section when the front wheel spindle has passed the
+//‘Section Begins’ Card and until the front wheel spindle has passed the ‘Section Ends’ Card. Further information can be obtained from the ACU Handbook.";
             $entryConditions = "Restricted ";
             break;
         default:
@@ -297,7 +298,7 @@
         </div>
 
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
-                    class="font-semibold">METHOD OF MARKING & TIES: </span><?php echo "$stopNonStop $methodOfMarking"; ?>
+                    class="font-semibold">SECTION MARKING AND SCORING: </span><?php echo "$stopNonStop $methodOfMarking"; ?>
         </div>
         @if($trial->hasNotes)
 

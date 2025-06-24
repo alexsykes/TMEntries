@@ -218,6 +218,10 @@ class EntryController extends Controller
         $entry->size = $request->size;
         $entry->status = $request->status;
         $entry->updated_at = date('Y-m-d H:i:s');
+
+        if($request->status == 6) {
+            $entry->ridingNumber = 0;
+        }
         $entry->save();
 
         return redirect("/trials/adminEntryList/{$trialID}");
@@ -519,6 +523,7 @@ class EntryController extends Controller
         $entry = Entry::findOrFail($id);
         $trial_id = $entry->trial_id;
         $entry->status = 6;
+        $entry->ridingNumber = 0;
         $entry->save();
         return redirect("/trials/adminEntryList/{$trial_id}");
     }

@@ -23,16 +23,29 @@ class StripePaymentController extends Controller
         $entries = DB::table('entries')
             ->whereIn('id', $entryIDs)
             ->get();
+    $numEntries = count($entries);
+        $trialIDs = array();
+        $trialIDString = implode(",", $trialIDs);
+
+        for ($i = 0; $i < count($entries); $i++) {
+            $trialIDs[] = $entries[$i]->trial_id;
+        }
+
+        $extras = DB::table('products')
+            ->join('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->whereIn('trial_id', $trialIDs)
+            ->where('product_category', 'other')
+            ->get();
 
 
+//        dd($extras);
         $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
         $cancelUrl = config('app.url')."/user/entries";
-//        dd($cancelUrl);;
-//        $cancelUrl = route('checkout-cancel');
 
         $lineItems = array();
+        $optionalItems = array();
         foreach ($entries as $entry) {
             $line = [
                 'price' => $entry->stripe_price_id,
@@ -42,6 +55,38 @@ class StripePaymentController extends Controller
             array_push($lineItems, $line);
         }
 
+//        if($extras->count() > 0) {
+//            foreach ($extras as $extra) {
+//                $line = [
+//                    'price' => $extra->stripe_price_id,
+//                    'adjustable_quantity' => [
+//                        'enabled' => true,
+//                        'minimum' => 0,
+//        'maximum' => $numEntries,
+//                    ],
+//                    'quantity' => 1,];
+//                array_push($lineItems, $line);
+//            }
+//        }
+
+        if($extras->count() > 0) {
+            foreach ($extras as $extra) {
+                $optionalItem =
+                    ['price' => $extra->stripe_price_id,
+                        'quantity' => 1,
+                        'adjustable_quantity' => [
+                            'enabled' => true,
+                            'minimum' => 0,
+                            'maximum' => $numEntries,
+                        ],
+
+                ];
+                array_push($optionalItems, $optionalItem);
+            }
+        }
+//        dd($optionalItems);
+
+//        dump($lineItems);
         $response = $stripe->checkout->sessions->create([
             'success_url' => $redirectUrl,
             'cancel_url' => $cancelUrl,
@@ -53,12 +98,15 @@ class StripePaymentController extends Controller
             'line_items' => [
                 $lineItems
             ],
+            'optional_items' => [
+                $optionalItems
+            ],
             'phone_number_collection' => ['enabled' => true],
             'mode' => 'payment',
             'allow_promotion_codes' => false,
             'metadata' => [
                 'entryIDs' => $request->entryIDs,
-                'trialID' => $request->trialID,
+                'trialID' => $trialIDString,
             ]
         ]);
 
