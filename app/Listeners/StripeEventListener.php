@@ -9,6 +9,7 @@ use App\Mail\RefundRequested;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Product;
+use App\Models\Purchase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -132,20 +133,8 @@ function onProductUpdated($productObject)
 
 function onCheckoutSessionCompleted($sessionObject)
 {
-//    New stuff starts
-//    var_dump($sessionObject['id']);
     $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
-    $lineItems = $stripe->checkout->sessions->allLineItems(
-        $sessionObject['id'],
-        []
-    );
-    $numSuppers = 0;
-    foreach ($lineItems as $lineItem) {
-        echo $lineItem['price']['product'] ;
-        echo $lineItem['quantity'] ;
-    }
 
-//    New stuff ends
     $metadata = $sessionObject['metadata'];
     $email = $sessionObject['customer_details']['email'];
     $stripe_payment_intent = $sessionObject['payment_intent'];
@@ -154,6 +143,38 @@ function onCheckoutSessionCompleted($sessionObject)
     $entryIDs = $metadata['entryIDs'];
     $entryIDArray = explode(',', $entryIDs);
 
+
+//    New stuff starts
+    $lineItems = $stripe->checkout->sessions->allLineItems(
+        $sessionObject['id'],
+        []
+    );
+    foreach ($lineItems as $lineItem) {
+        $stripe_product_id = $lineItem['price']['product'];
+        $quantity = $lineItem['quantity'];
+        $product = DB::table('products')
+            ->where('stripe_product_id', '=', $stripe_product_id)
+            ->first();
+        if($product->product_category == 'other') {
+            info( "PI: $stripe_payment_intent Qty - $quantity Product - $product->product_name" );
+
+            $attrs = [
+                'stripe_product_id' => $stripe_product_id,
+                'quantity' => $quantity,
+                'entryIDs' => $entryIDs,
+                'email' => $email,
+                'pi' => $stripe_payment_intent,
+            ];
+
+//            DB::table('purchases')->insert($purchase);
+            $purchase = Purchase::create($attrs);
+
+
+        };
+    }
+
+
+//    New stuff ends
     foreach ($entryIDArray as $entryID) {
 
         $entry = DB::table('entries')

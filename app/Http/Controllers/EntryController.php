@@ -122,12 +122,14 @@ class EntryController extends Controller
         $youthProductID = DB::table('products')
             ->where('trial_id', $trial_id)
             ->where('isYouth', true)
+            ->where('product_category', 'entry fee')
             ->value('stripe_product_id');
 
 
         $adultProductID = DB::table('products')
             ->where('trial_id', $trial_id)
             ->where('isYouth', false)
+            ->where('product_category', 'entry fee')
             ->value('stripe_product_id');
 
 
@@ -416,12 +418,14 @@ class EntryController extends Controller
         $youthProductID = DB::table('products')
             ->where('trial_id', $request->trial_id)
             ->where('isYouth', true)
+            ->where('product_category', 'entry fee')
             ->value('stripe_product_id');
 
 
         $adultProductID = DB::table('products')
             ->where('trial_id', $request->trial_id)
             ->where('isYouth', false)
+            ->where('product_category', 'entry fee')
             ->value('stripe_product_id');
 
 
