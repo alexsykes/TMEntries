@@ -5,8 +5,7 @@
 
     @php
         $statusArray = array('Awaiting payment', 'Confirmed Entry','Awaiting Refund', 'Refunded', 'Reserve - awaiting payment', 'Reserve', 'Removed by admin', 'Manual Entry - to pay', 'Manual Entry - paid', 'Manual Entry - FoC' );
-
-//        dd($entries);
+$numSalesItems = sizeof($sales);
     @endphp
 
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
@@ -34,7 +33,7 @@
 
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Online entries</div>
-        @foreach($purchases as $purchase)
+        @foreach($entryfees as $purchase)
             @php
                 $price = $purchase->stripe_price / 100;
                 $name = $purchase->product_name;
@@ -51,6 +50,29 @@
             {{--            <div>£{{$purchase->purchases * $purchase->purchases}}</div>--}}
         @endforeach
     </div>
+
+
+    @if($numSalesItems > 0)
+    <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Options</div>
+        @for($i = 0; $i < $numSalesItems; $i++)
+            @php
+            $sale = $sales[$i];
+            $product = $products[$i];
+////                $price = $purchase->stripe_price / 100;
+                $name = $product->product_name;
+                $description = $product->stripe_product_description;
+                $quantity = $sale->quantity;
+
+            @endphp
+            <div class="flex justify-between text-sm w-full pl-4 pr-4">
+                <div class="table-cell min-w-10 text-left">{{$name}}</div>
+                <div class="table-cell min-w-10 text-left">{{$description}}</div>
+                <div class="table-cell w-40 text-end">{{$quantity}}</div>
+            </div>
+        @endfor
+    </div>
+    @endif
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Entry list</div>
         @foreach($entries as $entry)

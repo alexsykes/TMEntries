@@ -9,7 +9,7 @@
             </div>
             <div class="text-sm pt-2 pl-2 pr-2 pb-2">
                 <div class=" ">@php echo $club->description; @endphp </div>
-                <div class="pt-2 text-blue-800 font-bold">Section markers</div>
+                <div class="pt-2 text-blue-800 font-bold">Scoring and section markers</div>
                 <div class=" ">@php echo $club->section_markers; @endphp </div>
 
                 <div class="pt-2 text-blue-800 font-bold">Connections</div>

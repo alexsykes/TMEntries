@@ -847,7 +847,7 @@ class EntryController extends Controller
         PDF::MultiCell(0, 0, 'Scan the QR code on your phone. Entries are correct at the time of compilation.', 0, 'L', false);
         PDF::SetY(190);
         PDF::MultiCell(0, 0, "Although every effort is made to provide accurate and up-to-date information, late changes may sometimes be unavoidable due to entrants' changes of course or class.",0,'L', false);
-
+//        dd(public_path($filename));
         PDF::Close();
         PDF::Output(public_path($filename), 'F');
         PDF::reset();

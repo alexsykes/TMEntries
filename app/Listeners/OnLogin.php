@@ -25,8 +25,8 @@ class OnLogin
     {
         //
         $user = $event->user;
-        Log::info("User with ID ".$user->id." successfully logged in.");
-        Log::info("Club admin ".$user->isClubUser);
+        Log::info($user->name." with ID (".$user->id.") successfully logged in.");
+//        Log::info("Club admin ".$user->isClubUser);
 
 
     }

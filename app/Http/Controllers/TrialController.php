@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Club;
 use App\Models\Entry;
+use App\Models\Purchase;
 use App\Models\Series;
 use App\Models\Trial;
 use Illuminate\Http\RedirectResponse;
@@ -11,8 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
-use Stripe\StripeClient;
 use PDF;
+use Stripe\StripeClient;
 
 class TrialController extends Controller
 {
@@ -25,11 +26,11 @@ class TrialController extends Controller
         $gmap_key = config('gmap.gmap_key');
         $trial = Trial::findorfail($trial_id);
 
-        if($trial->published == 0){
+        if ($trial->published == 0) {
             abort(404);
         }
 
-        if($trial->isResultPublished == 1){
+        if ($trial->isResultPublished == 1) {
             abort(404);
         }
 
@@ -45,6 +46,63 @@ class TrialController extends Controller
         $clubData = Club::where('id', $clubID)->first();
 //        dd($clubData);
         return view('trials.details', compact('trial_id', 'gmap_key', 'venue', 'trial', 'numEntries', 'series', 'clubData'));
+    }
+
+    public function info($id)
+    {
+        $entries = DB::table('entries')
+            ->where('trial_id', $id)
+            ->orderBy('name')
+            ->get();
+
+        $entryfees = DB::table('products')
+            ->leftJoin('prices', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
+            ->where('trial_id', $id)
+            ->where('products.product_category', 'entry fee')
+            ->select('products.product_name', 'products.purchases', 'prices.stripe_price')
+            ->get();
+
+
+        $products = DB::table('products')
+            ->where('products.trial_id', $id)
+            ->whereNot('products.product_category', 'entry fee')
+            ->orderBy('products.product_name', 'ASC')
+            ->select('products.product_name', 'products.stripe_product_description')
+            ->get();
+
+        $sales = DB::table('products')->selectRaw('sum(tme_purchases.quantity)AS quantity')
+            ->join('purchases', 'products.stripe_product_id', '=', 'purchases.stripe_product_id')
+            ->where('products.trial_id', $id)
+            ->groupBy('products.stripe_product_id')
+            ->orderBy('products.product_name', 'ASC')
+            ->get();
+
+////        dd($products, $sales);
+//        $productIDArray = array();
+//
+//        foreach ($products as $product) {
+//            array_push($productIDArray, $product->stripe_product_id);
+//        }
+//
+//        if (sizeof($productIDArray) > 0) {
+////            foreach ($productIDs as $productID) {
+//                $purchases = DB::table('purchases')
+//                    ->selectRaw('stripe_product_id, GROUP_CONCAT(entryIDs) AS entryIDs, sum(quantity) AS quantity')
+//                    ->whereIn('stripe_product_id', $productIDArray)
+//                    ->groupBy('stripe_product_id')
+//                    ->get();
+////            }
+//        }
+
+        $trial = DB::table('trials')
+            ->where('id', $id)
+            ->first();
+
+        $venue = DB::table('venues')
+            ->where('id', $trial->venueID)
+            ->first();
+
+        return view('trials.info', ['entries' => $entries, 'trial' => $trial, 'venue' => $venue, 'entryfees' => $entryfees, 'products' => $products, 'sales' => $sales]);
     }
 
     public function showTrialList()
@@ -67,20 +125,20 @@ class TrialController extends Controller
         return view('trials.admin_trial_list', ['trials' => $trials]);
     }
 
-/**
- *
- *  First stage of new trial - present form
- *  Form submitted to trials/save
- *
- *
- * */
+    /**
+     *
+     *  First stage of new trial - present form
+     *  Form submitted to trials/save
+     *
+     *
+     * */
 
     public function add()
     {
         $user = Auth::user();
 
         $isClubAdmin = $user->isClubUser;
-        if(!$isClubAdmin){
+        if (!$isClubAdmin) {
             return redirect('home');
         }
 
@@ -170,7 +228,7 @@ class TrialController extends Controller
 
 
         $isClubAdmin = $user->isClubUser;
-        if(!$isClubAdmin){
+        if (!$isClubAdmin) {
             return redirect('home');
         }
 
@@ -266,13 +324,13 @@ class TrialController extends Controller
                 $attrs['startInterval'] = request('startInterval', 60);
                 $attrs['penaltyDelta'] = request('penaltyDelta', 60);
 
-                if(request('customClasses')){
+                if (request('customClasses')) {
                     $array = explode(',', request('customClasses'));
                     $trimmedarray = array_map('trim', $array);
                     $attrs['customClasses'] = implode(',', $trimmedarray);
                 }
 
-                if(request('customCourses')){
+                if (request('customCourses')) {
                     $array = explode(',', request('customCourses'));
                     $trimmedarray = array_map('trim', $array);
                     $attrs['customCourses'] = implode(',', $trimmedarray);
@@ -334,14 +392,14 @@ class TrialController extends Controller
                 $trial = Trial::findorfail($id);
 
                 $attrs = request()->validate([
-               'authority' => 'required',
+                    'authority' => 'required',
                     'status' => 'required',
                     'coc' => 'required',
                     'centre' => Rule::requiredIf(request('authority') == "ACU"),
                     'otherRestriction' => Rule::requiredIf(request('status') == "Other Restriction"),
                 ]);
 
-                $attrs['notes'] = request('notes',);
+                $attrs['notes'] = request('notes');
                 $trial->update($attrs);
                 return redirect("trials/addTrialFees/{$trial->id}");
 
@@ -356,7 +414,7 @@ class TrialController extends Controller
                     'eodSurcharge' => Rule::requiredIf(request('hasEodSurcharge') == 1),
                 ]);
 // Add fees to Stripe
-            $trial->hasEodSurcharge = request('hasEodSurcharge', 0);
+                $trial->hasEodSurcharge = request('hasEodSurcharge', 0);
                 $trial->update($attrs);
                 $this->addStripeProducts($trial, $attrs['youthEntryFee'], $attrs['adultEntryFee']);
 
@@ -416,13 +474,12 @@ class TrialController extends Controller
         $attrs['customClasses'] = request('customClasses');
 
 
-
-        if(request('customClasses')){
+        if (request('customClasses')) {
             $array = explode(',', request('customClasses'));
             $trimmedarray = array_map('trim', $array);
             $attrs['customClasses'] = implode(',', $trimmedarray);
         }
-        if(request('customCourses')){
+        if (request('customCourses')) {
             $array = explode(',', request('customCourses'));
             $trimmedarray = array_map('trim', $array);
             $attrs['customCourses'] = implode(',', $trimmedarray);
@@ -487,6 +544,8 @@ class TrialController extends Controller
         return redirect('/adminTrials');
     }
 
+//    Add new trial
+
     private function addStripeProducts($trial, mixed $youthEntryFee = 15, mixed $adultEntryFee = 20)
     {
         $stripe_secret_key = config('cashier.secret');
@@ -528,8 +587,6 @@ class TrialController extends Controller
         return;
     }
 
-//    Add new trial
-
     public function addTrialTrial($id)
     {
         $trial = Trial::findOrFail($id);
@@ -570,7 +627,7 @@ class TrialController extends Controller
 //            ->sortBy('name');
 
         $entries = Entry::where('trial_id', $id)
-            ->whereIn('status', [1, 7,8,9 ])
+            ->whereIn('status', [1, 7, 8, 9])
             ->get()
             ->sortBy('name');
 
@@ -588,10 +645,10 @@ class TrialController extends Controller
 
         $duplicates = Entry::where('trial_id', $id)
 //            ->whereIn('status', [0, 1, 7, 8, 9 ])
-                ->where('ridingNumber', '!=', 0)
+            ->where('ridingNumber', '!=', 0)
             ->groupBy('ridingNumber')
             ->havingRaw('COUNT(ridingNumber) > 1')
-        ->get('ridingNumber');
+            ->get('ridingNumber');
 
 //        $entries = Entry::where('trial_id', $id)
 //            ->get()
@@ -599,7 +656,7 @@ class TrialController extends Controller
 
         $entries = DB::table('entries')
             ->where('trial_id', $id)
-            ->whereIn('status', [0, 1, 7, 8, 9 ])
+            ->whereIn('status', [0, 1, 7, 8, 9])
 //            ->orderBy('status')
             ->orderBy('name')
             ->get();
@@ -607,14 +664,14 @@ class TrialController extends Controller
 
         $eod = DB::table('entries')
             ->where('trial_id', $id)
-            ->where('token',  'OTD')
+            ->where('token', 'OTD')
             ->where('status', 7)
             ->orderBy('created_at')
             ->get();
 
         $cancelled = DB::table('entries')
             ->where('trial_id', $id)
-            ->where('status',  6)
+            ->where('status', 6)
             ->get();
 
         $trial = Trial::where('id', $id)->first();
@@ -715,34 +772,12 @@ class TrialController extends Controller
         return redirect('/adminTrials');
     }
 
-    public function info($id){
-        $entries = DB::table('entries')
-            ->where('trial_id', $id)
-            ->orderBy('name')
-            ->get();
-
-        $purchases = DB::table('products')
-            ->leftJoin('prices', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
-            ->where('trial_id', $id)
-            ->select('products.product_name', 'products.purchases', 'prices.stripe_price')
-        ->get();
-
-        $trial = DB::table('trials')
-            ->where('id', $id)
-            ->first();
-
-        $venue = DB::table('venues')
-            ->where('id', $trial->venueID)
-            ->first();
-
-        return view('trials.info', ['entries'=>$entries, 'purchases'=> $purchases, 'trial' => $trial,'venue' =>$venue]);
-    }
-
-    public function programme($id){
+    public function programme($id)
+    {
 
         $trial = DB::table('trials')->where('trials.id', $id)
             ->join('venues', 'trials.venueID', '=', 'venues.id')
-            ->select('trials.*', 'venues.name as venueName' )
+            ->select('trials.*', 'venues.name as venueName')
             ->first();
 //        dump($trial);
         $allCourses = array();
@@ -753,24 +788,24 @@ class TrialController extends Controller
         $classes = $trial->classlist;
         $customClasses = $trial->customClasses;
 
-        if($courses !='') {
+        if ($courses != '') {
             array_push($allCourses, $courses);
         }
 
-        if($customCourses !='') {
+        if ($customCourses != '') {
             array_push($allCourses, $customCourses);
         }
 
-        if($classes !='') {
+        if ($classes != '') {
             array_push($allClasses, $classes);
         }
 
-        if($customClasses !='') {
+        if ($customClasses != '') {
             array_push($allClasses, $customClasses);
         }
 
-        $classlist = str_replace(',',',',implode(',', $allClasses));
-        $courselist   = str_replace(',',',',implode(',', $allCourses));
+        $classlist = str_replace(',', ',', implode(',', $allClasses));
+        $courselist = str_replace(',', ',', implode(',', $allCourses));
 
         $numsections = $trial->numSections;
         $numlaps = $trial->numLaps;
@@ -814,7 +849,7 @@ EOD;
         MYPDF::SetFooterMargin(30);
         MYPDF::SetAutoPageBreak(TRUE, 15);
 
-        MYPDF::SetMargins(0, 20,0);
+        MYPDF::SetMargins(0, 20, 0);
 
         $nameWidth = 40;
         $indent = 10;
@@ -823,7 +858,7 @@ EOD;
 //        MYPDF::Cell(0, 0,"Entry list - $trial->name",  0, 0);
 
 
-        if(sizeof($riderList) > 0) {
+        if (sizeof($riderList) > 0) {
             foreach ($riderList as $rider) {
                 $name = $rider->name;
                 $ridingNumber = $rider->ridingNumber;
@@ -832,7 +867,7 @@ EOD;
                 $make = trim($rider->make);
                 $size = trim($rider->size);
 
-                $bike = $make." ".$size;
+                $bike = $make . " " . $size;
 
                 MYPDF::setX($indent);
                 MYPDF::Cell(10, $rowHeight, $ridingNumber, 0, 0, 'R', false, null, 1, false, 'C' . 'M');
@@ -876,13 +911,14 @@ class MYPDF extends PDF
     }
 
     // Page footer
-    public function Footer() {
+    public function Footer()
+    {
         // Position at 15 mm from bottom
         $this->SetY(-15);
         // Set font
         $this->SetFont('helvetica', 'I', 8);
         // Page number
-        $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
     }
 
 
