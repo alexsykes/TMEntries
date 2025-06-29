@@ -50,7 +50,7 @@ $email = Auth::user()->email;
                     @else
                         <td class="table-cell">{{$statusOptions[$entry->status]}}</td>
                     @endif
-                    <td class="table-cell"><a href="/users/entry/edit/{{$entry->id}}">Edit</a></td>
+                    <td class="table-cell"><a href="/users/entry/edit/{{$entry->id}}"><i class="fa-solid fa-pencil"></i></a></td>
                 </tr>
             @endforeach
         </table>

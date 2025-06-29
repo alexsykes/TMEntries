@@ -872,16 +872,13 @@ class EntryController extends Controller
 
         for ($i = 0; $i < sizeof($names); $i++) {
             if (isset($names[$i]) && $names[$i] != "") {
-                $birthDate = date_create($birthDates[$i]);;
-                $interval = $trial_date->diff($birthDate);
 
-//        Calculation for yout goes here
-                if ($interval->y < 18) {
-                    $isYouth = true;
-//                    $classs[$i] = "Youth";
-                } else {
-                    $isYouth = false;
-                }
+                    if($classs[$i] != "Youth") {
+                        $isYouth = false;
+                    } else {
+                        $isYouth = true;
+                    }
+
                 DB::table('entries')->insert([
                     'name' => $this->nameize($names[$i]),
                     'ridingNumber' => $ridingNumbers[$i],

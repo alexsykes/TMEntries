@@ -54,11 +54,12 @@ class StripePaymentController extends Controller
             array_push($lineItems, $line);
         }
 
+
         if ($extras->count() > 0) {
             foreach ($extras as $extra) {
                 $optionalItem =
                     ['price' => $extra->stripe_price_id,
-                        'quantity' => 1,
+                        'quantity' => $numEntries,
                         'adjustable_quantity' => [
                             'enabled' => true,
                             'minimum' => 0,

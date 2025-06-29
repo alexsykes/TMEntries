@@ -208,13 +208,10 @@ $classOptions = explode(',', $classlist);
                                             <option value="9">FoC</option>
                                         </select>
                                     </td>
-
-
-                                    <td class="table-cell">
-                                        <input class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"
-                                               type="date" id="dob[]" name="dob[]" value="1">
-                                    </td>
-
+{{--                                    <td class="table-cell">--}}
+{{--                                        <input class="m-1  bg-white  space-x-4 border-spacing-1 border-violet-700 rounded-md drop-shadow-lg pl-2 pr-2 pt-1 pb-1 border outline-1 -outline-offset-1"--}}
+{{--                                               type="date" id="dob[]" name="dob[]" value="1">--}}
+{{--                                    </td>--}}
                                 </tr>
 
                             @endfor

@@ -70,7 +70,7 @@ class UserController extends Controller
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
             ->where('entries.id', $id)
             ->where('entries.created_by', $userID)
-            ->get(['entries.*', 'trials.name as trial_name', 'trials.club as club', 'trials.classlist', 'trials.courselist', 'trials.customClasses', 'trials.customCourses', 'trials.isEntryLocked'])
+            ->get(['entries.*', 'trials.name as trial_name', 'trials.club as club', 'trials.classlist', 'trials.courselist', 'trials.customClasses', 'trials.customCourses', 'trials.isEntryLocked', 'trials.date as trialdate'])
         ->first();
 
         if($entry == null) {
