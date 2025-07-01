@@ -158,13 +158,13 @@
                             </div>
                         </x-form-field>
 
-{{--                        <x-form-field>--}}
-{{--                            <x-form-label for="isYouth">Under-18</x-form-label>--}}
-{{--                            <div class="ml-2 mt-2 col-span-full">--}}
-{{--                                <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth"/>--}}
-{{--                                <x-form-error name="isYouth"/>--}}
-{{--                            </div>--}}
-{{--                        </x-form-field>--}}
+                        <x-form-field>
+                            <x-form-label for="isYouth">Under-18</x-form-label>
+                            <div class="ml-2 mt-2 col-span-full">
+                                <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth"/>
+                                <x-form-error name="isYouth"/>
+                            </div>
+                        </x-form-field>
 
                         <div id="dateInput" class=" col-span-full">
                             <x-form-field>

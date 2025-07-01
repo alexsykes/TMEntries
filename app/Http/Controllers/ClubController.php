@@ -20,9 +20,13 @@ class ClubController extends Controller
 
     public function profile(Request $request) {
         $user = Auth::user();
+
+        if(!$user->isClubUser) {
+            abort(404);
+        }
         $clubID = $user->club_id;
 
-        $club = Club::find($clubID);
+        $club = Club::findOrfail($clubID);
         $series = Series::where('clubID', $clubID)
         ->get();
 //        dd($series);
@@ -114,12 +118,10 @@ class ClubController extends Controller
         return redirect('/club/profile');
     }
 
-    public function editProfile(Request $request) {
+    public function editProfile() {
         $user = Auth::user();
         $clubID = $user->club_id;
-
         $club = Club::find($clubID);
-
         return view('clubs.editprofile', ['club' => $club]);
     }
 }

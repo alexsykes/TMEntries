@@ -461,8 +461,8 @@ class EntryController extends Controller
 
         $interval = $trial_date->diff($birthDate);
 
-//        Calculation for yout goes here
-        if ($interval->y < 18) {
+//        Calculation for youth goes here
+        if($request->isYouth) {
             $attributes['isYouth'] = 1;
             $attributes['stripe_price_id'] = $youthPriceID;
             $attributes['stripe_product_id'] = $youthProductID;
@@ -471,6 +471,7 @@ class EntryController extends Controller
             $attributes['stripe_price_id'] = $adultPriceID;
             $attributes['stripe_product_id'] = $adultProductID;
         }
+
 
         $attributes['dob'] = $request->dob;
         $entry = Entry::create($attributes);
@@ -546,11 +547,19 @@ class EntryController extends Controller
 
         $entries = DB::table('entries')
             ->where('trial_id', $trialid)
-            ->whereIn('status', [1, 4, 5, 7, 8, 9])
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
             ->orderBy('course')
             ->orderBy('ridingNumber')
             ->orderBy('id')
             ->get();
+
+//        $unconfirmed = DB::table('entries')
+//            ->where('trial_id', $trialid)
+//            ->where('status', 0)
+//            ->orderBy('course')
+//            ->orderBy('ridingNumber')
+//            ->orderBy('id')
+//            ->get();
 
 
         return view('entries.editRidingNumbers', ['entries' => $entries, 'trialid' => $trialid]);
@@ -892,7 +901,7 @@ class EntryController extends Controller
                     'created_by' => Auth::user()->id,
                     'ipaddress' => $request->ip(),
                     'created_at' => date('Y-m-d H:i:s'),
-                    'dob' => $birthDates[$i],
+//                    'dob' => $birthDates[$i],
                     'trial_id' => $trial_id,
                 ]);
             }

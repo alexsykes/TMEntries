@@ -4,6 +4,7 @@
     </x-slot:heading>
     @php
         $statusOptions = array(    'Unconfirmed', 'Confirmed', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
+
  @endphp
 
 
@@ -15,7 +16,15 @@
     <div class=" pt-2 pb-2">
     <table class="w-full">
     @foreach($entries as $entry)
-        <tr class="flex-auto text-sm  odd:bg-white  even:bg-gray-50  border-b ">
+        @php
+            if(($entry->ridingNumber == 0 ) || ($entry->ridingNumber == null ) || ($entry->status == 0 )) {
+                $textColor = "text-red-500";
+                } else {
+                $textColor = "text-black";
+                }
+
+ @endphp
+        <tr class="flex-auto text-sm {{$textColor}}  odd:bg-white  even:bg-gray-50  border-b ">
             <td class="pl-2"><input type="hidden" name="entryID[]" id="entryID[]" value="{{$entry->id}}"> {{$entry->name}}</td>
             <td> {{$entry->course}}</td>
             <td> {{$entry->class}}</td>

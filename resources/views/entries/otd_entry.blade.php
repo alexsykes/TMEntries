@@ -66,6 +66,10 @@
             $types = array("2 stroke", "4 stroke", "e-bike");
     $entryIDs = array();
 
+            $trial_date = date_create($trial->date);
+        $offset = DateInterval::createFromDateString('4 years');
+        $maxDob = $trial_date->sub($offset)->format("Y-m-d");
+
 //    $userID = Auth::user()->id;
     //dump($entries);
     @endphp

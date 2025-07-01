@@ -44,7 +44,7 @@ class TrialController extends Controller
         $venue = $trial->venue();
         $clubID = $trial->club_id;
         $clubData = Club::where('id', $clubID)->first();
-//        dd($clubData);
+
         return view('trials.details', compact('trial_id', 'gmap_key', 'venue', 'trial', 'numEntries', 'series', 'clubData'));
     }
 
@@ -76,6 +76,20 @@ class TrialController extends Controller
             ->groupBy('products.stripe_product_id')
             ->orderBy('products.product_name', 'ASC')
             ->get();
+
+
+        $purchaseData = $this->getPurchasedDetails($id);
+
+        foreach ($purchaseData as $purchase) {
+    $entryIDs = $purchase;
+//    dump($entryIDs);
+        }
+//        $purchasers = DB::table('entries')
+//            ->selectRaw('entries.name')
+//            ->whereIn('id', $purchaserIDs)
+//            ->get();
+//
+//        dd($purchasers);
 
 ////        dd($products, $sales);
 //        $productIDArray = array();
@@ -383,6 +397,11 @@ class TrialController extends Controller
                     'stopNonStop' => 'required',
                 ]);
 
+                $attrs['numLaps'] = request('numLaps', 10);
+                $attrs['numSections'] = request('numSections', 4);
+                $attrs['numRows'] = request('numRows', 40);
+                $attrs['numColumns'] = request('numColumns', 3);
+                $attrs['fifty_fifty'] = request('fifty_fifty');
                 $trial->update($attrs);
 
                 return redirect("trials/addTrialRegs/{$trial->id}");
@@ -472,6 +491,7 @@ class TrialController extends Controller
         $attrs['customCourses'] = request('customCourses');
 
         $attrs['customClasses'] = request('customClasses');
+        $attrs['fifty_fifty'] = request('fifty_fifty');
 
 
         if (request('customClasses')) {
@@ -885,6 +905,27 @@ EOD;
         return response()->download($filename);
 
 //        return view('trials.programme', ['trial' => $trial]);
+    }
+
+    public function getPurchasedDetails($id) {
+        $products = DB::table('products')
+            ->where('trial_id', $id)
+//            ->where('product_category', 'other')
+            ->get();
+
+        $productData = array();
+
+        foreach ($products as $product) {
+            $productID = $product->stripe_product_id;
+            $productPurchases = DB::table('purchases')
+                ->select(DB::raw("GROUP_CONCAT(entryIDs) as `entryIDs`, SUM(quantity) as `quantity`"))
+                ->groupBy('stripe_product_id')
+                ->where('stripe_product_id', $productID)
+            ->get();
+
+            array_push($productData, $productPurchases);
+        }
+        return $productData;
     }
 
 }

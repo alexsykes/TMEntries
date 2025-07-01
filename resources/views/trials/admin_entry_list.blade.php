@@ -76,7 +76,7 @@ $classOptions = explode(',', $classlist);
                 <input type="hidden" id="trialid" name="trialid" value="{{$trial->id}}">
                 <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
                     <div class="flex justify-between font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
-                        <div>EOD entry list</div>
+                        <div>EOD Cash entries</div>
                     </div>
 
                     <table class="w-full text-sm">

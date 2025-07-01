@@ -587,20 +587,35 @@
                             </x-form-field>
                         </div>
 
-                        <div id="numColumnsDiv" class="mt-4 col-span-3">
-                            <x-form-field>
-                                <x-form-label for="numColumns">Number of columns in scoresheet</x-form-label>
-                                <div class="mt-2 col-span-2">
-                                    <x-form-input name="numColumns" type="text" id="numColumns"
-                                                  value="{{$trial->numColumns}}"
-                                                  placeholder="Number of columns" />
-                                    <x-form-error name="numColumns"/>
-                                </div>
-                                @error('numColumns')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
-                            </x-form-field>
-                        </div>
+                            <div id="numColumnsDiv" class="mt-4 col-span-3">
+                                <x-form-field>
+                                    <x-form-label for="numColumns">Number of columns in scoresheet</x-form-label>
+                                    <div class="mt-2 col-span-2">
+                                        <x-form-input name="numColumns" type="text" id="numColumns"
+                                                      value="{{$trial->numColumns}}"
+                                                      placeholder="Number of columns" />
+                                        <x-form-error name="numColumns"/>
+                                    </div>
+                                    @error('numColumns')
+                                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                    @enderror
+                                </x-form-field>
+                            </div>
+
+                            <div id="fiftyFiftyDiv" class="mt-4 col-span-3">
+                                <x-form-field>
+                                    <x-form-label for="fifty_fifty">50/50 Sections</x-form-label>
+                                    <div class="mt-2 col-span-2">
+                                        <x-form-input name="fifty_fifty" type="text" id="fifty_fifty"
+                                                      value="{{$trial->fifty_fifty}}"
+                                                      placeholder="50/50 sections - separated by commas" />
+                                        <x-form-error name="fifty_fifty"/>
+                                    </div>
+                                    @error('fifty_fifty')
+                                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                    @enderror
+                                </x-form-field>
+                            </div>
 
                     </div>
                 </div>

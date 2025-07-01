@@ -6,7 +6,9 @@
             <td>{{$entry->class}}</td>
             <td>{{$entry->course}}</td>
             <td>{{$entry->make}} &nbsp;{{$entry->size}}</td>
-            <td><a href="{{config('app.url')}}/entry/useredit/?id={{$entry->id}}&token={{$newToken}}">Make changes</a></td>
+        </tr>
+    <tr>
+            <td colspan="5"><a href="{{config('app.url')}}/entry/useredit/?id={{$entry->id}}&token={{$newToken}}">Make changes</a></td>
         </tr>
 </table>
 <p>If you need to make any further changes or withdraw from the event, please click on the link shown following the entry.</p>
