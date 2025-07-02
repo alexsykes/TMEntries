@@ -118,4 +118,8 @@ class AdminController extends Controller
         $trial->save();
         return redirect('/admin/trials');;
     }
+
+    public function about(){
+        return view('about.story');
+    }
 }

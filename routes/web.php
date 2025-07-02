@@ -10,6 +10,7 @@ use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ScoringController;
 use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AboutController;
 
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\StripePaymentController;
@@ -195,6 +196,9 @@ Route::get('/series/edit/{id}', [SeriesController::class, 'edit'])->middleware([
 Route::post('/series/store', [SeriesController::class, 'store'])->middleware(['auth', 'verified']);
 Route::patch('/series/update', [SeriesController::class, 'update'])->middleware(['auth', 'verified']);
 
+
+//ABOUT Routes
+Route::get('/about', [AboutController::class, 'about']);
 
 // MIDDLEWARE
 Route::middleware('auth')->group(function () {
