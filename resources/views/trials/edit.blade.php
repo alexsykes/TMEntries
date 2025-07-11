@@ -200,34 +200,35 @@
         <div id="Trial" class="tabcontent pt-0">
             <div class="space-y-2">
                     <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                        <div class="text-violet-700 font-semibold mb-4">Please list the Courses and Classes in the order in which you would like them to appear in the results. Courses/classes in each list should be separated by commas.</div>
                         <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
                             <div id="courseDataDiv" class="col-span-3">
-                            <x-form-field>
-                                <x-form-label class="pr-0" for="courselist">Courses</x-form-label>
-                                <div class=" pl-2 pr-0">
-                                    @foreach($courseArray as $course)
-                                        <div>
-                                            <input
-                                                    <?php
-                                                $courseArraySaved = explode(",", $trial->courselist);
-//                                                        dd($courseArraySaved);
-                                            if(in_array($course, $courseArraySaved)) { ?> checked <?php } ?>
-                                                    name="courselist[]" type="checkbox" id="courselist" value="{{$course}}"/>
-                                            <label  class="pl-4 pr-0" for="courselist">{{$course}}
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                    <x-form-error name="courselist[]"/>
-                                </div>
-                                @error('courselist')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
-                            </x-form-field>
+{{--                            <x-form-field>--}}
+{{--                                <x-form-label class="pr-0" for="courselist">Courses</x-form-label>--}}
+{{--                                <div class=" pl-2 pr-0">--}}
+{{--                                    @foreach($courseArray as $course)--}}
+{{--                                        <div>--}}
+{{--                                            <input--}}
+{{--                                                    <?php--}}
+{{--                                                $courseArraySaved = explode(",", $trial->courselist);--}}
+{{--//                                                        dd($courseArraySaved);--}}
+{{--                                            if(in_array($course, $courseArraySaved)) { ?> checked <?php } ?>--}}
+{{--                                                    name="courselist[]" type="checkbox" id="courselist" value="{{$course}}"/>--}}
+{{--                                            <label  class="pl-4 pr-0" for="courselist">{{$course}}--}}
+{{--                                            </label>--}}
+{{--                                        </div>--}}
+{{--                                    @endforeach--}}
+{{--                                    <x-form-error name="courselist[]"/>--}}
+{{--                                </div>--}}
+{{--                                @error('courselist')--}}
+{{--                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
+{{--                                @enderror--}}
+{{--                            </x-form-field>--}}
 
 
                             <x-form-field>
-                                <x-form-label for="customCourses">Custom courses</x-form-label>
+                                <x-form-label for="customCourses">Courses</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="customCourses" type="text" id="customCourses" value="{{$trial->customCourses}}"
                                                   placeholder="List of courses separated by commas" />
@@ -239,28 +240,28 @@
                             </x-form-field>
                         </div>
                             <div id="classDataDiv" class="col-span-3">
-                            <x-form-field>
-                                <x-form-label for="classlist">Classes</x-form-label>
-                                <div class=" pl-2 pr-2">
-                                    @foreach($classArray as $class)
-                                        <div><input
-                                                    <?php
-                                                $classArraySaved = explode(",", $trial->classlist);
-//                                                        dd($courseArraySaved);
-                                            if(in_array($class, $classArraySaved)) { ?> checked <?php } ?>
-                                                    name="classlist[]" type="checkbox" id="classlist" value="{{$class}}"/>
-                                            <label  class="pl-4 pr-2" for="classlist">{{$class}}</label>
-                                        </div>
-                                    @endforeach
-                                    <x-form-error name="classlist[]"/>
-                                </div>
-                                @error('classlist')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
-                            </x-form-field>
+{{--                            <x-form-field>--}}
+{{--                                <x-form-label for="classlist">Classes</x-form-label>--}}
+{{--                                <div class=" pl-2 pr-2">--}}
+{{--                                    @foreach($classArray as $class)--}}
+{{--                                        <div><input--}}
+{{--                                                    <?php--}}
+{{--                                                $classArraySaved = explode(",", $trial->classlist);--}}
+{{--//                                                        dd($courseArraySaved);--}}
+{{--                                            if(in_array($class, $classArraySaved)) { ?> checked <?php } ?>--}}
+{{--                                                    name="classlist[]" type="checkbox" id="classlist" value="{{$class}}"/>--}}
+{{--                                            <label  class="pl-4 pr-2" for="classlist">{{$class}}</label>--}}
+{{--                                        </div>--}}
+{{--                                    @endforeach--}}
+{{--                                    <x-form-error name="classlist[]"/>--}}
+{{--                                </div>--}}
+{{--                                @error('classlist')--}}
+{{--                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
+{{--                                @enderror--}}
+{{--                            </x-form-field>--}}
 
                             <x-form-field>
-                                <x-form-label for="customClasses">Custom classes</x-form-label>
+                                <x-form-label for="customClasses">Classes</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="customClasses" type="text" id="customClasses" value="{{$trial->customClasses}}"
                                                   placeholder="List of classes separated by commas" />

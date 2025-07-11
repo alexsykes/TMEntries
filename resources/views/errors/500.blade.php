@@ -7,7 +7,7 @@
         <div class="flex justify-between p-4 text-center">
             <div></div>
             <div class="text-gray-500">
-                <img src="{{URL::asset('images/network_fail.png')}}" alt="System error">
+                <img src="{{URL::asset('images/crash.png')}}" alt="System error">
             </div>
             <div></div>
         </div>

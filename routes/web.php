@@ -5,6 +5,7 @@ require __DIR__ . '/auth.php';
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ScoringController;
@@ -199,6 +200,12 @@ Route::patch('/series/update', [SeriesController::class, 'update'])->middleware(
 
 //ABOUT Routes
 Route::get('/about', [AboutController::class, 'about']);
+
+
+//Import routes
+Route::get('/import', [ImportController::class, 'showImportForm'])->name('import.form');
+Route::post('/import', [ImportController::class, 'importEntries'])->name('import.process');
+
 
 // MIDDLEWARE
 Route::middleware('auth')->group(function () {
