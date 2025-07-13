@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entry;
+use App\Models\Trial;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -105,5 +106,17 @@ class UserController extends Controller
 
 
         return redirect('stripe/usercheckout');
+    }
+
+    public function email($id) {
+//        Check for ownership
+        $user = auth()->user();
+        if($user->isClubUser != 1) {
+            abort(403);
+        }
+        $clubID = $user->club_id;
+        $trial = Trial::findorfail($id);
+
+        return view('user.email', ['trial' => $trial]);
     }
 }

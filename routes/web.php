@@ -12,6 +12,7 @@ use App\Http\Controllers\ScoringController;
 use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\MailController ;
 
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\StripePaymentController;
@@ -164,11 +165,21 @@ Route::get('/user/entries', [UserController::class, 'entryList'])->middleware(['
 Route::get('/users/entry/edit/{id}', [UserController::class, 'editEntry'])->middleware(['auth', 'verified']);
 Route::patch('/user/entry/update', [UserController::class, 'updateEntry'])->middleware(['auth', 'verified']);
 Route::get('/stripe/usercheckout', [StripePaymentController::class, 'stripeUserCheckout']);
+Route::get('/users/mail/{id}', [UserController::class, 'email'])->middleware(['auth', 'verified']);
 
 // ADMIN Routes
 Route::get('/admin/user/remove/{id}', [AdminController::class, 'adminRemove'])->middleware(['auth', 'verified'])->name('admin.remove');
 Route::get('/admin/editUser/{id}', [AdminController::class, 'editUser'])->middleware(['auth', 'verified'])->name('admin.editUser');
 Route::patch('/admin/updateUser', [AdminController::class, 'updateUser'])->middleware(['auth', 'verified'])->name('admin.updateUser');
+
+// MAIL Routes
+Route::get('/admin/mails', [AdminController::class, 'mailList'])->middleware(['auth', 'verified'])->name('admin.mails');
+
+Route::get('/mail/add', [MailController::class, 'add'])->middleware(['auth', 'verified'])->name('mail.add');
+
+Route::get('/mail/preview/{id}', [MailController::class, 'preview'])->middleware(['auth', 'verified'])->name('mail.preview');
+
+Route::get('/mail/edit/{id}', [MailController::class, 'edit'])->middleware(['auth', 'verified'])->name('mail.edit');
 
 // RESULT Routes
 Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');

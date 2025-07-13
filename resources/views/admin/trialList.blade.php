@@ -25,7 +25,7 @@
                 $date  = date_format($rawDate, "jS F, Y");
                 @endphp
 
-                <div class="border-b table-row pr-2 text-red-600">
+                <div class="border-b table-row pr-2">
                     <div class="hidden border-b pt-1 pb-1 pl-2 md:table-cell  ">{{$date}}</div>
                     <div class="hidden border-b  pr-2 pl-2 md:table-cell ">{{$trial->club}}</div>
                     <div class="border-b pt-1 pb-1 pr-2 pl-2 table-cell">{{$trial->name}}</div>

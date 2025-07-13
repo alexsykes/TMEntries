@@ -36,6 +36,13 @@ class AdminController extends Controller
         return view('admin.resultList', ['results' => $results]);
     }
 
+    public function mailList(){
+        $mails = DB::table('mails')
+            ->orderBy('subject')
+            ->get();
+        return view('admin.mailList', ['mails' => $mails]);
+    }
+
     public function sendMail()
     {
         $delay = 1;
