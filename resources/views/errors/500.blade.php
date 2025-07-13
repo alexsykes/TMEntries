@@ -1,7 +1,7 @@
 <x-error_page>
     <x-slot:heading>Oops! What happened here…</x-slot:heading>
     <div class=" w-full bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-        <div class="p-4 text-center font-semibold text-gray-500">{{config('app.name')}} is currently throwing a wobbly.
+        <div class="p-4 text-center font-semibold text-gray-500">{{config('app.name')}} has crashed.
             Please call back later
         </div>
         <div class="flex justify-between p-4 text-center">

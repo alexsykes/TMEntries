@@ -57,4 +57,32 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    public function updatePreferences(Request $request): RedirectResponse {
+//        dd($request->all());
+        $user = $request->user();
+        $currentPreferences = $user->preferences;
+
+        if($request->receive_results) {
+            $currentPreferences = $currentPreferences | 0b00000001;
+        } else {
+            $currentPreferences = $currentPreferences & 0b11111110;
+        }
+        if($request->receive_trials) {
+            $currentPreferences = $currentPreferences | 0b00000010;
+        } else {
+            $currentPreferences = $currentPreferences & 0b11111101;
+        }
+        if($request->receive_news) {
+            $currentPreferences = $currentPreferences | 0b00000100;
+        } else {
+            $currentPreferences = $currentPreferences & 0b11111011;
+        }
+
+        $user->preferences = $currentPreferences;
+        $user->save();
+
+        return Redirect::to('/');
+
+    }
 }

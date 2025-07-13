@@ -128,6 +128,7 @@
         <x-footer-link>
             <div class="text-center mx-auto  text-white">
                 @auth
+                    <a href="/profile" class="inline-block mt-1 mx-3 hover:underline">My Profile</a>
                     @if (Auth::user()->isAdminUser == 1)
                         <a href="/adminaccess" class="inline-block mt-1 mx-3 hover:underline">Admin access</a>
                     @endif
