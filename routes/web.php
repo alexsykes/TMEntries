@@ -180,12 +180,15 @@ Route::get('/mail/add', [MailController::class, 'add'])->middleware(['auth', 've
 Route::get('/mail/preview/{id}', [MailController::class, 'preview'])->middleware(['auth', 'verified'])->name('mail.preview');
 
 Route::get('/mail/edit/{id}', [MailController::class, 'edit'])->middleware(['auth', 'verified'])->name('mail.edit');
+Route::patch('/mail/update', [MailController::class, 'update'])->middleware(['auth', 'verified'])->name('mail.update');
+Route::post('/mail/store', [MailController::class, 'store'])->middleware(['auth', 'verified'])->name('mail.store');
 
 // RESULT Routes
 Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');
 Route::get('/results/display/{id}', [ResultController::class, 'display'])->name('results.display.id');
 Route::get('/result/edit/{id}', [ResultController::class, 'edit']);
 Route::patch('/results/update', [ResultController::class, 'update']);
+Route::patch('/mail/update', [MailController::class, 'update'])->middleware(['auth', 'verified'])->name('mail.update');
 
 
 // CLUB Routes
@@ -201,7 +204,7 @@ Route::patch('/club/update', [ClubController::class, 'update'])->middleware(['au
 Route::patch('/club/clubUpdate', [ClubController::class, 'clubUpdate'])->middleware(['auth', 'verified']);
 
 // SERIES Routes
-Route::get('/series/list', [SeriesController::class, 'list']);
+Route::get('/series/list', [SeriesController::class, 'list'])->middleware(['auth', 'verified']);
 Route::get('/series/detail/{id}', [SeriesController::class, 'detail']);
 Route::get('/series/add', [SeriesController::class, 'add'])->middleware(['auth', 'verified']);
 Route::get('/series/edit/{id}', [SeriesController::class, 'edit'])->middleware(['auth', 'verified']);

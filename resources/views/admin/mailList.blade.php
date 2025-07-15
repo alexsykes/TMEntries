@@ -8,16 +8,18 @@
         </div>
 
         <table class=" w-full text-sm">
-            <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
-                <td class="pl-2 table-cell">Subject</td>
-                <td class=" pl-2 table-cell">Summary</td>
-                <td class=" pl-2 table-cell">&nbsp;</td>
-                <td class=" pl-2 table-cell">&nbsp;</td>
+            <tr class="pr-4 font-semibold odd:bg-white  even:bg-gray-50  border-b ">
+                <td class="pl-2 font-semibold table-cell">Subject</td>
+                <td class="font-semibold table-cell">Summary</td>
+                <td class="font-semibold table-cell">Category</td>
+                <td class="font-semibold table-cell">&nbsp;</td>
+                <td class="font-semibold table-cell">&nbsp;</td>
             </tr>
             @foreach($mails as $mail)
                 <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
                     <td class="pl-2 table-cell">{{$mail->subject}}</td>
-                    <td class=" table-cell">{{$mail->summary}}</td>
+                    <td class="table-cell">{{$mail->summary}}</td>
+                    <td class="table-cell">{{$mail->category}}</td>
                     <td class="table-cell"><a href="/mail/edit/{{$mail->id}}"><span><i class="fa-solid fa-pencil"></i></span></a></td>
                     <td class="table-cell"><a href="/mail/preview/{{$mail->id}}"><span><i class="fa-solid fa-eye"></i></span></a></td>
                 </tr>

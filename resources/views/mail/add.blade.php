@@ -1,7 +1,7 @@
 <x-admin>
     <x-slot:heading>Compose a new email</x-slot:heading>
     @php
-        $mailCategoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
+        $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
         $distributionArray = array("Trial Entrants", "Past Entrants", "All Users");
     @endphp
     <form action="/mail/store" method="POST">
@@ -11,49 +11,64 @@
             <div class="grid grid-cols-2 gap-4 px-4">
                 <input type="hidden" name="isLibrary" value="true">
 
-                <div id="mailCategoryDiv" class="col-span-3">
+                <div id="categoryDiv" class=" col-span-3 mt-2">
                     <x-form-field>
-                        <x-form-label class="pr-0" for="mailCategory">Category</x-form-label>
-                        <div class="mt-2 pl-2 pr-0">
-                            @foreach($mailCategoryArray as $mailCategory)
-                                <div>
-                                    <input name="mailCategory[]" type="radio" id="mailCategory"
-                                           value="{{$mailCategory}}"
-                                            {{ (old('mailCategory')) ? ' checked' : '' }}
-                                    />
-                                    <label class="pl-4 pr-0" for="mailCategory">{{$mailCategory}}
-                                    </label>
-                                </div>
+                        <x-form-label for="category">Category</x-form-label>
+                        <div class="mt-2 col-span-2">
+                            @foreach($categoryArray as $option)
+                                <input name="category" type="radio" id="category"
+                                       value="{{$option}}"
+                                        {{ (old('category') == $option) ? ' checked' : '' }}
+                                >
+                                <label class="pl-1 pr-4" for="category">{{$option}}</label>
                             @endforeach
                         </div>
-                        @error('mailCategory')
+                        @error('category')
                         <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                         @enderror
                     </x-form-field>
                 </div>
 
-                <x-form-field>
-                    <x-form-label for="subject">Subject</x-form-label>
-                    <div class="mt-2 col-span-2">
-                        <x-form-input name="subject" type="text" id="subject" value=""
-                                      placeholder="Subject line - eg. Final Instructions" required/>
-                        <x-form-error name="subject"/>
-                    </div>
-                    @error('subject')
-                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                    @enderror
-                </x-form-field>
+                <div id="mailSummaryiv" class=" col-span-3 mt-2">
+                    <x-form-field>
+                        <x-form-label for="summary">Summary</x-form-label>
+                        <div class="mt-2 col-span-2">
+                            <x-form-input name="summary" type="text" id="summary"
+                                          value="{{old('summary')}}"
+                                          placeholder="Brief summary of email" required/>
+                            <x-form-error name="summary"/>
+                        </div>
+                        @error('summary')
+                        <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                        @enderror
+                    </x-form-field>
+                </div>
+
+                <div id="mailSubjectDiv" class=" col-span-3 mt-2">
+                    <x-form-field>
+                        <x-form-label for="subject">Subject</x-form-label>
+                        <div class="mt-2 col-span-2">
+                            <x-form-input name="subject" type="text" id="subject"
+                                          value="{{old('subject')}}"
+                                          placeholder="Subject line - eg. Final Instructions" required/>
+                            <x-form-error name="subject"/>
+                        </div>
+                        @error('subject')
+                        <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                        @enderror
+                    </x-form-field>
+                </div>
+
+                <div id="mailBodyTextDiv" class=" col-span-3 mt-2">
                 <x-form-field>
                     <x-form-label for="bodyText">Email body</x-form-label>
                     <div class="mt-2 ">
                         <textarea class="withEditor" name="bodyText" type="text" id="bodyText">
-
+                                                  {{old('bodyText')}}
                         </textarea>
                     </div>
-                    @error('description')
-                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                    @enderror
                 </x-form-field>
+                </div>
             </div>
         </div>
         <div id="buttons" class="py-2">

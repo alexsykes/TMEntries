@@ -12,6 +12,10 @@ class SeriesController extends Controller
     //
     public function list() {
         $user = auth()->user();
+        if(!$user->isClubUser) {
+            abort(403);
+        }
+
         $clubID = $user->club_id;
 
         $club = Club::find($clubID);

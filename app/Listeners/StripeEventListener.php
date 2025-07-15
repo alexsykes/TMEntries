@@ -30,6 +30,17 @@ function onPriceCreated($priceObject)
     ]);
 }
 
+function onPriceUpdated($priceObject)
+{
+    $stripe_price_id = $priceObject['id'];
+    $amount = $priceObject['unit_amount'];
+    $stripe_product_id = $priceObject['product'];
+
+    $price = DB::table('prices')->where('stripe_price_id', $stripe_price_id)
+    ->update(['stripe_price' => $amount,
+        'updated_at' => now(),]);
+}
+
 function onProductCreated($productObject)
 {
     $metadata = $productObject['metadata'];
@@ -323,7 +334,8 @@ class StripeEventListener
                 onProductCreated($object);
                 break;
             case 'price.updated':
-                onPriceUpdate($event);
+                $object = $event->payload['data']['object'];
+                onPriceUpdated($object);
                 break;
             case 'price.created':
                 $object = $event->payload['data']['object'];

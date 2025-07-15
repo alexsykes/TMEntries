@@ -61,6 +61,15 @@
                     <td class="pl-2 table-cell"><a href="/trials/toggleVisibility/{{$trial->id}}"><span><i
                                         class="{{$publishIMG}}"></i></span></a></td>
 
+                    <td class="pl-2 table-cell"><a href="/trials/edit/{{$trial->id}}">
+                            @if( $trial->isLocked == 0 )
+                                <span><i class="fa-solid text-violet-800 fa-gear"></i></span>
+                            @else
+                                <span><i class="fa-solid text-red-600 fa-gear"></i></span>
+                            @endif
+                        </a>
+                    </td>
+
                     <td class="pl-2 table-cell"><a href="/trials/info/{{$trial->id}}"><span><i
                                         class="fa-solid fa-circle-info text-violet-800"></i></span></a></td>
 

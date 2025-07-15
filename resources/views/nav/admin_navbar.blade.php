@@ -11,6 +11,7 @@
                         <a href="/clubs/list" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Clubs</a>
                         <a href="/admin/mails" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Mails</a>
                         <a href="/admin/venues" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Venues</a>
+{{--                        <a href="/series/list" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Series</a>--}}
                         <a href="/admin/trials" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Trials</a>
                         <a href="/admin/results" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Results</a>
                         <a href="/admin/users" class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Users</a>

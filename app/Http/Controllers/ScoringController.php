@@ -97,10 +97,13 @@ class ScoringController extends Controller
 //        dd($trialID, $scores, $scoreIDs);
 
         for ($index = 0; $index < count($scores); $index++) {
-            $riderScoresForSection = $scores[$index];
+            $riderScoresForSection =  $scores[$index];
             $scoreIDsForSection = $scoreIDs[$index];
 
-            if ($riderScoresForSection) {
+
+//  Check out settype here
+//             if ($riderScoresForSection != '') {
+//                dd($riderScoresForSection);
                 $riderscoresForLap = str_split($riderScoresForSection);
                 $scoreIdsForLap = explode(',', $scoreIDsForSection);
 
@@ -113,8 +116,7 @@ class ScoringController extends Controller
                         ]);
                 }
             }
-
-        }
+//        }
         return redirect("/scores/grid/{$trialID}");
     }
 
