@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use function Laravel\Prompts\table;
 
 class UserController extends Controller
 {
@@ -60,7 +61,6 @@ class UserController extends Controller
             ->orderBy('entries.status')
             ->select('entries.id', 'entries.status', 'entries.name', 'entries.class', 'entries.course', 'trials.name as trial', 'trials.isEntryLocked')
             ->get();
-//    dd($entries, $toPays, $todaysEntries);;
 
         return view('user.entry_list', compact('entries', 'toPays', 'todaysEntries'));
     }
@@ -71,6 +71,7 @@ class UserController extends Controller
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
             ->where('entries.id', $id)
             ->where('entries.created_by', $userID)
+            ->whereIn('entries.status', [0,1])
             ->get(['entries.*', 'trials.name as trial_name', 'trials.club as club', 'trials.classlist', 'trials.courselist', 'trials.customClasses', 'trials.customCourses', 'trials.isEntryLocked', 'trials.date as trialdate'])
         ->first();
 
@@ -100,6 +101,27 @@ class UserController extends Controller
         $entry->save();
 
         return redirect('/user/entries');
+    }
+
+    public function removeEntry($id){
+        $userID = auth()->user()->id;
+        $entry = Entry::findorfail($id);
+
+        if($userID != $entry->created_by) {
+            abort(403);
+        }
+        return view('user.confirm_remove_entry', ['entry' => $entry]);
+    }
+
+    public function userWithdraw($id){
+        $userID = auth()->user()->id;
+        $entry = Entry::findorfail($id);
+
+        if($userID != $entry->created_by) {
+            abort(403);
+        }
+
+        return redirect('user/entries');
     }
 
     public function checkout() {

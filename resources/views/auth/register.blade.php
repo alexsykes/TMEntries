@@ -9,7 +9,9 @@
         @csrf
 
         <!-- Name -->
-        <div class="font-semibold">Motor sport can be dangerous. Please check the box below to confirm your acceptance of our Terms of Use. </div>
+        <div class="font-semibold">Motor sport can be dangerous. Please remember to check the box below to confirm your acceptance of our Terms of Use. </div>
+        <div class="pt-2">You should receive an email - check your Junk mail - wth a link to verify your email address. Once your email has been verified, you will be able to register your entry for trials.</div>
+        <div class="pt-2 pb-2 font-semibold">Difficulties registering? Please let us know - <a href="mailto:monster@trialmonster.uk?Subject=Registration">click here</a> </div>
         <div>
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
@@ -47,8 +49,8 @@
         </div>
 
         <div class="flex mt-4">
-            <x-input-label for="agree" :value="__('I have read and understood the Terms and Conditions detailed on this website - see link below.')" />
-            <x-text-input id="agree" class="block mt-1 "
+            <x-input-label class="font-semibold" for="agree" :value="__('I have read and understood the Terms and Conditions detailed on this website - see link below.')" />
+            <x-text-input id="agree" class="block mt-1"
                           type="checkbox"
                           name="agree" required /></div>
 <div>

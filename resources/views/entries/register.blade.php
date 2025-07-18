@@ -78,25 +78,25 @@
     @enderror
     @if(sizeof($entries) > 0)
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Unconfirmed Entries
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Unconfirmed Entries - your entry is not confirmed until payment is completed
             </div>
 
-            <table class="w-full ml-4 mr-4">
-                <tr>
-                    <th class="">Ref</th>
-                    <th class="pl-2">Name</th>
-                    <th class="pl-2 hidden sm:table-cell">Course</th>
-                    <th class="pl-2 hidden sm:table-cell">Class</th>
-                    <th class="pl-2 hidden md:table-cell">Bike</th>
-                    <th class="pl-2"></th>
-                    <th class="pl-2"></th>
-                </tr>
+            <table class="w-full">
+{{--                <tr>--}}
+{{--                    <th class="">Ref</th>--}}
+{{--                    <th class="pl-2">Name</th>--}}
+{{--                    <th class="pl-2 hidden sm:table-cell">Course</th>--}}
+{{--                    <th class="pl-2 hidden sm:table-cell">Class</th>--}}
+{{--                    <th class="pl-2 hidden md:table-cell">Bike</th>--}}
+{{--                    <th class="pl-2"></th>--}}
+{{--                    <th class="pl-2"></th>--}}
+{{--                </tr>--}}
                 @foreach($entries as $entry)
                     @php
                         $entryID = $entry->id ;
                         array_push($entryIDs, $entryID);
                     @endphp
-                    <tr>
+                    <tr class="odd:bg-white  even:bg-gray-50  border-b">
                         <td class="">{{$entryID}}</td>
                         <td class="pl-2">{{$entry->name}}</td>
                         <td class="pl-2 hidden sm:table-cell">{{$entry->course}}</td>
@@ -114,12 +114,17 @@
             </table>
         </div>
 
+        <form action="/stripe/checkout" method="post">
+            @csrf
+            <button type="submit" class="mt-2 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Go to Payment</button>
+            <input type="hidden" id="entryIDs" name="entryIDs" value="{{implode(',',$entryIDs)}}" >
+        </form>
         {{--        <form action="/entries/checkout" method="post">--}}
 
-        <div class="mt-4" id="buttons">
-            <a href="/user/entries"
-               class="mt-4 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Completed</a>
-        </div>
+{{--        <div class="mt-4" id="buttons">--}}
+{{--            <a href="/user/entries"--}}
+{{--               class="mt-4 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Go to Checkout</a>--}}
+{{--        </div>--}}
     @endif
 
 
@@ -254,7 +259,7 @@
                        class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
                     <button type="submit"
                             class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
-                        Register
+                       Register
                     </button>
                 </div>
             </div>

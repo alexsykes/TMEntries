@@ -41,6 +41,23 @@ class MailController extends Controller
         return redirect('/admin/mails');
     }
 
+    public function storeUsermail(Request $request){
+
+        $attributes = $request->validate([
+            'category' => 'required',
+            'subject' => ['required', 'min:5', 'max:255'],
+            'bodyText' => 'required',
+            'summary' => ['required', 'min:5', 'max:255'],
+        ]);
+
+        $attributes['isLibrary'] = false;
+        $attributes['created_by'] = Auth::user()->id;
+
+        $mail = Mail::create($attributes);
+
+        return redirect('/clubaccess');
+    }
+
     public function update(Request $request){
         $attributes = $request->validate([
             'id' => 'required',

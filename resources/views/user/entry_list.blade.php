@@ -4,6 +4,7 @@
         $statusOptions = array(    'Payment due', 'Confirmed (Payment received)', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
         $entryIDs = array();
 $email = Auth::user()->email;
+$noEditArray = array(2,3,4);
 //        dd($entries, $toPays);
     @endphp
     <x-slot:heading>Entries for {{$email}}</x-slot:heading>
@@ -79,7 +80,7 @@ $email = Auth::user()->email;
                     <td class="table-cell">{{$entry->course}}</td>
                     <td class="table-cell">{{$entry->class}}</td>
                     <td class="table-cell">{{$statusOptions[$entry->status]}}</td>
-                    @if($entry->isEntryLocked == 1)
+                    @if(($entry->isEntryLocked == 1) || (in_array($entry->status, $noEditArray)))
                         <td class="table-cell"><i class="fa-solid fa-lock"></i></td>
                     @else
                         <td class="table-cell"><a href="/users/entry/edit/{{$entry->id}}"><i class="fa-solid fa-pencil"></i></a></td>

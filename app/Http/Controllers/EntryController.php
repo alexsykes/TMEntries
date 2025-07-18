@@ -276,10 +276,22 @@ class EntryController extends Controller
      * Email confirmation of entry changes
      */
 
+    public function withdrawConfirm(Request $request) {
+        $entryID = $request->id;
+        $entry = Entry::where('id', $entryID)->where('status', 1)->first();
+
+        return view('entries.withdraw_confirm', ['entry' => $entry]);
+    }
+
     public function withdraw(Request $request)
     {
+
         $id = $request->id;
-        $entry = Entry::where('id', $id)->where('status', 1)->first();
+        $token = $request->token;
+        $entry = Entry::where('id', $id)
+            ->where('status', 1)
+            ->where('token', $token)
+            ->first();
 
         if ($entry) {
             $pi = $entry->stripe_payment_intent;
@@ -302,7 +314,6 @@ class EntryController extends Controller
                 'amount' => $cost - 300,
 //            'amount' => 1,
             ]);
-
 //    Mark as refund requested
 //    Email user
         }

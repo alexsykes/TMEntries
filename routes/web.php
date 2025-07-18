@@ -98,7 +98,8 @@ Route::get('/userEntryList', [EntryController::class, 'userEntryList'])->middlew
 Route::get('/entries/register/{trialid}', [EntryController::class, 'register'])->middleware(['auth', 'verified']);
 Route::patch('/entries/userupdate', [EntryController::class, 'userupdate']);
 
-Route::get('/entry/withdraw/{id}', [EntryController::class, 'withdraw']);
+Route::get('/entry/withdraw', [EntryController::class, 'withdraw']);
+Route::get('/entry/withdrawConfirm/{id}', [EntryController::class, 'withdrawConfirm']);
 
 
 Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->middleware('auth', 'verified')->name('entries.edit');
@@ -161,11 +162,14 @@ Route::post('/scores/publish', [ScoringController::class, 'publish'])->name('sco
 // USER Routes
 Route::post('/user/checkout',[UserController::class, 'checkout']);
 Route::get('/close-my-account/{id}/{email}', [AdminController::class, 'closeMyAccount']);
-Route::get('/user/entries', [UserController::class, 'entryList'])->middleware(['auth', 'verified']);
+Route::get('/user/entries', [UserController::class, 'entryList'])->middleware(['auth', 'verified'])->name('user.entries');
 Route::get('/users/entry/edit/{id}', [UserController::class, 'editEntry'])->middleware(['auth', 'verified']);
 Route::patch('/user/entry/update', [UserController::class, 'updateEntry'])->middleware(['auth', 'verified']);
 Route::get('/stripe/usercheckout', [StripePaymentController::class, 'stripeUserCheckout']);
 Route::get('/users/mail/{id}', [UserController::class, 'email'])->middleware(['auth', 'verified']);
+Route::get('/user/removeEntry/{id}', [UserController::class, 'removeEntry'])->middleware(['auth', 'verified']); // First stage in rentry withdrawal
+Route::get('/user/confirmRemoveEntry', [UserController::class, 'confirmRemoveEntry'])->middleware(['auth', 'verified']); // Second stage
+Route::get('/user/withdraw/{id}', [UserController::class, 'userWithdraw'])->middleware(['auth', 'verified']); // Final stage
 
 // ADMIN Routes
 Route::get('/admin/user/remove/{id}', [AdminController::class, 'adminRemove'])->middleware(['auth', 'verified'])->name('admin.remove');
@@ -182,6 +186,7 @@ Route::get('/mail/preview/{id}', [MailController::class, 'preview'])->middleware
 Route::get('/mail/edit/{id}', [MailController::class, 'edit'])->middleware(['auth', 'verified'])->name('mail.edit');
 Route::patch('/mail/update', [MailController::class, 'update'])->middleware(['auth', 'verified'])->name('mail.update');
 Route::post('/mail/store', [MailController::class, 'store'])->middleware(['auth', 'verified'])->name('mail.store');
+Route::post('/usermail/store', [MailController::class, 'storeUsermail'])->middleware(['auth', 'verified'])->name('usermail.store');
 
 // RESULT Routes
 Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');
