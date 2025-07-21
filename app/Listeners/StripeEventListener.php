@@ -144,31 +144,38 @@ function onProductUpdated($productObject)
 
 function onCheckoutSessionCompleted($sessionObject)
 {
+//    Get secret key
     $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
-
+// and data from session
     $metadata = $sessionObject['metadata'];
     $email = $sessionObject['customer_details']['email'];
     $stripe_payment_intent = $sessionObject['payment_intent'];
-
-    $bcc = 'admin@trialmonster.uk';
     $entryIDs = $metadata['entryIDs'];
+
+//    Create array of entryIDs
     $entryIDArray = explode(',', $entryIDs);
 
 
-//    New stuff starts
+//  Process purchased items
+//    Get all line items
+
     $lineItems = $stripe->checkout->sessions->allLineItems(
         $sessionObject['id'],
         []
     );
+
+//  Record other items purchased
+//    var_dump($lineItems);
     foreach ($lineItems as $lineItem) {
         $stripe_product_id = $lineItem['price']['product'];
         $quantity = $lineItem['quantity'];
         $product = DB::table('products')
             ->where('stripe_product_id', '=', $stripe_product_id)
             ->first();
-        if($product->product_category == 'other') {
-            info( "PI: $stripe_payment_intent Qty - $quantity Product - $product->product_name" );
-
+        $stripe_price_id = $lineItem['price']['id'];
+//var_dump($stripe_price_id);
+//        if($product->product_category == 'other') {
+            info("PI: $stripe_payment_intent Qty - $quantity Product - $product->product_name");
             $attrs = [
                 'stripe_product_id' => $stripe_product_id,
                 'quantity' => $quantity,
@@ -176,33 +183,37 @@ function onCheckoutSessionCompleted($sessionObject)
                 'email' => $email,
                 'pi' => $stripe_payment_intent,
             ];
-
-//            DB::table('purchases')->insert($purchase);
             $purchase = Purchase::create($attrs);
 
 
-        };
-    }
-
-
-//    New stuff ends
-    foreach ($entryIDArray as $entryID) {
-
-        $entry = DB::table('entries')
-            ->where('id', '=', $entryID)
-            ->get();
-
-        $stripe_price_id = $entry[0]->stripe_price_id;
-        $stripe_product_id = $entry[0]->stripe_product_id;
-
         DB::table('products')
             ->where('stripe_product_id', '=', $stripe_product_id)
-            ->increment('purchases');
+            ->increment('purchases', $quantity);
 
         DB::table('prices')
             ->where('stripe_price_id', '=', $stripe_price_id)
-            ->increment('purchases');
+            ->increment('purchases', $quantity);
+//        };
     }
+
+//    Increment sales
+//    foreach ($entryIDArray as $entryID) {
+//        $entry = DB::table('entries')
+//            ->where('id', '=', $entryID)
+//            ->get();
+//
+//        $stripe_price_id = $entry[0]->stripe_price_id;
+//        $stripe_product_id = $entry[0]->stripe_product_id;
+//
+//        DB::table('products')
+//            ->where('stripe_product_id', '=', $stripe_product_id)
+//            ->increment('purchases');
+//
+//        DB::table('prices')
+//            ->where('stripe_price_id', '=', $stripe_price_id)
+//            ->increment('purchases');
+//    }
+
 
     $entries = DB::table('entries')
         ->whereIn('id', $entryIDArray)
@@ -212,18 +223,14 @@ function onCheckoutSessionCompleted($sessionObject)
             'updated_at' => now(),
             'stripe_payment_intent' => $stripe_payment_intent,]);
 
-    $entries = Entry::all()
-        ->whereIn('id', $entryIDArray);
-
+//  Get entries for confirmation email
     $entries = DB::table('entries')
         ->join('trials', 'entries.trial_id', '=', 'trials.id')
         ->whereIn('entries.id', $entryIDArray)
         ->get(['entries.*', 'trials.name as trial', 'trials.date as date']);
 
-//    $entriesWithTrialDetails = Entry::all()
-//        ->whereIn('id', $entryIDArray);
-//        ->join('trials','entries.trial_id', '=', 'trials.id');
-
+//  Send confirmation email with bcc: to admin
+    $bcc = 'admin@trialmonster.uk';
     Mail::to($email)
         ->bcc($bcc)
         ->send(new PaymentReceived($entries));
@@ -253,7 +260,6 @@ function onRefundCreated(mixed $object)
 
 function onRefundUpdated(mixed $object)
 {
-
     if (isset($object['metadata']['id'])) {
         $entryID = $object['metadata']['id'];
 
@@ -264,6 +270,17 @@ function onRefundUpdated(mixed $object)
         $bcc = 'admin@trialmonster.uk';
 
         $entry = DB::table('entries')->find($entryID);
+
+        $priceID = $entry->stripe_price_id;
+        $price = DB::table('prices')
+            ->where('stripe_price_id', '=', $priceID)
+            ->increment('refunds');
+
+        $productID = $entry->stripe_product_id;
+        $price = DB::table('products')
+            ->where('stripe_product_id', '=', $productID)
+            ->increment('refunds');
+
         $email = $entry->email;
         Mail::to($email)
             ->bcc($bcc)
@@ -280,14 +297,6 @@ function onPaymentIntentSucceeded()
 function onPaymentIntentCreated($object)
 {
     info("Payment intent created");
-
-//    $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
-//    $pi = $object['id'];
-//    $paymentIntent = $stripe->paymentIntents->retrieve(
-//        $pi,
-//        []
-//    );
-//    var_dump($paymentIntent);
 }
 
 class StripeEventListener

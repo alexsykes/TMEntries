@@ -63,27 +63,41 @@ class TrialController extends Controller
             ->get();
 
 
-        $products = DB::table('products')
-            ->where('products.trial_id', $id)
-            ->whereNot('products.product_category', 'entry fee')
-            ->orderBy('products.product_name', 'ASC')
-            ->select('products.product_name', 'products.stripe_product_description')
+        $productSales = DB::table('products')
+            ->leftJoin('prices', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
+            ->where('trial_id', $id)
+            ->select('products.product_category','products.product_name', 'prices.purchases', 'prices.refunds', 'prices.stripe_price')
+            ->orderBy('products.product_category')
+            ->orderBy('products.product_name')
             ->get();
-
-        $sales = DB::table('products')->selectRaw('sum(tme_purchases.quantity)AS quantity')
-            ->join('purchases', 'products.stripe_product_id', '=', 'purchases.stripe_product_id')
-            ->where('products.trial_id', $id)
-            ->groupBy('products.stripe_product_id')
-            ->orderBy('products.product_name', 'ASC')
-            ->get();
+//        dd($productSales);
 
 
-        $purchaseData = $this->getPurchasedDetails($id);
-
-        foreach ($purchaseData as $purchase) {
-    $entryIDs = $purchase;
-//    dump($entryIDs);
-        }
+//        $products = DB::table('products')
+//            ->where('products.trial_id', $id)
+//            ->whereNot('products.product_category', 'entry fee')
+//            ->orderBy('products.product_name', 'ASC')
+//            ->select('products.product_name', 'products.stripe_product_description')
+//            ->get();
+//
+//        $sales = DB::table('products')->selectRaw('sum(tme_purchases.quantity)AS quantity')
+//            ->join('purchases', 'products.stripe_product_id', '=', 'purchases.stripe_product_id')
+//            ->where('products.trial_id', $id)
+//            ->groupBy('products.stripe_product_id')
+//            ->orderBy('products.product_name', 'ASC')
+//            ->get();
+//
+//        $payments = DB::table('products')
+//            ->where('products.trial_id', $id)
+//            ->select('products.purchases', 'products.refunds')
+//            ->first();
+////        dd($payments);
+//        $purchaseData = $this->getPurchasedDetails($id);
+//
+//        foreach ($purchaseData as $purchase) {
+//    $entryIDs = $purchase;
+////    dump($entryIDs);
+//        }
 //        $purchasers = DB::table('entries')
 //            ->selectRaw('entries.name')
 //            ->whereIn('id', $purchaserIDs)
@@ -116,7 +130,7 @@ class TrialController extends Controller
             ->where('id', $trial->venueID)
             ->first();
 
-        return view('trials.info', ['entries' => $entries, 'trial' => $trial, 'venue' => $venue, 'entryfees' => $entryfees, 'products' => $products, 'sales' => $sales]);
+        return view('trials.info', ['entries' => $entries, 'trial' => $trial, 'venue' => $venue, 'sales' => $productSales]);
     }
 
     public function showTrialList()

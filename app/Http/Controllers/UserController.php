@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entry;
+use App\Models\Price;
 use App\Models\Trial;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use Stripe\StripeClient;
 use function Laravel\Prompts\table;
 
 class UserController extends Controller
@@ -117,9 +119,35 @@ class UserController extends Controller
         $userID = auth()->user()->id;
         $entry = Entry::findorfail($id);
 
+        if($entry->status != 1) {
+            abort(404);
+        }
+
         if($userID != $entry->created_by) {
             abort(403);
         }
+
+//        Get payment details
+        $pi = $entry->stripe_payment_intent;
+        $price = Price::where('stripe_price_id', $entry->stripe_price_id)->first();
+        $cost = $price->stripe_price;
+
+        $entry->updated_at = now();
+        $entry->status = 2;
+        $entry->save();
+
+        //        Request request
+        require('../vendor/autoload.php');
+        require('../vendor/stripe/stripe-php/lib/StripeClient.php');
+        $stripe = new StripeClient(config('stripe.stripe_secret_key'));
+
+        $stripe->refunds->create
+        ([
+            'metadata' => ['id' => $id],
+            'payment_intent' => $pi,
+            'amount' => $cost - 300,
+//            'amount' => 1,
+        ]);
 
         return redirect('user/entries');
     }

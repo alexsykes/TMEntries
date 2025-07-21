@@ -26,7 +26,6 @@ class AdminController extends Controller
         ->get();
         return view('admin.trialList', ['trials' => $trials]);
     }
-
     public function resultList()
     {
         $results = DB::table('trials')
@@ -35,14 +34,12 @@ class AdminController extends Controller
         ->get();
         return view('admin.resultList', ['results' => $results]);
     }
-
     public function mailList(){
         $mails = DB::table('mails')
             ->orderBy('subject')
             ->get();
         return view('admin.mailList', ['mails' => $mails]);
     }
-
     public function sendMail()
     {
         $delay = 1;
@@ -58,8 +55,6 @@ class AdminController extends Controller
         }
         return redirect('/adminaccess');
     }
-
-
     public function closeMyAccount()
     {
         $email = request('email');
@@ -74,7 +69,6 @@ class AdminController extends Controller
         }
         return redirect('/');
     }
-
     public function adminRemove()
     {
 //        dd(request('id'));
@@ -85,13 +79,11 @@ class AdminController extends Controller
             ->delete();
         return redirect('/adminaccess');
     }
-
     public function editUser()
     {
         $user = User::find(request('id'));
         return view('admin.adminUserEdit', ['user' => $user]);
     }
-
     public function updateUser()
     {
         $user = User::find(request('id'));
@@ -125,7 +117,6 @@ class AdminController extends Controller
         $trial->save();
         return redirect('/admin/trials');;
     }
-
     public function about(){
         return view('about.story');
     }

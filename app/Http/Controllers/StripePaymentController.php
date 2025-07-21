@@ -24,12 +24,12 @@ class StripePaymentController extends Controller
             ->get();
         $numEntries = count($entries);
         $trialIDs = array();
-        $trialIDString = implode(",", $trialIDs);
 
         for ($i = 0; $i < count($entries); $i++) {
             $trialIDs[] = $entries[$i]->trial_id;
         }
 
+        $trialIDString = implode(",", $trialIDs);
         $extras = DB::table('products')
             ->join('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
             ->whereIn('trial_id', $trialIDs)
@@ -65,14 +65,13 @@ class StripePaymentController extends Controller
                             'minimum' => 0,
                             'maximum' => $numEntries,
                         ],
-
                     ];
                 array_push($optionalItems, $optionalItem);
             }
         }
 //        dd($optionalItems);
 
-//        dd($lineItems, $optionalItems);
+//        dd($lineItems, $optionalItems, $trialIDString);
         $response = $stripe->checkout->sessions->create([
             'success_url' => $redirectUrl,
             'cancel_url' => $cancelUrl,
