@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\TMLogin;
+//use App\Mail\TMLogin;
+use App\Models\Trial;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
+use App\Models\Mail;
 
 class MailController extends Controller
 {
@@ -37,26 +38,60 @@ class MailController extends Controller
         $attributes['isLibrary'] = true;
         $attributes['created_by'] = Auth::user()->id;
 
+
         $mail = Mail::create($attributes);
 
         return redirect('/admin/mails');
     }
 
+
+    public function composeUserEmail($id) {
+//        Check for ownership
+        $user = auth()->user();
+        if($user->isClubUser != 1) {
+            abort(403);
+        }
+        $clubID = $user->club_id;
+        $trial = Trial::findorfail($id);
+
+        return view('user.email', ['trial' => $trial]);
+    }
+
     public function storeUsermail(Request $request){
+        $user = Auth::user();
+        $clubID = $user->club_id;
 
         $attributes = $request->validate([
             'category' => 'required',
-            'subject' => ['required', 'min:5', 'max:255'],
+            'subject' => ['required', 'min:5', 'max:63'],
             'bodyText' => 'required',
             'summary' => ['required', 'min:5', 'max:255'],
         ]);
 
         $attributes['isLibrary'] = false;
+        $attributes['club_id'] = $clubID;
         $attributes['created_by'] = Auth::user()->id;
 
         $mail = Mail::create($attributes);
 
-        return redirect('/clubaccess');
+        return redirect('/usermail/address_mail/' . $mail->id);
+    }
+
+    public function addressUsermail($id){
+        $user = Auth::user();
+
+    return view('user.address_mail', compact('user'));
+    }
+
+    public function storeAddressList(Request $request){
+
+
+    }
+    public function previewUsermail(Request $request){
+        $user = Auth::user();
+
+
+
     }
 
     public function update(Request $request){
