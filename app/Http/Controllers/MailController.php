@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mail;
+use App\Mail\TMLogin;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class MailController extends Controller
 {
@@ -75,6 +76,18 @@ class MailController extends Controller
             'bodyText' => $request->bodyText,
             'summary' => $request->summary,
             ]);
+
+        return redirect('/admin/mails');
+    }
+
+    public function sendTestmail(Request $request){
+//        dd($request->all());
+
+        $user = Auth::user();
+        $success = Mail::to('alex@alexsykes.net')
+            ->send(new TMLogin($user));
+
+        info("Email sent to {$user->email}");
 
         return redirect('/admin/mails');
     }

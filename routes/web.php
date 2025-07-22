@@ -187,6 +187,7 @@ Route::get('/mail/edit/{id}', [MailController::class, 'edit'])->middleware(['aut
 Route::patch('/mail/update', [MailController::class, 'update'])->middleware(['auth', 'verified'])->name('mail.update');
 Route::post('/mail/store', [MailController::class, 'store'])->middleware(['auth', 'verified'])->name('mail.store');
 Route::post('/usermail/store', [MailController::class, 'storeUsermail'])->middleware(['auth', 'verified'])->name('usermail.store');
+Route::get('/mail/sendTestmail', [MailController::class, 'sendTestMail']);
 
 // RESULT Routes
 Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');
