@@ -17,11 +17,15 @@ return new class extends Migration
 
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('club_id')->nullable();
+            $table->unsignedBigInteger('trial_id')->nullable();
 
             $table->string('subject');
             $table->string('category');
             $table->string('summary');
+//            $table->string('testAddress')->nullable();
             $table->text('bodyText');
+//            $table->text('addressTo');
+//            $table->text('othersTo')->nullable();
             $table->boolean('isLibrary')->default(false);
         });
 

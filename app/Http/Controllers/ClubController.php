@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Club;
+use App\Models\Mail;
 use App\Models\Series;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -123,5 +124,20 @@ class ClubController extends Controller
         $clubID = $user->club_id;
         $club = Club::find($clubID);
         return view('clubs.editprofile', ['club' => $club]);
+    }
+
+    public function mailList() {
+        $user = Auth::user();
+        $clubID = $user->club_id;
+
+        $mails = DB::table('mails')
+            ->where('club_id', $clubID)
+            ->orWhere('isLibrary', true)
+            ->orderBy('isLibrary', 'desc')
+            ->orderBy('category')
+            ->orderBy('subject')
+            ->get();
+
+        return view('clubs.maillist', ['mails' => $mails]);
     }
 }

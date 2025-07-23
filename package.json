@@ -19,6 +19,6 @@
     "dependencies": {
         "@tailwindcss/cli": "^4.1.4",
         "@tailwindcss/vite": "^4.1.4",
-        "tinymce": "^7.8.0"
+        "tinymce": "^7.9.1"
     }
 }

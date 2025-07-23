@@ -45,22 +45,27 @@ class MailController extends Controller
     }
 
 
-    public function composeUserEmail($id) {
+    public function composeUserEmail() {
 //        Check for ownership
         $user = auth()->user();
         if($user->isClubUser != 1) {
             abort(403);
         }
         $clubID = $user->club_id;
-        $trial = Trial::findorfail($id);
+        return view('user.email');
+    }
 
-        return view('user.email', ['trial' => $trial]);
+    public function editUserEmail($id)
+    {
+        $mail = Mail::findOrFail($id);
+        return view('user.edit_mail', ['mail' => $mail]);
     }
 
     public function storeUsermail(Request $request){
         $user = Auth::user();
         $clubID = $user->club_id;
 
+//        dd($request->all());
         $attributes = $request->validate([
             'category' => 'required',
             'subject' => ['required', 'min:5', 'max:63'],
@@ -68,13 +73,44 @@ class MailController extends Controller
             'summary' => ['required', 'min:5', 'max:255'],
         ]);
 
+        $attributes['trial_id'] = $request->trial_id;
         $attributes['isLibrary'] = false;
         $attributes['club_id'] = $clubID;
         $attributes['created_by'] = Auth::user()->id;
 
         $mail = Mail::create($attributes);
 
-        return redirect('/usermail/address_mail/' . $mail->id);
+        return redirect('/usermail/preview/' . $mail->id);
+    }
+    public function updateUserEmail(Request $request){
+        $action = $request->input('action');
+
+//        dd($request->all());
+        $attributes = $request->validate([
+            'trial_id' => 'required',
+            'category' => 'required',
+            'subject' => ['required', 'min:5', 'max:63'],
+            'bodyText' => 'required',
+            'summary' => ['required', 'min:5', 'max:255'],
+        ]);
+
+    if($action=='update') {
+        $mail = DB::table('mails')->where('id', $request->trial_id)
+            ->update(['updated_at' => now(),
+                'category' => $request->category,
+                'subject' => $request->subject,
+                'bodyText' => $request->bodyText,
+                'summary' => $request->summary,
+            ]);
+    } elseif ($action=='saveAsNew') {
+        $attributes['trial_id'] = $request->trial_id;
+        $attributes['isLibrary'] = false;
+        $attributes['created_by'] = Auth::user()->id;
+        $attributes['club_id'] = Auth::user()->club_id;
+
+        $mail = Mail::create($attributes);
+    }
+        return redirect('/club/mails');
     }
 
     public function addressUsermail($id){
@@ -87,11 +123,12 @@ class MailController extends Controller
 
 
     }
-    public function previewUsermail(Request $request){
+    public function previewUsermail( $id){
         $user = Auth::user();
 
+        $mail = Mail::findOrFail($id);
 
-
+        return view('mail.preview', compact('user', 'mail'));
     }
 
     public function update(Request $request){

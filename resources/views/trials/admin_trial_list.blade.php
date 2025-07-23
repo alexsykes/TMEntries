@@ -20,8 +20,8 @@
                                 class="ml-1 mr-3 fa-solid fa-gear "></i></span></div>
                 <div class=" pl-4 pr-4 text-sm">Info<span><i
                                 class="ml-1 mr-3 fa-solid fa-circle-info"></i></span></div>
-                <div class=" pl-4 pr-4 text-sm">Email<span><i
-                                class="ml-1 mr-3 fa-solid fa-envelope"></i></span></div>
+{{--                <div class=" pl-4 pr-4 text-sm">Email<span><i--}}
+{{--                                class="ml-1 mr-3 fa-solid fa-envelope"></i></span></div>--}}
 
             </div>
         </div>
@@ -73,10 +73,10 @@
                     <td class="pl-2 table-cell"><a href="/trials/info/{{$trial->id}}"><span><i
                                         class="fa-solid fa-circle-info text-violet-800"></i></span></a></td>
 
-                    <td class="pl-2 table-cell"><a href="/users/mail/{{$trial->id}}">
-                            <span><i class="fa-regular text-violet-800 fa-envelope"></i></span>
-                        </a>
-                    </td>
+{{--                    <td class="pl-2 table-cell"><a href="/users/mail/{{$trial->id}}">--}}
+{{--                            <span><i class="fa-regular text-violet-800 fa-envelope"></i></span>--}}
+{{--                        </a>--}}
+{{--                    </td>--}}
 
                 </tr>
             @endforeach
