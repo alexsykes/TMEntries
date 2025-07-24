@@ -195,6 +195,9 @@ Route::post('/usermail/update', [MailController::class, 'updateUserEmail'])->mid
 Route::get('/usermail/edit/{id}', [MailController::class, 'editUserEmail'])->middleware(['auth', 'verified']);
 Route::post('/usermail/storeAddressList', [MailController::class, 'storeAddressList'])->middleware(['auth', 'verified']);
 Route::get('/usermail/preview/{id}', [MailController::class, 'previewUsermail'])->middleware(['auth', 'verified'])->name('usermail.preview');
+Route::get('/usermail/sendMail/{id}', [MailController::class, 'sendMail'])->middleware(['auth', 'verified'])->name('usermail.sendMail');
+Route::post('/usermail/send', [MailController::class, 'send'])->middleware(['auth', 'verified'])->name('usermail.send');
+Route::post('/usermail/prepare', [MailController::class, 'prepare'])->middleware(['auth', 'verified'])->name('usermail.prepare');
 
 // RESULT Routes
 Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');

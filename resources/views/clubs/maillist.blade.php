@@ -23,7 +23,7 @@
                         <td class="table-cell">{{$mail->summary}}</td>
                         <td class="table-cell"><a href="/usermail/edit/{{$mail->id}}"><i class="fa-solid fa-pencil"></i></a> </td>
                         <td class="table-cell"><a href="/usermail/preview/{{$mail->id}}"><i class="fa-solid fa-eye"></i></a> </td>
-                        <td class="table-cell"><a href="/usermail/send/{{$mail->id}}"><i class="fa-solid fa-envelope"></i></a></td>
+                        <td class="table-cell"><a href="/usermail/sendMail/{{$mail->id}}"><i class="fa-solid fa-envelope"></i></a></td>
                     </tr>
 
                 @endforeach
