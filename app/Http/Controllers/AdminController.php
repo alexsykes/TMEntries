@@ -43,9 +43,7 @@ class AdminController extends Controller
     public function sendMail()
     {
         $delay = 1;
-
         $users = User::get();
-
 
         foreach ($users as $user) {
             Mail::to($user->email)

@@ -1,7 +1,7 @@
 <x-admin>
     <x-slot:heading>Compose a new email</x-slot:heading>
     @php
-        $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
+        $categoryArray = array("Trial Announcement", "Result Published", "General Announcement");
         $distributionArray = array("Trial Entrants", "Past Entrants", "All Users");
     @endphp
     <form action="/mail/store" method="POST">
@@ -72,7 +72,7 @@
             </div>
         </div>
         <div id="buttons" class="py-2">
-            <a href="/adminaccess"
+            <a href="/club/mails"
                class=" rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-red-900 shadow-sm hover:bg-red-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900">Cancel</a>
             <button type="submit"
                     class="rounded-md ml-2 bg-red-600 px-3 py-1 text-sm font-light  border border-red-800 text-white drop-shadow-lg hover:bg-red-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">

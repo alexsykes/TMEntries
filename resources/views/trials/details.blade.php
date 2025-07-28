@@ -154,7 +154,30 @@ $methodOfMarking = $clubData->section_markers;
     $courseOptions = explode(',', $courselist);
     $classOptions = explode(',', $classlist);
 
-    switch ($trial->restriction) {
+
+    switch ($trial->authority) {
+        case "AMCA":
+            $entryConditions = "All riders must be members of an AMCA affiliated club. ";
+            $machines = "Please see club website for machine specification and restrictions";
+//            $methodOfMarking = "A machine will be deemed to be in the section when the front wheel has passed the Section Begins card and marks will be awarded until the back wheel has passed the Section Ends card. 0, 1, 2, 3, 5 system - Ties decided by most cleans, ones, twos, threes, furthest clean";
+            break;
+        case "ACU":
+            $entryConditions = "All riders and passengers must hold a current ACU/SACU Trials Registration Card or ACU/SACU Competition Licence. Any rider or passenger from another FMN must produce a licence issued by their FMN, together with start permission and proof of personal accident insurance. ";
+            $machines = "Motorcycles as per NSC Appendix D Category 1, Group A1 Solos and TSR 8";
+//            $methodOfMarking = "A machine will be deemed to be in an Observed Section or Sub-Section when the front wheel spindle has passed the
+//‘Section Begins’ Card and until the front wheel spindle has passed the ‘Section Ends’ Card. Further information can be obtained from the ACU Handbook.";
+        case "Other":
+//            $methodOfMarking = "A machine will be deemed to be in an Observed Section or Sub-Section when the front wheel spindle has passed the
+//‘Section Begins’ Card and until the front wheel spindle has passed the ‘Section Ends’ Card. Further information can be obtained from the ACU Handbook.";
+//            $entryConditions = "";
+            break;
+        default:
+            $entryConditions = "";
+            $methodOfMarking="";
+            break;
+    }
+
+    switch ($trial->status) {
         case "Open":
             $rest = "an Open ";
             break;
@@ -163,33 +186,11 @@ $methodOfMarking = $clubData->section_markers;
             break;
         case "Club":
             $rest = "a Closed to Club ";
-        case "Other":
-            $rest = "Restricted ";
-            $rest .= "The trial will be restricted to " . $trial->otherRestriction;
+        case "Other Restriction":
+            $rest = "a Restricted";
+            $entryConditions .= $trial->otherRestriction;
             break;
         default:
-            break;
-    }
-
-    switch ($trial->authority) {
-        case "AMCA":
-            $entryConditions = "";
-            $machines = "Please see club website for machine specification and restrictions";
-//            $methodOfMarking = "A machine will be deemed to be in the section when the front wheel has passed the Section Begins card and marks will be awarded until the back wheel has passed the Section Ends card. 0, 1, 2, 3, 5 system - Ties decided by most cleans, ones, twos, threes, furthest clean";
-            break;
-        case "ACU":
-            $entryConditions = "All riders and passengers must hold a current ACU/SACU Trials Registration Card or ACU/SACU Competition Licence. Any rider or passenger from another FMN must produce a licence issued by their FMN, together with start permission and proof of personal accident insurance.";
-            $machines = "Motorcycles as per NSC Appendix D Category 1, Group A1 Solos and TSR 8";
-//            $methodOfMarking = "A machine will be deemed to be in an Observed Section or Sub-Section when the front wheel spindle has passed the
-//‘Section Begins’ Card and until the front wheel spindle has passed the ‘Section Ends’ Card. Further information can be obtained from the ACU Handbook.";
-        case "Other":
-//            $methodOfMarking = "A machine will be deemed to be in an Observed Section or Sub-Section when the front wheel spindle has passed the
-//‘Section Begins’ Card and until the front wheel spindle has passed the ‘Section Ends’ Card. Further information can be obtained from the ACU Handbook.";
-            $entryConditions = "Restricted ";
-            break;
-        default:
-            $entryConditions = "";
-            $methodOfMarking="";
             break;
     }
     ?>
@@ -228,7 +229,7 @@ $methodOfMarking = $clubData->section_markers;
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span class="font-semibold">DATE: </span> {{$formattedDate}}
         </div>
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
-                    class="font-semibold">ELIGIBILITY: </span>This trial will be {{$rest}} trial. {{$entryConditions}}
+                    class="font-semibold">ELIGIBILITY: </span>{{$entryConditions}}
         </div>
 {{--        <div class="ml-4 mr-4 pt-2  text-black text-left "><span--}}
 {{--                    class="font-semibold">MACHINES: </span>{{$machines}}--}}

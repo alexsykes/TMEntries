@@ -190,13 +190,13 @@ Route::get('/mail/sendTestmail', [MailController::class, 'sendTestMail']);
 
 Route::post('/usermail/store', [MailController::class, 'storeUsermail'])->middleware(['auth', 'verified'])->name('usermail.store');
 Route::get('/usermail/address_mail/{id}', [MailController::class, 'addressUsermail'])->middleware(['auth', 'verified']);
-Route::get('/usermail/add', [MailController::class, 'composeUserEmail'])->middleware(['auth', 'verified']);
+Route::get('/usermail/add', [MailController::class, 'composeUserEmail'])->middleware(['auth', 'verified']);             // from button on club/mails page -> form
 Route::post('/usermail/update', [MailController::class, 'updateUserEmail'])->middleware(['auth', 'verified']);
 Route::get('/usermail/edit/{id}', [MailController::class, 'editUserEmail'])->middleware(['auth', 'verified']);
 Route::post('/usermail/storeAddressList', [MailController::class, 'storeAddressList'])->middleware(['auth', 'verified']);
 Route::get('/usermail/preview/{id}', [MailController::class, 'previewUsermail'])->middleware(['auth', 'verified'])->name('usermail.preview');
-Route::get('/usermail/sendMail/{id}', [MailController::class, 'sendMail'])->middleware(['auth', 'verified'])->name('usermail.sendMail');
-Route::post('/usermail/send', [MailController::class, 'send'])->middleware(['auth', 'verified'])->name('usermail.send');
+Route::get('/usermail/sendMail/{id}', [MailController::class, 'sendMail'])->middleware(['auth', 'verified'])->name('usermail.sendMail');// Start of send -> /usermail/prepare
+Route::post('/usermail/send', [MailController::class, 'send'])->middleware(['auth', 'verified'])->name('usermail.send'); // Send
 Route::post('/usermail/prepare', [MailController::class, 'prepare'])->middleware(['auth', 'verified'])->name('usermail.prepare');
 
 // RESULT Routes
@@ -207,7 +207,7 @@ Route::patch('/results/update', [ResultController::class, 'update']);
 
 // CLUB Routes
 Route::get('/clubs/list', [ClubController::class, 'list']);
-Route::get('/club/mails', [ClubController::class, 'mailList']);
+Route::get('/club/mails', [ClubController::class, 'mailList']); // Lists mails
 Route::get('/clublist', [ClubController::class, 'clublist']);
 Route::get('/club/detail/{id}', [ClubController::class, 'detail']);
 Route::get('/club/profile', [ClubController::class, 'profile'])->middleware(['auth', 'verified']);

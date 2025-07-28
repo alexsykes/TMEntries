@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 //use App\Mail\TMLogin;
+use App\Mail\TestMail;
 use App\Models\Club;
-use App\Models\Mail;
+use Illuminate\Support\Facades\Mail;
+use App\Models\Mailshot;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -180,7 +182,21 @@ class MailController extends Controller
 
     public function send(Request $request)
     {
-        $distributionList = $request->distributionList;
+        $mailID = $request->input('mail_id');
+        $mailshot = Mailshot::findOrFail($mailID);
+
+        $subject = $mailshot->subject;
+        $bodyText = $mailshot->bodyText;
+        $mail = new TestMail();
+
+        $addresses = explode(',',$mailshot->distribution);
+        foreach ($addresses as $address) {
+//            dd($address);
+            Mail::to($address)
+                ->send($mail);
+        }
+
+
     }
 
     public function sendMail($id)
@@ -200,9 +216,17 @@ class MailController extends Controller
 
     public function prepare(Request $request)
     {
+        $userID = Auth::user()->id;
+        $clubID = Auth::user()->club_id;
         $mail_id = $request->mail_id;
         $distribution = $request->distribution;
         $distributionList = array();
+
+        $mail = DB::table('mails')->where('id', $mail_id)->first();
+
+        $attributes = $request->validate([
+            'mail_id' => 'required',
+        ]);
 
         switch ($distribution) {
             case "Test":
@@ -282,9 +306,14 @@ class MailController extends Controller
         }
         $distributionList = array_unique($distributionList);
 
+        $attributes['distribution'] = implode(', ', $distributionList);
+        $attributes['subject'] = $mail->subject;
+        $attributes['bodyText'] = $mail->bodyText;
+        $attributes['club_id'] = $mail->club_id;
+        $attributes['mail_id'] = $mail->id;
+        $attributes['sent_by'] = $userID;
 
-//        dump($distributionList);
-        return view('clubs.prepare', compact('distributionList', 'mail_id'));
-
+        $mailshot = Mailshot::create($attributes);
+        return view('clubs.prepare', compact('mailshot'));
     }
 }

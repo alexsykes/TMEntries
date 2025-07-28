@@ -31,60 +31,71 @@ $numSalesItems = sizeof($sales);
 
 
 
+{{--    <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">--}}
+{{--        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Online payments</div>--}}
+
+{{--        <table class="table-fixed text-sm w-full">--}}
+{{--            <tr>--}}
+{{--                <th>Item</th>--}}
+{{--                <th>Price</th>--}}
+{{--                <th class="text-end">Sales</th>--}}
+{{--                <th class="text-end">Refunds</th>--}}
+{{--                <th class="text-end">Total</th>--}}
+{{--            </tr>--}}
+{{--            @foreach($sales as $sale)--}}
+{{--                @php--}}
+{{--                    $price = $sale->stripe_price / 100;--}}
+{{--                    $name = $sale->product_name;--}}
+{{--                    $quantity = $sale->purchases;--}}
+{{--                    $refunds = $sale->refunds;--}}
+{{--                    $total = $price * ($quantity - $refunds) + ($refunds * 3);--}}
+
+{{--                @endphp--}}
+{{--                <tr>--}}
+{{--                    <td class="text-start">{{$name}}</td>--}}
+{{--                    <td>£{{$price}}</td>--}}
+{{--                    <td class="text-center">{{$quantity}}</td>--}}
+{{--                    <td class="text-end">{{$refunds}}</td>--}}
+{{--                    <td class="text-end">£{{$total}}</td>--}}
+{{--                </tr>--}}
+{{--                --}}{{--            <div>£{{$sale->purchases * $purchase->purchases}}</div>--}}
+{{--            @endforeach--}}
+{{--        </table>--}}
+{{--    </div>--}}
+
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Online payments</div>
 
-        <table class="table-fixed text-sm w-full">
-        <tr>
-            <th>Item</th>
-            <th>Price</th>
-            <th class="text-end">Sales</th>
-            <th class="text-end">Refunds</th>
-            <th class="text-end">Total</th>
-        </tr>
-        @foreach($sales as $sale)
-            @php
-                $price = $sale->stripe_price / 100;
-                $name = $sale->product_name;
-                $quantity = $sale->purchases;
-                $refunds = $sale->refunds;
-                $total = $price * ($quantity - $refunds) + ($refunds * 3);
 
-            @endphp
-            <tr>
-                <td class="text-start">{{$name}}</td>
-                <td>£{{$price}}</td>
-                <td class="text-center">{{$quantity}}</td>
-                <td class="text-end">{{$refunds}}</td>
-                <td class="text-end">£{{$total}}</td>
-            </tr>
-            {{--            <div>£{{$sale->purchases * $purchase->purchases}}</div>--}}
-        @endforeach
-        </table>
+            <div class="flex justify-between text-sm w-full pl-4 pr-4">
+                <div class="table-cell w-1/5">Item</div>
+                <div class="table-cell w-1/5">Price</div>
+                <div class="table-cell w-1/5">Sales</div>
+                <div class="table-cell w-1/5">Refunds</div>
+                <div class="table-cell w-1/5 text-end">Total</div>
+            </div>
+            @foreach($sales as $sale)
+                @php
+                    $price = $sale->stripe_price / 100;
+                    $name = $sale->product_name;
+                    $quantity = $sale->purchases;
+                    $refunds = $sale->refunds;
+                    $total = $price * ($quantity - $refunds) + ($refunds * 3);
+
+                @endphp
+                <div class="flex justify-between text-sm w-full pl-4 pr-4">
+                    <div class="table-cell w-1/5">{{$name}}</div>
+                    <div class="table-cell w-1/5">{{$price}}</div>
+                    <div class="table-cell w-1/5">{{$quantity}}</div>
+                    <div class="table-cell w-1/5">{{$refunds}}</div>
+                    <div class="table-cell w-1/5 text-end">£{{$total}}</div>
+                </div>
+                {{--            <div>£{{$sale->purchases * $purchase->purchases}}</div>--}}
+            @endforeach
+
     </div>
 
 
-{{--    @if($numSalesItems > 0)--}}
-{{--    <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">--}}
-{{--        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Options</div>--}}
-{{--        @for($i = 0; $i < $numSalesItems; $i++)--}}
-{{--            @php--}}
-{{--            $sale = $sales[$i];--}}
-{{--            $product = $products[$i];--}}
-{{--////                $price = $purchase->stripe_price / 100;--}}
-{{--                $name = $product->product_name;--}}
-{{--                $description = $product->stripe_product_description;--}}
-{{--                $quantity = $sale->quantity;--}}
-
-{{--            @endphp--}}
-{{--            <div class="flex justify-between text-sm w-full pl-4 pr-4">--}}
-{{--                <div class="table-cell min-w-10 text-left">{{$name}}</div>--}}
-{{--                <div class="table-cell min-w-10 text-left">{{$description}}</div>--}}
-{{--                <div class="table-cell w-40 text-end">{{$quantity}}</div>--}}
-{{--            </div>--}}
-{{--        @endfor--}}
-{{--    </div>--}}
-{{--    @endif--}}
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Entry list</div>
         @foreach($entries as $entry)

@@ -97,7 +97,7 @@
                         array_push($entryIDs, $entryID);
                     @endphp
                     <tr class="odd:bg-white  even:bg-gray-50  border-b">
-                        <td class="">{{$entryID}}</td>
+                        <td class="pl-2">{{$entryID}}</td>
                         <td class="pl-2">{{$entry->name}}</td>
                         <td class="pl-2 hidden sm:table-cell">{{$entry->course}}</td>
                         <td class="pl-2 hidden sm:table-cell">{{$entry->class}}</td>

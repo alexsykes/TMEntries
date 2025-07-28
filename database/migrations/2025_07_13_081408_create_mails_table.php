@@ -11,20 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-//        Schema::create('mails', function (Blueprint $table) {
-//            $table->id();
-//            $table->timestamps();
-//
-//            $table->unsignedBigInteger('created_by')->nullable();
-//            $table->unsignedBigInteger('club_id')->nullable();
-//            $table->unsignedBigInteger('trial_id')->nullable();
-//
-//            $table->string('subject');
-//            $table->string('category');
-//            $table->string('summary');
-//            $table->text('bodyText');
-//            $table->boolean('isLibrary')->default(false);
-//        });
+        Schema::create('mails', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('club_id')->nullable();
+            $table->unsignedBigInteger('trial_id')->nullable();
+
+            $table->string('subject');
+            $table->string('category');
+            $table->string('summary');
+            $table->text('bodyText');
+            $table->boolean('isLibrary')->default(false);
+        });
 
         Schema::create('mailshots', function (Blueprint $table) {
             $table->id();
@@ -32,12 +32,13 @@ return new class extends Migration
 
             $table->unsignedBigInteger('mail_id');
             $table->unsignedBigInteger('club_id')->nullable();
+            $table->unsignedBigInteger('sent_by')->nullable();
 
             $table->text('distribution')->nullable();
             $table->text('bodyText')->nullable();
             $table->string('subject')->nullable();
             $table->boolean('sent')->default(false);
-            $table->time('sent_at');
+            $table->time('sent_at')->nullable();
         });
     }
 
