@@ -53,4 +53,7 @@
     <div class="mt-4"><a class="underline  text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('register') }}">
             {{ __('No account? Register now') }}
         </a></div>
+
+    <div class="mt-4 font-semibold">Login difficulties?</div>
+    <a>If you need help logging in, please drop us an email. <a class="underline" href="mailto:monster@trialmonster.uk?subject=Login difficulties">Click here</a></div>
 </x-guest-layout>

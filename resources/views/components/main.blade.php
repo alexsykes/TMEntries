@@ -127,6 +127,7 @@
     <div class="bg-blue-800 text-white">
         <x-footer-link>
             <div class="text-center mx-auto  text-white">
+                <a href="/about" class="inline-block mt-1 mx-3 hover:underline">A better mousetrap…</a>
                 @auth
                     <a href="/profile" class="inline-block mt-1 mx-3 hover:underline">My Profile</a>
                     @if (Auth::user()->isAdminUser == 1)

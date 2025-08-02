@@ -14,10 +14,11 @@
                         <td class="pl-2 text-sm hidden md:table-cell"><a href="/trial/details/{{$trial->id}}">{{$date}}</a></td>
                         <td class="text-sm hidden md:table-cell"><a href="/trial/details/{{$trial->id}}">{{$trial->club}}</a></td>
                         <td class="text-sm pl-2 table-cell"><a href="/trial/details/{{$trial->id}}">{{$trial->name}}</a></td>
-                        <td title="Entry list" class="table-cell" ><a href="/trial/{{$trial->id}}/entrylist"><span><i class="text-xl  fa-solid fa-list-ul"></i></span></a></td>
-                        <td title="Register" class="table-cell "><a href="/trial/details/{{$trial->id}}"><span><i class="text-xl  fa-solid fa-circle-info"></i></span></a></td>
+                        <td title="Entry list" class="underline table-cell" ><a href="/trial/{{$trial->id}}/entrylist">Entry list</a></td>
+{{--                        <td title="Enter" class="table-cell "><a href="/trial/details/{{$trial->id}}"><span><i class="text-xl  fa-solid fa-circle-info"></i></span></a></td>--}}
                     </tr>
                 @endforeach
             </table>
+        <div class="font-bold w-full pt-2 pl-4 pr-4 rounded-b-xl  text-blue-600">For full details  and to enter, click on the trial name</div>
         </div>
 </x-main>

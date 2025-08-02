@@ -195,7 +195,8 @@ $methodOfMarking = $clubData->section_markers;
     }
     ?>
     <div class="text-blue-800 font-semibold text-center">{{$entryStatus}}</div>
-    <x-button class="{{$showButton}}" href="/entries/register/{{$trial_id}}">Register</x-button>
+    <a class="{{$showButton}}  rounded-md bg-blue-800  px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900" href="/entries/register/{{$trial_id}}">Enter NOW</a>
+
     <div class="text-sm mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <gmp-map class="p-4  rounded-xl drop-shadow-lg "
                  center="{{$latitude}},{{$longitude}}"
@@ -307,6 +308,12 @@ $methodOfMarking = $clubData->section_markers;
                         class="font-semibold">NOTES: </span><?php echo "$trial->notes"; ?>
             </div>
         @endif
+
     </div>
+
+
+        <div class="ml-2 mt-4" id="buttons">
+            <a class="{{$showButton}}  rounded-md bg-blue-800  px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900" href="/entries/register/{{$trial_id}}">Enter NOW</a>
+        </div>
 
 </x-main>

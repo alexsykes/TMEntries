@@ -63,23 +63,14 @@ class ProfileController extends Controller
         $user = $request->user();
         $currentPreferences = $user->preferences;
 
-        if($request->receive_results) {
-            $currentPreferences = $currentPreferences | 0b00000001;
+        if($request->receive_emails) {
+            $receive_emails = true;
         } else {
-            $currentPreferences = $currentPreferences & 0b11111110;
-        }
-        if($request->receive_trials) {
-            $currentPreferences = $currentPreferences | 0b00000010;
-        } else {
-            $currentPreferences = $currentPreferences & 0b11111101;
-        }
-        if($request->receive_news) {
-            $currentPreferences = $currentPreferences | 0b00000100;
-        } else {
-            $currentPreferences = $currentPreferences & 0b11111011;
+            $receive_emails = false;
         }
 
-        $user->preferences = $currentPreferences;
+
+        $user->receive_emails = $receive_emails;
         $user->save();
 
         return Redirect::to('/');

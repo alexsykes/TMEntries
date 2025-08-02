@@ -17,13 +17,19 @@ class MailController extends Controller
 
     public function edit($id)
     {
-        $mail = Mail::findOrFail($id);
+//        $mail = Mail::findOrFail($id);
+        $mail= DB::table('mail')
+            ->where('id', $id)
+            ->first();
         return view('mail.edit', compact('mail'));
     }
 
     public function preview($id)
     {
-        $mail = Mail::findOrFail($id);
+//        $mail = Mail::findOrFail($id);
+        $mail= DB::table('mail')
+            ->where('id', $id)
+            ->first();
 //        dd($mail);
         return view('mail.preview', ['mail' => $mail]);
     }
@@ -66,7 +72,10 @@ class MailController extends Controller
 
     public function editUserEmail($id)
     {
-        $mail = Mail::findOrFail($id);
+//        $mail = Mail::findOrFail($id);
+        $mail= DB::table('mails')
+            ->where('id', $id)
+            ->first();
         return view('user.edit_mail', ['mail' => $mail]);
     }
 
@@ -87,10 +96,14 @@ class MailController extends Controller
         $attributes['isLibrary'] = false;
         $attributes['club_id'] = $clubID;
         $attributes['created_by'] = Auth::user()->id;
+        $attributes['created_at']  = date("Y-m-d H:i:s");
+        $attributes['updated_at']  = date("Y-m-d H:i:s");
 
-        $mail = Mail::create($attributes);
-
-        return redirect('/usermail/preview/' . $mail->id);
+//        $mail = Mail::create($attributes);
+        $mail = DB::table('mails')->insert(
+            $attributes
+        );
+        return redirect('/club/mails/');
     }
 
     public function updateUserEmail(Request $request)
@@ -163,7 +176,10 @@ class MailController extends Controller
     public function previewUsermail($id)
     {
         $user = Auth::user();
-        $mail = Mail::findOrFail($id);
+//        $mail = Mail::findOrFail($id);
+        $mail= DB::table('mails')
+        ->where('id', $id)
+        ->first();
         return view('mail.preview', compact('user', 'mail'));
     }
 
@@ -201,7 +217,11 @@ class MailController extends Controller
 
     public function sendMail($id)
     {
-        $mail = Mail::findOrFail($id);
+//        $mail = Mail::findOrFail($id);
+        $mail= DB::table('mails')
+            ->where('id', $id)
+            ->first();
+
         $clubID = Auth::user()->club_id;
         $club = Club::findOrFail($clubID);
         $clubName = $club->name;

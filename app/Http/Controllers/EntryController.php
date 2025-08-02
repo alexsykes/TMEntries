@@ -868,10 +868,23 @@ class EntryController extends Controller
         PDF::SetY(190);
         PDF::MultiCell(0, 0, "Although every effort is made to provide accurate and up-to-date information, late changes may sometimes be unavoidable due to entrants' changes of course or class.",0,'L', false);
 //        dd(public_path($filename));
+        $filename = $this->filter_filename($filename);
         PDF::Close();
         PDF::Output(public_path($filename), 'F');
         PDF::reset();
         return response()->download($filename);
+    }
+
+    function filter_filename($name) {
+        // remove illegal file system characters https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
+        $name = str_replace(array_merge(
+            array_map('chr', range(0, 31)),
+            array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
+        ), '', $name);
+        // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
+        $ext = pathinfo($name, PATHINFO_EXTENSION);
+        $name= mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
+        return $name;
     }
 
     public function storeMultiple(Request $request)

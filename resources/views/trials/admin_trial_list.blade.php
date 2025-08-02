@@ -41,7 +41,7 @@
                     <td class="pl-2 table-cell">{{$trial->name}}</td>
 
                     <td class="pl-2 table-cell">
-                        <a href="/scores/setup/{{$trial->id}}">
+                        <a href="/scores/setup/{{$trial->id}}">Scores
                             @if( $trial->isScoringLocked == 0 )
                                 <span><i class="fa-solid fa-pencil text-violet-800"></i></span>
                             @else
@@ -49,7 +49,7 @@
                             @endif
                         </a>
                     </td>
-                    <td class="pl-2 table-cell"><a href="/trials/adminEntryList/{{$trial->id}}">
+                    <td class="pl-2 table-cell"><a href="/trials/adminEntryList/{{$trial->id}}">Entries
                             @if( $trial->isEntryLocked == 0 )
                                 <span><i class="fa-solid fa-list-ol text-violet-800"></i></span>
                             @else
@@ -58,10 +58,10 @@
                         </a>
                     </td>
 
-                    <td class="pl-2 table-cell"><a href="/trials/toggleVisibility/{{$trial->id}}"><span><i
+                    <td class="pl-2 table-cell"><a href="/trials/toggleVisibility/{{$trial->id}}">Show/Hide<span><i
                                         class="{{$publishIMG}}"></i></span></a></td>
 
-                    <td class="pl-2 table-cell"><a href="/trials/edit/{{$trial->id}}">
+                    <td class="pl-2 table-cell"><a href="/trials/edit/{{$trial->id}}">Setup
                             @if( $trial->isLocked == 0 )
                                 <span><i class="fa-solid text-violet-800 fa-gear"></i></span>
                             @else
@@ -70,7 +70,7 @@
                         </a>
                     </td>
 
-                    <td class="pl-2 table-cell"><a href="/trials/info/{{$trial->id}}"><span><i
+                    <td class="pl-2 table-cell"><a href="/trials/info/{{$trial->id}}"><span>Info<i
                                         class="fa-solid fa-circle-info text-violet-800"></i></span></a></td>
 
 {{--                    <td class="pl-2 table-cell"><a href="/users/mail/{{$trial->id}}">--}}

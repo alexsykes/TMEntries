@@ -58,7 +58,7 @@ Route::get('/admin/entries/editRidingNumbers/{id}', [EntryController::class, 'ed
 Route::patch('/admin/entries/update', [EntryController::class, 'adminEntryUpdate'])->middleware(['auth', 'verified']);
 Route::post('/admin/entries/store', [EntryController::class, 'adminEntryStore'])->middleware(['auth', 'verified']);
 //Route::get('/admin/entries/delete/{id}', [EntryController::class, 'adminEntryDelete'])->middleware(['auth', 'verified']);
-Route::get('admin/entries/printSignOnSheets/{id}', [EntryController::class, 'printSignOnSheets'])->middleware(['auth', 'verified']);
+Route::get('/admin/entries/printSignOnSheets/{id}', [EntryController::class, 'printSignOnSheets'])->middleware(['auth', 'verified']);
 Route::get('/admin/sendMail', [AdminController::class, 'sendMail'])->middleware(['auth', 'verified']);
 
 Route::get('/admin/trial/toggleLock/{id}', [AdminController::class, 'toggleLock'])->middleware(['auth', 'verified']);

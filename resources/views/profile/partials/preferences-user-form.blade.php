@@ -21,11 +21,11 @@
 <section>
     <header>
         <h2 class="text-lg font-medium text-gray-900">
-            {{ __('My Choices') }}
+            {{ __('Email Notifications') }}
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __('Choose which notifications you\'d like to receive via email. ') }}
+            {{ __('Choose whether you\'d like to receive notifications of results, future events etc. via email. ') }}
         </p>
     </header>
 
@@ -33,19 +33,19 @@
         @csrf
         @method('patch')
         <div>
-            <x-input-label for="receive_results" :value="__('Results published')" />
-            <input type="checkbox" id="receive_results" name="receive_results" {{$receiveResults}} class="mt-1 block"  />
+            <x-input-label for="receive_emails" :value="__('Receive notifications')" />
+            <input type="checkbox" id="receive_emails" name="receive_emails" {{$receiveResults}} class="mt-1 block"  />
         </div>
 
-        <div>
-            <x-input-label for="receive_trials" :value="__('New trials published')" />
-            <input type="checkbox" id="receive_trials" name="receive_trials"  {{$receiveTrials}}  class="mt-1 block"  />
-        </div>
+{{--        <div>--}}
+{{--            <x-input-label for="receive_trials" :value="__('New trials published')" />--}}
+{{--            <input type="checkbox" id="receive_trials" name="receive_trials"  {{$receiveTrials}}  class="mt-1 block"  />--}}
+{{--        </div>--}}
 
-        <div>
-            <x-input-label for="receive_news" :value="__('General')" />
-            <input type="checkbox" id="receive_news" name="receive_news"  {{$receiveNews}}  class="mt-1 block"  />
-        </div>
+{{--        <div>--}}
+{{--            <x-input-label for="receive_news" :value="__('General')" />--}}
+{{--            <input type="checkbox" id="receive_news" name="receive_news"  {{$receiveNews}}  class="mt-1 block"  />--}}
+{{--        </div>--}}
 
 
         <div class="flex items-center gap-4">

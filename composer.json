@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.2",
         "aws/aws-sdk-php": "^3.342",
+        "blade-ui-kit/blade-icons": "^1.8",
         "blade-ui-kit/blade-ui-kit": "^0.7.0",
         "elibyy/tcpdf-laravel": "^11.4",
         "endroid/qr-code": "^6.0",

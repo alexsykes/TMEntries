@@ -808,7 +808,6 @@ class TrialController extends Controller
 
     public function programme($id)
     {
-
         $trial = DB::table('trials')->where('trials.id', $id)
             ->join('venues', 'trials.venueID', '=', 'venues.id')
             ->select('trials.*', 'venues.name as venueName')
@@ -854,6 +853,7 @@ class TrialController extends Controller
             ->get(['ridingNumber', 'name', 'class', 'course', 'make', 'size']);
 
         $filename = "$trial->name.pdf";
+        $filename= $this->filter_filename($filename);
 
         MYPDF::SetCreator('TM UK');
         MYPDF::SetAuthor('TrialMonster.uk');
@@ -942,6 +942,18 @@ EOD;
         return $productData;
     }
 
+
+    function filter_filename($name) {
+        // remove illegal file system characters https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
+        $name = str_replace(array_merge(
+            array_map('chr', range(0, 31)),
+            array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
+        ), '', $name);
+        // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
+        $ext = pathinfo($name, PATHINFO_EXTENSION);
+        $name= mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
+        return $name;
+    }
 }
 
 class MYPDF extends PDF
