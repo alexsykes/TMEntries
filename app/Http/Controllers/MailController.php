@@ -207,12 +207,11 @@ class MailController extends Controller
 
         $addresses = explode(',',$mailshot->distribution);
         foreach ($addresses as $address) {
-//            dd($address);
+//            dd($address, $subject, $bodyText);
+//            dump($mail);
             Mail::to($address)
                 ->send($mail);
         }
-
-
     }
 
     public function sendMail($id)

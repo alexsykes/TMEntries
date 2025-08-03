@@ -5,9 +5,9 @@
         </x-mail::header>
     </x-slot:header>
 
- <x-slot>
+{{-- <x-slot>--}}
 {{--     {{$content}}--}}
- </x-slot>
+{{-- </x-slot>--}}
 
 
     <x-slot:footer>

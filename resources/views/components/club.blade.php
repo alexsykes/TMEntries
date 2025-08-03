@@ -119,7 +119,7 @@
                     <x-nav-link href="/club/profile" :active="request()->is('/clubaccess')">Profile</x-nav-link>
                     <x-nav-link href="/clubaccess" :active="request()->is('/clubaccess')">Trials</x-nav-link>
                     <x-nav-link href="/series/list" :active="request()->is('/series/list')">Competitions</x-nav-link>
-{{--                    <x-nav-link href="/club/mails" :active="request()->is('/club/mails')">Mail</x-nav-link>--}}
+                    <x-nav-link href="/club/mails" :active="request()->is('/club/mails')">Mail</x-nav-link>
                     @guest
                         <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>
                         {{--                        <x-nav-link href="/register" :active="request()->is('register')">Register</x-nav-link>--}}
