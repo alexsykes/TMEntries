@@ -15,9 +15,6 @@
     @php
         $distributionArray = array("Test", "Trial Entrants", "Past Entrants");
 
-//        dump($clubTrials);
-
-//        dd($mail);
     @endphp
     <x-slot:heading>Send mail</x-slot:heading>
     <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
@@ -49,6 +46,10 @@
                         <div class="mt-2 col-span-2">
                             @foreach($distributionArray as $option)
                                 <input name="distribution" type="radio" id="distribution"
+                                       @if ($option =="Test") {
+                                        {{"checked"}}
+                                       }
+                                       @endif
                                        onclick="Javascript:yesNoCheck()"
                                        value="{{$option}}">
                                 <label class="pl-1 pr-4" for="distribution">{{$option}}</label>

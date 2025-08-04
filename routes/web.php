@@ -12,7 +12,7 @@ use App\Http\Controllers\ScoringController;
 use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AboutController;
-use App\Http\Controllers\MailController ;
+use App\Http\Controllers\ClubmailController ;
 
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\StripePaymentController;
@@ -166,7 +166,7 @@ Route::get('/user/entries', [UserController::class, 'entryList'])->middleware(['
 Route::get('/users/entry/edit/{id}', [UserController::class, 'editEntry'])->middleware(['auth', 'verified']);
 Route::patch('/user/entry/update', [UserController::class, 'updateEntry'])->middleware(['auth', 'verified']);
 Route::get('/stripe/usercheckout', [StripePaymentController::class, 'stripeUserCheckout']);
-//Route::get('/users/mail/{id}', [MailController::class, 'composeUserEmail'])->middleware(['auth', 'verified']);
+
 Route::get('/user/removeEntry/{id}', [UserController::class, 'removeEntry'])->middleware(['auth', 'verified']); // First stage in rentry withdrawal
 Route::get('/user/confirmRemoveEntry', [UserController::class, 'confirmRemoveEntry'])->middleware(['auth', 'verified']); // Second stage
 Route::get('/user/withdraw/{id}', [UserController::class, 'userWithdraw'])->middleware(['auth', 'verified']); // Final stage
@@ -179,25 +179,25 @@ Route::patch('/admin/updateUser', [AdminController::class, 'updateUser'])->middl
 // MAIL Routes
 Route::get('/admin/mails', [AdminController::class, 'mailList'])->middleware(['auth', 'verified'])->name('admin.mails');
 
-Route::get('/mail/add', [MailController::class, 'add'])->middleware(['auth', 'verified'])->name('mail.add');
+Route::get('/mail/add', [ClubmailController::class, 'add'])->middleware(['auth', 'verified'])->name('mail.add');
 
-Route::get('/mail/preview/{id}', [MailController::class, 'preview'])->middleware(['auth', 'verified'])->name('mail.preview');
+Route::get('/mail/preview/{id}', [ClubmailController::class, 'preview'])->middleware(['auth', 'verified'])->name('mail.preview');
 
-Route::get('/mail/edit/{id}', [MailController::class, 'edit'])->middleware(['auth', 'verified'])->name('mail.edit');
-Route::patch('/mail/update', [MailController::class, 'update'])->middleware(['auth', 'verified'])->name('mail.update');
-Route::post('/mail/store', [MailController::class, 'store'])->middleware(['auth', 'verified'])->name('mail.store');
-Route::get('/mail/sendTestmail', [MailController::class, 'sendTestMail']);
+Route::get('/mail/edit/{id}', [ClubmailController::class, 'edit'])->middleware(['auth', 'verified'])->name('mail.edit');
+Route::patch('/mail/update', [ClubmailController::class, 'update'])->middleware(['auth', 'verified'])->name('mail.update');
+Route::post('/mail/store', [ClubmailController::class, 'store'])->middleware(['auth', 'verified'])->name('mail.store');
+Route::get('/mail/sendTestmail', [ClubmailController::class, 'sendTestMail']);
 
-Route::post('/usermail/store', [MailController::class, 'storeUsermail'])->middleware(['auth', 'verified'])->name('usermail.store');
-Route::get('/usermail/address_mail/{id}', [MailController::class, 'addressUsermail'])->middleware(['auth', 'verified']);
-Route::get('/usermail/add', [MailController::class, 'composeUserEmail'])->middleware(['auth', 'verified']);             // from button on club/mails page -> form
-Route::post('/usermail/update', [MailController::class, 'updateUserEmail'])->middleware(['auth', 'verified']);
-Route::get('/usermail/edit/{id}', [MailController::class, 'editUserEmail'])->middleware(['auth', 'verified']);
-Route::post('/usermail/storeAddressList', [MailController::class, 'storeAddressList'])->middleware(['auth', 'verified']);
-Route::get('/usermail/preview/{id}', [MailController::class, 'previewUsermail'])->middleware(['auth', 'verified'])->name('usermail.preview');
-Route::get('/usermail/sendMail/{id}', [MailController::class, 'sendMail'])->middleware(['auth', 'verified'])->name('usermail.sendMail');// Start of send -> /usermail/prepare
-Route::post('/usermail/send', [MailController::class, 'send'])->middleware(['auth', 'verified'])->name('usermail.send'); // Send
-Route::post('/usermail/prepare', [MailController::class, 'prepare'])->middleware(['auth', 'verified'])->name('usermail.prepare');
+Route::post('/usermail/store', [ClubmailController::class, 'storeUsermail'])->middleware(['auth', 'verified'])->name('usermail.store');
+Route::get('/usermail/address_mail/{id}', [ClubmailController::class, 'addressUsermail'])->middleware(['auth', 'verified']);
+Route::get('/usermail/add', [ClubmailController::class, 'composeUserEmail'])->middleware(['auth', 'verified']);             // from button on club/mails page -> form
+Route::post('/usermail/update', [ClubmailController::class, 'updateUserEmail'])->middleware(['auth', 'verified']);
+Route::get('/usermail/edit/{id}', [ClubmailController::class, 'editUserEmail'])->middleware(['auth', 'verified']);
+Route::post('/usermail/storeAddressList', [ClubmailController::class, 'storeAddressList'])->middleware(['auth', 'verified']);
+Route::get('/usermail/preview/{id}', [ClubmailController::class, 'previewUsermail'])->middleware(['auth', 'verified'])->name('usermail.preview');
+Route::get('/usermail/sendMail/{id}', [ClubmailController::class, 'sendMail'])->middleware(['auth', 'verified'])->name('usermail.sendMail');// Start of send -> /usermail/prepare
+Route::post('/usermail/send', [ClubmailController::class, 'send'])->middleware(['auth', 'verified'])->name('usermail.send'); // Send
+Route::post('/usermail/prepare', [ClubmailController::class, 'prepare'])->middleware(['auth', 'verified'])->name('usermail.prepare');
 
 // RESULT Routes
 Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');

@@ -10,11 +10,12 @@
                     @php
                         $date = date_format(date_create($trial->date), "M jS, Y");
                     @endphp
-                   <tr class="flex-auto odd:bg-white  even:bg-gray-50  border-b ">
-                        <td class="pl-2 text-sm hidden md:table-cell"><a href="/trial/details/{{$trial->id}}">{{$date}}</a></td>
+{{--                   <tr class="flex-auto pt-2 pb-2 odd:bg-white  even:bg-gray-50  border-b ">--}}
+                <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
+                    <td class="text-sm hidden sm:table-cell  pl-4 pt-1 pb-1"><a href="/trial/details/{{$trial->id}}">{{$date}}</a></td>
                         <td class="text-sm hidden md:table-cell"><a href="/trial/details/{{$trial->id}}">{{$trial->club}}</a></td>
                         <td class="text-sm pl-2 table-cell"><a href="/trial/details/{{$trial->id}}">{{$trial->name}}</a></td>
-                        <td title="Entry list" class="underline table-cell" ><a href="/trial/{{$trial->id}}/entrylist">Entry list</a></td>
+                        <td title="Entry list" class="text-sm underline table-cell" ><a href="/trial/{{$trial->id}}/entrylist">Entry list</a></td>
 {{--                        <td title="Enter" class="table-cell "><a href="/trial/details/{{$trial->id}}"><span><i class="text-xl  fa-solid fa-circle-info"></i></span></a></td>--}}
                     </tr>
                 @endforeach

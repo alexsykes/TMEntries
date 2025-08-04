@@ -28,10 +28,9 @@
             array_push($nonStarterArray, $notStarter->name);
         }
             $nonStarterList = implode(', ', $nonStarterArray);
-
-        //        dump($trial);
     @endphp
 
+    <div class="text-black mb-2 sm:hidden">Scores display will be improved by turning your phone on its side.</div>
     <div class="tab pl-8">
         <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-1" id="defaultOpen"
                 onclick="openSection(event, 'Results')">
@@ -49,7 +48,6 @@
     <div id="Results" class="tabcontent pt-0 ">
         @for($course=0;  $course < sizeof($courses); $course++)
             @if(sizeof($courseResults[$course]) > 0)
-
                 <div class=" mt-0 mb-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
                     <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">{{$courses[$course]}}</div>
                     <table class="w-full text-sm">
@@ -117,7 +115,6 @@
 //        dump($classResults);
             @endphp
             @if(sizeof($classResults) > 0)
-
                 <div class=" mt-0 mb-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
                     <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">{{$title}}</div>
                     <table class="w-full text-sm">
@@ -170,11 +167,12 @@
 
         {{--        <div class="pl-2 pr-2 text-sm">Non starters: {{$nonStarterList}}</div>--}}
     </div>
-
     <div id="Scores" class="tabcontent pt-0 ">
         @php
             if(sizeof($courses) > 0) {
         @endphp
+
+
         @for($course=0;  $course < sizeof($courses); $course++)
             @if(sizeof($courseResults[$course]) > 0)
                 <div class=" mt-0 mb-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
@@ -280,6 +278,8 @@
                                     @endforeach
 
                                 </table>
+
+                                <div class="pl-2 pr-4 text-sm w-full text-right">x indicates a missed section :: o indicates an omitted section which is not included in the scoring</div>
                             </div>
                         @endif
                     @endforeach

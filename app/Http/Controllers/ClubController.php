@@ -130,7 +130,7 @@ class ClubController extends Controller
         $user = Auth::user();
         $clubID = $user->club_id;
 
-        $mails = DB::table('mails')
+        $mails = DB::table('clubmails')
             ->where('club_id', $clubID)
             ->orWhere('isLibrary', true)
             ->orderBy('isLibrary', 'desc')

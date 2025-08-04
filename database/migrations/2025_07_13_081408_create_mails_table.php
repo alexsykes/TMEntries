@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mails', function (Blueprint $table) {
+        Schema::create('clubmails', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
 
@@ -38,7 +38,7 @@ return new class extends Migration
             $table->text('bodyText')->nullable();
             $table->string('subject')->nullable();
             $table->boolean('sent')->default(false);
-            $table->time('sent_at')->nullable();
+            $table->timestamp('sent_at')->nullable();
         });
     }
 

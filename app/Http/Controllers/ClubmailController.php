@@ -5,20 +5,21 @@ namespace App\Http\Controllers;
 //use App\Mail\TMLogin;
 use App\Mail\TestMail;
 use App\Models\Club;
+use App\Models\Clubmail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Mailshot;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class MailController extends Controller
+class ClubmailController extends Controller
 {
     //
 
     public function edit($id)
     {
 //        $mail = Mail::findOrFail($id);
-        $mail= DB::table('mail')
+        $mail= DB::table('clubmails')
             ->where('id', $id)
             ->first();
         return view('mail.edit', compact('mail'));
@@ -27,7 +28,7 @@ class MailController extends Controller
     public function preview($id)
     {
 //        $mail = Mail::findOrFail($id);
-        $mail= DB::table('mail')
+        $mail= DB::table('clubmails')
             ->where('id', $id)
             ->first();
 //        dd($mail);
@@ -36,7 +37,7 @@ class MailController extends Controller
 
     public function add()
     {
-        return view('mail.add');
+        return view('clubmails.add');
     }
 
     public function store(Request $request)
@@ -53,7 +54,7 @@ class MailController extends Controller
         $attributes['created_by'] = Auth::user()->id;
 
 
-        $mail = Mail::create($attributes);
+        $mail = Clubmail::create($attributes);
 
         return redirect('/admin/mails');
     }
@@ -73,7 +74,7 @@ class MailController extends Controller
     public function editUserEmail($id)
     {
 //        $mail = Mail::findOrFail($id);
-        $mail= DB::table('mails')
+        $mail= DB::table('clubmails')
             ->where('id', $id)
             ->first();
         return view('user.edit_mail', ['mail' => $mail]);
@@ -100,7 +101,7 @@ class MailController extends Controller
         $attributes['updated_at']  = date("Y-m-d H:i:s");
 
 //        $mail = Mail::create($attributes);
-        $mail = DB::table('mails')->insert(
+        $mail = DB::table('clubmails')->insert(
             $attributes
         );
         return redirect('/club/mails/');
@@ -120,7 +121,7 @@ class MailController extends Controller
         ]);
 
         if ($action == 'update') {
-            $mail = DB::table('mails')->where('id', $request->trial_id)
+            $mail = DB::table('clubmails')->where('id', $request->trial_id)
                 ->update(['updated_at' => now(),
                     'category' => $request->category,
                     'subject' => $request->subject,
@@ -133,7 +134,7 @@ class MailController extends Controller
             $attributes['created_by'] = Auth::user()->id;
             $attributes['club_id'] = Auth::user()->club_id;
 
-            $mail = Mail::create($attributes);
+            $mail = Clubmail::create($attributes);
         }
         return redirect('/club/mails');
     }
@@ -149,7 +150,7 @@ class MailController extends Controller
         ]);
 
 
-        $mail = DB::table('mails')->where('id', $request->id)
+        $mail = DB::table('clubmails')->where('id', $request->id)
             ->update(['updated_at' => now(),
                 'category' => $request->category,
                 'subject' => $request->subject,
@@ -177,9 +178,9 @@ class MailController extends Controller
     {
         $user = Auth::user();
 //        $mail = Mail::findOrFail($id);
-        $mail= DB::table('mails')
-        ->where('id', $id)
-        ->first();
+        $mail= DB::table('clubmails')
+            ->where('id', $id)
+            ->first();
         return view('mail.preview', compact('user', 'mail'));
     }
 
@@ -207,17 +208,24 @@ class MailController extends Controller
 
         $addresses = explode(',',$mailshot->distribution);
         foreach ($addresses as $address) {
-//            dd($address, $subject, $bodyText);
-//            dump($mail);
-            Mail::to($address)
-                ->send($mail);
+           $this->actualMail($address);
         }
+
+        $mailshot->sent_at  = now();
+        $mailshot->sent = true;
+        $mailshot->save();
+        return redirect('/club/mails');
+    }
+
+    public function actualMail($address){
+        $mail = new TestMail();
+        Mail::to($address)->send($mail);
     }
 
     public function sendMail($id)
     {
 //        $mail = Mail::findOrFail($id);
-        $mail= DB::table('mails')
+        $mail= DB::table('clubmails')
             ->where('id', $id)
             ->first();
 
@@ -241,7 +249,7 @@ class MailController extends Controller
         $distribution = $request->distribution;
         $distributionList = array();
 
-        $mail = DB::table('mails')->where('id', $mail_id)->first();
+        $mail = DB::table('clubmails')->where('id', $mail_id)->first();
 
         $attributes = $request->validate([
             'mail_id' => 'required',
