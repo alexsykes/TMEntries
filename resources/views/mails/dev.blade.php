@@ -1,8 +1,12 @@
 <x-mail>
-    <x-slot:heading>
-        Heading
-    </x-slot:heading>
+    <div class="m-4 font-semibold">
+        @php
+            echo $mailshot->subject;
+        @endphp
+    </div>
     <div class="m-4">
-    <p>Hello, is it me you're looking for?</p>
+        @php
+            echo $mailshot->bodyText;
+        @endphp
     </div>
 </x-mail>

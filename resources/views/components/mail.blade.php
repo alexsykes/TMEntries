@@ -12,11 +12,9 @@
             padding: 0;
         }
         p {
-            line-height: 24px;   /* within paragraph */
+            line-height: 20px;   /* within paragraph */
             margin-bottom: 8px; /* between paragraphs */
         }
-
-
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,7 +34,7 @@
                 <a href="{{Config::get('app.url')}}/profile" class="inline-block mt-1 mx-3 hover:underline">Don't want these emails? To unsubscribe, click here</a>
             </div>
 
-        <div class="text-sm text-center  bg-blue-800 text-white"><a href="https://oldgit.uk">©2018 - {{date("Y")}} Development by Oldgit UK</a></div>
+        <div class="text-sm mt-2 text-center  bg-blue-800 text-white"><a href="https://oldgit.uk">©2018 - {{date("Y")}} Development by Oldgit UK</a></div>
     </div>
 </main>
 </body>

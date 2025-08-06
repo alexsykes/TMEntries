@@ -6,11 +6,11 @@ namespace App\Http\Controllers;
 use App\Mail\TestMail;
 use App\Models\Club;
 use App\Models\Clubmail;
-use Illuminate\Support\Facades\Mail;
 use App\Models\Mailshot;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class ClubmailController extends Controller
 {
@@ -19,7 +19,7 @@ class ClubmailController extends Controller
     public function edit($id)
     {
 //        $mail = Mail::findOrFail($id);
-        $mail= DB::table('clubmails')
+        $mail = DB::table('clubmails')
             ->where('id', $id)
             ->first();
         return view('mail.edit', compact('mail'));
@@ -28,7 +28,7 @@ class ClubmailController extends Controller
     public function preview($id)
     {
 //        $mail = Mail::findOrFail($id);
-        $mail= DB::table('clubmails')
+        $mail = DB::table('clubmails')
             ->where('id', $id)
             ->first();
 //        dd($mail);
@@ -74,7 +74,7 @@ class ClubmailController extends Controller
     public function editUserEmail($id)
     {
 //        $mail = Mail::findOrFail($id);
-        $mail= DB::table('clubmails')
+        $mail = DB::table('clubmails')
             ->where('id', $id)
             ->first();
         return view('user.edit_mail', ['mail' => $mail]);
@@ -97,8 +97,8 @@ class ClubmailController extends Controller
         $attributes['isLibrary'] = false;
         $attributes['club_id'] = $clubID;
         $attributes['created_by'] = Auth::user()->id;
-        $attributes['created_at']  = date("Y-m-d H:i:s");
-        $attributes['updated_at']  = date("Y-m-d H:i:s");
+        $attributes['created_at'] = date("Y-m-d H:i:s");
+        $attributes['updated_at'] = date("Y-m-d H:i:s");
 
 //        $mail = Mail::create($attributes);
         $mail = DB::table('clubmails')->insert(
@@ -178,7 +178,7 @@ class ClubmailController extends Controller
     {
         $user = Auth::user();
 //        $mail = Mail::findOrFail($id);
-        $mail= DB::table('clubmails')
+        $mail = DB::table('clubmails')
             ->where('id', $id)
             ->first();
         return view('mail.preview', compact('user', 'mail'));
@@ -204,28 +204,27 @@ class ClubmailController extends Controller
 
         $subject = $mailshot->subject;
         $bodyText = $mailshot->bodyText;
-        $mail = new TestMail();
+        $mail = new TestMail($mailshot);
 
-        $addresses = explode(',',$mailshot->distribution);
+        $delay = 1;
+        $addresses = explode(',', $mailshot->distribution);
+
         foreach ($addresses as $address) {
-           $this->actualMail($address);
+            Mail::to($address)->later(now()->addSeconds($delay++), new TestMail($mailshot));
+
+            info("Email sent to {$address}");
         }
 
-        $mailshot->sent_at  = now();
+        $mailshot->sent_at = now();
         $mailshot->sent = true;
         $mailshot->save();
         return redirect('/club/mails');
     }
 
-    public function actualMail($address){
-        $mail = new TestMail();
-        Mail::to($address)->send($mail);
-    }
-
     public function sendMail($id)
     {
 //        $mail = Mail::findOrFail($id);
-        $mail= DB::table('clubmails')
+        $mail = DB::table('clubmails')
             ->where('id', $id)
             ->first();
 
@@ -241,6 +240,7 @@ class ClubmailController extends Controller
         return view('clubs.sendmail', compact('mail', 'clubTrials'));
     }
 
+//     Get mailing list of users
     public function prepare(Request $request)
     {
         $userID = Auth::user()->id;
