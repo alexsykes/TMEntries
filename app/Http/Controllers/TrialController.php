@@ -942,6 +942,10 @@ EOD;
         return $productData;
     }
 
+    public function makeResultPDF($id) {
+        $results = DB::table('results');
+    }
+
 
     function filter_filename($name) {
         // remove illegal file system characters https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words

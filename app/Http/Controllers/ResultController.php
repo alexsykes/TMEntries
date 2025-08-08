@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class ResultController extends Controller
 {
-    //
-
-
     public function list()
     {
         $pastTrials = DB::table('trials')

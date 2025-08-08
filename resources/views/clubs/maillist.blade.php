@@ -17,8 +17,8 @@
                         }
                     @endphp
                     <tr class="flex-auto even:bg-white odd:bg-gray-50  border-b ">
-                        <td class="ml-2 table-cell">{{$type}}</td>
-                        <td class="ml-2 table-cell">{{$mail->category}}</td>
+                        <td class="table-cell pl-4 pt-1 pb-1">{{$type}}</td>
+                        <td class="table-cell">{{$mail->category}}</td>
                         <td class="table-cell">{{$mail->subject}}</td>
                         <td class="table-cell">{{$mail->summary}}</td>
                         <td class="table-cell"><a href="/usermail/edit/{{$mail->id}}"><i class="fa-solid fa-pencil"></i></a> </td>

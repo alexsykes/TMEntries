@@ -140,4 +140,8 @@ class ClubController extends Controller
 
         return view('clubs.maillist', ['mails' => $mails]);
     }
+
+    public function membershipForm() {
+        return view('clubs.membership');
+    }
 }

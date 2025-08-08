@@ -14,7 +14,7 @@
                 {{$maillist}}
             </div>
             <div class="font-semibold text-violet-800 text-sm mt-2">
-            Please confirm that you wish to proceed.
+            Please confirm that you wish to send the email.
         </div>
         </div>
     </div>

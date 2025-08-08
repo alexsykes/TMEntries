@@ -207,7 +207,9 @@ Route::patch('/results/update', [ResultController::class, 'update']);
 
 // CLUB Routes
 Route::get('/clubs/list', [ClubController::class, 'list']);
-Route::get('/club/mails', [ClubController::class, 'mailList']); // Lists mails
+Route::get('/clubs/membershipForm', [ClubController::class, 'membershipForm']);
+Route::post('/clubs/membership', [ClubController::class, 'membership']);
+Route::get('/club/mails', [ClubController::class, 'mailList'])->middleware('auth', 'verified'); // Lists mails
 Route::get('/clublist', [ClubController::class, 'clublist']);
 Route::get('/club/detail/{id}', [ClubController::class, 'detail']);
 Route::get('/club/profile', [ClubController::class, 'profile'])->middleware(['auth', 'verified']);

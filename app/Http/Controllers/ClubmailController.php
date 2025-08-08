@@ -261,6 +261,7 @@ class ClubmailController extends Controller
                 break;
             case "Trial Entrants":
                 $trialID = $request->trial_id;
+//              Get email addresses from Stripe payments
                 $pastEntrants = DB::table('entries')
                     ->where('trial_id', $trialID)
                     ->whereNotNull('email')
@@ -268,16 +269,18 @@ class ClubmailController extends Controller
                     ->distinct()
                     ->get();
 
-//              Get email addresses from user table
+//              Add email addresses to distribution list
                 foreach ($pastEntrants as $pastEntrant) {
                     array_push($distributionList, $pastEntrant->email);
                 }
 
+//              Also get entrant (logged-in user) email address
                 $pastUsers = DB::table('entries')
                     ->select('users.email')
                     ->distinct()
                     ->join('users', 'entries.created_by', '=', 'users.id')
                     ->where('trial_id', $trialID)
+                    ->where('users.receive_emails', true)
                     ->get();
 
                 foreach ($pastUsers as $pastUser) {
@@ -316,6 +319,7 @@ class ClubmailController extends Controller
                     ->distinct()
                     ->join('users', 'entries.created_by', '=', 'users.id')
                     ->whereIn('trial_id', $clubTrialIDs)
+                    ->where('users.receive_emails', true)
                     ->get();
 
                 foreach ($pastUsers as $pastUser) {
@@ -323,7 +327,11 @@ class ClubmailController extends Controller
                 }
                 break;
             case "All Users":
-                $allUsers = DB::table('users')->select('email')->distinct()->get();
+                $allUsers = DB::table('users')
+                    ->select('email')
+                    ->distinct()
+                    ->where('users.receive_emails', true)
+                    ->get();
                 foreach ($allUsers as $user) {
                     array_push($distributionList, $user->email);
                 }
