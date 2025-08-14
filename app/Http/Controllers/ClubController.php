@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Club;
+use App\Models\ClubMember;
 use App\Models\Mail;
 use App\Models\Series;
 use Illuminate\Http\Request;
@@ -141,7 +142,37 @@ class ClubController extends Controller
         return view('clubs.maillist', ['mails' => $mails]);
     }
 
-    public function membershipForm() {
-        return view('clubs.membership');
+    public function membershipForm($id) {
+        return view('clubs.membership', ['club_id' => $id]);
+    }
+
+    public function addMember(Request $request) {
+//        dd($request->all());
+        $attributes = $request->validate([
+            'firstname' => ['required', 'min:2', 'max:255'],
+            'lastname' => ['required', 'min:2', 'max:255'],
+            'club_id' => 'required',
+            'email' => ['required','email'],
+            'phone' => 'required',
+            'address' => 'required',
+            'postcode' => 'required',
+            'emergency_contact' => 'required',
+            'emergency_number' => 'required',
+            'social' => 'required',
+            'membership_type' => 'required',
+            'accept' => 'required',
+        ]);
+
+        $attributes['social'] = implode(request('social'));
+        $member =  ClubMember::create($attributes);
+
+        $product = DB::table('products')
+            ->where('club_id', $request->club_id)
+            ->where('product_category' , 'membership')
+            ->first();
+
+        dd($product, $member);
+
+        return redirect('/clubs/checkout', ['member' => $member, 'product' => $product]);
     }
 }

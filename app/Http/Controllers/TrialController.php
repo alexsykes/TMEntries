@@ -593,6 +593,7 @@ class TrialController extends Controller
                 'category' => 'entry fee',
                 'trialid' => $trial->id,
                 'club' => $trial->club,
+                'club_id' => $trial->club_id,
                 'trialname' => $trial->name,
                 'amount' => $youthEntryFee,
                 'isYouth' => true,
@@ -610,6 +611,7 @@ class TrialController extends Controller
                 'category' => 'entry fee',
                 'trialid' => $trial->id,
                 'club' => $trial->club,
+                'club_id' => $trial->club_id,
                 'trialname' => $trial->name,
                 'amount' => $adultEntryFee,
                 'isYouth' => false,
@@ -742,6 +744,7 @@ class TrialController extends Controller
 
         $user = Auth::user();
         $userid = $user->id;
+        $club_id = $user->club_id;
         $attrs['created_by'] = $userid;
 
         $attrs['status'] = request('status', "Open");
@@ -788,6 +791,7 @@ class TrialController extends Controller
         $attrs['authority'] = request('authority');
         $attrs['entrySelectionBasis'] = request('entrySelectionBasis');
         $attrs['scoringMode'] = request('scoringMode');
+        $attrs['club_id'] = $club_id;
 
 //        dd($attrs);
         $trial = Trial::create($attrs);
@@ -914,9 +918,9 @@ EOD;
         }
 
         PDF::Close();
-        PDF::Output(public_path($filename), 'F');
+        PDF::Output(public_path('pdf/'.$filename), 'F');
         PDF::reset();
-        return response()->download($filename);
+        return response()->download('pdf/'.$filename);
 
 //        return view('trials.programme', ['trial' => $trial]);
     }
@@ -940,10 +944,6 @@ EOD;
             array_push($productData, $productPurchases);
         }
         return $productData;
-    }
-
-    public function makeResultPDF($id) {
-        $results = DB::table('results');
     }
 
 

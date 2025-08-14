@@ -622,7 +622,7 @@ class EntryController extends Controller
         }
 
 //        dump($startList);
-        $filename = "pdf/Sign-on $trialDetails->name.pdf";
+        $filename = "Sign-on $trialDetails->name.pdf";
 
         MYPDF::SetCreator('TM UK');
 

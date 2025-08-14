@@ -205,10 +205,12 @@ Route::get('/results/display/{id}', [ResultController::class, 'display'])->name(
 Route::get('/result/edit/{id}', [ResultController::class, 'edit']);
 Route::patch('/results/update', [ResultController::class, 'update']);
 
+Route::get('/results/getResultsPDF/{id}', [ResultController::class, 'getResultsPDF']);
+
 // CLUB Routes
 Route::get('/clubs/list', [ClubController::class, 'list']);
-Route::get('/clubs/membershipForm', [ClubController::class, 'membershipForm']);
-Route::post('/clubs/membership', [ClubController::class, 'membership']);
+Route::get('/clubs/membershipForm/{id}', [ClubController::class, 'membershipForm']);
+Route::post('/club/member/add', [ClubController::class, 'addMember']);
 Route::get('/club/mails', [ClubController::class, 'mailList'])->middleware('auth', 'verified'); // Lists mails
 Route::get('/clublist', [ClubController::class, 'clublist']);
 Route::get('/club/detail/{id}', [ClubController::class, 'detail']);

@@ -65,6 +65,7 @@ function onProductCreated($productObject)
         $product_category = $metadata['category'];
     }
 
+    $club_id = $metadata['club_id'];
     $trialid = 0;
     if(isset($metadata['trialid'])) {
         $trialid = $metadata['trialid'];
@@ -81,11 +82,13 @@ function onProductCreated($productObject)
         'product_category' => $product_category,
         'trial_id' => $trialid,
         'isYouth' => $youth,
+        'club_id' => $club_id,
         'purchases' => 0,
         'version' => 1,
     ]);
-    info("Product created" . $product->product_name);
 
+    info("Product created" . $product->product_name);
+//    echo "ClubID: $product->club_id";
     $email = 'monster@trialmonster.uk';
     Mail::to($email)->send(new ProductCreated($product));
 }

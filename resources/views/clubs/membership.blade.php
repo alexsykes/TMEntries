@@ -1,11 +1,12 @@
 <x-main>
     <x-slot:heading>Club membership</x-slot:heading>
     @php
-        $membershipTypeArray = array('Renewal', 'New member');
+        $membershipTypeArray = array('Renewal', 'New');
         $socialArray = array('No','FaceBook', 'WhatsApp', 'Other');
     @endphp
-    <form action="/club/membership" method="POST">
+    <form action="/club/member/add" method="POST">
         @csrf
+        <input type="hidden" name="club_id" value="{{$club_id}}" id="club_id">
         <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Please complete the
                 following details
@@ -131,12 +132,14 @@
                     <x-form-field>
                         <x-form-label for="membership_type">Type of Membership</x-form-label>
                         <div class="mt-2">
-                            @foreach($membership_typeArray as $option)
-                                <input name="membership_type" type="radio" id="membership_type" value="{{$option}}"
-                                       {{ (old('membership_type') == $option) ? ' checked' : '' }}
-                                       required>
-                                <label class="pl-1 pr-4" for="membership_type">{{$option}}</label>
-                            @endforeach
+                            <input name="membership_type" type="radio" id="membership_type" value="new"
+                                   {{ (old('membership_type') == 'new') ? ' checked' : '' }}
+                                   required>
+                            <label class="pl-1 pr-4" for="membership_type">New membership</label>
+                            <input name="membership_type" type="radio" id="membership_type" value="renewal"
+                                   {{ (old('membership_type') == 'renewal') ? ' checked' : '' }}
+                                   required>
+                            <label class="pl-1 pr-4" for="membership_type">Renewal</label>
 
                         </div>
                         @error('membership_type')

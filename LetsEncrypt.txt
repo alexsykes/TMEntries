@@ -1,0 +1,111 @@
+Last login: Sun Jul 27 15:12:09 2025 from 52.94.39.67
+cd /opt/bitnami/projects/trialmonster/
+bitnami@ip-172-26-0-172:~$ cd /opt/bitnami/projects/trialmonster/
+bitnami@ip-172-26-0-172:/opt/bitnami/projects/trialmonster$ sudo apt-get install software-properties-common
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+software-properties-common is already the newest version (0.99.30-4.1~deb12u1).
+0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+bitnami@ip-172-26-0-172:/opt/bitnami/projects/trialmonster$ sudo apt-add-repository ppa:certbot/certbot -y
+Traceback (most recent call last):
+  File "/usr/bin/apt-add-repository", line 362, in <module>
+    sys.exit(0 if addaptrepo.main() else 1)
+                  ^^^^^^^^^^^^^^^^^
+  File "/usr/bin/apt-add-repository", line 345, in main
+    shortcut = handler(source, **shortcut_params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/softwareproperties/shortcuts.py", line 40, in shortcut_handler
+    return handler(shortcut, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/softwareproperties/ppa.py", line 86, in __init__
+    if self.lpppa.publish_debug_symbols:
+       ^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/softwareproperties/ppa.py", line 126, in lpppa
+    self._lpppa = self.lpteam.getPPAByName(name=self.ppaname)
+                  ^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/softwareproperties/ppa.py", line 113, in lpteam
+    self._lpteam = self.lp.people(self.teamname)
+                   ^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'people'
+bitnami@ip-172-26-0-172:/opt/bitnami/projects/trialmonster$ sudo apt-get update -y
+Hit:1 http://deb.debian.org/debian bookworm InRelease
+Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Get:3 http://security.debian.org bookworm-security InRelease [48.0 kB]
+Get:4 file:/etc/apt/mirrors/debian.list Mirrorlist [38 B]
+Get:6 file:/etc/apt/mirrors/debian-security.list Mirrorlist [47 B]
+Hit:5 https://cdn-aws.deb.debian.org/debian bookworm InRelease
+Get:7 https://cdn-aws.deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Get:8 https://cdn-aws.deb.debian.org/debian bookworm-backports InRelease [59.4 kB]
+Get:9 https://cdn-aws.deb.debian.org/debian-security bookworm-security InRelease [48.0 kB]
+Get:10 http://security.debian.org bookworm-security/main Sources [142 kB]
+Get:11 http://security.debian.org bookworm-security/main amd64 Packages [272 kB]
+Hit:12 https://packages.broadcom.com/artifactory/saltproject-deb stable InRelease
+Get:13 https://cdn-aws.deb.debian.org/debian bookworm-backports/main Sources.diff/Index [63.3 kB]
+Get:14 https://cdn-aws.deb.debian.org/debian bookworm-backports/main amd64 Packages.diff/Index [63.3 kB]
+Get:15 https://cdn-aws.deb.debian.org/debian bookworm-backports/main Translation-en.diff/Index [63.3 kB]
+Get:18 https://cdn-aws.deb.debian.org/debian bookworm-backports/main Sources T-2025-07-27-1404.52-F-2025-07-27-0204.35.pdiff [664 B]
+Get:18 https://cdn-aws.deb.debian.org/debian bookworm-backports/main Sources T-2025-07-27-1404.52-F-2025-07-27-0204.35.pdiff [664 B]
+Get:19 https://cdn-aws.deb.debian.org/debian bookworm-backports/main amd64 Packages T-2025-07-27-1404.52-F-2025-07-27-0204.35.pdiff [481 B]
+Get:19 https://cdn-aws.deb.debian.org/debian bookworm-backports/main amd64 Packages T-2025-07-27-1404.52-F-2025-07-27-0204.35.pdiff [481 B]
+Get:20 https://cdn-aws.deb.debian.org/debian bookworm-backports/main Translation-en T-2025-07-27-1404.52-F-2025-07-27-0805.12.pdiff [1,632 B]
+Get:20 https://cdn-aws.deb.debian.org/debian bookworm-backports/main Translation-en T-2025-07-27-1404.52-F-2025-07-27-0805.12.pdiff [1,632 B]
+Get:16 https://cdn-aws.deb.debian.org/debian-security bookworm-security/main Sources [142 kB]
+Get:17 https://cdn-aws.deb.debian.org/debian-security bookworm-security/main amd64 Packages [272 kB]
+Fetched 1,287 kB in 1s (1,111 kB/s)
+Reading package lists... Done
+bitnami@ip-172-26-0-172:/opt/bitnami/projects/trialmonster$ sudo apt-get install certbot -y
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+certbot is already the newest version (2.1.0-4).
+0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+bitnami@ip-172-26-0-172:/opt/bitnami/projects/trialmonster$ DOMAIN1=trialmonster.uk
+DOMAIN2=slopefinder.uk
+DOMAIN3=slopefinder.net
+WILDCARD1=*.$DOMAIN1
+WILDCARD2=*.$DOMAIN2
+WILDCARD3=*.$DOMAIN3
+bitnami@ip-172-26-0-172:/opt/bitnami/projects/trialmonster$ echo $DOMAIN1 && echo $WILDCARD1 && echo $DOMAIN2 && echo $WILDCARD2 && echo $DOMAIN3 && echo $WILDCARD3
+trialmonster.uk
+*.trialmonster.uk
+slopefinder.uk
+*.slopefinder.uk
+slopefinder.net
+*.slopefinder.net
+bitnami@ip-172-26-0-172:/opt/bitnami/projects/trialmonster$ sudo certbot -d $DOMAIN1 -d $WILDCARD1 -d $DOMAIN2 -d $WILDCARD2 -d $DOMAIN3 -d $WILDCARD3  --manual --preferred-challenges dns certonly
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Certificate not yet due for renewal
+
+You have an existing certificate that has exactly the same domains or certificate name you requested and isn't close to expiry.
+(ref: /etc/letsencrypt/renewal/slopefinder.net-0001.conf)
+
+What would you like to do?
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: Keep the existing certificate for now
+2: Renew & replace the certificate (may be subject to CA rate limits)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
+Renewing an existing certificate for trialmonster.uk and 5 more domains
+
+Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/slopefinder.net-0001/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/slopefinder.net-0001/privkey.pem
+This certificate expires on 2025-10-25.
+These files will be updated when the certificate renews.
+
+NEXT STEPS:
+- This certificate will not be renewed automatically. Autorenewal of --manual certificates requires the use of an authentication hook script (--manual-auth-hook) but one was not provided. To renew this certificate, repeat this same certbot command before the certificate's expiry date.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you like Certbot, please consider supporting our work by:
+ * Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+ * Donating to EFF:                    https://eff.org/donate-le
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+DOMAIN=slopefinder.net
+echo $DOMAIN
+
+sudo certbot certonly --manual --preferred-challenge dns -d slopefinder.net -d *.oldgit.uk -d *.slopefinder.net -d *.slopefinder.uk -d *.trialmonster.net -d *.trialmonster.uk -d oldgit.uk -d slopefinder.net -d slopefinder.uk -d trialmonster.net -d trialmonster.uk  --force-renewal
