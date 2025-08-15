@@ -6,6 +6,7 @@ use App\Models\Trial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\ResultController;
 
 class ScoringController extends Controller
 {
@@ -246,6 +247,8 @@ class ScoringController extends Controller
                     'resultStatus' => $resultStatus
                 ]);
         }
+        $utilityController = new UtilityController();
+        $utilityController->getResultsPDF($trialID);
 
         $this->lockTrial($trialID);
         $this->updateTrial($trialID);

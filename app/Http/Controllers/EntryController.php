@@ -599,10 +599,10 @@ class EntryController extends Controller
 
     public function printSignOnSheets($id)
     {
-//        $id = 119;
+//      Generate QR codes, save in images/qr
         $this->generate($id);
 
-
+//      Get entry list
         $trialDetails = DB::table('trials')->where('id', $id)->first();
         $venueID = $trialDetails->venueID;
         $venue = DB::table('venues')->where('id', $venueID)->first();
@@ -621,7 +621,6 @@ class EntryController extends Controller
             exit("No entries to print");
         }
 
-//        dump($startList);
         $filename = "Sign-on $trialDetails->name.pdf";
 
         MYPDF::SetCreator('TM UK');
@@ -642,7 +641,8 @@ class EntryController extends Controller
 
 
         $authority = $trialDetails->authority;
-//        info("Authority: $authority");
+
+//        Add template imageand setup variables
         switch ($authority) {
             case 'AMCA':
                 $img_file = storage_path('app/public/images/amca.jpg');
@@ -658,6 +658,11 @@ class EntryController extends Controller
                 $numberWidth = 3;
                 $nameWidth = 46;
                 $linesPerPage = 22;
+                PDF::setLeftMargin(26);
+                PDF::setY(75);
+                PDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                PDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                PDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                 break;
             case 'ACU' :
                 $img_file = storage_path('app/public/images/ACU_2025.png');
@@ -674,6 +679,18 @@ class EntryController extends Controller
                 $numberWidth = 3;
                 $nameWidth = 33;
                 $linesPerPage = 19;
+                PDF::setLeftMargin(21);
+                PDF::setY(38);
+                PDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
+                PDF::setY(46);
+                PDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
+                PDF::setY(54);
+                PDF::setLeftMargin(29);
+                PDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                PDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                PDF::setY(62);
+                PDF::setLeftMargin(29);
+                PDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                 break;
 
             default:
@@ -691,34 +708,8 @@ class EntryController extends Controller
                 $linesPerPage = 20;
                 break;
         }
+//        Add background image
         PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
-
-        // set the starting point for the page content
-        //        Add trial details
-        switch ($trialDetails->authority) {
-            case 'ACU':
-                PDF::setLeftMargin(21);
-                PDF::setY(38);
-                PDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::setY(46);
-                PDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::setY(54);
-                PDF::setLeftMargin(29);
-                PDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::setY(62);
-                PDF::setLeftMargin(29);
-                PDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                break;
-
-            case 'AMCA':
-                PDF::setLeftMargin(26);
-                PDF::setY(75);
-                PDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                break;
-        }
 
         PDF::SetPageMark();
         PDF::SetFontSize(10, true);
@@ -727,8 +718,6 @@ class EntryController extends Controller
 
 //        PDF::Write(0, "What's next?");
         $index = 0;
-// Remove the following line
-//        $startList = array();
 
         $lineNumber = 1;
         if (sizeof($startList) > 0) {
@@ -870,9 +859,9 @@ class EntryController extends Controller
 //        dd(public_path($filename));
         $filename = $this->filter_filename($filename);
         PDF::Close();
-        PDF::Output(public_path($filename), 'F');
+        PDF::Output(public_path('pdf/signon/'.$filename), 'F');
         PDF::reset();
-        return response()->download($filename);
+        return response()->download('pdf/signon/'.$filename);
     }
 
     function filter_filename($name) {
@@ -1042,7 +1031,6 @@ class EntryController extends Controller
     }
 
     public function generate($id) {
-//        dd($id);
         $liveSite = config('app.url');
         $data = "$liveSite/otd/$id";
         $data2 = "$liveSite/trial/programme/$id";
