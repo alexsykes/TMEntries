@@ -334,9 +334,6 @@ class TrialController extends Controller
 
                 $trial = Trial::create($attrs);
                 return redirect("trials/addTrialDetail/{$trial->id}");
-
-//
-
             case 'trialData':
                 $id = request('trialID');
                 $attrs = request()->validate([
@@ -746,6 +743,7 @@ class TrialController extends Controller
         $userid = $user->id;
         $club_id = $user->club_id;
         $attrs['created_by'] = $userid;
+        $attrs['name'] = trim($attrs['name']);
 
         $attrs['status'] = request('status', "Open");
         $attrs['centre'] = request('centre');
@@ -869,6 +867,10 @@ class TrialController extends Controller
         MYPDF::SetPrintHeader(true);
         MYPDF::AddPage();
 
+        MYPDF::setFooterCallback(function () {
+
+        });
+
 // set some text to print
         $txt = <<<EOD
 Entry list - $trial->name
@@ -985,11 +987,11 @@ class MYPDF extends PDF
     public function Footer()
     {
         // Position at 15 mm from bottom
-        $this->SetY(-15);
-        // Set font
-        $this->SetFont('helvetica', 'I', 8);
-        // Page number
-        $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+//        $this->SetY(-15);
+//        // Set font
+//        $this->SetFont('helvetica', 'I', 8);
+//        // Page number
+//        $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
     }
 
 

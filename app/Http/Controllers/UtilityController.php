@@ -16,7 +16,7 @@ class UtilityController extends Controller
             ->get(['trials.*', 'venues.name as venue']);
         return $trialDetails;
     }
-    public function getResultsPDF($id)
+    public function saveResultsPDF($id)
     {
         $resultController = new ResultController();
         $data = $resultController->getResultList($id);
@@ -56,8 +56,8 @@ class UtilityController extends Controller
         $courses = explode(',', $courselist);
         $classes = explode(',', $classlist);
 
-
-        $filename = "$trial->name.pdf";
+    $trialName = trim($trial->name);
+        $filename = "$trialName.pdf";
         $filename = $this->filter_filename($filename);
 
 //        PDF setup
@@ -93,8 +93,8 @@ EOD;
         });
 
         MYPDF::setFooterCallback(function () {
-            MYPDF::Cell(0,0, 'x - indicates a missed section with a 5 mark penalty. o - indicates an omitted section with no penalty', 0, true, 'C');
-            MYPDF::Cell(0, 0, 'Provisional Results printed '. now(), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            MYPDF::Cell(0,0, 'x indicates a missed section :: o indicates an omitted section which is not included in the scoring', 0, true, 'C');
+            MYPDF::Cell(0, 0, 'Provisional Results updated '. now(), 0, false, 'L', 0, '', 0, false, 'T', 'M');
             MYPDF::Cell(0, 0, 'Page ' . MYPDF::getAliasNumPage() . ' of ' . MYPDF::getAliasNbPages(), 0, true, 'R', 0, '', 0, false, 'T', 'M');
         });
 
@@ -196,7 +196,6 @@ EOD;
     }
     function filter_filename($name)
     {
-        // remove illegal file system characters https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
         $name = str_replace(array_merge(
             array_map('chr', range(0, 31)),
             array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
@@ -205,6 +204,27 @@ EOD;
         $ext = pathinfo($name, PATHINFO_EXTENSION);
         $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
         return $name;
+    }
+
+    function nameize($str, $a_char = array("'", "-", " "))
+    {
+        //$str contains the complete raw name string
+        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
+        $string = strtolower($str);
+        foreach ($a_char as $temp) {
+            $pos = strpos($string, $temp);
+            if ($pos) {
+                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
+                $mend = '';
+                $a_split = explode($temp, $string);
+                foreach ($a_split as $temp2) {
+                    //capitalize each portion of the string which was separated at a special character
+                    $mend .= ucfirst($temp2) . $temp;
+                }
+                $string = substr($mend, 0, -1);
+            }
+        }
+        return ucfirst($string);
     }
 }
 

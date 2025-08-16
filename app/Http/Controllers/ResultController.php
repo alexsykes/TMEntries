@@ -57,6 +57,11 @@ class ResultController extends Controller
         $classes = $trial->classlist;
         $customClasses = $trial->customClasses;
 
+        $utilityController = new UtilityController();
+        $trialName = trim($trial->name);
+        $filename = "$trialName.pdf";
+        $filename = $utilityController->filter_filename($filename);
+
 
 //    dump($courses, $customCourses, $classes, $customCourses);
         if ($courses != '') {
@@ -110,7 +115,7 @@ class ResultController extends Controller
             ->get('name');
 
 
-        return view('results.detail', ['trial' => $trial, 'courseResults' => $courseResults, 'courses' => $courses, 'nonStarters' => $nonStarters, 'resultsByClass' => $resultsByClass]);
+        return view('results.detail', ['trial' => $trial, 'courseResults' => $courseResults, 'courses' => $courses, 'nonStarters' => $nonStarters, 'resultsByClass' => $resultsByClass, 'filename' => $filename]);
     }
 
     private function getYCResultsByClass($id, $courselist, $classlist)
@@ -199,7 +204,6 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
             $score = str_pad($sectionScore, $numLaps, 'x');
             $scoreString .= $score;
         }
-//        dump($scoreString);
 
         $scores = str_split($scoreString, 1);
         $sequentialScores = "";
@@ -209,7 +213,6 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
                 $sequentialScores .= $scores[$offset];
             }
         }
-
 
         $entry->sequentialScores = $sequentialScores;
         $entry->sectionScores = $scoreString;
@@ -242,6 +245,8 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
 
         $trial->updated_at = now();
         $trial->save();
+
+        $this->getResultsPDF($trialID);
 
         return redirect("/results/display/$trialID");
     }
@@ -337,7 +342,8 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
 
     public function getResultsPDF($id){
         $utilityController = new UtilityController();
-        $utilityController->getResultsPDF($id);
+       $result = $utilityController->saveResultsPDF($id);
+      echo $result;
     }
 
 

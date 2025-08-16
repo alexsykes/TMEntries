@@ -1,6 +1,7 @@
 <x-main>
     <x-slot:heading>{{$trial->name}}</x-slot:heading>
     @php
+$download_link = asset('pdf/results/'.$filename);
         $owner = (Auth::id());
             $canEdit = false;
         if(($owner == $trial->created_by)  && ($trial->isResultPublished)) {
@@ -290,6 +291,7 @@
 
 
     <div class="text-black  pt-0 text-sm">
+        <div id="pdfDownload"><a href="{{$download_link}}">Click here for download</a></div>
         <div>{{$trial->club}}</div>
         <div>{{$trial->venue}}</div>
         <div>Permit: {{$trial->permit}}</div>

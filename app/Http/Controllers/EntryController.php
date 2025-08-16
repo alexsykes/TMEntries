@@ -142,7 +142,10 @@ class EntryController extends Controller
             ->value('stripe_price_id');
 
 //        dd($trial_id, $adultProductID, $adultPriceID, $youthProductID, $youthPriceID);
-        $entry->name = $this->nameize($request->name);
+        $utilityController = new UtilityController();
+
+
+        $entry->name = $utilityController->nameize($request->name);
         $entry->class = $request->class;
         $entry->course = $request->course;
         $entry->licence = $request->licence;
@@ -174,26 +177,26 @@ class EntryController extends Controller
         return redirect("/entries/register/{$trial_id}");
     }
 
-    function nameize($str, $a_char = array("'", "-", " "))
-    {
-        //$str contains the complete raw name string
-        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
-        $string = strtolower($str);
-        foreach ($a_char as $temp) {
-            $pos = strpos($string, $temp);
-            if ($pos) {
-                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
-                $mend = '';
-                $a_split = explode($temp, $string);
-                foreach ($a_split as $temp2) {
-                    //capitalize each portion of the string which was separated at a special character
-                    $mend .= ucfirst($temp2) . $temp;
-                }
-                $string = substr($mend, 0, -1);
-            }
-        }
-        return ucfirst($string);
-    }
+//    function nameize($str, $a_char = array("'", "-", " "))
+//    {
+//        //$str contains the complete raw name string
+//        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
+//        $string = strtolower($str);
+//        foreach ($a_char as $temp) {
+//            $pos = strpos($string, $temp);
+//            if ($pos) {
+//                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
+//                $mend = '';
+//                $a_split = explode($temp, $string);
+//                foreach ($a_split as $temp2) {
+//                    //capitalize each portion of the string which was separated at a special character
+//                    $mend .= ucfirst($temp2) . $temp;
+//                }
+//                $string = substr($mend, 0, -1);
+//            }
+//        }
+//        return ucfirst($string);
+//    }
 
     public function adminEntryUpdate(Request $request)
     {
@@ -460,7 +463,8 @@ class EntryController extends Controller
             'dob' => 'required',
         ]);
 
-        $attributes['name'] = $this->nameize($request->name);
+        $utilityController = new UtilityController();
+        $attributes['name'] = $utilityController->nameize($request->name);
         $attributes['IPaddress'] = $IPaddress;
         $attributes['size'] = $request->size;
         $attributes['licence'] = $request->licence;
@@ -892,6 +896,9 @@ class EntryController extends Controller
         $birthDates = $request->input('dob');
         $statuss = $request->input('status');
 
+
+        $utilityController = new UtilityController();
+
         for ($i = 0; $i < sizeof($names); $i++) {
             if (isset($names[$i]) && $names[$i] != "") {
 
@@ -902,7 +909,7 @@ class EntryController extends Controller
                     }
 
                 DB::table('entries')->insert([
-                    'name' => $this->nameize($names[$i]),
+                    'name' => $utilityController->nameize($names[$i]),
                     'ridingNumber' => $ridingNumbers[$i],
                     'make' => $makes[$i],
                     'size' => $sizes[$i],
@@ -947,7 +954,9 @@ class EntryController extends Controller
             'dob' => 'required',
         ]);
 
-        $attributes['name'] = $this->nameize($request->name);
+        $utilityController = new UtilityController();
+
+        $attributes['name'] = $utilityController->nameize($request->name);
         $attributes['IPaddress'] = $IPaddress;
         $attributes['size'] = $request->size;
         $attributes['licence'] = $request->licence;

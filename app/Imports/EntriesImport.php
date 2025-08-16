@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Http\Controllers\UtilityController;
 use App\Models\Entry;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -31,7 +32,9 @@ class EntriesImport implements ToModel, WithHeadingRow
             $UNIX_DATE = ($xlDate - 25569) * 86400;
             $dob = (gmdate("Y-m-d", $UNIX_DATE));
             $rawName = $row['first_name'] . ' ' . $row['surname'];
-            $name = $this->nameize($rawName);
+
+            $utilityController= new UtilityController();
+            $name = $utilityController->nameize($rawName);
 
             return new Entry([
                 'trial_id' => 146,
@@ -49,26 +52,5 @@ class EntriesImport implements ToModel, WithHeadingRow
                 'licence' => $licence,
             ]);
         }
-
-    function nameize($str, $a_char = array("'", "-", " "))
-    {
-        //$str contains the complete raw name string
-        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
-        $string = strtolower($str);
-        foreach ($a_char as $temp) {
-            $pos = strpos($string, $temp);
-            if ($pos) {
-                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
-                $mend = '';
-                $a_split = explode($temp, $string);
-                foreach ($a_split as $temp2) {
-                    //capitalize each portion of the string which was separated at a special character
-                    $mend .= ucfirst($temp2) . $temp;
-                }
-                $string = substr($mend, 0, -1);
-            }
-        }
-        return ucfirst($string);
-    }
 //    }
 }
