@@ -5,13 +5,16 @@
 
 
         <div class="text-sm bg-white p-2  border-solid border border-gray-300 m-4"><span class="font-bold">From: </span>monster@trialmonster.uk</div>
+        <div class="text-sm bg-white p-2  border-solid border border-gray-300 m-4"><span class="font-bold">Attachment: </span>{{$mail->originalName}}</div>
             <div class="text-sm bg-white p-2  border-solid border border-gray-300 m-4"><span class="font-bold">Subject: </span>{{$mail->subject}}</div>
             <div class="text-sm bg-white p-2  border-solid border border-gray-300 m-4">@php
             echo $mail->bodyText;
             @endphp</div>
     </div>
-    <div id="buttons" class="py-2">
+    <div id="buttons" class="py-2 mt-2">
         <a href="/club/mails"
            class=" rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-700 shadow-sm hover:bg-violet-700 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-700">Cancel</a>
+        <a href="/usermail/sendMail/{{$mail->id}}"
+           class=" ml-2 rounded-md bg-violet-700 px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-violet-700 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-700">Send</a>
     </div>
 </x-club>

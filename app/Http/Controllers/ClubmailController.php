@@ -54,7 +54,7 @@ class ClubmailController extends Controller
         $attributes['created_by'] = Auth::user()->id;
 
 
-        $mail = Clubmail::create($attributes);
+//        $mail = Clubmail::create($attributes);
 
         return redirect('/admin/mails');
     }
@@ -84,8 +84,15 @@ class ClubmailController extends Controller
     {
         $user = Auth::user();
         $clubID = $user->club_id;
+//        File handler
 
-//        dd($request->all());
+        $attachment = $request->file('attachment');
+        $fileName = time() . '.' . $attachment->extension();
+        $attachment->move(public_path('attachments'), $fileName);
+
+        $originalName = $attachment->getClientOriginalName();
+        $mimeType = $attachment->getClientMimeType();
+
         $attributes = $request->validate([
             'category' => 'required',
             'subject' => ['required', 'min:5', 'max:63'],
@@ -93,6 +100,9 @@ class ClubmailController extends Controller
             'summary' => ['required', 'min:5', 'max:255'],
         ]);
 
+        $attributes['originalName'] = $originalName;
+        $attributes['mimeType'] = $mimeType;
+        $attributes['fileName'] = $fileName;
         $attributes['trial_id'] = $request->trial_id;
         $attributes['isLibrary'] = false;
         $attributes['club_id'] = $clubID;
@@ -100,16 +110,14 @@ class ClubmailController extends Controller
         $attributes['created_at'] = date("Y-m-d H:i:s");
         $attributes['updated_at'] = date("Y-m-d H:i:s");
 
-//        $mail = Mail::create($attributes);
-        $mail = DB::table('clubmails')->insert(
-            $attributes
-        );
+        $mail = Clubmail::create($attributes);
         return redirect('/club/mails/');
     }
 
     public function updateUserEmail(Request $request)
     {
         $action = $request->input('action');
+
 
 //        dd($request->all());
         $attributes = $request->validate([
@@ -121,18 +129,53 @@ class ClubmailController extends Controller
         ]);
 
         if ($action == 'update') {
-            $mail = DB::table('clubmails')->where('id', $request->trial_id)
-                ->update(['updated_at' => now(),
-                    'category' => $request->category,
-                    'subject' => $request->subject,
-                    'bodyText' => $request->bodyText,
-                    'summary' => $request->summary,
-                ]);
+            if ($request->attachment) {
+                $attachment = $request->file('attachment');
+                $fileName = time() . '.' . $attachment->extension();
+                $attachment->move(public_path('attachments'), $fileName);
+
+                $originalName = $attachment->getClientOriginalName();
+                $mimeType = $attachment->getClientMimeType();
+
+                $attributes['originalName'] = $originalName;
+                $attributes['mimeType'] = $mimeType;
+                $attributes['fileName'] = $fileName;
+
+                $mail = DB::table('clubmails')->where('id', $request->trial_id)
+                    ->update(['updated_at' => now(),
+                        'category' => $request->category,
+                        'subject' => $request->subject,
+                        'bodyText' => $request->bodyText,
+                        'summary' => $request->summary,
+                        'originalName' => $originalName,
+                        'mimeType' => $mimeType,
+                        'fileName' => $fileName,
+                    ]);
+            }
+            else {
+                $mail = DB::table('clubmails')->where('id', $request->trial_id)
+                    ->update(['updated_at' => now(),
+                        'category' => $request->category,
+                        'subject' => $request->subject,
+                        'bodyText' => $request->bodyText,
+                        'summary' => $request->summary,
+                    ]);
+            }
         } elseif ($action == 'saveAsNew') {
+            $attachment = $request->file('attachment');
+            $fileName = time() . '.' . $attachment->extension();
+            $attachment->move(public_path('attachments'), $fileName);
+
+            $originalName = $attachment->getClientOriginalName();
+            $mimeType = $attachment->getClientMimeType();
+
             $attributes['trial_id'] = $request->trial_id;
             $attributes['isLibrary'] = false;
             $attributes['created_by'] = Auth::user()->id;
             $attributes['club_id'] = Auth::user()->club_id;
+            $attributes['originalName'] = $originalName;
+            $attributes['mimeType'] = $mimeType;
+            $attributes['fileName'] = $fileName;
 
             $mail = Clubmail::create($attributes);
         }
@@ -177,7 +220,6 @@ class ClubmailController extends Controller
     public function previewUsermail($id)
     {
         $user = Auth::user();
-//        $mail = Mail::findOrFail($id);
         $mail = DB::table('clubmails')
             ->where('id', $id)
             ->first();
@@ -347,6 +389,10 @@ class ClubmailController extends Controller
         $attributes['club_id'] = $mail->club_id;
         $attributes['mail_id'] = $mail->id;
         $attributes['sent_by'] = $userID;
+
+        $attributes['originalName'] = $mail->originalName;
+        $attributes['mimeType'] = $mail->mimeType;
+        $attributes['fileName'] = $mail->fileName;
 
         $mailshot = Mailshot::create($attributes);
         return view('clubs.prepare', compact('mailshot'));

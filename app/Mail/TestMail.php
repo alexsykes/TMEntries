@@ -3,9 +3,9 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -43,8 +43,8 @@ class TestMail extends Mailable
     public function content(): Content
     {
         return new Content(
-        'mails.dev',
-            with:[
+            'mails.dev',
+            with: [
                 'mailshot' => $this->mailshot,
             ]
         );
@@ -53,10 +53,14 @@ class TestMail extends Mailable
     /**
      * Get the attachments for the message.
      *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * @return array<int, Attachment>
      */
     public function attachments(): array
     {
-        return [];
+        return [
+            Attachment::fromPath(public_path('attachments/'.$this->mailshot->fileName))
+                ->as($this->mailshot->originalName)
+                ->withMime($this->mailshot->mimeType),
+        ];
     }
 }

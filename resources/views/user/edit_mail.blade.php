@@ -19,7 +19,7 @@
         $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
         $addressToArray = array("Test", "Entry List", "Unconfirmed Entries", "Previous Entrants", "Other");
     @endphp
-    <form action="/usermail/update" method="POST">
+    <form action="/usermail/update" method="POST" enctype="multipart/form-data">
 {{--        @method('PATCH')--}}
         @csrf
         <input type="hidden" id="mail_id" name="trial_id" value="{{$mail->id}}">
@@ -44,6 +44,17 @@
                         @enderror
                     </x-form-field>
                 </div>
+
+                <x-form-field>
+                    <x-form-label for="attachment">Attachment <span class="font-normal text-black">{{$mail->originalName}}</span></x-form-label>
+                    <div class="mt-2 col-span-2">
+                        <input name="attachment" type="file" id="attachment" value="" />
+                        <x-form-error name="attachment"/>
+                    </div>
+                    @error('attachment')
+                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
+                </x-form-field>
 
                 <x-form-field>
                     <x-form-label for="summary">Summary - brief description of email message</x-form-label>

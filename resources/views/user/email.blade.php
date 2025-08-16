@@ -19,46 +19,11 @@
         $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
 //        $addressToArray = array("Test", "Entry List", "Unconfirmed Entries", "Previous Entrants", "Other");
     @endphp
-    <form action="/usermail/store" method="POST">
+    <form action="/usermail/store" method="POST" enctype="multipart/form-data">
         @csrf
         <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Email content</div>
             <div class="grid grid-cols-2 gap-4 px-4">
-
-
-{{--                <div id="addressToDiv" class=" col-span-3 mt-2">--}}
-{{--                    <x-form-field>--}}
-{{--                        <x-form-label for="addressTo">To</x-form-label>--}}
-{{--                        <div class="mt-2 col-span-2">--}}
-{{--                            @foreach($addressToArray as $option)--}}
-{{--                                <input name="addressTo" type="radio" id="addressTo"--}}
-{{--                                       onclick="Javascript:yesNoCheck()"--}}
-{{--                                       value="{{$option}}"--}}
-{{--                                        {{ (old('addressTo') == $option) ? ' checked' : '' }}--}}
-{{--                                >--}}
-{{--                                <label class="pl-1 pr-4" for="addressTo">{{$option}}</label>--}}
-{{--                            @endforeach--}}
-{{--                        </div>--}}
-{{--                        @error('addressTo')--}}
-{{--                        <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
-{{--                        @enderror--}}
-{{--                    </x-form-field>--}}
-{{--                </div>--}}
-
-{{--                <div id="testAddressDiv" class=" col-span-3 mt-2">--}}
-{{--                <x-form-field>--}}
-{{--                    <x-form-label for="testAddress">Test address</x-form-label>--}}
-{{--                    <div class="mt-2 col-span-2">--}}
-{{--                        <x-form-input name="testAddress" type="email" id="testAddress" value=""--}}
-{{--                                      placeholder="test@example.com" />--}}
-{{--                        <x-form-error name="testAddress"/>--}}
-{{--                    </div>--}}
-{{--                    @error('testAddress')--}}
-{{--                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
-{{--                    @enderror--}}
-{{--                </x-form-field>--}}
-{{--                </div>--}}
-
 
                 <div id="categoryDiv" class=" col-span-3 mt-2">
                     <x-form-field>
@@ -77,6 +42,17 @@
                         @enderror
                     </x-form-field>
                 </div>
+
+                <x-form-field>
+                    <x-form-label for="attachment">Attachment</x-form-label>
+                    <div class="mt-2 col-span-2">
+                        <input name="attachment" type="file" id="attachment" value="" />
+                        <x-form-error name="attachment"/>
+                    </div>
+                    @error('attachment')
+                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
+                </x-form-field>
 
                 <x-form-field>
                     <x-form-label for="summary">Summary - brief description of email message</x-form-label>
