@@ -35,11 +35,13 @@
         <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-violet-500 p-2  " onclick="openSection(event, 'Fees')">Fees</button>
     </div>
     <form action="/trials/update" method="POST">
-        <input type="hidden" value="{{$trial->id}}" id="trialid" name="trialid">
         @method('PATCH')
         @csrf
 
         <div id="Details" class="tabcontent pt-0 ">
+            <input type="hidden" value="{{$trial->id}}" name="trialid">
+            <input type="hidden" value="{{$trial->club_id}}" name="club_id">
+            <input type="hidden" value="{{$trial->series_id}}" name="series_id">
             <div class="space-y-2">
                     <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                         <div class=" grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">

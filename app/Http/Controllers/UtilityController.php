@@ -228,28 +228,3 @@ EOD;
     }
 }
 
-class MYPDF extends PDF
-{
-    //Page header
-    public function Header()
-    {
-        $bMargin = $this->getBreakMargin();
-        // get current auto-page-break mode
-        $auto_page_break = $this->AutoPageBreak;
-        // disable auto-page-break
-        $this->SetAutoPageBreak(false, 0);
-        $this->SetAutoPageBreak($auto_page_break, $bMargin);
-        // set the starting point for the page content
-        $this->setPageMark();
-    }
-//
-//    // Page footer
-//    public function Footer()
-//    {
-//        // Page number
-////        $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' of ' . $this->getAliasNbPages(), 0, false, 'L', 0, '', 0, false, 'T', 'M');
-//
-//    }
-
-
-}

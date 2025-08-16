@@ -79,7 +79,7 @@ Route::get('/trials/remove/{id}', [TrialController::class, 'remove'])->middlewar
 Route::patch('/trials/update', [TrialController::class, 'update'])->middleware(['auth', 'verified'])->name('update');
 Route::post('/trials/store', [TrialController::class, 'store'])->middleware(['auth', 'verified'])->name('store');
 Route::post('/trials/save', [TrialController::class, 'save'])->middleware(['auth', 'verified'])->name('save');
-Route::post('/trials/edit/saveasnew', [TrialController::class, 'saveasnew'])->middleware(['auth', 'verified'])->name('saveasnew');
+//Route::post('/trials/edit/saveasnew', [TrialController::class, 'saveasnew'])->middleware(['auth', 'verified'])->name('saveasnew');
 
 
 Route::get('/trials/add', [TrialController::class, 'add'])->middleware(['auth', 'verified'])->name('add');

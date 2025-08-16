@@ -627,21 +627,22 @@ class EntryController extends Controller
 
         $filename = "Sign-on $trialDetails->name.pdf";
 
+
         MYPDF::SetCreator('TM UK');
 
-        PDF::SetAuthor('TrialMonster.uk');
-        PDF::SetTitle('Sign-on sheet');
-        PDF::SetImageScale(PDF_IMAGE_SCALE_RATIO);
-        PDF::AddPage();
-        $bMargin = PDF::GetBreakMargin();
-        PDF::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-        PDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-        PDF::SetHeaderMargin(0);
-        PDF::SetFooterMargin(0);
-        PDF::SetPrintFooter(false);
-        PDF::SetAutoPageBreak(TRUE, 0);
+        MYPDF::SetAuthor('TrialMonster.uk');
+        MYPDF::SetTitle('Sign-on sheet');
+        MYPDF::SetImageScale(PDF_IMAGE_SCALE_RATIO);
+        MYPDF::AddPage();
+        $bMargin = MYPDF::GetBreakMargin();
+        MYPDF::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        MYPDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        MYPDF::SetHeaderMargin(0);
+        MYPDF::SetFooterMargin(0);
+        MYPDF::SetPrintFooter(false);
+        MYPDF::SetAutoPageBreak(TRUE, 0);
 
-        PDF::SetMargins(0, 0, 0);
+        MYPDF::SetMargins(0, 0, 0);
 
 
         $authority = $trialDetails->authority;
@@ -662,11 +663,11 @@ class EntryController extends Controller
                 $numberWidth = 3;
                 $nameWidth = 46;
                 $linesPerPage = 22;
-                PDF::setLeftMargin(26);
-                PDF::setY(75);
-                PDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                MYPDF::setLeftMargin(26);
+                MYPDF::setY(75);
+                MYPDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                MYPDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                MYPDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                 break;
             case 'ACU' :
                 $img_file = storage_path('app/public/images/ACU_2025.png');
@@ -683,18 +684,18 @@ class EntryController extends Controller
                 $numberWidth = 3;
                 $nameWidth = 33;
                 $linesPerPage = 19;
-                PDF::setLeftMargin(21);
-                PDF::setY(38);
-                PDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::setY(46);
-                PDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::setY(54);
-                PDF::setLeftMargin(29);
-                PDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                PDF::setY(62);
-                PDF::setLeftMargin(29);
-                PDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                MYPDF::setLeftMargin(21);
+                MYPDF::setY(38);
+                MYPDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
+                MYPDF::setY(46);
+                MYPDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
+                MYPDF::setY(54);
+                MYPDF::setLeftMargin(29);
+                MYPDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                MYPDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                MYPDF::setY(62);
+                MYPDF::setLeftMargin(29);
+                MYPDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                 break;
 
             default:
@@ -713,14 +714,14 @@ class EntryController extends Controller
                 break;
         }
 //        Add background image
-        PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+        MYPDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
 
-        PDF::SetPageMark();
-        PDF::SetFontSize(10, true);
-        PDF::SetTopMargin($topMargin);
-        PDF::SetAutoPageBreak(false, $bottomMargin);
+        MYPDF::SetPageMark();
+        MYPDF::SetFontSize(10, true);
+        MYPDF::SetTopMargin($topMargin);
+        MYPDF::SetAutoPageBreak(false, $bottomMargin);
 
-//        PDF::Write(0, "What's next?");
+//        MYPDF::Write(0, "What's next?");
         $index = 0;
 
         $lineNumber = 1;
@@ -750,38 +751,38 @@ class EntryController extends Controller
 
                 // Number cell
                 if ($number != 0) {
-                    PDF::setX($numberIndent);
-                    PDF::Cell($numberWidth, $rowHeight, $number, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                    MYPDF::setX($numberIndent);
+                    MYPDF::Cell($numberWidth, $rowHeight, $number, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                 }
                 // AMCA
                 if ($authority == 'AMCA') {
                     // Name cell
-                    PDF::setX($nameIndent);
-                    PDF::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+                    MYPDF::setX($nameIndent);
+                    MYPDF::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
 
                     // ID cell
                     if ($entry->isYouth != 0) {
-                        PDF::setX($parentIndent);
-                        PDF::Cell($idWidth, $rowHeight, "*", 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                        MYPDF::setX($parentIndent);
+                        MYPDF::Cell($idWidth, $rowHeight, "*", 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                     }
                     // ID cell
                     if ($id != 0) {
-                        PDF::setX($idIndent);
-                        PDF::Cell($idWidth, $rowHeight, $id, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                        MYPDF::setX($idIndent);
+                        MYPDF::Cell($idWidth, $rowHeight, $id, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                     }
                     // Class cell
-                    PDF::setX($classIndent);
-                    PDF::Cell(17, $rowHeight, $class, 0, 1, 'L', false, null, 1, 0, 'C' . 'M');
+                    MYPDF::setX($classIndent);
+                    MYPDF::Cell(17, $rowHeight, $class, 0, 1, 'L', false, null, 1, 0, 'C' . 'M');
                 } // ACU
                 else if ($authority == 'ACU') {
                     // Name cell
-                    PDF::setX($nameIndent);
-                    PDF::Cell($nameWidth, $rowHeight, $name, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
+                    MYPDF::setX($nameIndent);
+                    MYPDF::Cell($nameWidth, $rowHeight, $name, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
                     if ($entry->isYouth != 0) {
-                        PDF::setX($parentIndent);
-                        PDF::Cell($idWidth, $rowHeight, "*", 0, 0, 'R', false, null, 0, false, 'C' . 'M');
-                        PDF::setX($parentSignIndent);
-                        PDF::Cell($idWidth, $rowHeight, "*", 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                        MYPDF::setX($parentIndent);
+                        MYPDF::Cell($idWidth, $rowHeight, "*", 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                        MYPDF::setX($parentSignIndent);
+                        MYPDF::Cell($idWidth, $rowHeight, "*", 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                     }
                 }
 
@@ -789,43 +790,43 @@ class EntryController extends Controller
 
 
                 if ($lineNumber % $linesPerPage == 0) {
-                    PDF::addPage();
-                    PDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+                    MYPDF::addPage();
+                    MYPDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
                     switch ($trialDetails->authority) {
                         case 'ACU':
-                            PDF::setLeftMargin(21);
-                            PDF::setY(38);
-                            PDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
-                            PDF::setY(46);
-                            PDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
-                            PDF::setY(54);
-                            PDF::setLeftMargin(29);
-                            PDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                            PDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                            PDF::setY(62);
-                            PDF::setLeftMargin(29);
-                            PDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                            MYPDF::setLeftMargin(21);
+                            MYPDF::setY(38);
+                            MYPDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
+                            MYPDF::setY(46);
+                            MYPDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
+                            MYPDF::setY(54);
+                            MYPDF::setLeftMargin(29);
+                            MYPDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                            MYPDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                            MYPDF::setY(62);
+                            MYPDF::setLeftMargin(29);
+                            MYPDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                             break;
 
                         case 'AMCA':
-                            PDF::setLeftMargin(26);
-                            PDF::setY(75);
-                            PDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                            PDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-                            PDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                            MYPDF::setLeftMargin(26);
+                            MYPDF::setY(75);
+                            MYPDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                            MYPDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                            MYPDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                             break;
                     }
 
-                    PDF::setY($topMargin);
+                    MYPDF::setY($topMargin);
                 }
                 $lineNumber++;
 
             }
         }
 
-        PDF::addPage();
-        PDF::SetFontSize(18);
-        PDF::Text(0,10,"Registration",0,false, true,0,0,'C' );
+        MYPDF::addPage();
+        MYPDF::SetFontSize(18);
+        MYPDF::Text(0,10,"Registration",0,false, true,0,0,'C' );
 // References storage/app/public/images
         $tid = $trialDetails->id;
 
@@ -834,37 +835,37 @@ class EntryController extends Controller
 
 
         $img_file = public_path($qr1);
-        PDF::Image($img_file, 40  , 20, 130, '', '', '', '', false, 300, '', false, false, 0);
+        MYPDF::Image($img_file, 40  , 20, 130, '', '', '', '', false, 300, '', false, false, 0);
 
-        PDF::Text(30, 170, '1 - Scan QR code on your phone', );
-        PDF::Text(30, 180, '2 - Complete details, click Register', );
-        PDF::Text(30, 190, '3 - Join queue. Correct entry fee(s), please', );
-        PDF::Text(30, 200, '4 - Complete Sign-on sheet', );
-        PDF::Text(30, 210, '5 - Enjoy your ride', );
+        MYPDF::Text(30, 170, '1 - Scan QR code on your phone', );
+        MYPDF::Text(30, 180, '2 - Complete details, click Register', );
+        MYPDF::Text(30, 190, '3 - Join queue. Correct entry fee(s), please', );
+        MYPDF::Text(30, 200, '4 - Complete Sign-on sheet', );
+        MYPDF::Text(30, 210, '5 - Enjoy your ride', );
 
 
-        PDF::addPage();
-        PDF::SetFontSize(18);
-        PDF::Text(0,10,"Entry List",0,false, true,0,0,'C' );
+        MYPDF::addPage();
+        MYPDF::SetFontSize(18);
+        MYPDF::Text(0,10,"Entry List",0,false, true,0,0,'C' );
 
         $img_file = public_path($qr2);
-        PDF::Image($img_file, 40  , 20, 130, '', '', '', '', false, 300, '', false, false, 0);
+        MYPDF::Image($img_file, 40  , 20, 130, '', '', '', '', false, 300, '', false, false, 0);
 
-        PDF::SetY(170);
-        PDF::SetX(0);
-        PDF::SetLeftMargin(20);
-        PDF::SetRightMargin(20);
+        MYPDF::SetY(170);
+        MYPDF::SetX(0);
+        MYPDF::SetLeftMargin(20);
+        MYPDF::SetRightMargin(20);
 
 
 
-        PDF::MultiCell(0, 0, 'Scan the QR code on your phone. Entries are correct at the time of compilation.', 0, 'L', false);
-        PDF::SetY(190);
-        PDF::MultiCell(0, 0, "Although every effort is made to provide accurate and up-to-date information, late changes may sometimes be unavoidable due to entrants' changes of course or class.",0,'L', false);
+        MYPDF::MultiCell(0, 0, 'Scan the QR code on your phone. Entries are correct at the time of compilation.', 0, 'L', false);
+        MYPDF::SetY(190);
+        MYPDF::MultiCell(0, 0, "Although every effort is made to provide accurate and up-to-date information, late changes may sometimes be unavoidable due to entrants' changes of course or class.",0,'L', false);
 //        dd(public_path($filename));
         $filename = $this->filter_filename($filename);
-        PDF::Close();
-        PDF::Output(public_path('pdf/signon/'.$filename), 'F');
-        PDF::reset();
+        MYPDF::Close();
+        MYPDF::Output(public_path('pdf/signon/'.$filename), 'F');
+        MYPDF::reset();
         return response()->download('pdf/signon/'.$filename);
     }
 

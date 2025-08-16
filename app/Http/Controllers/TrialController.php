@@ -504,6 +504,9 @@ class TrialController extends Controller
         $attrs['customClasses'] = request('customClasses');
         $attrs['fifty_fifty'] = request('fifty_fifty');
 
+        $attrs['club_id'] = request('club_id');
+        $attrs['series_id'] = request('series_id');
+
 
         if (request('customClasses')) {
             $array = explode(',', request('customClasses'));
@@ -568,6 +571,7 @@ class TrialController extends Controller
     {
         $user = Auth::user();
         $userid = $user->id;
+//        dd($attrs);
         $trial = Trial::create($attrs);
         $this->addStripeProducts($trial, $attrs['youthEntryFee'], $attrs['adultEntryFee']);
         info("new trial created by $userid");
