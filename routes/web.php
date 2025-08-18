@@ -239,7 +239,8 @@ Route::get('/about', [AboutController::class, 'about']);
 Route::get('/import', [ImportController::class, 'showImportForm'])->name('import.form');
 Route::post('/import', [ImportController::class, 'importEntries'])->name('import.process');
 
-
+// Utility routes
+Route::get('/createResultPDF/{id}', [\App\Http\Controllers\UtilityController::class, 'createResultPDF'])->middleware(['auth', 'verified']);
 // MIDDLEWARE
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

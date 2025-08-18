@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Trial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PDF;
 
 class UtilityController extends Controller
 {
-
     public function getTrialDetails($id) {
         $trialDetails = DB::table('trials')
             ->join('venues', 'trials.venueID', '=', 'venues.id')
@@ -23,6 +23,8 @@ class UtilityController extends Controller
 
         $trial = $data['trial'];
         $name = $trial->name;
+        $updated_at = $trial->updated_at;
+
         $resultList = $data['results'];
 
         $allCourses = array();
@@ -57,18 +59,20 @@ class UtilityController extends Controller
         $classes = explode(',', $classlist);
 
     $trialName = trim($trial->name);
-        $filename = "$trialName.pdf";
+        $trialName = trim($trial->name);
+        $filename = "$trial->id $trialName.pdf";
+        $filename = str_replace(' ', '_', $filename);
         $filename = $this->filter_filename($filename);
 
 //        PDF setup
-        MYPDF::SetCreator('TM UK');
-        MYPDF::SetAuthor('TrialMonster.uk');
-        MYPDF::SetTitle('Entry list');
-        MYPDF::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', 8));
-        MYPDF::SetFooterFont(array(PDF_FONT_NAME_MAIN, '', 8));
-        MYPDF::SetPrintHeader(false);
-        MYPDF::SetPrintFooter(true);
-        MYPDF::AddPage('L', 'A4');
+        MYPDFG::SetCreator('TM UK');
+        MYPDFG::SetAuthor('TrialMonster.uk');
+        MYPDFG::SetTitle('Entry list');
+        MYPDFG::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', 8));
+        MYPDFG::SetFooterFont(array(PDF_FONT_NAME_MAIN, '', 8));
+        MYPDFG::SetPrintHeader(false);
+        MYPDFG::SetPrintFooter(true);
+        MYPDFG::AddPage('L', 'A4');
         $txt = <<<EOD
 $trial->name
 
@@ -76,26 +80,26 @@ $trial->club are grateful to the landowners at $trial->venue, observers, other o
 EOD;
 
 // print a block of text using Write()
-        MYPDF::SetFontSize(10);
-        MYPDF::SetFont(PDF_FONT_NAME_MAIN, 'B', 12);
-        MYPDF::Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
+        MYPDFG::SetFontSize(10);
+        MYPDFG::SetFont(PDF_FONT_NAME_MAIN, 'B', 12);
+        MYPDFG::Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
 
-        MYPDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-        MYPDF::SetHeaderMargin(15);
-        MYPDF::SetFooterMargin(15);
-        MYPDF::SetAutoPageBreak(TRUE, 20);
-        MYPDF::SetCellHeightRatio(1.5);
+        MYPDFG::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        MYPDFG::SetHeaderMargin(15);
+        MYPDFG::SetFooterMargin(15);
+        MYPDFG::SetAutoPageBreak(TRUE, 20);
+        MYPDFG::SetCellHeightRatio(1.5);
 
-        MYPDF::SetMargins(0, 20);
+        MYPDFG::SetMargins(0, 20);
 
-        MYPDF::setHeaderCallback(function () {
-            MYPDF::SetXY(10,10);
+        MYPDFG::setHeaderCallback(function () {
+            MYPDFG::SetXY(10,10);
         });
 
-        MYPDF::setFooterCallback(function () {
-            MYPDF::Cell(0,0, 'x indicates a missed section :: o indicates an omitted section which is not included in the scoring', 0, true, 'C');
-            MYPDF::Cell(0, 0, 'Provisional Results updated '. now(), 0, false, 'L', 0, '', 0, false, 'T', 'M');
-            MYPDF::Cell(0, 0, 'Page ' . MYPDF::getAliasNumPage() . ' of ' . MYPDF::getAliasNbPages(), 0, true, 'R', 0, '', 0, false, 'T', 'M');
+        MYPDFG::setFooterCallback(function () {
+            MYPDFG::Cell(0,0, 'x indicates a missed section :: o indicates an omitted section which is not included in the scoring', 0, true, 'C');
+            MYPDFG::Cell(0, 0, 'Provisional Results updated '. now(), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            MYPDFG::Cell(0, 0, 'Page ' . MYPDFG::getAliasNumPage() . ' of ' . MYPDFG::getAliasNbPages(), 0, true, 'R', 0, '', 0, false, 'T', 'M');
         });
 
         $rowHeight = 9;
@@ -113,7 +117,7 @@ EOD;
                         $remaining = $this->printLine($result, $numSections, $numLaps);
 
                         if($remaining < 40){
-                            MYPDF::AddPage('L', 'A4');
+                            MYPDFG::AddPage('L', 'A4');
                             $this->printClassHeader($course, $class, $rowHeight, $numSections);
                         }
                     }
@@ -122,28 +126,34 @@ EOD;
             }
         }
 
-        MYPDF::Close();
-        MYPDF::Output(public_path('pdf/results/' . $filename), 'F');
-        MYPDF::reset();
-        return response()->download('pdf/results/' . $filename);
+        MYPDFG::Close();
+        MYPDFG::Output(public_path('pdf/results/' . $filename), 'F');
+        MYPDFG::reset();
+//        return response()->download('pdf/results/' . $filename);
+        return;
 
     }
+
+    public function createResultPDF($id){
+            $this->saveResultsPDF($id);
+    }
+
     function printClassHeader($course, $class, $rowHeight, $numSections)
     {
-        $y = MYPDF::GetY();
-        MYPDF::SetY($y + $rowHeight);
+        $y = MYPDFG::GetY();
+        MYPDFG::SetY($y + $rowHeight);
 //                    Output class header
-        MYPDF::SetFont('', 'B', 9, '', true);
-        MYPDF::setX(10);
-        MYPDF::Cell(0, 0, "$course - $class", 0, 0, 'L', false, null, 0, false, 'C' . 'M');
-        MYPDF::setX(100);
-        MYPDF::Cell(10, 0, "Total", 0, 0, 'C', false, null, 0, false, 'C' . 'M');
+        MYPDFG::SetFont('', 'B', 9, '', true);
+        MYPDFG::setX(10);
+        MYPDFG::Cell(0, 0, "$course - $class", 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+        MYPDFG::setX(100);
+        MYPDFG::Cell(10, 0, "Total", 0, 0, 'C', false, null, 0, false, 'C' . 'M');
 
         $sectionWidth = 177 / $numSections;
         for ($index = 1; $index <= $numSections; $index++) {
-            MYPDF::Cell($sectionWidth, 0, $index, 0, 0, 'C', false, null, 0, false, 'C' . 'M');
+            MYPDFG::Cell($sectionWidth, 0, $index, 0, 0, 'C', false, null, 0, false, 'C' . 'M');
         }
-        MYPDF::Cell('', '', '', '', 1);
+        MYPDFG::Cell('', '', '', '', 1);
     }
     function printLine($result, $numSections, $numLaps)
     {
@@ -187,11 +197,12 @@ EOD;
         for ($index = 1; $index <= $numSections; $index++) {
 
 //            PDF::setX($startScores + 10 * $index);
-            PDF::Cell($sectionWidth, 0, $sectionScores[$index - 1], 0, 0, 'C', false, null, 0, false, 'C' . 'M');
+            PDF::Cell($sectionWidth, 0, str_replace('o', '', $sectionScores[$index - 1]), 0, 0, 'C', false, null, 0, false, 'C' . 'M');
+//            PDF::Cell($sectionWidth, 0, $sectionScores[$index - 1], 0, 0, 'C', false, null, 0, false, 'C' . 'M');
         }
 //      Add line break
         PDF::Cell('', '', '', '', 1);
-        $remaining = 210 - MYPDF::getY();
+        $remaining = 210 - MYPDFG::getY();
         return $remaining;
     }
     function filter_filename($name)
@@ -226,5 +237,40 @@ EOD;
         }
         return ucfirst($string);
     }
+}
+
+class MYPDFG extends PDF
+{
+    //Page header
+    public function Header()
+    {
+        $bMargin = $this->getBreakMargin();
+        // get current auto-page-break mode
+        $auto_page_break = $this->AutoPageBreak;
+        // disable auto-page-break
+        $this->SetAutoPageBreak(false, 0);
+
+        // Set font
+        $this->SetFont('helvetica', 'B', 20);
+        // Title
+        $this->Cell(0, 15, '<< TCPDF Example 003 >>', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+
+        $this->SetAutoPageBreak($auto_page_break, $bMargin);
+        // set the starting point for the page content
+        $this->setPageMark();
+    }
+
+    // Page footer
+    public function Footer()
+    {
+        // Position at 15 mm from bottom
+//        $this->SetY(-15);
+//        // Set font
+//        $this->SetFont('helvetica', 'I', 8);
+//        // Page number
+//        $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+    }
+
+
 }
 

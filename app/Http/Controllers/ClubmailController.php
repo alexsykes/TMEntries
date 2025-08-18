@@ -276,7 +276,7 @@ class ClubmailController extends Controller
         $clubTrials = DB::table('trials')->where('club', $clubName)
             ->select(['name', 'id'])
             ->orderBy('date', 'desc')
-            ->limit(5)
+            ->limit(10)
             ->get();
 
         return view('clubs.sendmail', compact('mail', 'clubTrials'));

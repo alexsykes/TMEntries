@@ -136,6 +136,7 @@ class TrialController extends Controller
     public function showTrialList()
     {
         $trials = DB::table('trials')->where('published', 1)
+            ->where('isResultPublished', false)
             ->whereTodayOrAfter('date', '>', date('Y-m-d'))
             ->orderBy('date')
             ->get();
@@ -861,17 +862,17 @@ class TrialController extends Controller
         $filename = "$trial->name.pdf";
         $filename= $this->filter_filename($filename);
 
-        MYPDF::SetCreator('TM UK');
-        MYPDF::SetAuthor('TrialMonster.uk');
-        MYPDF::SetTitle('Entry list');
-//        MYPDF::SetImageScale(PDF_IMAGE_SCALE_RATIO);
-//        MYPDF::SetHeaderData('',0,"Title", "other");
-//        MYPDF::SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' Hi there!', PDF_HEADER_STRING);
-        MYPDF::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', 48));
-        MYPDF::SetPrintHeader(true);
-        MYPDF::AddPage();
+        MYPDFP::SetCreator('TM UK');
+        MYPDFP::SetAuthor('TrialMonster.uk');
+        MYPDFP::SetTitle('Entry list');
+//        MYPDFP::SetImageScale(PDF_IMAGE_SCALE_RATIO);
+//        MYPDFP::SetHeaderData('',0,"Title", "other");
+//        MYPDFP::SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' Hi there!', PDF_HEADER_STRING);
+        MYPDFP::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', 48));
+        MYPDFP::SetPrintHeader(true);
+        MYPDFP::AddPage();
 
-        MYPDF::setFooterCallback(function () {
+        MYPDFP::setFooterCallback(function () {
 
         });
 
@@ -885,21 +886,21 @@ $trial->club are grateful to the landowners at $trial->venueName, observers, oth
 EOD;
 
 // print a block of text using Write()
-        MYPDF::SetFontSize(14);
-        MYPDF::Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
+        MYPDFP::SetFontSize(14);
+        MYPDFP::Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
 
-        MYPDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-        MYPDF::SetHeaderMargin(130);
-        MYPDF::SetFooterMargin(30);
-        MYPDF::SetAutoPageBreak(TRUE, 15);
+        MYPDFP::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        MYPDFP::SetHeaderMargin(130);
+        MYPDFP::SetFooterMargin(30);
+        MYPDFP::SetAutoPageBreak(TRUE, 15);
 
-        MYPDF::SetMargins(0, 20, 0);
+        MYPDFP::SetMargins(0, 20, 0);
 
         $nameWidth = 40;
         $indent = 10;
         $rowHeight = 7;
 
-//        MYPDF::Cell(0, 0,"Entry list - $trial->name",  0, 0);
+//        MYPDFP::Cell(0, 0,"Entry list - $trial->name",  0, 0);
 
 
         if (sizeof($riderList) > 0) {
@@ -913,19 +914,19 @@ EOD;
 
                 $bike = $make . " " . $size;
 
-                MYPDF::setX($indent);
-                MYPDF::Cell(10, $rowHeight, $ridingNumber, 0, 0, 'R', false, null, 1, false, 'C' . 'M');
-                MYPDF::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
-                MYPDF::Cell($nameWidth, $rowHeight, $course, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
-                MYPDF::Cell($nameWidth, $rowHeight, $class, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
-                MYPDF::Cell(0, $rowHeight, $bike, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
+                MYPDFP::setX($indent);
+                MYPDFP::Cell(10, $rowHeight, $ridingNumber, 0, 0, 'R', false, null, 1, false, 'C' . 'M');
+                MYPDFP::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+                MYPDFP::Cell($nameWidth, $rowHeight, $course, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+                MYPDFP::Cell($nameWidth, $rowHeight, $class, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+                MYPDFP::Cell(0, $rowHeight, $bike, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
 
             }
         }
 
-        PDF::Close();
-        PDF::Output(public_path('pdf/'.$filename), 'F');
-        PDF::reset();
+        MYPDFP::Close();
+        MYPDFP::Output(public_path('pdf/'.$filename), 'F');
+        MYPDFP::reset();
         return response()->download('pdf/'.$filename);
 
 //        return view('trials.programme', ['trial' => $trial]);
@@ -966,7 +967,7 @@ EOD;
     }
 }
 
-class MYPDF extends PDF
+class MYPDFP extends PDF
 {
     //Page header
     public function Header()

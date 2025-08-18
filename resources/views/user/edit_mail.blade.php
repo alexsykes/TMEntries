@@ -14,6 +14,7 @@
 
 {{--    </script>--}}
 
+{{--    @dump($mail)--}}
     <x-slot:heading>Edit email</x-slot:heading>
     @php
         $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
