@@ -87,12 +87,16 @@ class ClubmailController extends Controller
 //        File handler
 
         $attachment = $request->file('attachment');
-        $fileName = time() . '.' . $attachment->extension();
-        $attachment->move(public_path('attachments'), $fileName);
+        if($attachment) {
+            $fileName = time() . '.' . $attachment->extension();
+            $attachment->move(public_path('attachments'), $fileName);
 
-        $originalName = $attachment->getClientOriginalName();
-        $mimeType = $attachment->getClientMimeType();
-
+            $originalName = $attachment->getClientOriginalName();
+            $mimeType = $attachment->getClientMimeType();
+            $attributes['originalName'] = $originalName;
+            $attributes['mimeType'] = $mimeType;
+            $attributes['fileName'] = $fileName;
+        }
         $attributes = $request->validate([
             'category' => 'required',
             'subject' => ['required', 'min:5', 'max:63'],
@@ -100,15 +104,16 @@ class ClubmailController extends Controller
             'summary' => ['required', 'min:5', 'max:255'],
         ]);
 
-        $attributes['originalName'] = $originalName;
-        $attributes['mimeType'] = $mimeType;
-        $attributes['fileName'] = $fileName;
+
         $attributes['trial_id'] = $request->trial_id;
         $attributes['isLibrary'] = false;
         $attributes['club_id'] = $clubID;
         $attributes['created_by'] = Auth::user()->id;
         $attributes['created_at'] = date("Y-m-d H:i:s");
         $attributes['updated_at'] = date("Y-m-d H:i:s");
+
+        $attributes['reply_to_address'] = $request->input('reply_to_address');
+        $attributes['reply_to_name'] = $request->input('reply_to_name');
 
         $mail = Clubmail::create($attributes);
         return redirect('/club/mails/');
@@ -150,7 +155,12 @@ class ClubmailController extends Controller
                         'originalName' => $originalName,
                         'mimeType' => $mimeType,
                         'fileName' => $fileName,
-                    ]);
+
+
+                        'reply_to_address' => $request->input('reply_to_address'),
+                'reply_to_name' => $request->input('reply_to_name'),
+
+                ]);
             }
             else {
                 $mail = DB::table('clubmails')->where('id', $request->trial_id)
@@ -159,23 +169,36 @@ class ClubmailController extends Controller
                         'subject' => $request->subject,
                         'bodyText' => $request->bodyText,
                         'summary' => $request->summary,
+
+                        'reply_to_address' => $request->input('reply_to_address'),
+                        'reply_to_name' => $request->input('reply_to_name'),
                     ]);
             }
         } elseif ($action == 'saveAsNew') {
-            $attachment = $request->file('attachment');
-            $fileName = time() . '.' . $attachment->extension();
-            $attachment->move(public_path('attachments'), $fileName);
 
-            $originalName = $attachment->getClientOriginalName();
-            $mimeType = $attachment->getClientMimeType();
+            $attachment = $request->file('attachment');
+            if($attachment) {
+                $fileName = time() . '.' . $attachment->extension();
+                $attachment->move(public_path('attachments'), $fileName);
+
+                $originalName = $attachment->getClientOriginalName();
+                $mimeType = $attachment->getClientMimeType();
+
+                $attributes['originalName'] = $originalName;
+                $attributes['mimeType'] = $mimeType;
+                $attributes['fileName'] = $fileName;
+            } else {
+                $attributes['originalName'] = '';
+                $attributes['mimeType'] = '';
+                $attributes['fileName'] = '';
+            }
 
             $attributes['trial_id'] = $request->trial_id;
             $attributes['isLibrary'] = false;
             $attributes['created_by'] = Auth::user()->id;
             $attributes['club_id'] = Auth::user()->club_id;
-            $attributes['originalName'] = $originalName;
-            $attributes['mimeType'] = $mimeType;
-            $attributes['fileName'] = $fileName;
+            $attributes['reply_to_address'] = $request->input('reply_to_address');
+            $attributes['reply_to_name'] = $request->input('reply_to_name');
 
             $mail = Clubmail::create($attributes);
         }
@@ -389,6 +412,9 @@ class ClubmailController extends Controller
         $attributes['club_id'] = $mail->club_id;
         $attributes['mail_id'] = $mail->id;
         $attributes['sent_by'] = $userID;
+
+        $attributes['reply_to_address'] = $mail->reply_to_address;
+        $attributes['reply_to_name'] = $mail->reply_to_name;
 
         $attributes['originalName'] = $mail->originalName;
         $attributes['mimeType'] = $mail->mimeType;

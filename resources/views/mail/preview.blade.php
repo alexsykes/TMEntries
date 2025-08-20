@@ -15,6 +15,6 @@
         <a href="/club/mails"
            class=" rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-700 shadow-sm hover:bg-violet-700 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-700">Cancel</a>
         <a href="/usermail/sendMail/{{$mail->id}}"
-           class=" ml-2 rounded-md bg-violet-700 px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-violet-700 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-700">Send</a>
+           class=" ml-2 rounded-md bg-violet-700 px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-violet-700 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-700">Add Addresses</a>
     </div>
 </x-club>

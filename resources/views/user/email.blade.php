@@ -78,6 +78,31 @@
                     @enderror
                 </x-form-field>
 
+
+                <x-form-field>
+                    <x-form-label for="reply_to_name">Reply to (Name)</x-form-label>
+                    <div class="mt-2 col-span-2">
+                        <x-form-input name="reply_to_name" type="text" id="reply_to_name" value=""
+                                      placeholder="Optional" />
+                        <x-form-error name="reply_to_name"/>
+                    </div>
+                    @error('reply_to_name')
+                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
+                </x-form-field>
+
+                <x-form-field>
+                    <x-form-label for="reply_to_address">Reply to (Email address)</x-form-label>
+                    <div class="mt-2 col-span-2">
+                        <x-form-input name="reply_to_address" type="email" id="reply_to_address" value=""
+                                      placeholder="Optional" />
+                        <x-form-error name="reply_to_address"/>
+                    </div>
+                    @error('reply_to_address')
+                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
+                </x-form-field>
+
                 <x-form-field>
                     <x-form-label for="bodyText">Email body</x-form-label>
                     <div class="mt-2 ">

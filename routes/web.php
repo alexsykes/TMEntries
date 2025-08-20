@@ -12,7 +12,7 @@ use App\Http\Controllers\ScoringController;
 use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AboutController;
-use App\Http\Controllers\ClubmailController ;
+use App\Http\Controllers\ClubmailController;
 
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\StripePaymentController;
@@ -160,7 +160,7 @@ Route::post('/scores/confirmPublish', [ScoringController::class, 'confirmPublish
 Route::post('/scores/publish', [ScoringController::class, 'publish'])->name('scores.publish');
 
 // USER Routes
-Route::post('/user/checkout',[UserController::class, 'checkout']);
+Route::post('/user/checkout', [UserController::class, 'checkout']);
 Route::get('/close-my-account/{id}/{email}', [AdminController::class, 'closeMyAccount']);
 Route::get('/user/entries', [UserController::class, 'entryList'])->middleware(['auth', 'verified'])->name('user.entries');
 Route::get('/users/entry/edit/{id}', [UserController::class, 'editEntry'])->middleware(['auth', 'verified']);

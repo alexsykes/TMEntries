@@ -11,17 +11,17 @@
 
             <div class="flex justify-between">
                 <div class=" pl-4 pr-4 text-sm">Scoring <span><i
-                                class="ml-1 mr-3 fa-solid fa-pencil "></i></span></div>
+                                class="ml-3 mr-3 fa-solid fa-pencil "></i></span></div>
                 <div class=" pl-4 pr-4 text-sm">Entries <span><i
-                                class="ml-1 mr-3 fa-solid fa-list-ol "></i></span></div>
-                <div class=" pl-4 pr-4 text-sm">Show/Hide<span><i
-                                class="ml-1 mr-3 fa-solid fa-eye "></i></span></div>
-                <div class=" pl-4 pr-4 text-sm">Trial Setup<span><i
-                                class="ml-1 mr-3 fa-solid fa-gear "></i></span></div>
-                <div class=" pl-4 pr-4 text-sm">Info<span><i
-                                class="ml-1 mr-3 fa-solid fa-circle-info"></i></span></div>
+                                class="ml-3 mr-3 fa-solid fa-list-ol "></i></span></div>
+                <div class=" pl-4 pr-4 text-sm">Show/Hide <span><i
+                                class="ml-3 mr-3 fa-solid fa-eye "></i></span></div>
+                <div class=" pl-4 pr-4 text-sm">Trial Setup <span><i
+                                class="ml-3 mr-3 fa-solid fa-gear "></i></span></div>
+                <div class=" pl-4 pr-4 text-sm">Info <span><i
+                                class="ml-3 mr-3 fa-solid fa-circle-info"></i></span></div>
 {{--                <div class=" pl-4 pr-4 text-sm">Email<span><i--}}
-{{--                                class="ml-1 mr-3 fa-solid fa-envelope"></i></span></div>--}}
+{{--                                class="ml-3 mr-3 fa-solid fa-envelope"></i></span></div>--}}
 
             </div>
         </div>
@@ -43,35 +43,35 @@
                     <td class="pl-2 table-cell">
                         <a href="/scores/setup/{{$trial->id}}">Scores
                             @if( $trial->isScoringLocked == 0 )
-                                <span><i class="fa-solid fa-pencil text-violet-800"></i></span>
+                                <span><i class="ml-1 fa-solid fa-pencil text-violet-800"></i></span>
                             @else
-                                <span><i class="fa-solid fa-pencil text-red-600"></i></span>
+                                <span><i class="ml-1 fa-solid fa-pencil text-red-600"></i></span>
                             @endif
                         </a>
                     </td>
                     <td class="pl-2 table-cell"><a href="/trials/adminEntryList/{{$trial->id}}">Entries
                             @if( $trial->isEntryLocked == 0 )
-                                <span><i class="fa-solid fa-list-ol text-violet-800"></i></span>
+                                <span><i class="ml-1 fa-solid fa-list-ol text-violet-800"></i></span>
                             @else
-                                <span><i class="fa-solid fa-list text-red-600"></i></span>
+                                <span><i class="ml-1 fa-solid fa-list text-red-600"></i></span>
                             @endif
                         </a>
                     </td>
 
-                    <td class="pl-2 table-cell"><a href="/trials/toggleVisibility/{{$trial->id}}">Show/Hide<span><i
-                                        class="{{$publishIMG}}"></i></span></a></td>
+                    <td class="pl-2 table-cell"><a href="/trials/toggleVisibility/{{$trial->id}}">Show/Hide
+                            <span><i class="ml-1 {{$publishIMG}}"></i></span></a></td>
 
                     <td class="pl-2 table-cell"><a href="/trials/edit/{{$trial->id}}">Setup
                             @if( $trial->isLocked == 0 )
-                                <span><i class="fa-solid text-violet-800 fa-gear"></i></span>
+                                <span><i class="ml-1 fa-solid text-violet-800 fa-gear"></i></span>
                             @else
-                                <span><i class="fa-solid text-red-600 fa-gear"></i></span>
+                                <span><i class="ml-1 fa-solid text-red-600 fa-gear"></i></span>
                             @endif
                         </a>
                     </td>
 
                     <td class="pl-2 table-cell"><a href="/trials/info/{{$trial->id}}"><span>Info<i
-                                        class="fa-solid fa-circle-info text-violet-800"></i></span></a></td>
+                                        class="ml-1 fa-solid fa-circle-info text-violet-800"></i></span></a></td>
 
 {{--                    <td class="pl-2 table-cell"><a href="/users/mail/{{$trial->id}}">--}}
 {{--                            <span><i class="fa-regular text-violet-800 fa-envelope"></i></span>--}}

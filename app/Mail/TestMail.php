@@ -33,7 +33,12 @@ class TestMail extends Mailable
     {
         return new Envelope(
             from: new Address('monster@trialmonster.uk', 'TrialMonster'),
-            subject: $this->mailshot->subject,
+            replyTo: [
+                new Address($this->mailshot->reply_to_address,
+                $this->mailshot->reply_to_name,),
+            ],
+            subject: $this->mailshot->subject
+//        replyTo: $this->mailshot->reply_to_address
         );
     }
 
