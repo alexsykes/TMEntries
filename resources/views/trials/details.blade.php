@@ -323,7 +323,7 @@ $methodOfMarking = $clubData->section_markers;
 
 
         <div class="ml-2 mt-4" id="buttons">
-            <a class="{{$showButton}}  rounded-md bg-blue-800  px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900" href="/entries/register/{{$trial_id}}">{{ $buttonText; }}</a>
+            <a class="{{$showButton}}  rounded-md bg-blue-800  px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900" href="/entries/register/{{$trial_id}}">{{ $buttonText}}</a>
         </div>
 
 </x-main>
