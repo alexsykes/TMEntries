@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Mail\EntryChanged;
+use App\Mail\PaymentReceived;
+use App\Mail\ReserveAdded;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Trial;
@@ -419,9 +421,20 @@ class EntryController extends Controller
 
     public function store(Request $request)
     {
-
         $trial_id = session('trial_id');
         $trial = Trial::findOrFail($trial_id);
+
+//        Check for full entry list
+        $entryLimit = $trial->entryLimit;
+        $numEntries = Entry::where('trial_id', $trial_id)
+            ->whereIn('status', [1,7,8,9])
+        ->count();
+
+        $status = 0;
+        if ($numEntries >= $entryLimit) {
+            $status = 5;
+        }
+
         $trial_date = date_create($trial->date);
 
         $IPaddress = $request->ip();
@@ -470,6 +483,7 @@ class EntryController extends Controller
         $attributes['licence'] = $request->licence;
         $attributes['token'] = $token;
         $attributes['accept'] = $accept;
+        $attributes['status'] = $status;
         $attributes['created_by'] = Auth::user()->id;
 
         $birthDate = date_create($request->dob);
@@ -491,15 +505,20 @@ class EntryController extends Controller
         $attributes['dob'] = $request->dob;
         $entry = Entry::create($attributes);
 
+
+        $trial = Trial::findOrFail($attributes['trial_id']);
+
+        if($entry->status == 5) {
+            $this->sendReserveEmail($entry, $trial);
+        }
+
         $entryID = $entry->id;
         $attr['entryID'] = $entryID;
-        $trial = Trial::findOrFail($attributes['trial_id']);
         $entries = Entry::all()
             ->where('trial_id', $trial_id)
             ->where('status', 0)
             ->where('created_by', $attributes['created_by']);
 
-//        $entries = Entry::all()->where('IPaddress', $IPaddress)->where('trial_id', session('trial_id'))->where('email', $attributes['email']);
         return view('entries.register', ['entries' => $entries, 'trial' => $trial]);
     }
 
@@ -1038,6 +1057,20 @@ class EntryController extends Controller
             ->first();
         $cost = $price->stripe_price / 100;
         return view('entries.otd_confirm', ['trialid' => $trialid, 'cost' => $cost]);
+    }
+
+    function sendReserveEmail(Entry $entry, Trial $trial){
+        $userID = $entry->created_by;
+        $user = DB::table('users')->where('id', $userID)->first();
+        $username = $user->name;
+        $email = $user->email;
+
+        $bcc = "admin@trialmonster.uk";
+
+        Mail::to($email)
+            ->bcc($bcc)
+            ->send(new ReserveAdded($entry, $trial));
+        dd($username, $email);
     }
 
     public function generate($id) {

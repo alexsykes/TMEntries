@@ -18,6 +18,7 @@ $methodOfMarking = $clubData->section_markers;
     $marker = array($latitude, $longitude);
     array_push($markerArray, $marker);
 
+
     // Trial details
 //  Get parameters
     $hasClosingDate = $trial->hasClosingDate;
@@ -26,6 +27,8 @@ $methodOfMarking = $clubData->section_markers;
     $hasEodSurcharge = $trial->hasEodSurcharge;
     $hasWaitingList = $trial->hasWaitingList;
     $hasTimePenalty = $trial->hasTimePenalty;
+
+    $buttonText = "Enter NOW";
 
     if($hasEntryLimit) {
         $entryLimit = $trial->entryLimit;
@@ -87,9 +90,15 @@ $methodOfMarking = $clubData->section_markers;
     }
 
 //    Entry limit
-    if($hasEntryLimit && $entriesLeft == 0) {
+    if($hasEntryLimit && $entriesLeft <= 0) {
         $showButton = "hidden";
         $entryStatus = "Registration is now closed as the entry limit has been reached ";
+
+        if($hasWaitingList) {
+            $entryStatus = "Entries for this trial are now FULL. You may register and be added to our waiting list.";
+            $buttonText = "Register";
+            $showButton = "";
+        }
     }
     elseif ($hasEntryLimit && $entriesLeft == 1) {
         $entryStatus = "Final entry remaining!";
@@ -196,7 +205,7 @@ $methodOfMarking = $clubData->section_markers;
     ?>
     <div class="text-blue-800 font-semibold text-center">{{$entryStatus}}</div>
     <div class="mt-2 w-full">
-    <a class="{{$showButton}}  rounded-md bg-blue-800  px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900" href="/entries/register/{{$trial_id}}">Enter NOW</a>
+    <a class="{{$showButton}}  rounded-md bg-blue-800  px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900" href="/entries/register/{{$trial_id}}">{{$buttonText}}</a>
     </div>
     <div class="text-sm mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <gmp-map class="p-4  rounded-xl drop-shadow-lg "
@@ -314,7 +323,7 @@ $methodOfMarking = $clubData->section_markers;
 
 
         <div class="ml-2 mt-4" id="buttons">
-            <a class="{{$showButton}}  rounded-md bg-blue-800  px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900" href="/entries/register/{{$trial_id}}">Enter NOW</a>
+            <a class="{{$showButton}}  rounded-md bg-blue-800  px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900" href="/entries/register/{{$trial_id}}">{{ $buttonText; }}</a>
         </div>
 
 </x-main>

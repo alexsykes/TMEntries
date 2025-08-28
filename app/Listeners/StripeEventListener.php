@@ -37,8 +37,8 @@ function onPriceUpdated($priceObject)
     $stripe_product_id = $priceObject['product'];
 
     $price = DB::table('prices')->where('stripe_price_id', $stripe_price_id)
-    ->update(['stripe_price' => $amount,
-        'updated_at' => now(),]);
+        ->update(['stripe_price' => $amount,
+            'updated_at' => now(),]);
 }
 
 function onProductCreated($productObject)
@@ -53,7 +53,7 @@ function onProductCreated($productObject)
     $product_name = $productObject['name'];
 
     $youth = false;
-    if(isset($metadata['isYouth'])) {
+    if (isset($metadata['isYouth'])) {
         $isYouth = $metadata['isYouth'];
         if ($isYouth == 'true') {
             $youth = true;
@@ -61,13 +61,13 @@ function onProductCreated($productObject)
     }
 
     $product_category = '';
-    if(isset($metadata['category'])) {
+    if (isset($metadata['category'])) {
         $product_category = $metadata['category'];
     }
 
     $club_id = $metadata['club_id'];
     $trialid = 0;
-    if(isset($metadata['trialid'])) {
+    if (isset($metadata['trialid'])) {
         $trialid = $metadata['trialid'];
     }
 
@@ -106,7 +106,7 @@ function onProductUpdated($productObject)
 
 
     $youth = false;
-    if(isset($metadata['isYouth'])) {
+    if (isset($metadata['isYouth'])) {
         $isYouth = $metadata['isYouth'];
         if ($isYouth == 'true') {
             $youth = true;
@@ -114,12 +114,12 @@ function onProductUpdated($productObject)
     }
 
     $product_category = '';
-    if(isset($metadata['category'])) {
+    if (isset($metadata['category'])) {
         $product_category = $metadata['category'];
     }
 
     $trialid = 0;
-    if(isset($metadata['trialid'])) {
+    if (isset($metadata['trialid'])) {
         $trialid = $metadata['trialid'];
     }
 
@@ -168,7 +168,6 @@ function onCheckoutSessionCompleted($sessionObject)
     );
 
 //  Record other items purchased
-//    var_dump($lineItems);
     foreach ($lineItems as $lineItem) {
         $stripe_product_id = $lineItem['price']['product'];
         $quantity = $lineItem['quantity'];
@@ -176,17 +175,16 @@ function onCheckoutSessionCompleted($sessionObject)
             ->where('stripe_product_id', '=', $stripe_product_id)
             ->first();
         $stripe_price_id = $lineItem['price']['id'];
-//var_dump($stripe_price_id);
-//        if($product->product_category == 'other') {
-            info("PI: $stripe_payment_intent Qty - $quantity Product - $product->product_name");
-            $attrs = [
-                'stripe_product_id' => $stripe_product_id,
-                'quantity' => $quantity,
-                'entryIDs' => $entryIDs,
-                'email' => $email,
-                'pi' => $stripe_payment_intent,
-            ];
-            $purchase = Purchase::create($attrs);
+
+        info("PI: $stripe_payment_intent Qty - $quantity Product - $product->product_name");
+        $attrs = [
+            'stripe_product_id' => $stripe_product_id,
+            'quantity' => $quantity,
+            'entryIDs' => $entryIDs,
+            'email' => $email,
+            'pi' => $stripe_payment_intent,
+        ];
+        $purchase = Purchase::create($attrs);
 
 
         DB::table('products')
@@ -196,26 +194,8 @@ function onCheckoutSessionCompleted($sessionObject)
         DB::table('prices')
             ->where('stripe_price_id', '=', $stripe_price_id)
             ->increment('purchases', $quantity);
-//        };
     }
 
-//    Increment sales
-//    foreach ($entryIDArray as $entryID) {
-//        $entry = DB::table('entries')
-//            ->where('id', '=', $entryID)
-//            ->get();
-//
-//        $stripe_price_id = $entry[0]->stripe_price_id;
-//        $stripe_product_id = $entry[0]->stripe_product_id;
-//
-//        DB::table('products')
-//            ->where('stripe_product_id', '=', $stripe_product_id)
-//            ->increment('purchases');
-//
-//        DB::table('prices')
-//            ->where('stripe_price_id', '=', $stripe_price_id)
-//            ->increment('purchases');
-//    }
 
 
     $entries = DB::table('entries')
@@ -318,7 +298,7 @@ class StripeEventListener
     public function handle(WebhookReceived $event): void
     {
         $eventType = $event->payload['type'];
-    info("event type: $eventType");
+        info("event type: $eventType");
         switch ($eventType) {
             case 'refund.created':
                 $object = $event->payload['data']['object'];
@@ -361,7 +341,7 @@ class StripeEventListener
                 onPaymentIntentSucceeded();
                 break;
             case 'payment_intent.created':
-             $object = $event->payload['data']['object'];
+                $object = $event->payload['data']['object'];
                 onPaymentIntentCreated($object);
                 break;
             default:

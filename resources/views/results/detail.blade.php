@@ -282,7 +282,7 @@ $download_link = asset('pdf/results/'.$filename);
 
                                 </table>
 
-                                <div class="pl-2 pr-4 text-sm w-full text-right">x indicates a missed section :: o indicates an omitted section which is not included in the scoring</div>
+                                <div class="pl-2 pr-4 text-sm w-full text-right">x indicates a missed section</div>
                             </div>
                         @endif
                     @endforeach

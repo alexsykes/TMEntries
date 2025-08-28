@@ -18,17 +18,20 @@
     <script>
         function removeAttachment() {
             document.getElementById('attachDiv').style.display = "none";
+            document.getElementById('hasAttachment').value = false;
         }
     </script>
     <x-slot:heading>Edit email</x-slot:heading>
     @php
         $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
         $addressToArray = array("Test", "Entry List", "Unconfirmed Entries", "Previous Entrants", "Other");
+        if($mail->originalName == "") { $hasAttachment = false; } else { $hasAttachment = true; }
     @endphp
     <form action="/usermail/update" method="POST" enctype="multipart/form-data">
         {{--        @method('PATCH')--}}
         @csrf
         <input type="hidden" id="mail_id" name="trial_id" value="{{$mail->id}}">
+        <input type="hidden" id="hasAttachment" name="hasAttachment" value="{{$hasAttachment}}">
         <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">{{$mail->summary}}</div>
             <div class="grid grid-cols-2 gap-4 px-4">
@@ -52,10 +55,10 @@
                 </div>
 
                 <div id="attachDiv" class=" col-span-3 mt-2">
-                @if($mail->originalName != "")
+{{--                @if($mail->originalName != "")--}}
                         <div class="font-semibold text-blue-700 col-span-3 mt-2">Attachment <span class="font-normal text-black">{{$mail->originalName}}</span></div>
                         <a class="text-red-600" onclick="removeAttachment()"><i class="fa-solid fa-trash text-red-600 ml-2 mr-2"></i>Remove attachment</a>
-                @else
+{{--                @else--}}
                     <x-form-field>
                         <x-form-label for="attachment">Attachment <span
                                     class="font-normal text-black">{{$mail->originalName}}</span></x-form-label>
@@ -67,7 +70,7 @@
                         <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                         @enderror
                     </x-form-field>
-                @endif
+{{--                @endif--}}
                 </div>
 
                 <x-form-field>

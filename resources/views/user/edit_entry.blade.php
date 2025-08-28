@@ -13,6 +13,7 @@
 
     $allClasses = array();
     $classes = $entry->classlist;
+    $status = $entry->status;
 //    dd($classes);
     $customClasses = $entry->customClasses;
 if($courses != "") {
@@ -62,7 +63,8 @@ if($customClasses != "") {
                         <x-form-field>
                             <x-form-label for="isYouth">Date of Birth</x-form-label>
                             <div class="mt-2">
-                                <x-form-input type="date" max="{{$maxDob}}" name="dob" id="dob" value="{{$entry->dob}}"/>
+                                <x-form-input type="date" max="{{$maxDob}}" name="dob" id="dob"
+                                              value="{{$entry->dob}}"/>
                                 <x-form-error name="dob"/>
                             </div>
                         </x-form-field>
@@ -90,7 +92,6 @@ if($customClasses != "") {
                             <x-form-error name="size"/>
                         </div>
                     </x-form-field>
-
 
 
                 </div>
@@ -148,15 +149,18 @@ if($customClasses != "") {
 
                 </div>
 
-                <div class="ml-4 mb-4">
-                    This entry can be withdrawn and a refund issued. Please note that an administration charge of £3 will be applied to any refunds.
-                </div>
-                </div>
-
+                @if($status == 1)
+                    <div class="ml-4 mb-4">
+                        This entry can be withdrawn and a refund issued. Please note that an administration charge of £3
+                        will be applied to any refunds.
+                    </div>
+                @endif
+            </div>
 
             <div class="mt-4" id="buttons">
                 <a href="/user/entries"
-                   class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel changes</a>
+                   class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel
+                    changes</a>
 
                 <button type="submit"
                         class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
@@ -164,7 +168,8 @@ if($customClasses != "") {
                 </button>
 
                 <a href="/user/removeEntry/{{$entry->id}}"
-                   class="rounded-md bg-red-600 ml-2 px-3 py-2  text-sm  text-white shadow-sm hover:bg-red-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900">Withdraw entry</a>
+                   class="rounded-md bg-red-600 ml-2 px-3 py-2  text-sm  text-white shadow-sm hover:bg-red-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900">Withdraw
+                    entry</a>
             </div>
 
         </form>

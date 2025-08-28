@@ -123,8 +123,6 @@ class ClubmailController extends Controller
     {
         $action = $request->input('action');
 
-
-//        dd($request->all());
         $attributes = $request->validate([
             'trial_id' => 'required',
             'category' => 'required',

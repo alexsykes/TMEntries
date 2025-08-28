@@ -73,7 +73,7 @@ class UserController extends Controller
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
             ->where('entries.id', $id)
             ->where('entries.created_by', $userID)
-            ->whereIn('entries.status', [0,1])
+            ->whereIn('entries.status', [0,1,4,5])
             ->get(['entries.*', 'trials.name as trial_name', 'trials.club as club', 'trials.classlist', 'trials.courselist', 'trials.customClasses', 'trials.customCourses', 'trials.isEntryLocked', 'trials.date as trialdate'])
         ->first();
 

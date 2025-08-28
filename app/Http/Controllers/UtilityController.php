@@ -97,7 +97,7 @@ EOD;
         });
 
         MYPDFG::setFooterCallback(function () {
-            MYPDFG::Cell(0,0, 'x indicates a missed section :: o indicates an omitted section which is not included in the scoring', 0, true, 'C');
+            MYPDFG::Cell(0,0, 'x indicates a missed section', 0, true, 'C');
             MYPDFG::Cell(0, 0, 'Provisional Results updated '. now(), 0, false, 'L', 0, '', 0, false, 'T', 'M');
             MYPDFG::Cell(0, 0, 'Page ' . MYPDFG::getAliasNumPage() . ' of ' . MYPDFG::getAliasNbPages(), 0, true, 'R', 0, '', 0, false, 'T', 'M');
         });
