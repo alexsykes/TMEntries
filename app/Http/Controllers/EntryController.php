@@ -434,9 +434,9 @@ class EntryController extends Controller
         $status = 0;
         if ($numEntries + 5 >= $entryLimit) {
             $status = 5;
-            EntryLimitReached::dispatch($trial_id);
+            EntryLimitReached::dispatch($trial_id, $entryLimit, $numEntries);
         }
-dd("EntryLimitReached::dispatch()");
+dd("EntryLimitReached::dispatch()", $trial_id, $entryLimit, $numEntries);
         $trial_date = date_create($trial->date);
 
         $IPaddress = $request->ip();

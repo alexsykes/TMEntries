@@ -674,8 +674,14 @@ class TrialController extends Controller
             ->select('name')
             ->get();
 
+        $reserveList = Entry::where('trial_id', $id)
+            ->where('status', 5)
+            ->select('name')
+            ->get()
+            ->sortBy('id');
+
         $trial = Trial::where('id', $id)->first();
-        return view('trials.entrylist', ['entries' => $entries, 'unconfirmed' => $unconfirmed, 'trial' => $trial]);
+        return view('trials.entrylist', ['entries' => $entries, 'unconfirmed' => $unconfirmed,'reserves' =>$reserveList, 'trial' => $trial]);
     }
 
     public function adminEntryList($id)

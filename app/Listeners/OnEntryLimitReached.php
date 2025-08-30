@@ -3,10 +3,13 @@
 namespace App\Listeners;
 
 use App\Events\EntryLimitReached;
+use App\Mail\LastChance;
+use App\Mail\ReserveAdded;
 use App\Models\Entry;
 use App\Models\Trial;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Mail;
 
 class OnEntryLimitReached
 {
@@ -23,11 +26,47 @@ class OnEntryLimitReached
      */
     public function handle(EntryLimitReached $event): void
     {
-//        dd($event->trial_id);
-        Info("Entry limit + 5 reached");
-        $unconfirmed = Entry::where("status", 0)
-            ->where("trial_id", $event->trial_id)
-            ->get();
-        dd("Unconfirmed: " . $unconfirmed);
+        $numEntries = $event->numEntries;
+        $entryLimit = $event->entry_limit;
+        $trialID = $event->trial_id;
+//        dump($trialID, $entryLimit, $numEntries);
+
+        Info("Confirmed entries: $event->numEntries" );
+
+//        Handle unconfirmed if 5 entries left
+        if($entryLimit - $numEntries == 5) {
+            $unconfirmed = Entry::where("status", 0)
+                ->join("users", "users.id", "=", "entries.created_by")
+                ->select('entries.id', 'entries.name', 'users.email')
+                ->where("trial_id", $trialID)
+                ->get();
+
+            $ids = array();
+            $trial = Trial::findOrFail($trialID);
+            $bcc = "monster@trialmonster.uk";
+            foreach ($unconfirmed as $entry) {
+//                Send LastChance email
+                Mail::to($entry->email)
+                    ->bcc($bcc)
+                    ->send(new LastChance($trial));
+
+
+
+
+//            $success = Entry::where('id', $entry->id)
+//                ->update(["status" => 5]);
+            }
+//            dd("Check");
+        }
+    }
+
+    public function moveToReserveList(Entry $entry): void{
+//        Mail
+
+
+//        Downgrade
+
+
+
     }
 }

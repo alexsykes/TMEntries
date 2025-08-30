@@ -6,6 +6,12 @@
         }
         $names = implode(', ', $tmp);
 
+        $tmp = array();
+        foreach ($reserves as $entry) {
+            array_push($tmp, $entry->name);
+        }
+        $reserveNames = implode(', ', $tmp);
+
         $numEntries = sizeof($entries) + sizeof($unconfirmed);
     @endphp
     <x-slot:heading>
@@ -33,12 +39,21 @@
             @endforeach
         </table>
         @endif
-@if(sizeof($unconfirmed) != 0 )
 
-    <div class="font-bold w-full pt-2 mt-2 pb-2 pl-4 pr-4   text-white bg-blue-600">Unconfirmed entries</div>
-        <div class="w-full text-sm mt-2 pl-4 pr-6">   {{$names}} </div>
+        @if(sizeof($reserves) != 0 )
 
-    @endif
+            <div class="font-bold w-full pt-2 mt-2 pb-2 pl-4 pr-4   text-white bg-blue-600">Reserve list</div>
+            <div class="w-full text-sm mt-2 pl-4 pr-6">   {{$reserveNames}} </div>
+
+        @endif
+
+        @if(sizeof($unconfirmed) != 0 )
+
+            <div class="font-bold w-full pt-2 mt-2 pb-2 pl-4 pr-4   text-white bg-blue-600">Unconfirmed entries</div>
+            <div class="w-full text-sm mt-2 pl-4 pr-6">   {{$names}} </div>
+
+        @endif
+
         @if($numEntries == 0)
             <div  class="w-full text-sm  pl-4 mt-2 pr-6">No entries have been received yet.</div>
         @endif
