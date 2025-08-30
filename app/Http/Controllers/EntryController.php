@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\EntryLimitReached;
 use App\Mail\EntryChanged;
 use App\Mail\PaymentReceived;
 use App\Mail\ReserveAdded;
@@ -431,10 +432,11 @@ class EntryController extends Controller
         ->count();
 
         $status = 0;
-        if ($numEntries >= $entryLimit) {
+        if ($numEntries + 5 >= $entryLimit) {
             $status = 5;
+            EntryLimitReached::dispatch($trial_id);
         }
-
+dd("EntryLimitReached::dispatch()");
         $trial_date = date_create($trial->date);
 
         $IPaddress = $request->ip();
@@ -1070,7 +1072,6 @@ class EntryController extends Controller
         Mail::to($email)
             ->bcc($bcc)
             ->send(new ReserveAdded($entry, $trial));
-        dd($username, $email);
     }
 
     public function generate($id) {
