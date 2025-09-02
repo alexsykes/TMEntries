@@ -36,7 +36,7 @@ class OnFiveSpacesReached
 //        Handle unconfirmed if 5 entries left
         if($entryLimit - $numEntries == 5) {
             $unconfirmed = Entry::where("status", 0)
-                ->join("users", "users.id", "=", "entries.created_by")
+                ->leftJoin("users", "users.id", "=", "entries.created_by")
                 ->select('entries.id', 'entries.name', 'users.email')
                 ->where("trial_id", $trialID)
                 ->get();
@@ -44,23 +44,13 @@ class OnFiveSpacesReached
             $ids = array();
             $trial = Trial::findOrFail($trialID);
             $bcc = "monster@trialmonster.uk";
+
             foreach ($unconfirmed as $entry) {
 //                Send LastChance email
-                Info("Sendmail to $entry->email");
+                Info("LastChance to $entry->email");
                 Mail::to($entry->email)
-                    ->bcc($bcc)
                     ->send(new LastChance($trial));
             }
         }
-    }
-
-    public function moveToReserveList(Entry $entry): void{
-//        Mail
-
-
-//        Downgrade
-
-
-
     }
 }

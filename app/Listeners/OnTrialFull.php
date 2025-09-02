@@ -48,9 +48,9 @@ class OnTrialFull
                     ->bcc($bcc)
                     ->send(new \App\Mail\TrialFull($trial));
         }
-//        Entry::whereIn('entries.id', $ids)
-//            ->update(['entries.status' => 5,
-//                'updated_at' => now()
-//            ]);
+        Entry::whereIn('entries.id', $ids)
+            ->update(['entries.status' => 5,
+                'updated_at' => now()
+            ]);
     }
 }

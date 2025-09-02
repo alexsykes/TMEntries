@@ -437,13 +437,13 @@ class EntryController extends Controller
         $status = 0;
         $spaces = $entryLimit - $numEntries;
 
-        if ($spaces == 5) {
-            FiveSpacesReached::dispatch($trial_id, $entryLimit, $numEntries);
-        }
+//        if ($spaces == 5) {
+////            FiveSpacesReached::dispatch($trial_id, $entryLimit, $numEntries);
+//        }
 
 //        If no spaces, then change status 0 to status 5 - Reserve List
         if ($spaces <=  0) {
-            TrialFull::dispatch($trial_id, $entryLimit, $numEntries);
+//            TrialFull::dispatch($trial_id, $entryLimit, $numEntries);
             $status = 5;
         }
 
@@ -516,7 +516,6 @@ class EntryController extends Controller
 
         $attributes['dob'] = $request->dob;
         $entry = Entry::create($attributes);
-
 
         $trial = Trial::findOrFail($attributes['trial_id']);
 
