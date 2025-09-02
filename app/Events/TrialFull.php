@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Trial;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -11,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class EntryLimitReached
+class TrialFull
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -19,7 +18,9 @@ class EntryLimitReached
      * Create a new event instance.
      */
     public function __construct(public int $trial_id, public int $entry_limit, public int $numEntries)
-    {  }
+    {
+        //
+    }
 
     /**
      * Get the channels the event should broadcast on.

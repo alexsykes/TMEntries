@@ -2,16 +2,15 @@
 
 namespace App\Listeners;
 
-use App\Events\EntryLimitReached;
+use App\Events\FiveSpacesReached;
 use App\Mail\LastChance;
 use App\Mail\ReserveAdded;
 use App\Models\Entry;
 use App\Models\Trial;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
 
-class OnEntryLimitReached
+class OnFiveSpacesReached
 {
     /**
      * Create the event listener.
@@ -24,14 +23,15 @@ class OnEntryLimitReached
     /**
      * Handle the event.
      */
-    public function handle(EntryLimitReached $event): void
+    public function handle(FiveSpacesReached $event): void
     {
         $numEntries = $event->numEntries;
         $entryLimit = $event->entry_limit;
         $trialID = $event->trial_id;
 //        dump($trialID, $entryLimit, $numEntries);
 
-        Info("Confirmed entries: $event->numEntries" );
+        Info("Confirmed entries: $numEntries" );
+        Info("Entry limit: $entryLimit" );
 
 //        Handle unconfirmed if 5 entries left
         if($entryLimit - $numEntries == 5) {
@@ -46,17 +46,11 @@ class OnEntryLimitReached
             $bcc = "monster@trialmonster.uk";
             foreach ($unconfirmed as $entry) {
 //                Send LastChance email
+                Info("Sendmail to $entry->email");
                 Mail::to($entry->email)
                     ->bcc($bcc)
                     ->send(new LastChance($trial));
-
-
-
-
-//            $success = Entry::where('id', $entry->id)
-//                ->update(["status" => 5]);
             }
-//            dd("Check");
         }
     }
 

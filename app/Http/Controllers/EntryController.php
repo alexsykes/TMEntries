@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\EntryLimitReached;
+use App\Events\FiveSpacesReached;
+use App\Events\TrialFull;
 use App\Mail\EntryChanged;
 use App\Mail\PaymentReceived;
 use App\Mail\ReserveAdded;
@@ -430,13 +431,22 @@ class EntryController extends Controller
         $numEntries = Entry::where('trial_id', $trial_id)
             ->whereIn('status', [1,7,8,9])
         ->count();
-
+        Info("NumEntries: $numEntries");
+//        Check for number of entries left
+//        If 5, then email registered but not paid
         $status = 0;
-        if ($numEntries + 5 >= $entryLimit) {
-            $status = 5;
-            EntryLimitReached::dispatch($trial_id, $entryLimit, $numEntries);
+        $spaces = $entryLimit - $numEntries;
+
+        if ($spaces == 5) {
+            FiveSpacesReached::dispatch($trial_id, $entryLimit, $numEntries);
         }
-dd("EntryLimitReached::dispatch()", $trial_id, $entryLimit, $numEntries);
+
+//        If no spaces, then change status 0 to status 5 - Reserve List
+        if ($spaces <=  0) {
+            TrialFull::dispatch($trial_id, $entryLimit, $numEntries);
+            $status = 5;
+        }
+
         $trial_date = date_create($trial->date);
 
         $IPaddress = $request->ip();

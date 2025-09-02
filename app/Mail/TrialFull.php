@@ -8,9 +8,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Queue\SerializesModels;
 
-class LastChance extends Mailable
+class TrialFull extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -28,7 +29,7 @@ class LastChance extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Last Chance - '.$this->trial->name,
+            subject: 'Entries Full - '.$this->trial->name,
         );
     }
 
@@ -38,7 +39,7 @@ class LastChance extends Mailable
     public function content(): Content
     {
         return new Content(
-            html: 'mails.last_chance',
+            html: 'mails.trial_full',
             with: [
                 'trial' => $this->trial,
             ],
@@ -53,5 +54,19 @@ class LastChance extends Mailable
     public function attachments(): array
     {
         return [];
+    }
+
+    public function headers(): Headers
+
+    {
+
+        return new Headers(
+
+            text: [
+                'X-Priority' => '2',
+                'X-MSMail-Priority' => 'Normal',
+                'Importance' => 'Normal',
+            ],
+        );
     }
 }
