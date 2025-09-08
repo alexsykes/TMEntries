@@ -68,6 +68,7 @@ function onProductCreated($productObject)
     }
 
     $club_id = $metadata['club_id'];
+
     $trialid = 0;
     if (isset($metadata['trialid'])) {
         $trialid = $metadata['trialid'];
@@ -233,7 +234,7 @@ function onCheckoutSessionCompleted($sessionObject)
 //        Check for full entry list
         $entryLimit = $trial->entryLimit;
         $numEntries = Entry::where('trial_id', $trialID)
-            ->whereIn('status', [1, 7, 8, 9])
+            ->whereIn('status', [1, 4, 7, 8, 9])
             ->count();
         Info("NumEntries: $numEntries");
 //        Check for number of entries left
@@ -270,10 +271,71 @@ function onRefundCreated(mixed $object)
 
         $entry = DB::table('entries')->find($entryID);
         $email = $entry->email;
+        /*
+
+//        TODO Remove comments
         Mail::to($email)
             ->bcc($bcc)
             ->send(new RefundRequested($entry));
+        */
         info("Refund Requested: $entryID");
+
+//        dd("Refund Requested: $entryID");        */
+////       Check for spaces
+        $trialID = $entry->trial_id;
+
+        $trial = Trial::findOrFail($trialID);
+
+//        Check for full entry list
+        $entryLimit = $trial->entryLimit;
+        $numEntries = Entry::where('trial_id', $trialID)
+            ->whereIn('status', [1, 4, 7, 8, 9])
+            ->count();
+        Info("NumEntries: $numEntries");
+//        Check for number of entries left
+//        If 5, then email registered but not paid
+        $spaces = $entryLimit - $numEntries;
+
+        echo "Spaces: $spaces\n";
+//        $spaces - which should equal 1 in most cases
+        $reserveIDs = Entry::where('status', 5)
+            ->where('trial_id', $trialID)
+            ->orderBy('updated_at')
+            ->limit(1)
+            ->get();
+
+        foreach ($reserveIDs as $reserveID) {
+
+            $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
+
+            $id = $reserveID->id;
+            $email = $reserveID->email;
+            $name = $reserveID->name;
+            $stripe_product_id = $reserveID->stripe_product_id;
+
+            $customer = $stripe->customers->create
+            ([
+                'name' => $name,
+                'email' => $email,
+            ]);
+
+            $invoice = $stripe->invoices->create([
+                'customer' => $customer->id,
+                    'collection_method' => 'send_invoice',
+                    'days_until_due' => 3,
+                    ]
+            );
+
+// TODO Remove comment on next line
+////            $reserveID->update(['status' => 4]);
+
+//            echo("Reserve $id: $name - $email \n");
+//            echo("Product $stripe_product_id \n");
+//            echo("Customer $customer->id     \n");
+//            echo("Invoice $invoice->id     \n");
+//            Raise invoice
+
+        }
     }
 }
 

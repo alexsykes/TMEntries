@@ -26,7 +26,7 @@
                             <form method="POST" action="/logout">
                                 @csrf
                                 <button type="submit"
-                                        class="text-white bg-blue-700 border-white border hover:bg-blue-30tme_subscription_items0 hover:text-white px-3 py-1 rounded-md text-sm font-medium">
+                                        class="text-white bg-blue-700 border-white border hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">
                                     Log out
                                 </button>
                             </form>

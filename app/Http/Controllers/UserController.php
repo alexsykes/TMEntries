@@ -116,6 +116,7 @@ class UserController extends Controller
     }
 
     public function userWithdraw($id){
+//        dd($id);
         $userID = auth()->user()->id;
         $entry = Entry::findorfail($id);
 
@@ -136,6 +137,7 @@ class UserController extends Controller
         $entry->status = 2;
         $entry->save();
 
+//        dd($id, $entry->stripe_payment_intent);
         //        Request request
         require('../vendor/autoload.php');
         require('../vendor/stripe/stripe-php/lib/StripeClient.php');
@@ -146,7 +148,6 @@ class UserController extends Controller
             'metadata' => ['id' => $id],
             'payment_intent' => $pi,
             'amount' => $cost - 300,
-//            'amount' => 1,
         ]);
 
         return redirect('user/entries');

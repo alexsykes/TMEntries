@@ -14,7 +14,7 @@ $download_link = asset('pdf/results/'.$filename);
             If($fifty_fifty != "") {
                 $hasFifty = true;
                 $fiftyArray = explode(",", $fifty_fifty);
-//                dump($fiftyArray);
+
             }
             $courselist = $trial->courselist;
             $classlist = $trial->classlist;
@@ -32,7 +32,7 @@ $download_link = asset('pdf/results/'.$filename);
     @endphp
 
     <div class="text-black mb-2 sm:hidden">Scores display will be improved by turning your phone on its side.</div>
-    <div class="text-red-600 mb-2 ml-2 font-semibold "><a href="{{$download_link}}">!New! Result download in traditional format - click here</a></div>
+    <div class="text-red-600 mb-2 ml-2 font-semibold "><a href="{{$download_link}}"><span><i class="fa-solid fa-star"></i></span>New - Result download in traditional format - click here</a></div>
     <div class="tab pl-8">
         <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-1" id="defaultOpen"
                 onclick="openSection(event, 'Results')">

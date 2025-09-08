@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Trial;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\ResultController;
@@ -64,27 +65,31 @@ class ScoringController extends Controller
 
     public function grid($trialID)
     {
+        $db_prefix = Config::get('database.connections.mysql.prefix');
         $trial = Trial::find($trialID);
         $riderNumbers = $this->getRiderNumbers($trialID);
 
-        $scores = DB::select("SELECT rider, GROUP_CONCAT( IF(score IS NULL, '.',score) ORDER BY section, lap SEPARATOR '') AS scoreData FROM tme_scores WHERE trial_id = {$trialID} GROUP BY rider  ORDER BY rider");
+        $scores = DB::select("SELECT rider, GROUP_CONCAT( IF(score IS NULL, '.',score) ORDER BY section, lap SEPARATOR '') AS scoreData FROM ".$db_prefix."scores WHERE trial_id = {$trialID} GROUP BY rider  ORDER BY rider");
+
         return view('scoring.grid', ['scores' => $scores, 'trial' => $trial, 'riderNumbers' => $riderNumbers]);
     }
 
     public function sectionScores($trialid, $section)
     {
+        $db_prefix = Config::get('database.connections.mysql.prefix');
         $trial = Trial::find($trialid);
 
-        $scores = DB::select("SELECT rider, GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM tme_scores WHERE trial_id = {$trialid} AND section = {$section}  GROUP BY rider  ORDER BY rider	;");
+        $scores = DB::select("SELECT rider, GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM ".$db_prefix."scores WHERE trial_id = {$trialid} AND section = {$section}  GROUP BY rider  ORDER BY rider	;");
 //        dd($scores);
         return view('scoring.section_score_grid', ['scores' => $scores, 'trial' => $trial, 'section' => $section]);
     }
 
     public function sectionScoresForRider($trialID, $rider, $section)
     {
+        $db_prefix = Config::get('database.connections.mysql.prefix');
         $trial = Trial::find($trialID);
         $numLaps = $trial->numLaps;
-        $scores = DB::select("SELECT  GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM tme_scores WHERE trial_id = {$trialID} AND section = {$section}  AND  rider	= {$rider}  GROUP BY rider  ORDER BY rider;");
+        $scores = DB::select("SELECT  GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM ".$db_prefix."scores WHERE trial_id = {$trialID} AND section = {$section}  AND  rider	= {$rider}  GROUP BY rider  ORDER BY rider;");
 
         return view('scoring.editRiderSectionScore', ['scores' => $scores, 'rider' => $rider, 'section' => $section,'numLaps' => $numLaps,  'trialID' => $trialID]);
     }
@@ -179,6 +184,7 @@ class ScoringController extends Controller
 
     public function publish(Request $request)
     {
+        $db_prefix = Config::get('database.connections.mysql.prefix');
 //        Get trial details
         $trialID = $request->trialID;
         $trial = DB::table('trials')->where('id', $trialID)->first();
@@ -207,7 +213,7 @@ class ScoringController extends Controller
         $nonStarters = $this->getNonStarters($trialID, $allMissed);
 
 //        Get rider scores
-        $riderScores = Db::select("SELECT e.ridingNumber, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS sectionScores, GROUP_CONCAT(score ORDER BY lap, section SEPARATOR '') AS sequentialScores FROM tme_entries e JOIN tme_scores s ON e.ridingNumber = s.rider AND e.trial_id = s.trial_id WHERE e.trial_id = $trialID GROUP BY ridingNumber");
+        $riderScores = Db::select("SELECT e.ridingNumber, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS sectionScores, GROUP_CONCAT(score ORDER BY lap, section SEPARATOR '') AS sequentialScores FROM ".$db_prefix."entries e JOIN ".$db_prefix."scores s ON e.ridingNumber = s.rider AND e.trial_id = s.trial_id WHERE e.trial_id = $trialID GROUP BY ridingNumber");
 
 //        then transfer all scores to entries
         foreach ($riderScores as $riderScore) {
@@ -248,9 +254,9 @@ class ScoringController extends Controller
                 ]);
         }
         $utilityController = new UtilityController();
-        $utilityController->getResultsPDF($trialID);
+        $utilityController->saveResultsPDF($trialID);
 
-        $this->lockTrial($trialID);
+//        $this->lockTrial($trialID);
         $this->updateTrial($trialID);
         return redirect("/results/display/{$trialID}");
     }
