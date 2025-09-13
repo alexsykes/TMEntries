@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\EntryWithdrawn;
 use App\Models\Entry;
 use App\Models\Price;
 use Illuminate\Http\Request;
@@ -137,7 +138,6 @@ class UserController extends Controller
 
     public function userWithdraw($id)
     {
-//        dd($id);
         $userID = auth()->user()->id;
         $entry = Entry::findorfail($id);
 
@@ -157,6 +157,7 @@ class UserController extends Controller
             $entry->status = 2;
             $entry->save();
 
+            EntryWithdrawn::dispatch($id);
 //        dd($id, $entry->stripe_payment_intent);
             //        Request request
             require('../vendor/autoload.php');
