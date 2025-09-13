@@ -4,9 +4,9 @@ namespace App\Listeners;
 
 use App\Events\FiveSpacesReached;
 use App\Events\TrialFull;
+use App\Mail\PaymentReceived;
 use App\Mail\ProductCreated;
 use App\Mail\RefundConfirmed;
-use App\Mail\RefundRequested;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Product;
@@ -218,9 +218,9 @@ function onCheckoutSessionCompleted($sessionObject)
 
 //  Send confirmation email with bcc: to admin
     $bcc = 'admin@trialmonster.uk';
-//    Mail::to($email)
-//        ->bcc($bcc)
-//        ->send(new PaymentReceived($entries));
+    Mail::to($email)
+        ->bcc($bcc)
+        ->send(new PaymentReceived($entries));
     info("Checkout session completed. $entryIDs");
 
 
@@ -231,27 +231,32 @@ function onCheckoutSessionCompleted($sessionObject)
     foreach ($trialIDs as $trialID) {
         $trial = Trial::findOrFail($trialID);
 
+//        Check whether trial has entry limit
+        if ($trial->hasEntryLimit) {
+            info("Trial has entryLimit");
 //        Check for full entry list
-        $entryLimit = $trial->entryLimit;
-        $numEntries = Entry::where('trial_id', $trialID)
-            ->whereIn('status', [1, 4, 7, 8, 9])
-            ->count();
-        Info("NumEntries: $numEntries");
+            $entryLimit = $trial->entryLimit;
+            $numEntries = Entry::where('trial_id', $trialID)
+                ->whereIn('status', [1, 4, 7, 8, 9])
+                ->count();
+            Info("NumEntries: $numEntries");
 //        Check for number of entries left
 //        If 5, then email registered but not paid
-        $spaces = $entryLimit - $numEntries;
+            $spaces = $entryLimit - $numEntries;
 
-//         echo "Spaces: $spaces\n Limit: $entryLimit\n Entries: $numEntries";
+//            echo "Spaces: $spaces\n Limit: $entryLimit\n Entries: $numEntries";
 
-        if ($spaces == 5) {
+            if ($spaces == 5) {
 //             send LastChance email
-            FiveSpacesReached::dispatch($trialID, $entryLimit, $numEntries);
-        }
+                info("FiveSpacesReached ($spaces spaces) dispatched");
+                FiveSpacesReached::dispatch($trialID, $entryLimit, $numEntries);
+            }
 
-        if ($spaces <= 0) {
-            TrialFull::dispatch($trialID, $entryLimit, $numEntries);
+            if ($spaces <= 0) {
+                info("TrialFull ($spaces spaces) dispatched");
+                TrialFull::dispatch($trialID, $entryLimit, $numEntries);
+            }
         }
-
     }
 
 
@@ -320,10 +325,10 @@ function onRefundCreated(mixed $object)
             ]);
 
             $invoice = $stripe->invoices->create([
-                'customer' => $customer->id,
+                    'customer' => $customer->id,
                     'collection_method' => 'send_invoice',
                     'days_until_due' => 3,
-                    ]
+                ]
             );
 
 // TODO Remove comment on next line
@@ -396,7 +401,7 @@ class StripeEventListener
     public function handle(WebhookReceived $event): void
     {
         $eventType = $event->payload['type'];
-        info("event type: $eventType");
+//        info("event type: $eventType");
         switch ($eventType) {
             case 'refund.created':
                 $object = $event->payload['data']['object'];
@@ -443,7 +448,7 @@ class StripeEventListener
                 onPaymentIntentCreated($object);
                 break;
             default:
-                echo 'Received unknown event type ' . $eventType;
+                info('Received unknown event type ' . $eventType);
         }
     }
 

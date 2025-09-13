@@ -196,6 +196,20 @@
                                 </div>
                             </div>
                         </x-form-field>
+
+
+
+                        <x-form-field>
+                            <x-form-label for="number">Riding Number</x-form-label>
+                            <div class="mt-2 col-span-2">
+                                <x-form-input name="number" type="text" id="number" :value="old('number')"
+                                              placeholder="Optional"/>
+                                <x-form-error name="number"/>
+                            </div>
+                            @error('number')
+                            <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                            @enderror
+                        </x-form-field>
                     </div>
                 </div>
 

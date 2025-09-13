@@ -168,7 +168,7 @@ Route::patch('/user/entry/update', [UserController::class, 'updateEntry'])->midd
 Route::get('/stripe/usercheckout', [StripePaymentController::class, 'stripeUserCheckout']);
 
 Route::get('/user/removeEntry/{id}', [UserController::class, 'removeEntry'])->middleware(['auth', 'verified']); // First stage in rentry withdrawal
-Route::get('/user/confirmRemoveEntry', [UserController::class, 'confirmRemoveEntry'])->middleware(['auth', 'verified']); // Second stage
+//Route::get('/user/confirmRemoveEntry', [UserController::class, 'confirmRemoveEntry'])->middleware(['auth', 'verified']); // Second stage
 Route::get('/user/withdraw/{id}', [UserController::class, 'userWithdraw'])->middleware(['auth', 'verified']); // Final stage
 
 // ADMIN Routes

@@ -146,7 +146,6 @@ if($customClasses != "") {
                             </div>
                         </div>
                     </x-form-field>
-
                 </div>
 
                 @if($status == 1)
@@ -163,13 +162,22 @@ if($customClasses != "") {
                     changes</a>
 
                 <button type="submit"
+                        name="action"
+                        value="save"
                         class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
                     Save changes
                 </button>
 
-                <a href="/user/removeEntry/{{$entry->id}}"
-                   class="rounded-md bg-red-600 ml-2 px-3 py-2  text-sm  text-white shadow-sm hover:bg-red-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900">Withdraw
-                    entry</a>
+                <button type="submit"
+                        name="action"
+                        value="withdraw"
+                        class="rounded-md ml-2 bg-red-600 px-3 py-1 text-sm border border-red-800 text-white drop-shadow-lg hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                    Withdraw
+                </button>
+
+{{--                <a href="/user/removeEntry/{{$entry->id}}"--}}
+{{--                   class="rounded-md bg-red-600 ml-2 px-3 py-2  text-sm  text-white shadow-sm hover:bg-red-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900">Withdraw--}}
+{{--                    entry</a>--}}
             </div>
 
         </form>

@@ -9,7 +9,7 @@
     </x-slot:heading>
     <?php
     session(['trial_id' => $trial->id]);
-//dd($clubData);
+//dd($trial);
 
 $methodOfMarking = $clubData->section_markers;
     $latitude = $trial->venue->latitude;

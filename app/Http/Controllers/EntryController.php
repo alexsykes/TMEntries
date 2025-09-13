@@ -425,26 +425,31 @@ class EntryController extends Controller
     {
         $trial_id = session('trial_id');
         $trial = Trial::findOrFail($trial_id);
+//        Check for entry limit
+        $hasEntryLimit = $trial->hasEntryLimit;
 
+        $status = 0;
+
+        if($hasEntryLimit) {
 //        Check for full entry list
-        $entryLimit = $trial->entryLimit;
-        $numEntries = Entry::where('trial_id', $trial_id)
-            ->whereIn('status', [1,7,8,9])
-        ->count();
-        Info("NumEntries: $numEntries");
+            $entryLimit = $trial->entryLimit;
+            $numEntries = Entry::where('trial_id', $trial_id)
+                ->whereIn('status', [1, 7, 8, 9])
+                ->count();
+            Info("NumEntries: $numEntries");
 //        Check for number of entries left
 //        If 5, then email registered but not paid
-        $status = 0;
-        $spaces = $entryLimit - $numEntries;
+            $spaces = $entryLimit - $numEntries;
 
 //        if ($spaces == 5) {
 ////            FiveSpacesReached::dispatch($trial_id, $entryLimit, $numEntries);
 //        }
 
 //        If no spaces, then change status 0 to status 5 - Reserve List
-        if ($spaces <=  0) {
+            if ($spaces <= 0) {
 //            TrialFull::dispatch($trial_id, $entryLimit, $numEntries);
-            $status = 5;
+                $status = 5;
+            }
         }
 
         $trial_date = date_create($trial->date);
@@ -535,7 +540,11 @@ class EntryController extends Controller
 
     public function delete(Request $request)
     {
-        Entry::destroy($request->id);
+        $entry = Entry::findOrFail($request->id);
+        $entry->status = 6;
+        $entry->ridingNumber = 0;
+        $entry->save();
+
         return redirect('entries/register/' . session('trial_id'));
     }
 
@@ -991,6 +1000,7 @@ class EntryController extends Controller
         $attributes['IPaddress'] = $IPaddress;
         $attributes['size'] = $request->size;
         $attributes['licence'] = $request->licence;
+        $attributes['ridingNumber'] = $request->number;
         $attributes['token'] = "OTD";
         $attributes['accept'] = false;
         $attributes['created_by'] = 0;
