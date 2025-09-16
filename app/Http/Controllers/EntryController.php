@@ -98,7 +98,12 @@ class EntryController extends Controller
             ->where('trial_id', $trial_id)
             ->where('status', 0);
 
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial]);
+        $reserves = Entry::all()
+            ->where('created_by', $user_id)
+            ->where('trial_id', $trial_id)
+            ->whereIn('status', [4 ,5]);
+
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves]);
     }
 
 //     From editing from list on register page
@@ -434,7 +439,7 @@ class EntryController extends Controller
 //        Check for full entry list
             $entryLimit = $trial->entryLimit;
             $numEntries = Entry::where('trial_id', $trial_id)
-                ->whereIn('status', [1, 7, 8, 9])
+                ->whereIn('status', [1, 4, 7, 8, 9])
                 ->count();
             Info("NumEntries: $numEntries");
 //        Check for number of entries left
@@ -535,7 +540,12 @@ class EntryController extends Controller
             ->where('status', 0)
             ->where('created_by', $attributes['created_by']);
 
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial]);
+
+        $reserves = Entry::all()
+            ->where('trial_id', $trial_id)
+            ->whereIn('status', [ 4, 5])
+            ->where('created_by', $attributes['created_by']);
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves]);
     }
 
     public function delete(Request $request)

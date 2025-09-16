@@ -27,7 +27,7 @@ class EntryOffer extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Entry Offer',
+            subject: 'Entry Offer - payment due',
         );
     }
 
@@ -37,7 +37,7 @@ class EntryOffer extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'mails.entry_offer',
         );
     }
 

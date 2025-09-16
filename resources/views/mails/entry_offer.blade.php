@@ -1,1 +1,3 @@
-<?php
+<x-mail>
+
+</x-mail>

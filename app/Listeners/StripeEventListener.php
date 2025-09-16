@@ -309,6 +309,7 @@ function onRefundCreated(mixed $object)
             ->limit(1)
             ->get();
 
+        /*
         foreach ($reserveIDs as $reserveID) {
 
             $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
@@ -341,6 +342,7 @@ function onRefundCreated(mixed $object)
 //            Raise invoice
 
         }
+        */
     }
 }
 

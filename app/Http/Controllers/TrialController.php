@@ -675,7 +675,7 @@ class TrialController extends Controller
             ->get();
 
         $reserveList = Entry::where('trial_id', $id)
-            ->where('status', 5)
+            ->whereIn('status', [4, 5])
             ->select('name')
             ->get()
             ->sortBy('id');

@@ -82,15 +82,15 @@
             </div>
 
             <table class="w-full">
-{{--                <tr>--}}
-{{--                    <th class="">Ref</th>--}}
-{{--                    <th class="pl-2">Name</th>--}}
-{{--                    <th class="pl-2 hidden sm:table-cell">Course</th>--}}
-{{--                    <th class="pl-2 hidden sm:table-cell">Class</th>--}}
-{{--                    <th class="pl-2 hidden md:table-cell">Bike</th>--}}
-{{--                    <th class="pl-2"></th>--}}
-{{--                    <th class="pl-2"></th>--}}
-{{--                </tr>--}}
+                {{--                <tr>--}}
+                {{--                    <th class="">Ref</th>--}}
+                {{--                    <th class="pl-2">Name</th>--}}
+                {{--                    <th class="pl-2 hidden sm:table-cell">Course</th>--}}
+                {{--                    <th class="pl-2 hidden sm:table-cell">Class</th>--}}
+                {{--                    <th class="pl-2 hidden md:table-cell">Bike</th>--}}
+                {{--                    <th class="pl-2"></th>--}}
+                {{--                    <th class="pl-2"></th>--}}
+                {{--                </tr>--}}
                 @foreach($entries as $entry)
                     @php
                         $entryID = $entry->id ;
@@ -121,10 +121,44 @@
         </form>
         {{--        <form action="/entries/checkout" method="post">--}}
 
-{{--        <div class="mt-4" id="buttons">--}}
-{{--            <a href="/user/entries"--}}
-{{--               class="mt-4 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Go to Checkout</a>--}}
-{{--        </div>--}}
+        {{--        <div class="mt-4" id="buttons">--}}
+        {{--            <a href="/user/entries"--}}
+        {{--               class="mt-4 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Go to Checkout</a>--}}
+        {{--        </div>--}}
+    @endif
+    @if(sizeof($reserves) > 0)
+        <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Reserves - you will receive an email notification if a space becomes available.
+            </div>
+
+            <table class="w-full">
+                @foreach($reserves as $entry)
+                    @php
+                        $entryID = $entry->id ;
+                        array_push($entryIDs, $entryID);
+                    @endphp
+                    <tr class="odd:bg-white  even:bg-gray-50  border-b">
+                        <td class="pl-2">{{$entryID}}</td>
+                        <td class="pl-2">{{$entry->name}}</td>
+                        <td class="pl-2 hidden sm:table-cell">{{$entry->course}}</td>
+                        <td class="pl-2 hidden sm:table-cell">{{$entry->class}}</td>
+                        <td class="pl-2 hidden md:table-cell">{{$entry->make}} {{$entry->size}}</td>
+                        <td class="pl-2"><a href="/entries/edit/{{$entryID}}"><i class="fa-solid fa-pen-to-square"></i></a>
+                        </td>
+                        <td class="pl-2"><a href="/entries/delete/{{$entryID}}"><i
+                                        class="fa-solid fa-ban text-orange-700"></i></a></td>
+                    </tr>
+                @endforeach
+            </table>
+        </div>
+
+
+        {{--        <form action="/entries/checkout" method="post">--}}
+
+        {{--        <div class="mt-4" id="buttons">--}}
+        {{--            <a href="/user/entries"--}}
+        {{--               class="mt-4 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Go to Checkout</a>--}}
+        {{--        </div>--}}
     @endif
 
 
