@@ -422,6 +422,19 @@ class StripeEventListener
                 $object = $event->payload['data']['object'];
                 onCheckoutSessionCompleted($object);
                 break;
+
+            case 'invoice.created':
+
+                break;
+
+            case 'invoice.sent':
+
+                break;
+
+            case 'invoice.paid':
+
+                break;
+
             case 'product.updated':
                 $object = $event->payload['data']['object'];
                 onProductUpdated($object);

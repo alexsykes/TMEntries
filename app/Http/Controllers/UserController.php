@@ -145,7 +145,6 @@ class UserController extends Controller
             abort(403);
         }
 
-
         if ($entry->status == 1) {
 
 //        Get payment details
@@ -159,18 +158,22 @@ class UserController extends Controller
 
             EntryWithdrawn::dispatch($id);
 //        dd($id, $entry->stripe_payment_intent);
-            //        Request request
+//                    Request request
             require('../vendor/autoload.php');
             require('../vendor/stripe/stripe-php/lib/StripeClient.php');
             $stripe = new StripeClient(config('stripe.stripe_secret_key'));
 
-//            todo revert amount
+
+            info("Line 168 ID: $id \n");
+//            TODO revert amount
             $stripe->refunds->create
             ([
-                'metadata' => ['id' => $id],
                 'payment_intent' => $pi,
 //                'amount' => $cost - 300,
                 'amount' => 1,
+                'metadata' => [
+                    'entry_id' => $entry->id,
+                ]
             ]);
         } elseif ($entry->status == 0) {
             $entry->updated_at = now();

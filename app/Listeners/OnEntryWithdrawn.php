@@ -12,8 +12,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
 use App\Events\EntryWithdrawn;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Stripe\StripeClient;
 
 class OnEntryWithdrawn
 {
@@ -30,6 +32,7 @@ class OnEntryWithdrawn
      */
     public function handle(EntryWithdrawn $event): void
     {
+        info("OnEntryWithdrawn");
         $entryID = $event->entryID;
 
 //      Get trial details
@@ -55,7 +58,10 @@ class OnEntryWithdrawn
             foreach ($entriesToOffer as $entry) {
                 info("Entry Withdrawn: place to offer");
                 $userID = $entry->created_by;
-                $email = User::findOrFail($userID)->email;
+                $user = User::findOrFail($userID);
+                $email = $user->email;
+                $username = $user->name;
+
                 $name = $entry->name;
                 $entryID = $entry->id;
 
@@ -69,7 +75,9 @@ class OnEntryWithdrawn
                     ->first();
 
                 info("Product ID: $productID \n PriceID: $priceID");
-                $bcc = 'admin@trialmonster.uk';
+
+                $this->invoice($entry, $email, $username);
+//                $bcc = 'admin@trialmonster.uk';
 //
 //
 //                Mail::to($email)
@@ -82,76 +90,42 @@ class OnEntryWithdrawn
 
     }
 
-//    function raiseInvoice()
-//    {
-//
-//        require_once '../vendor/autoload.php';
-//        require_once '../secrets.php';
-//
-//        \Stripe\Stripe::setApiKey($stripeSecretKey);
-//// You probably have a database to keep track of preexisting customers.
-//// But to keep things simple, we'll use an Object to store Stripe object IDs in this example.
-//        $CUSTOMERS = [
-//            [
-//                'stripeId' => 'cus_123456789',
-//                'email' => 'jenny.rosen@example.com'
-//            ],
-//        ];
-//// Prices on Stripe model the pricing scheme of your business.
-//// Create Prices in the Dashboard or with the API before accepting payments
-//// and store the IDs in your database.
-//        $PRICES = [
-//            'basic' => 'price_123456789',
-//            'professional' => 'price_987654321',
-//        ];
-//
-//        function sendInvoice($email)
-//        {
-//            // Look up a customer in your database
-//            global $CUSTOMERS;
-//            global $PRICES;
-//
-//            $customerId = null;
-//
-//            $customers = array_filter($CUSTOMERS, function ($customer) use ($email) {
-//                return $customer['email'] === $email;
-//            });
-//
-//            if (!$customers) {
-//                // Create a new Customer
-//                $customer = \Stripe\Customer::create([
-//                    'email' => $email,
-//                    'description' => 'Customer to invoice',
-//                ]);
-//                // Store the Customer ID in your database to use for future purchases
-//                $CUSTOMERS[] = [
-//                    'stripeId' => $customer->id,
-//                    'email' => $email
-//                ];
-//
-//                $customerId = $customer->id;
-//            } else {
-//                // Read the Customer ID from your database
-//                $customerId = $customers[0]['stripeId'];
-//            }
-//
-//            // Create an Invoice
-//            $invoice = \Stripe\Invoice::create([
-//                'customer' => $customerId,
-//                'collection_method' => 'send_invoice',
-//                'days_until_due' => 30,
-//            ]);
-//
-//            // Create an Invoice Item with the Price, and Customer you want to charge
-//            $invoiceItem = \Stripe\InvoiceItem::create([
-//                'customer' => $customerId,
-//                'price' => $PRICES['basic'],
-//                'invoice' => $invoice->id
-//            ]);
-//
-//
-//            // Send the Invoice
-//            $invoice->sendInvoice();
-//        }
-//    }
+    public function invoice($entry, $email, $username){
+//    info('Invoice');
+        $another = new StripeClient(Config::get('stripe.stripe_secret_key'));
+
+        $trialID = $entry->trial_id;
+        $trial = Trial::findOrFail($trialID);
+        $trialName = $trial->name;
+        $trialClub = $trial->club;
+
+        $customer = $another->customers->create([
+            'email' => $email,
+            'description' => $username,
+        ]);
+
+        $customerId = $customer->id;
+
+        $entryID = $entry->id;
+        // Create an Invoice
+        $invoice = $another->invoices->create([
+            'customer' => $customerId,
+            'description' => $trialClub.' - '.$trialName,
+            'collection_method' => 'send_invoice',
+            'days_until_due' => 3,
+            'metadata' => [
+                'entryID' => $entryID,
+            ]
+        ]);
+
+//   Add line items
+        $invoiceItem = $another->invoiceItems->create([
+            'customer' => $customerId,
+            "amount" => 2000,
+            'description' => ' Ref: '.$entryID,
+            'invoice' => $invoice->id,
+        ]);
+
+        $invoice->sendInvoice();
+    }
 }
