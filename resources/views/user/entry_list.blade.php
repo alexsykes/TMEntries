@@ -21,6 +21,7 @@ $noEditArray = array(2,3,4);
                             }
                     @endphp
                     <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
+                        <td class="pl-2 table-cell">{{$entry->id}}</td>
                         <td class="pl-2 table-cell">{{$entry->name}}</td>
                         <td class="table-cell">{{$entry->course}}</td>
                         <td class="table-cell">{{$entry->class}}</td>
@@ -75,6 +76,7 @@ $noEditArray = array(2,3,4);
                     }
                 @endphp
                 <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
+                    <td class="pl-2    table-cell">{{$entry->id}}</td>
                     <td class="pl-2    table-cell">{{$entry->trial}}</td>
                     <td class="table-cell">{{$entry->name}}</td>
                     <td class="table-cell">{{$entry->course}}</td>

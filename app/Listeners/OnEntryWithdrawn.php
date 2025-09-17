@@ -32,7 +32,7 @@ class OnEntryWithdrawn
      */
     public function handle(EntryWithdrawn $event): void
     {
-        info("OnEntryWithdrawn");
+//        info("OnEntryWithdrawn");
         $entryID = $event->entryID;
 
 //      Get trial details
@@ -46,45 +46,39 @@ class OnEntryWithdrawn
             ->whereIn('status', [1, 4, 7, 8, 9])
                 ->count();
 
-        info("Trial limit: $entryLimit \n TrialID: $trialID \n Trial hasLmit: $hasLimit");
+//  Check for vacancy created
+        info("Trial limit: $entryLimit \n TrialID: $trialID \n Trial hasLmit: $hasLimit \n NumEntries: $numEntries \n");
         if($hasLimit && $entryLimit > $numEntries) {
             $vacancies = $entryLimit - $numEntries;
 
+//            Get reserve entry
             $entriesToOffer = Entry::where('trial_id', $trialID)
                 ->where('status', 5)
                 ->limit($vacancies)
                 ->get();
 
             foreach ($entriesToOffer as $entry) {
-                info("Entry Withdrawn: place to offer");
+                $entryID = $entry->id;
+
+//                Change entry status to under offer
+                $entry->status = 4;
+                info("Entry Withdrawn: place to offer: $entryID");
                 $userID = $entry->created_by;
                 $user = User::findOrFail($userID);
                 $email = $user->email;
                 $username = $user->name;
 
-                $name = $entry->name;
-                $entryID = $entry->id;
-
-                $entry->status = 4;
                 $entry->update();
 
+//              Get product reference for invoice
                 $productID = $entry->stripe_product_id;
                 $priceID = Price::where('stripe_product_id', $productID)
                     ->select('stripe_price_id')
                     ->orderBy('id', 'desc')
                     ->first();
 
-                info("Product ID: $productID \n PriceID: $priceID");
-
+//              Prepare invoice
                 $this->invoice($entry, $email, $username);
-//                $bcc = 'admin@trialmonster.uk';
-//
-//
-//                Mail::to($email)
-//                    ->bcc($bcc)
-//                    ->send(new EntryOffer());
-
-                info("EntryID: $entryID Name: $name - Email: $email");
             }
         }
 
@@ -101,7 +95,7 @@ class OnEntryWithdrawn
 
         $customer = $another->customers->create([
             'email' => $email,
-            'description' => $username,
+            'name' => $username,
         ]);
 
         $customerId = $customer->id;

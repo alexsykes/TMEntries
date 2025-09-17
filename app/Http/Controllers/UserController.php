@@ -156,7 +156,6 @@ class UserController extends Controller
             $entry->status = 2;
             $entry->save();
 
-            EntryWithdrawn::dispatch($id);
 //        dd($id, $entry->stripe_payment_intent);
 //                    Request request
             require('../vendor/autoload.php');
@@ -164,7 +163,7 @@ class UserController extends Controller
             $stripe = new StripeClient(config('stripe.stripe_secret_key'));
 
 
-            info("Line 168 ID: $id \n");
+//            info("Line 168 ID: $id \n");
 //            TODO revert amount
             $stripe->refunds->create
             ([
@@ -180,6 +179,8 @@ class UserController extends Controller
             $entry->status = 6;
             $entry->save();
         }
+
+        EntryWithdrawn::dispatch($id);
         return redirect('user/entries');
     }
 

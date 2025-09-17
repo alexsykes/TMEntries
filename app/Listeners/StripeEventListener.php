@@ -19,6 +19,15 @@ use Laravel\Cashier\Events\WebhookReceived;
 use Stripe\StripeClient;
 
 
+function onInvoiceSent($invoiceObject)
+{
+    info("Invoice Sent");
+    $email = $invoiceObject['customer_email'];
+    $name = $invoiceObject['customer_name'];
+    $url = $invoiceObject['hosted_invoice_url'];
+
+    info("Email: $email \n Name: $name \n URL: $url");
+}
 function onPriceCreated($priceObject)
 {
     $stripe_price_id = $priceObject['id'];
@@ -276,16 +285,13 @@ function onRefundCreated(mixed $object)
 
         $entry = DB::table('entries')->find($entryID);
         $email = $entry->email;
-        /*
 
-//        TODO Remove comments
         Mail::to($email)
             ->bcc($bcc)
             ->send(new RefundRequested($entry));
-        */
-        info("Refund Requested: $entryID");
 
-//        dd("Refund Requested: $entryID");        */
+//        TODO - remove this?
+        /*
 ////       Check for spaces
         $trialID = $entry->trial_id;
 
@@ -301,14 +307,13 @@ function onRefundCreated(mixed $object)
 //        If 5, then email registered but not paid
         $spaces = $entryLimit - $numEntries;
 
-        echo "Spaces: $spaces\n";
 //        $spaces - which should equal 1 in most cases
         $reserveIDs = Entry::where('status', 5)
             ->where('trial_id', $trialID)
             ->orderBy('updated_at')
-            ->limit(1)
+            ->limit($spaces)
             ->get();
-
+*/
         /*
         foreach ($reserveIDs as $reserveID) {
 
@@ -346,10 +351,9 @@ function onRefundCreated(mixed $object)
     }
 }
 
-function onRefundUpdated(mixed $object)
-{
-    if (isset($object['metadata']['id'])) {
-        $entryID = $object['metadata']['id'];
+function onRefundUpdated(mixed $object) {
+    if (isset($object['metadata']['entry_id'])) {
+        $entryID = $object['metadata']['entry_id'];
 
         $entry = DB::table('entries')
             ->where('id', $entryID)
@@ -370,6 +374,7 @@ function onRefundUpdated(mixed $object)
             ->increment('refunds');
 
         $email = $entry->email;
+        info("$email");
         Mail::to($email)
             ->bcc($bcc)
             ->send(new RefundConfirmed($entry));
@@ -428,6 +433,8 @@ class StripeEventListener
                 break;
 
             case 'invoice.sent':
+                $object = $event->payload['data']['object'];
+                onInvoiceSent($object);
 
                 break;
 
