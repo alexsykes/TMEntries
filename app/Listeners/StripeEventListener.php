@@ -25,8 +25,9 @@ function onInvoiceSent($invoiceObject)
     $email = $invoiceObject['customer_email'];
     $name = $invoiceObject['customer_name'];
     $url = $invoiceObject['hosted_invoice_url'];
+    $entryID = $invoiceObject['metadata']['entryID'];
 
-    info("Email: $email \n Name: $name \n URL: $url");
+    info("Email: $email \n Name: $name \n URL: $url \n EntryID: $entryID");
 }
 function onPriceCreated($priceObject)
 {

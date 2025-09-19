@@ -72,10 +72,10 @@ class OnEntryWithdrawn
 
 //              Get product reference for invoice
                 $productID = $entry->stripe_product_id;
-                $priceID = Price::where('stripe_product_id', $productID)
-                    ->select('stripe_price_id')
-                    ->orderBy('id', 'desc')
-                    ->first();
+//                $priceID = Price::where('stripe_product_id', $productID)
+//                    ->select('stripe_price_id')
+//                    ->orderBy('id', 'desc')
+//                    ->first();
 
 //              Prepare invoice
                 $this->invoice($entry, $email, $username);
@@ -115,10 +115,15 @@ class OnEntryWithdrawn
 //   Add line items
         $invoiceItem = $another->invoiceItems->create([
             'customer' => $customerId,
-            "amount" => 2000,
+//            "amount" => 2000,
+            'pricing' => [
+                'price' => $entry->stripe_price_id,
+//                'product' => $entry->stripe_product_id,
+            ],
             'description' => ' Ref: '.$entryID,
             'invoice' => $invoice->id,
         ]);
+
 
         $invoice->sendInvoice();
     }
