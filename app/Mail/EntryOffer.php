@@ -16,7 +16,7 @@ class EntryOffer extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(public $entryData)
     {
         //
     }
@@ -27,7 +27,7 @@ class EntryOffer extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Entry Offer - payment due',
+            subject: 'Entry Offer - Action Required',
         );
     }
 
@@ -38,6 +38,9 @@ class EntryOffer extends Mailable
     {
         return new Content(
             view: 'mails.entry_offer',
+            with: [
+                'entryData' => $this->entryData,
+            ],
         );
     }
 

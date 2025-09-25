@@ -12,4 +12,6 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command('backup:run')->dailyAt('05:01');
+
+Schedule::command('app:check-for-reserves')->everyHour();
 //Schedule::command('backup:run')->everyMinute();

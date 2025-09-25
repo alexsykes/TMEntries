@@ -162,8 +162,9 @@
     @endif
 
 
-    <form action="/entries/store" method="POST">
+    <form autocomplete="off" action="/entries/store" method="POST">
         @csrf
+        <input autocomplete="false" name="hidden" type="text" class="hidden">
         <input type="hidden" id="trial_id" name="trial_id" value="{{$trial_id}}">
         <input type="hidden" id="created_by" name="created_by" value="{{$userID}}">
         <div class="space-y-12">
@@ -233,6 +234,7 @@
                             <x-form-label for="size">Capacity</x-form-label>
                             <div class="mt-2">
                                 <x-form-input name="size" type="text" id="size" :value="old('size')"
+                                              autocomplete="off"
                                               placeholder="Bike engine size - leave empty for e-Bike"/>
                                 <x-form-error name="size"/>
                             </div>

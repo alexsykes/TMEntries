@@ -31,15 +31,22 @@ class TestMail extends Mailable
      */
     public function envelope(): Envelope
     {
-        return new Envelope(
-            from: new Address('monster@trialmonster.uk', 'TrialMonster'),
+        if ($this->mailshot->reply_to_address != null && $this->mailshot->reply_to_name != null) {
+            return new Envelope(
+                from: new Address('monster@trialmonster.uk', 'TrialMonster'),
             replyTo: [
                 new Address($this->mailshot->reply_to_address,
                 $this->mailshot->reply_to_name,),
             ],
-            subject: $this->mailshot->subject
-//        replyTo: $this->mailshot->reply_to_address
-        );
+                subject: $this->mailshot->subject
+            );
+
+        } else {
+            return new Envelope(
+                from: new Address('monster@trialmonster.uk', 'TrialMonster'),
+                subject: $this->mailshot->subject
+            );
+        }
     }
 
     /**
@@ -62,10 +69,15 @@ class TestMail extends Mailable
      */
     public function attachments(): array
     {
-        return [
-            Attachment::fromPath(public_path('attachments/'.$this->mailshot->fileName))
-                ->as($this->mailshot->originalName)
-                ->withMime($this->mailshot->mimeType),
-        ];
+
+        if($this->mailshot->fileName) {
+            return [
+                Attachment::fromPath(public_path('attachments/' . $this->mailshot->fileName))
+                    ->as($this->mailshot->originalName)
+                    ->withMime($this->mailshot->mimeType),
+            ];
+        } else {
+            return [];
+        }
     }
 }

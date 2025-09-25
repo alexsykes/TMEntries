@@ -40,6 +40,7 @@ class ScoringController extends Controller
         $trial->numColumns = $request->numColumns;
         $trial->numRows = $request->numRows;
 
+        $trial->updated_at = now();
 
         $trial->save();
 

@@ -68,6 +68,7 @@ class OnEntryWithdrawn
                 $email = $user->email;
                 $username = $user->name;
 
+//                TODO remove comment
                 $entry->update();
 
 //              Get product reference for invoice
@@ -85,7 +86,6 @@ class OnEntryWithdrawn
     }
 
     public function invoice($entry, $email, $username){
-//    info('Invoice');
         $another = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $trialID = $entry->trial_id;
@@ -115,15 +115,14 @@ class OnEntryWithdrawn
 //   Add line items
         $invoiceItem = $another->invoiceItems->create([
             'customer' => $customerId,
-//            "amount" => 2000,
             'pricing' => [
                 'price' => $entry->stripe_price_id,
-//                'product' => $entry->stripe_product_id,
             ],
             'description' => ' Ref: '.$entryID,
             'invoice' => $invoice->id,
         ]);
 
+    info('Invoice - $entryID' );
 
         $invoice->sendInvoice();
     }

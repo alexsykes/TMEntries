@@ -270,11 +270,12 @@ class ClubmailController extends Controller
         $mail = new TestMail($mailshot);
 
         $delay = 1;
-        $addresses = explode(',', $mailshot->distribution);
+        $addresses = explode(', ', $mailshot->distribution);
 
         foreach ($addresses as $address) {
+//            info("Address: {$address}");
             Mail::to($address)->later(now()->addSeconds($delay++), new TestMail($mailshot));
-
+//            Mail::to($address)->send(new TestMail($mailshot));
             info("Email sent to {$address}");
         }
 

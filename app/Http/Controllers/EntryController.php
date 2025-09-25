@@ -315,16 +315,16 @@ class EntryController extends Controller
             $entry->save();
 
 //        Request request
-            require('../vendor/autoload.php');
-            require('../vendor/stripe/stripe-php/lib/StripeClient.php');
+//            require('../vendor/autoload.php');
+//            require('../vendor/stripe/stripe-php/lib/StripeClient.php');
             $stripe = new StripeClient(config('stripe.stripe_secret_key'));
 
             $stripe->refunds->create
             ([
                 'metadata' => ['id' => $id],
                 'payment_intent' => $pi,
-                'amount' => $cost - 300,
-//            'amount' => 1,
+//                'amount' => $cost - 300,
+            'amount' => 1,
             ]);
 //    Mark as refund requested
 //    Email user
