@@ -17,18 +17,78 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Cashier\Events\WebhookReceived;
 use Stripe\StripeClient;
+use App\Mail\EntryOffer;
 
+
+/* Paid status
+    0 - New entry within limit, not paid
+    1 - Confirmed entry
+    2 - Withdrawn, having paid, waiting for refund
+    3 - Refunded entries
+    4 - Reserve - invoiced, awaiting payment
+    5 - Reserve - not paid
+    6 - Removed
+    7 - Manual entry - unpaid
+    8 - Manual entry - paid
+    9 - Manual entry - FoC
+*/
 
 function onInvoiceSent($invoiceObject)
 {
-    info("Invoice Sent");
     $email = $invoiceObject['customer_email'];
     $name = $invoiceObject['customer_name'];
     $url = $invoiceObject['hosted_invoice_url'];
+    $pdf = $invoiceObject['invoice_pdf'];
     $entryID = $invoiceObject['metadata']['entryID'];
+    $pi = $invoiceObject['payment_intent'];
 
-    info("Email: $email \n Name: $name \n URL: $url \n EntryID: $entryID");
+    $entry = Entry::where('id', $entryID)->first();
+    $entry->stripe_payment_intent = $pi;
+    $entry->updated_at = now();
+    $entry->save();
+
+    $trial = DB::table('trials')->where('id', $entry->trial_id)->first();
+
+    $date = date_create($trial->date);
+    $entryData = array();
+    $entryData['trialName'] = $trial->name;
+    $entryData['trialClub'] = $trial->club;
+    $entryData['date'] = date_format($date, "F jS, Y");
+    $entryData['rider'] = $entry->name;
+    $entryData['class'] = $entry->class;
+    $entryData['course'] = $entry->course;
+    $entryData['entryID'] = $entryID;
+    $entryData['url'] = $url;
+    $entryData['pdf'] = $pdf;
+
+    Mail::to($email, $name)->send(new EntryOffer($entryData));
+
 }
+function onInvoicePaid($invoiceObject)
+{
+    $entryID = $invoiceObject['metadata']['entryID'];
+    $email = $invoiceObject['customer_email'];
+
+    $entry = Entry::where('id', $entryID)->first();
+    $entry->status = 1;
+    $entry->updated_at = now();
+    $entry->save();
+
+    //  Get entries for confirmation email
+    $entries = DB::table('entries')
+        ->join('trials', 'entries.trial_id', '=', 'trials.id')
+        ->where('entries.id', $entryID)
+        ->get(['entries.*', 'trials.name as trial', 'trials.date as date']);
+
+//  Send confirmation email with bcc: to admin
+    $bcc = 'admin@trialmonster.uk';
+    Mail::to($email)
+        ->bcc($bcc)
+        ->send(new PaymentReceived($entries));
+//    Mail::to($email, $name)->send(new EntryOffer($entryData));
+
+}
+
 function onPriceCreated($priceObject)
 {
     $stripe_price_id = $priceObject['id'];
@@ -100,7 +160,7 @@ function onProductCreated($productObject)
         'version' => 1,
     ]);
 
-    info("Product created" . $product->product_name);
+    // info("Product created" . $product->product_name);
 //    echo "ClubID: $product->club_id";
     $email = 'monster@trialmonster.uk';
     Mail::to($email)->send(new ProductCreated($product));
@@ -191,7 +251,7 @@ function onCheckoutSessionCompleted($sessionObject)
             ->first();
         $stripe_price_id = $lineItem['price']['id'];
 
-        info("PI: $stripe_payment_intent Qty - $quantity Product - $product->product_name");
+        // info("PI: $stripe_payment_intent Qty - $quantity Product - $product->product_name");
         $attrs = [
             'stripe_product_id' => $stripe_product_id,
             'quantity' => $quantity,
@@ -231,7 +291,7 @@ function onCheckoutSessionCompleted($sessionObject)
     Mail::to($email)
         ->bcc($bcc)
         ->send(new PaymentReceived($entries));
-    info("Checkout session completed. $entryIDs");
+    // info("Checkout session completed. $entryIDs");
 
 
 //    Check for entry limit reached
@@ -243,7 +303,7 @@ function onCheckoutSessionCompleted($sessionObject)
 
 //        Check whether trial has entry limit
         if ($trial->hasEntryLimit) {
-            info("Trial has entryLimit");
+            // info("Trial has entryLimit");
 //        Check for full entry list
             $entryLimit = $trial->entryLimit;
             $numEntries = Entry::where('trial_id', $trialID)
@@ -258,12 +318,12 @@ function onCheckoutSessionCompleted($sessionObject)
 
             if ($spaces == 5) {
 //             send LastChance email
-                info("FiveSpacesReached ($spaces spaces) dispatched");
+                // info("FiveSpacesReached ($spaces spaces) dispatched");
                 FiveSpacesReached::dispatch($trialID, $entryLimit, $numEntries);
             }
 
             if ($spaces <= 0) {
-                info("TrialFull ($spaces spaces) dispatched");
+                // info("TrialFull ($spaces spaces) dispatched");
                 TrialFull::dispatch($trialID, $entryLimit, $numEntries);
             }
         }
@@ -352,7 +412,8 @@ function onRefundCreated(mixed $object)
     }
 }
 
-function onRefundUpdated(mixed $object) {
+function onRefundUpdated(mixed $object)
+{
     if (isset($object['metadata']['entry_id'])) {
         $entryID = $object['metadata']['entry_id'];
 
@@ -375,22 +436,22 @@ function onRefundUpdated(mixed $object) {
             ->increment('refunds');
 
         $email = $entry->email;
-        info("$email");
+        // info("$email");
         Mail::to($email)
             ->bcc($bcc)
             ->send(new RefundConfirmed($entry));
-        info("Refund Confirmed: $entryID");
+        // info("Refund Confirmed: $entryID");
     }
 }
 
 function onPaymentIntentSucceeded()
 {
-    info("Payment intent succeeded");
+    // info("Payment intent succeeded");
 }
 
 function onPaymentIntentCreated($object)
 {
-    info("Payment intent created");
+    // info("Payment intent created");
 }
 
 class StripeEventListener
@@ -409,7 +470,7 @@ class StripeEventListener
     public function handle(WebhookReceived $event): void
     {
         $eventType = $event->payload['type'];
-//        info("event type: $eventType");
+//        // info("event type: $eventType");
         switch ($eventType) {
             case 'refund.created':
                 $object = $event->payload['data']['object'];
@@ -440,6 +501,8 @@ class StripeEventListener
                 break;
 
             case 'invoice.paid':
+                $object = $event->payload['data']['object'];
+                onInvoicePaid($object);
 
                 break;
 
@@ -471,7 +534,7 @@ class StripeEventListener
                 onPaymentIntentCreated($object);
                 break;
             default:
-                info('Received unknown event type ' . $eventType);
+//                // info('Received unknown event type ' . $eventType);
         }
     }
 

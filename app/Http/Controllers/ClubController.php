@@ -171,7 +171,7 @@ class ClubController extends Controller
             ->where('product_category' , 'membership')
             ->first();
 
-        dd($product, $member);
+//        dd($product, $member);
 
         return redirect('/clubs/checkout', ['member' => $member, 'product' => $product]);
     }

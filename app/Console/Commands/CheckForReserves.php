@@ -6,10 +6,25 @@ use App\Mail\EntryOffer;
 use App\Models\Entry;
 use App\Models\Trial;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Stripe\StripeClient;
 use function Pest\Laravel\get;
+
+/* Paid status
+    0 - New entry within limit, not paid
+    1 - Confirmed entry
+    2 - Withdrawn, having paid, waiting for refund
+    3 - Refunded entries
+    4 - Reserve - invoiced, awaiting payment
+    5 - Reserve - not paid
+    6 - Removed
+    7 - Manual entry - unpaid
+    8 - Manual entry - paid
+    9 - Manual entry - FoC
+*/
 
 class CheckForReserves extends Command
 {
@@ -65,31 +80,24 @@ class CheckForReserves extends Command
                         ->where('trial_id', $trialID)
                         ->where('status', 5)
                         ->orderBy('updated_at')
-                        ->limit($numSpaces)
+                        ->limit(1)
                     ->get();
 
 //                    Offer entry to each reserve
                     foreach($entriesForOffer as $entry) {
                         $entryID = $entry->id;
 
-                        $entry = DB::table('entries')->where('id', $entryID)->first();
+//                        $entry = DB::table('entries')->where('id', $entryID)->first();
+                        $entry = Entry::where('id', $entryID)->first();
                         $entrant = DB::table('users')->where('id', $entry->created_by)->first();
-                        $trial = DB::table('trials')->where('id', $entry->trial_id)->first();
+//                        $trial = DB::table('trials')->where('id', $entry->trial_id)->first();
                         $email = $entrant->email;
                         $entrantName = $entrant->name;
-                        $date = date_create($trial->date);
-//                        info("\nOffer to $entryID\n $entry->name\n $entrantName\n$email\n");
+                        $entry->status = 4;
+                        $entry->updated_at = now();
+                        $entry->save();
 
-                        $entryData = array();
-                        $entryData['trialName'] = $trial->name;
-                        $entryData['trialClub'] = $trial->club;
-                        $entryData['date'] = date_format($date, "F jS, Y");
-                        $entryData['rider'] = $entry->name;
-                        $entryData['class'] = $entry->class;
-                        $entryData['course'] = $entry->course;
-                        $entryData['entryID'] = $entryID;
-
-//                        Mail::to($email, $entrantName)->send(new EntryOffer($entryData));
+                        $this->invoice($entry, $email, $entrantName);
                     }
                 }
                 else {
@@ -97,5 +105,45 @@ class CheckForReserves extends Command
                 }
             }
         }
+    }
+
+    public function invoice($entry, $email, $username){
+        $another = new StripeClient(Config::get('stripe.stripe_secret_key'));
+
+        $trialID = $entry->trial_id;
+        $trial = Trial::findOrFail($trialID);
+        $trialName = $trial->name;
+        $trialClub = $trial->club;
+
+        $customer = $another->customers->create([
+            'email' => $email,
+            'name' => $username,
+        ]);
+
+        $customerId = $customer->id;
+
+        $entryID = $entry->id;
+        // Create an Invoice
+        $invoice = $another->invoices->create([
+            'customer' => $customerId,
+            'description' => $trialClub.' - '.$trialName,
+            'collection_method' => 'send_invoice',
+            'days_until_due' => 3,
+            'metadata' => [
+                'entryID' => $entryID,
+            ]
+        ]);
+
+//   Add line items
+        $invoiceItem = $another->invoiceItems->create([
+            'customer' => $customerId,
+            'pricing' => [
+                'price' => $entry->stripe_price_id,
+            ],
+            'description' => ' Ref: '.$entryID,
+            'invoice' => $invoice->id,
+        ]);
+
+        $invoice->sendInvoice();
     }
 }
