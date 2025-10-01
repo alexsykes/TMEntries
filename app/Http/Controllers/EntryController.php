@@ -323,8 +323,8 @@ class EntryController extends Controller
             ([
                 'metadata' => ['id' => $id],
                 'payment_intent' => $pi,
-//                'amount' => $cost - 300,
-            'amount' => 1,
+                'amount' => $cost - 300,
+//            'amount' => 1,
             ]);
 //    Mark as refund requested
 //    Email user
@@ -511,9 +511,9 @@ class EntryController extends Controller
         $birthDate = date_create($request->dob);
 
         $interval = $trial_date->diff($birthDate);
+        $ageInYears = $interval->format('%y');
 
-//        Calculation for youth goes here
-        if($request->isYouth) {
+        if($request->isYouth && $ageInYears < 18) {
             $attributes['isYouth'] = 1;
             $attributes['stripe_price_id'] = $youthPriceID;
             $attributes['stripe_product_id'] = $youthProductID;

@@ -38,7 +38,7 @@ class TrialController extends Controller
         $series = Series::where('id', $seriesID)->first();
         $numEntries = Entry::all()
             ->where('trial_id', $trial_id)
-            ->whereIn('status', [1, 2, 4, 5, 7, 8, 9])
+            ->whereIn('status', [1, 4, 5, 7, 8, 9])
             ->count();
 
         $venue = $trial->venue();
@@ -338,8 +338,6 @@ class TrialController extends Controller
             case 'trialData':
                 $id = request('trialID');
                 $attrs = request()->validate([
-                    'courselist' => Rule::requiredIf(request('customCourses') == ""),
-                    'classlist' => Rule::requiredIf(request('customClasses') == ""),
                     'customCourses' => Rule::requiredIf(request('courselist') == ""),
                     'customClasses' => Rule::requiredIf(request('classlist') == ""),
                     'penaltyDelta' => Rule::requiredIf(request('hasTimePenalty') == 1),
@@ -360,18 +358,6 @@ class TrialController extends Controller
                     $array = explode(',', request('customCourses'));
                     $trimmedarray = array_map('trim', $array);
                     $attrs['customCourses'] = implode(',', $trimmedarray);
-                }
-
-                if (request('classlist')) {
-                    $attrs['classlist'] = implode(',', request('classlist'));
-                } else {
-                    $attrs['classlist'] = '';
-                }
-
-                if (request('courselist')) {
-                    $attrs['courselist'] = implode(',', request('courselist'));
-                } else {
-                    $attrs['courselist'] = '';
                 }
 
                 $trial = Trial::findorfail($id);

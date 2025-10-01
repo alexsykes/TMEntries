@@ -4,9 +4,11 @@ namespace App\Listeners;
 
 use App\Events\FiveSpacesReached;
 use App\Events\TrialFull;
+use App\Mail\InvoiceOverdue;
 use App\Mail\PaymentReceived;
 use App\Mail\ProductCreated;
 use App\Mail\RefundConfirmed;
+use App\Mail\RefundRequested;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Product;
@@ -62,6 +64,14 @@ function onInvoiceSent($invoiceObject)
     $entryData['pdf'] = $pdf;
 
     Mail::to($email, $name)->send(new EntryOffer($entryData));
+
+}
+
+function onInvoiceOverdue($invoiceObject)
+{
+    $email ="monster@trialmonster.uk";
+    Mail::to($email)
+        ->send(new InvoiceOverdue());
 
 }
 function onInvoicePaid($invoiceObject)
@@ -335,12 +345,12 @@ function onCheckoutSessionCompleted($sessionObject)
 function onRefundCreated(mixed $object)
 {
 //    Get the entryID from the metadata
-    if (isset($object['metadata']['id'])) {
-        $entryID = $object['metadata']['id'];
+    if (isset($object['metadata']['entry_id'])) {
+        $entryID = $object['metadata']['entry_id'];
 
         $entry = DB::table('entries')
             ->where('id', $entryID)
-            ->update(['status' => 2]);
+            ->update(['status' => 2, 'updated_at' => now()]);
 
         $bcc = 'admin@trialmonster.uk';
 
@@ -419,7 +429,7 @@ function onRefundUpdated(mixed $object)
 
         $entry = DB::table('entries')
             ->where('id', $entryID)
-            ->update(['status' => 3]);
+            ->update(['status' => 3, 'updated_at' => now()]);
 
         $bcc = 'admin@trialmonster.uk';
 
@@ -440,7 +450,6 @@ function onRefundUpdated(mixed $object)
         Mail::to($email)
             ->bcc($bcc)
             ->send(new RefundConfirmed($entry));
-        // info("Refund Confirmed: $entryID");
     }
 }
 
@@ -504,6 +513,11 @@ class StripeEventListener
                 $object = $event->payload['data']['object'];
                 onInvoicePaid($object);
 
+                break;
+
+            case 'invoice.overdue':
+                $object = $event->payload['data']['object'];
+                onInvoiceOverdue($object);
                 break;
 
             case 'product.updated':

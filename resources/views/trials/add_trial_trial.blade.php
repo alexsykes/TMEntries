@@ -3,17 +3,21 @@
         Create a new trial
     </x-slot:heading>
     @php
-        $courseArray = array("Expert", "Intermediate", "Hard Novice", "Novice", "50/50", "Clubman", "Clubman A", "Clubman B", "Easy");
-        $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
+//        $courseArray = array("Expert", "Intermediate", "Hard Novice", "Novice", "50/50", "Clubman", "Clubman A", "Clubman B", "Easy");
+//        $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
         $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
         $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
         $scoringModeArray = array("Observer", "App", "Punch Cards", "Other");
         $stopAllowedArray = array("Stop permitted", "Non-stop");
         $authorityArray = array("ACU", "AMCA", "Other");
         $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
-
+if($series) {
         $classes = $series->classes;
         $courses = $series->courses;
+        } else {
+            $classes = "";
+            $courses = "";
+        }
 
     @endphp
 
@@ -30,26 +34,6 @@
                     <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
                         <div id="courseDataDiv" class="col-span-3">
-{{--                            <x-form-field>--}}
-{{--                                <x-form-label class="pr-0" for="courselist">Courses</x-form-label>--}}
-{{--                                <div class=" pl-2 pr-0">--}}
-{{--                                    @foreach($courseArray as $course)--}}
-{{--                                        <div>--}}
-{{--                                            <input  name="courselist[]" type="checkbox" id="courselist" value="{{$course}}"--}}
-{{--                                                    {{ (is_array(old('courselist')) and in_array($course, old('courselist'))) ? ' checked' : '' }}--}}
-{{--                                            />--}}
-{{--                                            <label  class="pl-4 pr-0" for="courselist">{{$course}}--}}
-{{--                                            </label>--}}
-{{--                                        </div>--}}
-{{--                                    @endforeach--}}
-{{--                                    <x-form-error name="courselist"/>--}}
-{{--                                </div>--}}
-{{--                                @error('courselist')--}}
-{{--                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
-{{--                                @enderror--}}
-{{--                            </x-form-field>--}}
-
-
                             <x-form-field>
                                 <x-form-label for="customCourses">Courses</x-form-label>
                                 <div class="mt-2 col-span-2">
@@ -65,26 +49,6 @@
                         </div>
 
                         <div id="classDataDiv" class="col-span-3">
-{{--                            <x-form-field>--}}
-{{--                                <x-form-label for="classlist">Classes</x-form-label>--}}
-{{--                                <div class=" pl-2 pr-2">--}}
-{{--                                    @foreach($classArray as $class)--}}
-
-{{--                                        <div>--}}
-{{--                                            <input  name="classlist[]" type="checkbox" id="classlist" value="{{$class}}"--}}
-
-{{--                                                    {{ (is_array(old('classlist')) and in_array($class, old('classlist'))) ? ' checked' : '' }}--}}
-{{--                                            />--}}
-{{--                                            <label  class="pl-4 pr-2" for="classlist">{{$class}}</label>--}}
-{{--                                        </div>--}}
-{{--                                    @endforeach--}}
-{{--                                    <x-form-error name="classlist"/>--}}
-{{--                                </div>--}}
-{{--                                @error('classlist')--}}
-{{--                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
-{{--                                @enderror--}}
-{{--                            </x-form-field>--}}
-
                             <x-form-field>
                                 <x-form-label for="customClasses">Classes</x-form-label>
                                 <div class="mt-2 col-span-2">

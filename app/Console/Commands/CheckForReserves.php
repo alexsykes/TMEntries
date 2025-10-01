@@ -128,7 +128,7 @@ class CheckForReserves extends Command
             'customer' => $customerId,
             'description' => $trialClub.' - '.$trialName,
             'collection_method' => 'send_invoice',
-            'days_until_due' => 3,
+            'days_until_due' => 2,
             'metadata' => [
                 'entryID' => $entryID,
             ]

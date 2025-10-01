@@ -231,7 +231,7 @@ $methodOfMarking = $clubData->section_markers;
         <div class="ml-4 mr-4 pt-2  text-black text-left ">{{$trial->club}} will organise
             {{$rest}} trial for solo motorcycles, held under the Rules of the {{$trial->authority}}, the following
             Supplementary Regulations and any Final Instructions issued for the meeting.
-            Please take the time to carefully read any specific Safety Procedures produced by {{$trial->club}} which
+            Please take the time to carefully read any specific Safety Procedures and Notes produced by {{$trial->club}} which
             form part of the Supplementary Regulations. There will also be a Riders Briefing which all riders must
             attend ten minutes before the official start time.
         </div>

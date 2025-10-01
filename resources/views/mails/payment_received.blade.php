@@ -1,5 +1,5 @@
 
-<x-mail>
+<x-automail>
     <div class="space-y-2">
 <div>Your Stripe payment has been processed and I am pleased to confirm that your entry or entries listed below are now confirmed.<br><b>Please remember to sign-in on arrival at the event.</b></div>
 <table>
@@ -29,4 +29,4 @@
 <div>In case of any other enquiries, please reply to this email quoting the Entry Reference.</div>
 <div></div><b>Thank you for entering with TrialMonster</b></div>
     </div>
-</x-mail>
+</x-automail>
