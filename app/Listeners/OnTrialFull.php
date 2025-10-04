@@ -30,7 +30,7 @@ class OnTrialFull
         Info("Confirmed entries: $numEntries");
         Info("Entry limit: $entryLimit");
 
-        $unconfirmed = Entry::where("status", 0)
+        $unconfirmed = Entry::whereIn("status", [0,11])
             ->join("users", "users.id", "=", "entries.created_by")
             ->select('entries.id', 'entries.name', 'users.email')
             ->where("trial_id", $trialID)

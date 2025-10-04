@@ -24,6 +24,8 @@ use function Pest\Laravel\get;
     7 - Manual entry - unpaid
     8 - Manual entry - paid
     9 - Manual entry - FoC
+    10 -
+    11 - Reminder sent
 */
 
 class CheckForReserves extends Command

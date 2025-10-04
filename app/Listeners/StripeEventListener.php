@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\FiveSpacesReached;
 use App\Events\TrialFull;
+use App\Mail\EntryOffer;
 use App\Mail\InvoiceOverdue;
 use App\Mail\PaymentReceived;
 use App\Mail\ProductCreated;
@@ -19,7 +20,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Cashier\Events\WebhookReceived;
 use Stripe\StripeClient;
-use App\Mail\EntryOffer;
 
 
 /* Paid status
@@ -33,6 +33,8 @@ use App\Mail\EntryOffer;
     7 - Manual entry - unpaid
     8 - Manual entry - paid
     9 - Manual entry - FoC
+    10 -
+    11 - Reminder sent
 */
 
 function onInvoiceSent($invoiceObject)
@@ -69,11 +71,12 @@ function onInvoiceSent($invoiceObject)
 
 function onInvoiceOverdue($invoiceObject)
 {
-    $email ="monster@trialmonster.uk";
+    $email = "monster@trialmonster.uk";
     Mail::to($email)
         ->send(new InvoiceOverdue());
 
 }
+
 function onInvoicePaid($invoiceObject)
 {
     $entryID = $invoiceObject['metadata']['entryID'];
@@ -91,7 +94,7 @@ function onInvoicePaid($invoiceObject)
         ->get(['entries.*', 'trials.name as trial', 'trials.date as date']);
 
 //  Send confirmation email with bcc: to admin
-    $bcc = 'admin@trialmonster.uk';
+    $bcc = 'monster@trialmonster.uk';
     Mail::to($email)
         ->bcc($bcc)
         ->send(new PaymentReceived($entries));
@@ -297,17 +300,12 @@ function onCheckoutSessionCompleted($sessionObject)
         ->get(['entries.*', 'trials.name as trial', 'trials.date as date']);
 
 //  Send confirmation email with bcc: to admin
-    $bcc = 'admin@trialmonster.uk';
+    $bcc = 'monster@trialmonster.uk';
+//    $email = 'monster@trialmonster.uk';
     Mail::to($email)
         ->bcc($bcc)
         ->send(new PaymentReceived($entries));
-    // info("Checkout session completed. $entryIDs");
 
-
-//    Check for entry limit reached
-//    Check for multiple trials
-
-//    Iterate through trials
     foreach ($trialIDs as $trialID) {
         $trial = Trial::findOrFail($trialID);
 
@@ -323,23 +321,16 @@ function onCheckoutSessionCompleted($sessionObject)
 //        Check for number of entries left
 //        If 5, then email registered but not paid
             $spaces = $entryLimit - $numEntries;
-
-//            echo "Spaces: $spaces\n Limit: $entryLimit\n Entries: $numEntries";
-
-            if ($spaces == 5) {
-//             send LastChance email
-                // info("FiveSpacesReached ($spaces spaces) dispatched");
-                FiveSpacesReached::dispatch($trialID, $entryLimit, $numEntries);
-            }
-
+echo "Spaces: $spaces\n";
             if ($spaces <= 0) {
                 // info("TrialFull ($spaces spaces) dispatched");
                 TrialFull::dispatch($trialID, $entryLimit, $numEntries);
+            } elseif ($spaces <= 10) {
+//             send LastChance email
+                FiveSpacesReached::dispatch($trialID, $entryLimit, $numEntries);
             }
         }
     }
-
-
 }
 
 function onRefundCreated(mixed $object)
@@ -352,7 +343,7 @@ function onRefundCreated(mixed $object)
             ->where('id', $entryID)
             ->update(['status' => 2, 'updated_at' => now()]);
 
-        $bcc = 'admin@trialmonster.uk';
+        $bcc = 'monster@trialmonster.uk';
 
         $entry = DB::table('entries')->find($entryID);
         $email = $entry->email;
@@ -431,7 +422,7 @@ function onRefundUpdated(mixed $object)
             ->where('id', $entryID)
             ->update(['status' => 3, 'updated_at' => now()]);
 
-        $bcc = 'admin@trialmonster.uk';
+        $bcc = 'monster@trialmonster.uk';
 
         $entry = DB::table('entries')->find($entryID);
 
