@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\FiveSpacesReached;
-use App\Events\TrialFull;
 use App\Mail\EntryChanged;
-use App\Mail\PaymentReceived;
 use App\Mail\ReserveAdded;
 use App\Models\Entry;
 use App\Models\Price;
@@ -13,21 +10,18 @@ use App\Models\Trial;
 use App\Rules\NoDuplicates;
 use Auth;
 use DateTime;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\Rule;
-use PDF;
-use Stripe\StripeClient;
-
-
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
-use Endroid\QrCode\Label\LabelAlignment;
 use Endroid\QrCode\Label\Font\OpenSans;
+use Endroid\QrCode\Label\LabelAlignment;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use PDF;
+use Stripe\StripeClient;
 
 
 class EntryController extends Controller
@@ -101,7 +95,7 @@ class EntryController extends Controller
         $reserves = Entry::all()
             ->where('created_by', $user_id)
             ->where('trial_id', $trial_id)
-            ->whereIn('status', [4 ,5]);
+            ->whereIn('status', [4, 5]);
 
         return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves]);
     }
@@ -233,7 +227,7 @@ class EntryController extends Controller
         $entry->status = $request->status;
         $entry->updated_at = date('Y-m-d H:i:s');
 
-        if($request->status == 6) {
+        if ($request->status == 6) {
             $entry->ridingNumber = 0;
         }
         $entry->save();
@@ -288,7 +282,8 @@ class EntryController extends Controller
      * Email confirmation of entry changes
      */
 
-    public function withdrawConfirm(Request $request) {
+    public function withdrawConfirm(Request $request)
+    {
         $entryID = $request->id;
         $entry = Entry::where('id', $entryID)->where('status', 1)->first();
 
@@ -428,41 +423,11 @@ class EntryController extends Controller
 
     public function store(Request $request)
     {
-        $trial_id = session('trial_id');
+//        $trial_id = session('trial_id');
+        $trial_id = $request->trial_id;
         $trial = Trial::findOrFail($trial_id);
-//        Check for entry limit
-        $hasEntryLimit = $trial->hasEntryLimit;
 
-        $status = 0;
-
-        if($hasEntryLimit) {
-//        Check for full entry list
-            $entryLimit = $trial->entryLimit;
-            $numEntries = Entry::where('trial_id', $trial_id)
-                ->whereIn('status', [1, 4, 7, 8, 9])
-                ->count();
-            Info("NumEntries: $numEntries");
-//        Check for number of entries left
-//        If 5, then email registered but not paid
-            $spaces = $entryLimit - $numEntries;
-
-//        if ($spaces == 5) {
-////            FiveSpacesReached::dispatch($trial_id, $entryLimit, $numEntries);
-//        }
-
-//        If no spaces, then change status 0 to status 5 - Reserve List
-            if ($spaces <= 0) {
-//            TrialFull::dispatch($trial_id, $entryLimit, $numEntries);
-                $status = 5;
-            }
-        }
-
-        $trial_date = date_create($trial->date);
-
-        $IPaddress = $request->ip();
-        $request->session()->put('trial_id', $request->trial_id);
-        $accept = session('accept');
-
+//        Get product and price data
 //        Get product/price IDs
         $youthProductID = DB::table('products')
             ->where('trial_id', $request->trial_id)
@@ -486,6 +451,36 @@ class EntryController extends Controller
             ->where('stripe_product_id', $adultProductID)
             ->value('stripe_price_id');
 
+//        Check for entry limit
+        $hasEntryLimit = $trial->hasEntryLimit;
+
+
+        $status = 0;
+
+        if ($hasEntryLimit) {
+//        Check for full entry list
+            $entryLimit = $trial->entryLimit;
+            $numEntries = Entry::where('trial_id', $trial_id)
+                ->whereIn('status', [1, 4, 7, 8, 9])
+                ->count();
+            Info("EntryController: line 444: NumEntries: $numEntries");
+//        Check for number of entries left
+//        If 5, then email registered but not paid
+            $spaces = $entryLimit - $numEntries;
+
+//        If no spaces, then change status 0 to status 5 - Reserve List
+            if ($spaces <= 0) {
+//            TrialFull::dispatch($trial_id, $entryLimit, $numEntries);
+                $status = 5;
+            }
+        }
+
+        $trial_date = date_create($trial->date);
+
+        $IPaddress = $request->ip();
+        $request->session()->put('trial_id', $request->trial_id);
+
+//        Token added to emailed entry link
         $token = bin2hex(random_bytes(16));
 
         $attributes = $request->validate([
@@ -504,7 +499,7 @@ class EntryController extends Controller
         $attributes['size'] = $request->size;
         $attributes['licence'] = $request->licence;
         $attributes['token'] = $token;
-        $attributes['accept'] = $accept;
+//        $attributes['accept'] = $accept;
         $attributes['status'] = $status;
         $attributes['created_by'] = Auth::user()->id;
 
@@ -513,7 +508,7 @@ class EntryController extends Controller
         $interval = $trial_date->diff($birthDate);
         $ageInYears = $interval->format('%y');
 
-        if($request->isYouth && $ageInYears < 18) {
+        if ($ageInYears < 18) {
             $attributes['isYouth'] = 1;
             $attributes['stripe_price_id'] = $youthPriceID;
             $attributes['stripe_product_id'] = $youthProductID;
@@ -527,9 +522,9 @@ class EntryController extends Controller
         $attributes['dob'] = $request->dob;
         $entry = Entry::create($attributes);
 
-        $trial = Trial::findOrFail($attributes['trial_id']);
+//        $trial = Trial::findOrFail($attributes['trial_id']);
 
-        if($entry->status == 5) {
+        if ($entry->status == 5) {
             $this->sendReserveEmail($entry, $trial);
         }
 
@@ -543,9 +538,23 @@ class EntryController extends Controller
 
         $reserves = Entry::all()
             ->where('trial_id', $trial_id)
-            ->whereIn('status', [ 4, 5])
+            ->whereIn('status', [4, 5])
             ->where('created_by', $attributes['created_by']);
         return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves]);
+    }
+
+    function sendReserveEmail(Entry $entry, Trial $trial)
+    {
+        $userID = $entry->created_by;
+        $user = DB::table('users')->where('id', $userID)->first();
+        $username = $user->name;
+        $email = $user->email;
+
+        $bcc = "admin@trialmonster.uk";
+
+        Mail::to($email)
+            ->bcc($bcc)
+            ->send(new ReserveAdded($entry, $trial));
     }
 
     public function delete(Request $request)
@@ -875,30 +884,30 @@ class EntryController extends Controller
 
         MYPDF::addPage();
         MYPDF::SetFontSize(18);
-        MYPDF::Text(0,10,"Registration",0,false, true,0,0,'C' );
+        MYPDF::Text(0, 10, "Registration", 0, false, true, 0, 0, 'C');
 // References storage/app/public/images
         $tid = $trialDetails->id;
 
-    $qr1 = "images/qr/data_$tid.png";
-    $qr2 = "images/qr/programme_$tid.png";
+        $qr1 = "images/qr/data_$tid.png";
+        $qr2 = "images/qr/programme_$tid.png";
 
 
         $img_file = public_path($qr1);
-        MYPDF::Image($img_file, 40  , 20, 130, '', '', '', '', false, 300, '', false, false, 0);
+        MYPDF::Image($img_file, 40, 20, 130, '', '', '', '', false, 300, '', false, false, 0);
 
-        MYPDF::Text(30, 170, '1 - Scan QR code on your phone', );
-        MYPDF::Text(30, 180, '2 - Complete details, click Register', );
-        MYPDF::Text(30, 190, '3 - Join queue. Correct entry fee(s), please', );
-        MYPDF::Text(30, 200, '4 - Complete Sign-on sheet', );
-        MYPDF::Text(30, 210, '5 - Enjoy your ride', );
+        MYPDF::Text(30, 170, '1 - Scan QR code on your phone');
+        MYPDF::Text(30, 180, '2 - Complete details, click Register');
+        MYPDF::Text(30, 190, '3 - Join queue. Correct entry fee(s), please');
+        MYPDF::Text(30, 200, '4 - Complete Sign-on sheet');
+        MYPDF::Text(30, 210, '5 - Enjoy your ride');
 
 
         MYPDF::addPage();
         MYPDF::SetFontSize(18);
-        MYPDF::Text(0,10,"Entry List",0,false, true,0,0,'C' );
+        MYPDF::Text(0, 10, "Entry List", 0, false, true, 0, 0, 'C');
 
         $img_file = public_path($qr2);
-        MYPDF::Image($img_file, 40  , 20, 130, '', '', '', '', false, 300, '', false, false, 0);
+        MYPDF::Image($img_file, 40, 20, 130, '', '', '', '', false, 300, '', false, false, 0);
 
         MYPDF::SetY(170);
         MYPDF::SetX(0);
@@ -906,19 +915,86 @@ class EntryController extends Controller
         MYPDF::SetRightMargin(20);
 
 
-
         MYPDF::MultiCell(0, 0, 'Scan the QR code on your phone. Entries are correct at the time of compilation.', 0, 'L', false);
         MYPDF::SetY(190);
-        MYPDF::MultiCell(0, 0, "Although every effort is made to provide accurate and up-to-date information, late changes may sometimes be unavoidable due to entrants' changes of course or class.",0,'L', false);
+        MYPDF::MultiCell(0, 0, "Although every effort is made to provide accurate and up-to-date information, late changes may sometimes be unavoidable due to entrants' changes of course or class.", 0, 'L', false);
 //        dd(public_path($filename));
         $filename = $this->filter_filename($filename);
         MYPDF::Close();
-        MYPDF::Output(public_path('pdf/signon/'.$filename), 'F');
+        MYPDF::Output(public_path('pdf/signon/' . $filename), 'F');
         MYPDF::reset();
-        return response()->download('pdf/signon/'.$filename);
+        return response()->download('pdf/signon/' . $filename);
     }
 
-    function filter_filename($name) {
+    public function generate($id)
+    {
+        $liveSite = config('app.url');
+        $data = "$liveSite/otd/$id";
+        $data2 = "$liveSite/trial/programme/$id";
+        $trial = DB::table('trials')
+            ->where('id', $id)
+            ->first();
+
+        if ($trial == null) {
+            abort(404);
+        }
+
+        $name = $trial->name;
+
+        $builder = new Builder(
+            writer: new PngWriter(),
+            writerOptions: [],
+            validateResult: false,
+            data: $data,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::High,
+            size: 600,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+//            logoPath: __DIR__.'/assets/bender.png',
+//            logoResizeToWidth: 50,
+//            logoPunchoutBackground: true,
+            labelText: $name,
+            labelFont: new OpenSans(24),
+            labelAlignment: LabelAlignment::Center
+        );
+
+
+        $result = $builder->build();
+        $filename = "data_$id.png";
+        $dir = 'images/qr/' . $filename;
+        $result->saveToFile($dir);
+
+
+        $name = $trial->name;
+        $builder = new Builder(
+            writer: new PngWriter(),
+            writerOptions: [],
+            validateResult: false,
+            data: $data2,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::High,
+            size: 600,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+//            logoPath: __DIR__.'/assets/bender.png',
+//            logoResizeToWidth: 50,
+//            logoPunchoutBackground: true,
+            labelText: $name,
+            labelFont: new OpenSans(24),
+            labelAlignment: LabelAlignment::Center
+        );
+        $result = $builder->build();
+        $filename = "programme_$id.png";
+        $dir = 'images/qr/' . $filename;
+        $result->saveToFile($dir);
+
+
+//        return redirect("/trials/adminEntryList/$id");
+    }
+
+    function filter_filename($name)
+    {
         // remove illegal file system characters https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
         $name = str_replace(array_merge(
             array_map('chr', range(0, 31)),
@@ -926,7 +1002,7 @@ class EntryController extends Controller
         ), '', $name);
         // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
         $ext = pathinfo($name, PATHINFO_EXTENSION);
-        $name= mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
+        $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
         return $name;
     }
 
@@ -952,11 +1028,11 @@ class EntryController extends Controller
         for ($i = 0; $i < sizeof($names); $i++) {
             if (isset($names[$i]) && $names[$i] != "") {
 
-                    if($classs[$i] != "Youth") {
-                        $isYouth = false;
-                    } else {
-                        $isYouth = true;
-                    }
+                if ($classs[$i] != "Youth") {
+                    $isYouth = false;
+                } else {
+                    $isYouth = true;
+                }
 
                 DB::table('entries')->insert([
                     'name' => $utilityController->nameize($names[$i]),
@@ -979,7 +1055,8 @@ class EntryController extends Controller
         return redirect("/trials/adminEntryList/{$trial_id}");
     }
 
-    public function otdCreate(Request $request){
+    public function otdCreate(Request $request)
+    {
         $trial_id = $request->trial_id;
         $trial = Trial::findOrFail($trial_id);
         $trial_date = date_create($trial->date);
@@ -1042,15 +1119,16 @@ class EntryController extends Controller
         $trial = DB::table('trials')
             ->where('id', $id)
             ->whereTodayOrAfter('date')
-        ->first();
+            ->first();
 
-        if($trial == null){
+        if ($trial == null) {
             abort(404);
         }
         return view('entries.otd_entry', ['trial' => $trial]);
     }
 
-    public function otdSaveNumbers(Request $request) {
+    public function otdSaveNumbers(Request $request)
+    {
 //        dd($request->all());
         $trialid = $request->trialid;
 
@@ -1058,7 +1136,7 @@ class EntryController extends Controller
 
         for ($i = 0; $i < $numEntries; $i++) {
             $ridingNumber = $request->ridingNumber[$i];
-            if($ridingNumber != null) {
+            if ($ridingNumber != null) {
                 $entryID = $request->entryID[$i];
                 DB::table('entries')->where('id', $entryID)->update(['ridingNumber' => $ridingNumber, 'status' => 8, 'updated_at' => NOW()]);
             }
@@ -1070,7 +1148,7 @@ class EntryController extends Controller
     public function otd_confirm(Request $request)
     {
         $entryid = $request->entryid;
-        $entry  = DB::table('entries')->where('id', $entryid)->first();
+        $entry = DB::table('entries')->where('id', $entryid)->first();
 
         $trialid = $entry->trial_id;
         $isYouth = $entry->isYouth;
@@ -1088,86 +1166,6 @@ class EntryController extends Controller
             ->first();
         $cost = $price->stripe_price / 100;
         return view('entries.otd_confirm', ['trialid' => $trialid, 'cost' => $cost]);
-    }
-
-    function sendReserveEmail(Entry $entry, Trial $trial){
-        $userID = $entry->created_by;
-        $user = DB::table('users')->where('id', $userID)->first();
-        $username = $user->name;
-        $email = $user->email;
-
-        $bcc = "admin@trialmonster.uk";
-
-        Mail::to($email)
-            ->bcc($bcc)
-            ->send(new ReserveAdded($entry, $trial));
-    }
-
-    public function generate($id) {
-        $liveSite = config('app.url');
-        $data = "$liveSite/otd/$id";
-        $data2 = "$liveSite/trial/programme/$id";
-        $trial = DB::table('trials')
-            ->where('id', $id)
-        ->first();
-
-        if($trial == null){
-            abort(404);
-        }
-
-        $name = $trial->name;
-
-        $builder = new Builder(
-            writer: new PngWriter(),
-            writerOptions: [],
-            validateResult: false,
-            data: $data,
-            encoding: new Encoding('UTF-8'),
-            errorCorrectionLevel: ErrorCorrectionLevel::High,
-            size: 600,
-            margin: 10,
-            roundBlockSizeMode: RoundBlockSizeMode::Margin,
-//            logoPath: __DIR__.'/assets/bender.png',
-//            logoResizeToWidth: 50,
-//            logoPunchoutBackground: true,
-            labelText: $name,
-            labelFont: new OpenSans(24),
-            labelAlignment: LabelAlignment::Center
-        );
-
-
-        $result = $builder->build();
-        $filename = "data_$id.png";
-        $dir = 'images/qr/'.$filename;
-        $result->saveToFile($dir);
-
-
-        $name = $trial->name;
-        $builder = new Builder(
-            writer: new PngWriter(),
-            writerOptions: [],
-            validateResult: false,
-            data: $data2,
-            encoding: new Encoding('UTF-8'),
-            errorCorrectionLevel: ErrorCorrectionLevel::High,
-            size: 600,
-            margin: 10,
-            roundBlockSizeMode: RoundBlockSizeMode::Margin,
-//            logoPath: __DIR__.'/assets/bender.png',
-//            logoResizeToWidth: 50,
-//            logoPunchoutBackground: true,
-            labelText: $name,
-            labelFont: new OpenSans(24),
-            labelAlignment: LabelAlignment::Center
-        );
-        $result = $builder->build();
-        $filename = "programme_$id.png";
-        $dir = 'images/qr/'.$filename;
-        $result->saveToFile($dir);
-
-
-
-//        return redirect("/trials/adminEntryList/$id");
     }
 }
 

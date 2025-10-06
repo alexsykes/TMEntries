@@ -40,6 +40,18 @@ class AdminController extends Controller
             ->get();
         return view('admin.mailList', ['mails' => $mails]);
     }
+
+    public function refundTrial($id){
+        $trialID = $id;
+
+//        Get entry data for trial
+        $entryData = DB::table('entries')->where('trial_id', $trialID)
+            ->where('status', 1)
+            ->whereNotNull('stripe_payment_intent')
+            ->pluck('stripe_payment_intent');
+
+        dd($entryData);
+    }
     public function sendMail()
     {
         $delay = 1;

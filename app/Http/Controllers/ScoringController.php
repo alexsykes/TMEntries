@@ -257,7 +257,7 @@ class ScoringController extends Controller
         $utilityController = new UtilityController();
         $utilityController->saveResultsPDF($trialID);
 
-//        $this->lockTrial($trialID);
+        $this->lockTrial($trialID);
         $this->updateTrial($trialID);
         return redirect("/results/display/{$trialID}");
     }

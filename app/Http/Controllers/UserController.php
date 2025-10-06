@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\EntryWithdrawn;
 use App\Models\Entry;
 use App\Models\Price;
+use App\Models\Trial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Stripe\StripeClient;
@@ -66,6 +67,7 @@ class UserController extends Controller
 
     public function editEntry($id)
     {
+        info("EntryID: $id");
         $userID = auth()->user()->id;
         $entry = DB::table('entries')
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
@@ -90,18 +92,65 @@ class UserController extends Controller
         switch ($action) {
             case 'save':
                 $entry = Entry::findorfail($id);
+                $trial_id = $entry->trial_id;
+                $trial = Trial::findOrFail($trial_id);
+                $trial_date = date_create($trial->date);
+
+                //        Get product/price IDs
+                $youthProductID = DB::table('products')
+                    ->where('trial_id', $trial_id)
+                    ->where('isYouth', true)
+                    ->where('product_category', 'entry fee')
+                    ->value('stripe_product_id');
+
+
+                $adultProductID = DB::table('products')
+                    ->where('trial_id', $trial_id)
+                    ->where('isYouth', false)
+                    ->where('product_category', 'entry fee')
+                    ->value('stripe_product_id');
+
+
+                $youthPriceID = DB::table('prices')
+                    ->where('stripe_product_id', $youthProductID)
+                    ->value('stripe_price_id');
+
+                $adultPriceID = DB::table('prices')
+                    ->where('stripe_product_id', $adultProductID)
+                    ->value('stripe_price_id');
+
+
                 $request->validate([
                     'class' => 'required',
                     'course' => 'required',
                     'make' => 'required',
                     'type' => 'required',
                 ]);
-
+                $entry->dob = $request->dob;
                 $entry->class = $request->class;
                 $entry->course = $request->course;
                 $entry->make = $request->make;
                 $entry->type = $request->type;
                 $entry->size = $request->size;
+
+//                Adjust product etc. for dob
+                $birthDate = date_create($request->dob);
+
+                $interval = $trial_date->diff($birthDate);
+                $ageInYears = $interval->format('%y');
+
+                if($ageInYears < 18) {
+                    $entry->isYouth = 1;
+                    $entry->stripe_price_id = $youthPriceID;
+                    $entry->stripe_product_id = $youthProductID;
+                } else {
+                    $entry->isYouth = 0;
+                    $entry->stripe_price_id = $adultPriceID;
+                    $entry->stripe_product_id = $adultProductID;
+                }
+
+
+
                 $entry->save();
                 return redirect('/user/entries');
                 break;
@@ -162,14 +211,11 @@ class UserController extends Controller
             require('../vendor/stripe/stripe-php/lib/StripeClient.php');
             $stripe = new StripeClient(config('stripe.stripe_secret_key'));
 
-
-//            info("Line 168 ID: $id \n");
-//            TODO revert amount
             $stripe->refunds->create
             ([
                 'payment_intent' => $pi,
-//                'amount' => $cost - 300,
-                'amount' => 1,
+                'amount' => $cost - 300,
+//                'amount' => 1,
                 'metadata' => [
                     'entry_id' => $entry->id,
                 ]

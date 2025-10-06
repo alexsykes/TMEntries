@@ -11,10 +11,12 @@
                 <div class="hidden pl-2 text-sm sm:block text-center">Scoring</div>
                 <div class="hidden pl-2 text-sm sm:block text-center">Entries</div>
                 <div class="hidden pl-2 text-sm sm:block text-center">Results</div>
+                <div class="hidden pl-2 text-sm sm:block text-center">Refund</div>
                 <div class="w-12 text-center text-sm sm:hidden">T</div>
                 <div class="w-12 text-center text-sm sm:hidden">S</div>
                 <div class="w-12 text-center text-sm sm:hidden">E</div>
                 <div class="w-12 text-center text-sm sm:hidden">R</div>
+                <div class="w-12 text-center text-sm sm:hidden">£</div>
             </div>
         </div>
         <div class="table  w-full text-sm">
@@ -40,7 +42,6 @@
                             @endif
                         </a>
                     </div>
-
                     <div class="border-b w-12   table-cell text-center">
                         <a href="/admin/trial/toggleScoring/{{$trial->id}}">
                             @if( $trial->isScoringLocked == 0 )
@@ -60,7 +61,6 @@
                             @endif
                         </a>
                     </div>
-
                     <div class="border-b w-12   table-cell text-center">
                         <a href="/admin/trial/toggleResultPublished/{{$trial->id}}">
                             @if( $trial->isResultPublished == 0 )
@@ -68,6 +68,13 @@
 
                             @else
                                 <span><i class="fa-solid fa-lock text-red-600"></i></span>
+                            @endif
+                        </a>
+                    </div>
+                    <div class="border-b w-20   table-cell text-center">
+                        <a href="/admin/trial/toggleResultPublished/{{$trial->id}}">
+                            @if( $trial->isResultPublished == 0 )
+                                <a href="/admin/trial/refund/{{$trial->id}}">Refund</a>
                             @endif
                         </a>
                     </div>

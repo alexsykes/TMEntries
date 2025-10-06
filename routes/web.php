@@ -65,6 +65,8 @@ Route::get('/admin/trial/toggleLock/{id}', [AdminController::class, 'toggleLock'
 Route::get('/admin/trial/toggleEntry/{id}', [AdminController::class, 'toggleEntry'])->middleware(['auth', 'verified']);
 Route::get('/admin/trial/toggleScoring/{id}', [AdminController::class, 'toggleScoring'])->middleware(['auth', 'verified']);
 Route::get('/admin/trial/toggleResultPublished/{id}', [AdminController::class, 'toggleResultPublished'])->middleware(['auth', 'verified']);
+
+Route::get('/admin/trial/refund/{id}', [AdminController::class, 'refundTrial'])->middleware(['auth', 'verified']);
 //
 
 Route::get('/trials/edit/{id}', [TrialController::class, 'edit'])->middleware(['auth', 'verified'])->name('edit');
