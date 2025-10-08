@@ -218,6 +218,7 @@ class UserController extends Controller
 //                'amount' => 1,
                 'metadata' => [
                     'entry_id' => $entry->id,
+                    'reason' => 'user_request'
                 ]
             ]);
         } elseif ($entry->status == 0) {

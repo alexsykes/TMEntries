@@ -321,7 +321,7 @@ function onCheckoutSessionCompleted($sessionObject)
 //        Check for number of entries left
 //        If 5, then email registered but not paid
             $spaces = $entryLimit - $numEntries;
-echo "Spaces: $spaces\n";
+            echo "Spaces: $spaces\n";
             if ($spaces <= 0) {
                 // info("TrialFull ($spaces spaces) dispatched");
                 TrialFull::dispatch($trialID, $entryLimit, $numEntries);
@@ -338,109 +338,64 @@ function onRefundCreated(mixed $object)
 //    Get the entryID from the metadata
     if (isset($object['metadata']['entry_id'])) {
         $entryID = $object['metadata']['entry_id'];
+        $reason = $object['metadata']['reason'];
+        $status = $object['status'];
 
-        $entry = DB::table('entries')
-            ->where('id', $entryID)
+        $entryIDs = explode(',', $entryID);
+
+//        Update status -> 2 (waiting for refund)
+        $entries = DB::table('entries')
+            ->whereIn('id', $entryIDs)
             ->update(['status' => 2, 'updated_at' => now()]);
 
         $bcc = 'monster@trialmonster.uk';
 
+        foreach ($entryIDs  as $entryID) {
         $entry = DB::table('entries')->find($entryID);
-        $email = $entry->email;
-
-        Mail::to($email)
-            ->bcc($bcc)
-            ->send(new RefundRequested($entry));
-
-//        TODO - remove this?
-        /*
-////       Check for spaces
-        $trialID = $entry->trial_id;
-
-        $trial = Trial::findOrFail($trialID);
-
-//        Check for full entry list
-        $entryLimit = $trial->entryLimit;
-        $numEntries = Entry::where('trial_id', $trialID)
-            ->whereIn('status', [1, 4, 7, 8, 9])
-            ->count();
-        Info("NumEntries: $numEntries");
-//        Check for number of entries left
-//        If 5, then email registered but not paid
-        $spaces = $entryLimit - $numEntries;
-
-//        $spaces - which should equal 1 in most cases
-        $reserveIDs = Entry::where('status', 5)
-            ->where('trial_id', $trialID)
-            ->orderBy('updated_at')
-            ->limit($spaces)
-            ->get();
-*/
-        /*
-        foreach ($reserveIDs as $reserveID) {
-
-            $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
-
-            $id = $reserveID->id;
-            $email = $reserveID->email;
-            $name = $reserveID->name;
-            $stripe_product_id = $reserveID->stripe_product_id;
-
-            $customer = $stripe->customers->create
-            ([
-                'name' => $name,
-                'email' => $email,
-            ]);
-
-            $invoice = $stripe->invoices->create([
-                    'customer' => $customer->id,
-                    'collection_method' => 'send_invoice',
-                    'days_until_due' => 3,
-                ]
-            );
-
-// TODO Remove comment on next line
-////            $reserveID->update(['status' => 4]);
-
-//            echo("Reserve $id: $name - $email \n");
-//            echo("Product $stripe_product_id \n");
-//            echo("Customer $customer->id     \n");
-//            echo("Invoice $invoice->id     \n");
-//            Raise invoice
-
+            $email = $entry->email;
+            echo $email.PHP_EOL;
+            Mail::to($email)
+                ->bcc($bcc)
+                ->queue(new RefundRequested($entry, $reason));
         }
-        */
     }
 }
 
 function onRefundUpdated(mixed $object)
 {
+    //    Get the entryID from the metadata
     if (isset($object['metadata']['entry_id'])) {
         $entryID = $object['metadata']['entry_id'];
+        $reason = $object['metadata']['reason'];
+        $status = $object['status'];
 
-        $entry = DB::table('entries')
-            ->where('id', $entryID)
+        $entryIDs = explode(',', $entryID);
+
+//        Update status -> 2 (waiting for refund)
+        $entries = DB::table('entries')
+            ->whereIn('id', $entryIDs)
             ->update(['status' => 3, 'updated_at' => now()]);
 
         $bcc = 'monster@trialmonster.uk';
+        foreach ($entryIDs as $entryID) {
 
-        $entry = DB::table('entries')->find($entryID);
+            $entry = DB::table('entries')->find($entryID);
+            $priceID = $entry->stripe_price_id;
+            $price = DB::table('prices')
+                ->where('stripe_price_id', '=', $priceID)
+                ->increment('refunds');
 
-        $priceID = $entry->stripe_price_id;
-        $price = DB::table('prices')
-            ->where('stripe_price_id', '=', $priceID)
-            ->increment('refunds');
+            $productID = $entry->stripe_product_id;
+            $price = DB::table('products')
+                ->where('stripe_product_id', '=', $productID)
+                ->increment('refunds');
 
-        $productID = $entry->stripe_product_id;
-        $price = DB::table('products')
-            ->where('stripe_product_id', '=', $productID)
-            ->increment('refunds');
-
-        $email = $entry->email;
-        // info("$email");
-        Mail::to($email)
-            ->bcc($bcc)
-            ->send(new RefundConfirmed($entry));
+            $email = $entry->email;
+            // info("$email");
+            Mail::to($email)
+                ->bcc($bcc)
+                ->queue(new RefundConfirmed($entry, $reason));
+        }
     }
 }
 

@@ -1,4 +1,10 @@
-<x-automail><p><b>We have received a request from your email address to withdraw the entry detailed below. If you did not request this refund, please reply to this email immediately.</b></p>
+<x-automail>
+    @if($reason == 'cancellation')
+        <p><b>Due to weather conditions, we have reluctantly been forced to cancel this event. A full refund has now been made to your account</b></p>
+    @elseif($reason == 'user_request')
+        <p><b>We have received a request from your email address to withdraw the entry detailed below. If you did not request this refund, please reply to this email immediately.</b></p>
+    @endif
+
 <p>We can confirm that your refund for the following entry has now been completed.</p>
 <table>
     <tr>

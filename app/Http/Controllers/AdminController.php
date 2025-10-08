@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Mail\TMLogin;
 use App\Models\Trial;
 use App\Models\User;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use Stripe\StripeClient;
 
 class AdminController extends Controller
 {
@@ -44,13 +47,29 @@ class AdminController extends Controller
     public function refundTrial($id){
         $trialID = $id;
 
-//        Get entry data for trial
-        $entryData = DB::table('entries')->where('trial_id', $trialID)
+//        Get entries with status 1
+        $entryData = DB::table('entries')
+            ->select('stripe_payment_intent', DB::raw('group_concat(id) as ids'))
+            ->groupBy('stripe_payment_intent')
+            ->where('trial_id', $trialID)
             ->where('status', 1)
             ->whereNotNull('stripe_payment_intent')
-            ->pluck('stripe_payment_intent');
+            ->get();
 
-        dd($entryData);
+        foreach ($entryData as $entry) {
+            $paymentIntent = $entry->stripe_payment_intent;
+            $entry_id = $entry->ids;
+
+            $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
+            $stripe->refunds->create([
+                'payment_intent' => $paymentIntent,
+                'amount' => 1,
+                'metadata' => ['entry_id' => $entry_id,
+                    'reason' => 'cancellation']
+            ]);
+//        payment intents to refund
+            Log::info("Refund requested - $entry_id");
+        }
     }
     public function sendMail()
     {
