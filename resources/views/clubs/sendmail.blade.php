@@ -10,10 +10,14 @@
             if (selected == "Trial Entrants") {
                 document.getElementById('trialSelectDiv').style.display = 'block';
             } else document.getElementById('trialSelectDiv').style.display = 'none';
+
+            if (selected == "Distribution List") {
+                document.getElementById('distributionListSelectDiv').style.display = 'block';
+            } else document.getElementById('distributionListSelectDiv').style.display = 'none';
         }
     </script>
     @php
-        $distributionArray = array("Test", "Trial Entrants", "Past Entrants");
+        $distributionArray = array("Test", "Trial Entrants", "Past Entrants", "Distribution List");
 
     @endphp
     <x-slot:heading>Send mail</x-slot:heading>
@@ -75,18 +79,33 @@
                 </div>
 
                 <div id="trialSelectDiv" class="hidden col-span-3 mt-2">
-                <x-form-field>
-                    <x-form-label class="pb-2" for="course">Trial</x-form-label>
-                    <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
-                        <div class="pb-2 pt-2    sm:col-span-2">
-                            <select class="ml-2 bg-white  space-x-4 border-none" name="trial_id" id="trial_id">
-                                @foreach($clubTrials as $trial)
-                                    <option value="{{$trial->id}}" >{{$trial->name}}</option>
-                                @endforeach
-                            </select>
+                    <x-form-field>
+                        <x-form-label class="pb-2" for="course">Trial</x-form-label>
+                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
+                            <div class="pb-2 pt-2    sm:col-span-2">
+                                <select class="ml-2 bg-white  space-x-4 border-none" name="trial_id" id="trial_id">
+                                    @foreach($clubTrials as $trial)
+                                        <option value="{{$trial->id}}" >{{$trial->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                </x-form-field>
+                    </x-form-field>
+                </div>
+
+                <div id="distributionListSelectDiv" class="hidden col-span-3 mt-2">
+                    <x-form-field>
+                        <x-form-label class="pb-2" for="course">Distribution List</x-form-label>
+                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
+                            <div class="pb-2 pt-2    sm:col-span-2">
+                                <select class="ml-2 bg-white  space-x-4 border-none" name="distribution_id" id="trial_id">
+                                    @foreach($distributions as $distribution)
+                                        <option value="{{$distribution->id}}" >{{$distribution->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </x-form-field>
                 </div>
             </div>
         </div>

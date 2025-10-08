@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Mail\TestMail;
 use App\Models\Club;
 use App\Models\Clubmail;
+use App\Models\MailDistribution;
 use App\Models\Mailshot;
 use Auth;
 use Illuminate\Http\Request;
@@ -301,7 +302,12 @@ class ClubmailController extends Controller
             ->limit(10)
             ->get();
 
-        return view('clubs.sendmail', compact('mail', 'clubTrials'));
+        $distributions = DB::table('mail_distributions')
+            ->where('club_id', $clubID)
+            ->orderBy('name')
+            ->get();
+//        dd($distributions);
+        return view('clubs.sendmail', compact('mail', 'clubTrials', 'distributions'));
     }
 
 //     Get mailing list of users
@@ -401,6 +407,14 @@ class ClubmailController extends Controller
                 }
                 break;
             default:
+
+            case "Distribution List":
+                $distribution_id = $request->distribution_id;
+                $mail_distribution = MailDistribution::findOrFail($distribution_id);
+
+                $distributionList = explode(',', $mail_distribution->to);
+
+                break;
 
         }
         $distributionList = array_unique($distributionList);
