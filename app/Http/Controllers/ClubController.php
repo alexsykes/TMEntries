@@ -6,6 +6,7 @@ use App\Models\Club;
 use App\Models\ClubMember;
 use App\Models\MailDistribution;
 use App\Models\Series;
+use App\Models\Trial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -83,8 +84,7 @@ class ClubController extends Controller
         $attributes['section_markers'] = request('section_markers', '');
 
         $club = Club::create($attributes);
-//        dd($club);
-        return redirect('/clubs/list');
+        return redirect('/club/profile?tab=profile');
     }
 
     public function clubUpdate(Request $request)
@@ -105,7 +105,7 @@ class ClubController extends Controller
         $club->update($attributes);
         $club->save();
 
-        return redirect('/club/profile');
+        return redirect('/club/profile?tab=profile');
     }
 
     public function update(Request $request)
@@ -189,16 +189,27 @@ class ClubController extends Controller
         return redirect('/clubs/checkout', ['member' => $member, 'product' => $product]);
     }
 
-    public function console()
+    public function console(Request $request)
     {
+        $selectedTab = "Profile";
+        if (isset($request->tab)) {
+            $selectedTab = $request->tab;
+        }
         $user = Auth::user();
         $id = $user->club_id;
         $club = DB::table('clubs')
             ->where('id', $id)
             ->first();
 
+        $user = Auth::user();
+        $userID = $user->id;
+        $trials = Trial::all()
+            ->where('created_by', $userID)
+            ->sortByDesc('date');
+
         $distributionLists = DB::table('mail_distributions')
             ->where('club_id', $id)
+            ->orderBy('name')
             ->get();
 
         $countItemsArray = array();
@@ -214,7 +225,7 @@ class ClubController extends Controller
         $series = Series::where('clubID', $id)
             ->get();
 
-        return view('clubs.console', ['club' => $club, 'distributionLists' => $distributionLists, 'trials' => $trials, 'series' => $series, 'countItemsArray' => $countItemsArray]);
+        return view('clubs.console', ['club' => $club, 'distributionLists' => $distributionLists, 'trials' => $trials, 'series' => $series, 'countItemsArray' => $countItemsArray, 'trials' => $trials, 'selectedTab' => $selectedTab]);
     }
 
     public function addDistribution()
@@ -242,6 +253,7 @@ class ClubController extends Controller
         $attributes['club_id'] = $club_id;
         $attributes['created_by'] = $created_by;
         MailDistribution::create($attributes);
+        return redirect('/club/profile?tab=mailinglist');
     }
 
     public function updateDistribution(Request $request)
@@ -255,5 +267,6 @@ class ClubController extends Controller
 
         $item->update($attributes);
         $item->save();
+        return redirect('/club/profile?tab=mailinglist');
     }
 }

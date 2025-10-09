@@ -59,7 +59,7 @@
                     <x-form-label for="website">Website</x-form-label>
                     <div class="mt-2 col-span-2">
                         <x-form-input name="website" type="text" id="website" value="{{$club->website}}"
-                                      placeholder="Website link" />
+                                      placeholder="Website link"/>
                         <x-form-error name="website"/>
                     </div>
                     @error('website')
@@ -68,12 +68,11 @@
                 </x-form-field>
 
 
-
                 <x-form-field>
                     <x-form-label for="facebook">Facebook</x-form-label>
                     <div class="mt-2 col-span-2">
                         <x-form-input name="facebook" type="text" id="facebook" value="{{$club->facebook}}"
-                                      placeholder="Facebook link" />
+                                      placeholder="Facebook link"/>
                         <x-form-error name="facebook"/>
                     </div>
                     @error('facebook')
@@ -82,19 +81,20 @@
                 </x-form-field>
 
 
-
                 <x-form-field>
                     <x-form-label for="section_markers">Scoring and section markers</x-form-label>
                     <div class="mt-2">
-                        <textarea class="withEditor" name ="section_markers" id="section_markers" rows="5"  class=" block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"  required >{{ $club->section_markers }}</textarea>
-                        <x-form-error name="section_markers" />
+                        <textarea class="withEditor" name="section_markers" id="section_markers" rows="5"
+                                  class=" block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                  required>{{ $club->section_markers }}</textarea>
+                        <x-form-error name="section_markers"/>
                     </div>
                 </x-form-field>
 
                 <x-form-field>
                     <x-form-label for="description">Notes</x-form-label>
                     <div class="mt-2 ">
-                        <textarea class="withEditor" name="description" type="text" id="description" >
+                        <textarea class="withEditor" name="description" type="text" id="description">
                             {{$club->description}}
                         </textarea>
                     </div>
@@ -106,8 +106,11 @@
             </div>
         </div>
         <div id="buttons" class="py-2">
-            <a href="/club/profile"
-               class=" rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-900 shadow-sm hover:bg-violet-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-900">Cancel</a>
+            <button class=" rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-900 shadow-sm hover:bg-violet-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-900"
+                    onclick="history.back()">Go Back
+            </button>
+            {{--            <a href="/club/profile"--}}
+            {{--               class=" rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-900 shadow-sm hover:bg-violet-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-900">Cancel</a>--}}
             <button type="submit"
                     class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
                 Update

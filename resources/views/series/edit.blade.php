@@ -1,4 +1,4 @@
-<x-club >
+<x-club>
     <x-slot:heading>Updating {{$series->name}}</x-slot:heading>
     @php
         //dd($clubs);
@@ -30,7 +30,7 @@
                     <div class="mt-2 col-span-2">
                         <x-form-input name="description" type="text" id="description" value="{{$series->description}}"
                                       required
-                                      placeholder="A brief description of the series" />
+                                      placeholder="A brief description of the series"/>
                         <x-form-error name="description"/>
                     </div>
                     @error('description')
@@ -63,12 +63,13 @@
                 </x-form-field>
 
 
-
                 <x-form-field>
                     <x-form-label for="notes">Notes</x-form-label>
-                    <div class="text-sm">Please give full details of the series - machine eligibiity, number of rounds, how scores are awarded etc.</div>
+                    <div class="text-sm">Please give full details of the series - machine eligibiity, number of rounds,
+                        how scores are awarded etc.
+                    </div>
                     <div class="mt-2 ">
-                        <textarea class="withEditor" name="notes" type="text" id="notes" >{{$series->notes}}</textarea>
+                        <textarea class="withEditor" name="notes" id="notes">{{$series->notes}}</textarea>
                     </div>
                     @error('notes')
                     <p class="text-xs text-violet-500 font-semibold mt-1">{{ $message }}</p>
@@ -78,8 +79,10 @@
         </div>
 
         <div id="buttons" class="py-2">
-            <a href="/club/profile"
-               class=" rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-900 shadow-sm hover:bg-violet-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-900">Cancel</a>
+            <button class="rounded-md ml-2 bg-white px-3 py-1 text-sm font-light  border border-violet-800  drop-shadow-lg text-violet-900 shadow-sm hover:bg-violet-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-900"
+                    onclick="history.back()">Cancel</button>
+            {{--            <a href="/club/profile"--}}
+            {{--               class=" rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-900 shadow-sm hover:bg-violet-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-900">Cancel</a>--}}
             <button type="submit"
                     class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
                 Update

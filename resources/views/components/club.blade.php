@@ -2,7 +2,6 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  class="h-full bg-violet-900">
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-{{--    <script src="https://cdn.tailwindcss.com"></script>--}}
     <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>
     <x-head.tinymce-config/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -102,9 +101,7 @@
 
     </style>
 
-    <title><?php if (config('APP_NAME') != ''){
-            echo env('APP_NAME');
-        }  else { echo "Club admin"; } ?></title>
+    <title>{{config('app.name')}}</title>
 </head>
 <body class="h-full bg-violet-800 text-white">
     <header class="bg-violet-800 drop-shadow-md">
@@ -116,7 +113,7 @@
             <div class="hidden sm:block">
                 <div class="ml-4 flex space-x-4 items-center m-auto px md:ml-6" >
                     <x-nav-link href="/" :active="request()->is('/')">Public site</x-nav-link>
-                    <x-nav-link href="/club/profile" :active="request()->is('/clubaccess')">Profile</x-nav-link>
+                    <x-nav-link href="/club/console" :active="request()->is('/club/console')">Console</x-nav-link>
                     <x-nav-link href="/clubaccess" :active="request()->is('/clubaccess')">Trials</x-nav-link>
 {{--                    <x-nav-link href="/series/list" :active="request()->is('/series/list')">Competitions</x-nav-link>--}}
                     <x-nav-link href="/club/mails" :active="request()->is('/club/mails')">Mail</x-nav-link>

@@ -76,7 +76,7 @@ class SeriesController extends Controller
             'description' => 'required',
         ]);
         $series = Series::create($attributes);
-        return redirect('/club/profile');
+        return redirect('/club/profile?tab=competitions');
     }
 
     public function update()
@@ -92,6 +92,6 @@ class SeriesController extends Controller
         ]);
         $series->update($attributes);
         $series->save();
-        return redirect('/club/profile');
+        return redirect('/club/profile?tab=competitions');
     }
 }

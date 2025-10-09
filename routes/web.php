@@ -223,7 +223,8 @@ Route::get('/club/edit/{id}', [ClubController::class, 'edit'])->middleware(['aut
 Route::post('/club/store', [ClubController::class, 'store'])->middleware(['auth', 'verified'])->name('club.store');
 Route::patch('/club/update', [ClubController::class, 'update'])->middleware(['auth', 'verified']);
 Route::patch('/club/clubUpdate', [ClubController::class, 'clubUpdate'])->middleware(['auth', 'verified']);
-Route::get('/club/console/{id}', [ClubController::class, 'console'])->middleware(['auth', 'verified'])->name('club.console');
+Route::get('/club/console', [ClubController::class, 'console'])->middleware(['auth', 'verified'])->name('club.console');
+Route::get('/club/console/{tab}', [ClubController::class, 'console'])->middleware(['auth', 'verified'])->name('club.console.tab');
 Route::get('/club/distribution/add', [ClubController::class, 'addDistribution'])->middleware(['auth', 'verified']);
 Route::get('/club/distribution/edit/{id}', [ClubController::class, 'editDistribution'])->middleware(['auth', 'verified']);
 Route::post('/club/distribution/store', [ClubController::class, 'storeDistribution'])->middleware(['auth', 'verified']);
@@ -231,7 +232,7 @@ Route::patch('/club/distribution/update', [ClubController::class, 'updateDistrib
 
 // SERIES Routes
 Route::get('/series/list', [SeriesController::class, 'list'])->middleware(['auth', 'verified']);
-Route::get('/series/detail/{id}', [SeriesController::class, 'detail']);
+Route::get('/series/detail', [SeriesController::class, 'detail']);
 Route::get('/series/add', [SeriesController::class, 'add'])->middleware(['auth', 'verified']);
 Route::get('/series/edit/{id}', [SeriesController::class, 'edit'])->middleware(['auth', 'verified']);
 Route::post('/series/store', [SeriesController::class, 'store'])->middleware(['auth', 'verified']);

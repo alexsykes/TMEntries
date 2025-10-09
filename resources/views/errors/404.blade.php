@@ -1,4 +1,4 @@
-<meta http-equiv="refresh" content="7; url='https://trialmonster.uk'" />
+<meta http-equiv="refresh" content="7; url='{{config('app.url')}}'"/>
 @extends('errors::minimal')
 
 @section('title', __('Page Not Found'))
