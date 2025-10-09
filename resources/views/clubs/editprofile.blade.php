@@ -84,8 +84,7 @@
                 <x-form-field>
                     <x-form-label for="section_markers">Scoring and section markers</x-form-label>
                     <div class="mt-2">
-                        <textarea class="withEditor" name="section_markers" id="section_markers" rows="5"
-                                  class=" block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                        <textarea  name="section_markers" id="section_markers" rows="5" class="withEditor block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                                   required>{{ $club->section_markers }}</textarea>
                         <x-form-error name="section_markers"/>
                     </div>
@@ -93,8 +92,8 @@
 
                 <x-form-field>
                     <x-form-label for="description">Notes</x-form-label>
-                    <div class="mt-2 ">
-                        <textarea class="withEditor" name="description" type="text" id="description">
+                    <div class="mt-2">
+                        <textarea class="withEditor" name="description" id="description">
                             {{$club->description}}
                         </textarea>
                     </div>

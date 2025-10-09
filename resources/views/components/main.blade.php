@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full ">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 {{--    <script src="https://cdn.tailwindcss.com"></script>--}}
