@@ -1,49 +1,50 @@
 <x-main>
     <x-slot:heading>{{$trial->name}}</x-slot:heading>
     @php
-$download_link = asset('pdf/results/'.$filename);
-        $owner = (Auth::id());
-            $canEdit = false;
-        if(($owner == $trial->created_by)  && ($trial->isResultPublished)) {
-            $canEdit = true;
-        }
+        $download_link = asset('pdf/results/'.$filename);
+                $owner = (Auth::id());
+                    $canEdit = false;
+                if(($owner == $trial->created_by)  && ($trial->isResultPublished)) {
+                    $canEdit = true;
+                }
 
-            $fifty_fifty = $trial->fifty_fifty;
-        $hasFifty = false;
-        $fiftyArray = array();
-            If($fifty_fifty != "") {
-                $hasFifty = true;
-                $fiftyArray = explode(",", $fifty_fifty);
+                    $fifty_fifty = $trial->fifty_fifty;
+                $hasFifty = false;
+                $fiftyArray = array();
+                    If($fifty_fifty != "") {
+                        $hasFifty = true;
+                        $fiftyArray = explode(",", $fifty_fifty);
 
-            }
-            $courselist = $trial->courselist;
-            $classlist = $trial->classlist;
-            $numsections = $trial->numSections;
-            $numlaps = $trial->numLaps;
-                        $rawDate = new DateTime($trial->date);
-                        $date  = date_format($rawDate, "jS F, Y");
-                        $rawDate = new DateTime($trial->updated_at);
-                        $updated  = date_format($rawDate, "H:ia jS F, Y");
-            $nonStarterArray = array();
-        foreach($nonStarters as $notStarter) {
-            array_push($nonStarterArray, $notStarter->name);
-        }
-            $nonStarterList = implode(', ', $nonStarterArray);
+                    }
+                    $courselist = $trial->courselist;
+                    $classlist = $trial->classlist;
+                    $numsections = $trial->numSections;
+                    $numlaps = $trial->numLaps;
+                                $rawDate = new DateTime($trial->date);
+                                $date  = date_format($rawDate, "jS F, Y");
+                                $rawDate = new DateTime($trial->updated_at);
+                                $updated  = date_format($rawDate, "H:ia jS F, Y");
+                    $nonStarterArray = array();
+                foreach($nonStarters as $notStarter) {
+                    array_push($nonStarterArray, $notStarter->name);
+                }
+                    $nonStarterList = implode(', ', $nonStarterArray);
     @endphp
 
     <div class="text-black mb-2 sm:hidden">Scores display will be improved by turning your phone on its side.</div>
-    <div class="text-red-600 mb-2 ml-2 font-semibold "><a href="{{$download_link}}"><span><i class="fa-solid fa-star"></i></span>New - Result download in traditional format - click here</a></div>
+    <div class="text-red-600 mb-2 ml-2 font-semibold "><a href="{{$download_link}}"><span><i
+                        class="fa-solid fa-star"></i></span>New - Result download in traditional format - click here</a>
+    </div>
     <div class="tab pl-8">
         <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-1" id="defaultOpen"
                 onclick="openSection(event, 'Results')">
             Course Results
         </button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-1" id="defaultOpen"
+        <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-1"
                 onclick="openSection(event, 'Class')">
             Class Results
         </button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-1  "
-                onclick="openSection(event, 'New Scores')">Scores
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-1" onclick="openSection(event, 'New Scores')">Scores
         </button>
         {{--        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Classes')">Class Results</button>--}}
     </div>
@@ -107,6 +108,7 @@ $download_link = asset('pdf/results/'.$filename);
 
         {{--        <div class="pl-2 pr-2 text-sm">Non starters: {{$nonStarterList}}</div>--}}
     </div>
+
     <div id="Class" class="tabcontent pt-0 ">
         @for($index=0;  $index < sizeof($resultsByClass); $index++)
             @php  $course = $resultsByClass[$index][0];
@@ -114,7 +116,6 @@ $download_link = asset('pdf/results/'.$filename);
         $classResults = $resultsByClass[$index][2];
         $title = "$course - $class";
 
-//        dump($classResults);
             @endphp
             @if(sizeof($classResults) > 0)
                 <div class=" mt-0 mb-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
@@ -169,6 +170,7 @@ $download_link = asset('pdf/results/'.$filename);
 
         {{--        <div class="pl-2 pr-2 text-sm">Non starters: {{$nonStarterList}}</div>--}}
     </div>
+
     <div id="Scores" class="tabcontent pt-0 ">
         @php
             if(sizeof($courses) > 0) {
@@ -217,6 +219,7 @@ $download_link = asset('pdf/results/'.$filename);
             }
         @endphp
     </div>
+
     <div id="New Scores" class="tabcontent pt-0 ">
 
         @if(sizeof($resultsByClass) > 0)
@@ -237,10 +240,12 @@ $download_link = asset('pdf/results/'.$filename);
 
                             <div class=" mt-0 mb-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
                                 @if($hasFifty && $course == "50/50")
-                                    <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">@php echo "$course - $class"; @endphp - bold scores indicate harder sections</div>
+                                    <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">@php echo "$course - $class"; @endphp
+                                        - bold scores indicate harder sections
+                                    </div>
 
-                                    @else
-                                <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">@php echo "$course - $class"; @endphp</div>
+                                @else
+                                    <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">@php echo "$course - $class"; @endphp</div>
                                 @endif
                                 <table class="w-full text-sm">
                                     <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
@@ -270,7 +275,7 @@ $download_link = asset('pdf/results/'.$filename);
 
                                             @for($index = 0; $index < $numsections; $index++)
                                                 @if((in_array($index + 1, $fiftyArray) && $fifty))
-                                                <td class="w-10 pr-4 text-center font-bold  table-cell">{{$scoreArray[$index]}}</td>
+                                                    <td class="w-10 pr-4 text-center font-bold  table-cell">{{$scoreArray[$index]}}</td>
                                                 @else
                                                     <td class="w-10 pr-4 text-center table-cell">{{$scoreArray[$index]}}</td>
                                                 @endif

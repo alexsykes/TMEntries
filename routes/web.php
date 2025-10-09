@@ -216,13 +216,18 @@ Route::post('/club/member/add', [ClubController::class, 'addMember']);
 Route::get('/club/mails', [ClubController::class, 'mailList'])->middleware('auth', 'verified'); // Lists mails
 Route::get('/clublist', [ClubController::class, 'clublist']);
 Route::get('/club/detail/{id}', [ClubController::class, 'detail']);
-Route::get('/club/profile', [ClubController::class, 'profile'])->middleware(['auth', 'verified']);
+Route::get('/club/profile', [ClubController::class, 'console'])->middleware(['auth', 'verified']);
 Route::get('/club/profile/edit', [ClubController::class, 'editProfile'])->middleware(['auth', 'verified']);
 Route::get('/clubs/add', [ClubController::class, 'add'])->middleware(['auth', 'verified']);
 Route::get('/club/edit/{id}', [ClubController::class, 'edit'])->middleware(['auth', 'verified']);
 Route::post('/club/store', [ClubController::class, 'store'])->middleware(['auth', 'verified'])->name('club.store');
 Route::patch('/club/update', [ClubController::class, 'update'])->middleware(['auth', 'verified']);
 Route::patch('/club/clubUpdate', [ClubController::class, 'clubUpdate'])->middleware(['auth', 'verified']);
+Route::get('/club/console/{id}', [ClubController::class, 'console'])->middleware(['auth', 'verified'])->name('club.console');
+Route::get('/club/distribution/add', [ClubController::class, 'addDistribution'])->middleware(['auth', 'verified']);
+Route::get('/club/distribution/edit/{id}', [ClubController::class, 'editDistribution'])->middleware(['auth', 'verified']);
+Route::post('/club/distribution/store', [ClubController::class, 'storeDistribution'])->middleware(['auth', 'verified']);
+Route::patch('/club/distribution/update', [ClubController::class, 'updateDistribution'])->middleware(['auth', 'verified']);
 
 // SERIES Routes
 Route::get('/series/list', [SeriesController::class, 'list'])->middleware(['auth', 'verified']);
