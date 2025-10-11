@@ -117,9 +117,9 @@
                 @foreach($distributionLists as $item)
 
                     <div class="flex pb-2 w-full  ">
-                        <div class="w-1/5 font-semibold text-purple-700 underline"><a
-                                    href="/club/distribution/edit/{{$item->id}}">{{$item->name}}
-                                ({{$countItemsArray[$index]}})</a></div>
+                        <div class="w-1/5 text-purple-700"><a class="underline font-semibold"
+                                    href="/club/distribution/edit/{{$item->id}}">{{$item->name}}</a>
+                                ({{$countItemsArray[$index]}})</div>
                         <div class="w-1/5">{{$item->description}}</div>
                         <div class="w-3/5 overflow-clip">{{$item->to}}</div>
                     </div>

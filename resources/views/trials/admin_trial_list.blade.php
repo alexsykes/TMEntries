@@ -82,13 +82,11 @@
             @endforeach
         </table>
     </div>
-    <div class="flex justify-between">
+    <div class="pt-4 text-sm text-red-600">Red link - You can visit the page but no changes can be made.</div>
     <div class="mt-4" id="buttons">
         <a href="trials/add"
            class="rounded-md  ml-4 pt-2 pb-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
             Add a new trial
         </a>
-    </div>
-    <div class="pt-4 text-sm text-red-600">Red link - You can visit the page but no changes can be made.</div>
     </div>
 </x-club>

@@ -2,27 +2,22 @@
 
 require __DIR__ . '/auth.php';
 
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ClubController;
+use App\Http\Controllers\ClubmailController;
 use App\Http\Controllers\EntryController;
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ScoringController;
 use App\Http\Controllers\SeriesController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\AboutController;
-use App\Http\Controllers\ClubmailController;
-
-use App\Http\Controllers\ClubController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\TrialController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-use Laravel\Cashier\Http\Controllers\WebhookController;
-use App\Models\User;
-use Laravel\Cashier\Cashier;
 
 //NOTE: wilcards {} should go at end!!!
 
@@ -215,7 +210,7 @@ Route::get('/clubs/membershipForm/{id}', [ClubController::class, 'membershipForm
 Route::post('/club/member/add', [ClubController::class, 'addMember']);
 Route::get('/club/mails', [ClubController::class, 'mailList'])->middleware('auth', 'verified'); // Lists mails
 Route::get('/clublist', [ClubController::class, 'clublist']);
-Route::get('/club/detail/{id}', [ClubController::class, 'detail']);
+//Route::get('/club/detail/{id}', [ClubController::class, 'detail']);
 Route::get('/club/profile', [ClubController::class, 'console'])->middleware(['auth', 'verified']);
 Route::get('/club/profile/edit', [ClubController::class, 'editProfile'])->middleware(['auth', 'verified']);
 Route::get('/clubs/add', [ClubController::class, 'add'])->middleware(['auth', 'verified']);
@@ -248,7 +243,7 @@ Route::get('/import', [ImportController::class, 'showImportForm'])->name('import
 Route::post('/import', [ImportController::class, 'importEntries'])->name('import.process');
 
 // Utility routes
-Route::get('/createResultPDF/{id}', [\App\Http\Controllers\UtilityController::class, 'createResultPDF'])->middleware(['auth', 'verified']);
+Route::get('/createResultPDF/{id}', [UtilityController::class, 'createResultPDF'])->middleware(['auth', 'verified']);
 // MIDDLEWARE
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

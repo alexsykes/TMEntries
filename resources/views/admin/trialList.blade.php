@@ -22,9 +22,9 @@
         <div class="table  w-full text-sm">
             @foreach($trials as $trial)
                 @php
-//                    dump($trial);
-                $rawDate = new DateTime($trial->date);
-                $date  = date_format($rawDate, "jS F, Y");
+                    //                    dump($trial);
+                                    $rawDate = new DateTime($trial->date);
+                                    $date  = date_format($rawDate, "jS F, Y");
                 @endphp
 
                 <div class="border-b table-row pr-2">
@@ -32,10 +32,12 @@
                     <div class="hidden border-b  pr-2 pl-2 md:table-cell ">{{$trial->club}}</div>
                     <div class="border-b pt-1 pb-1 pr-2 pl-2 table-cell">{{$trial->name}}</div>
                     <div class="border-b w-12   table-cell text-center">
-                        <a class="table-cell w-full" href="/admin/trial/edit/{{$trial->id}}"><span><i class="fa-solid fa-gear text-black"></i></span></a></div>
+                        <a class="table-cell w-full" href="/admin/trial/edit/{{$trial->id}}"><span><i
+                                        class="fa-solid fa-gear text-black"></i></span></a></div>
                     <div class="border-b w-12   table-cell text-center">
                         <a href="/admin/trial/toggleLock/{{$trial->id}}">
-                            @if( $trial->isLocked == 0 )<span><i class="fa-solid fa-lock-open text-green-500"></i></span>
+                            @if( $trial->isLocked == 0 )
+                                <span><i class="fa-solid fa-lock-open text-green-500"></i></span>
 
                             @else
                                 <span><i class="fa-solid fa-lock text-red-600"></i></span>
@@ -54,7 +56,8 @@
                     </div>
                     <div class="border-b w-12   table-cell text-center">
                         <a href="/admin/trial/toggleEntry/{{$trial->id}}">
-                            @if( $trial->isEntryLocked == 0 )<span><i class="fa-solid fa-lock-open text-green-500"></i></span>
+                            @if( $trial->isEntryLocked == 0 )
+                                <span><i class="fa-solid fa-lock-open text-green-500"></i></span>
 
                             @else
                                 <span><i class="fa-solid fa-lock text-red-600"></i></span>
@@ -78,10 +81,7 @@
                             @endif
                         </a>
                     </div>
-
-
                 </div>
-
             @endforeach
         </div>
     </div>

@@ -25,9 +25,8 @@ class ClubController extends Controller
     public function profile(Request $request)
     {
         $user = Auth::user();
-
         if (!$user->isClubUser) {
-            abort(404);
+            abort(code: 404);
         }
         $clubID = $user->club_id;
 
@@ -225,7 +224,7 @@ class ClubController extends Controller
         $series = Series::where('clubID', $id)
             ->get();
 
-        return view('clubs.console', ['club' => $club, 'distributionLists' => $distributionLists, 'trials' => $trials, 'series' => $series, 'countItemsArray' => $countItemsArray, 'trials' => $trials, 'selectedTab' => $selectedTab]);
+        return view('clubs.console', ['club' => $club, 'distributionLists' => $distributionLists, 'series' => $series, 'countItemsArray' => $countItemsArray, 'trials' => $trials, 'selectedTab' => $selectedTab]);
     }
 
     public function addDistribution()
