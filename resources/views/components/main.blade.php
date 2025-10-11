@@ -2,11 +2,11 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-{{--    <script src="https://cdn.tailwindcss.com"></script>--}}
+    {{--    <script src="https://cdn.tailwindcss.com"></script>--}}
     <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
-{{--    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">--}}
+    {{--    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">--}}
     <style>
         html,
         body {
@@ -14,11 +14,6 @@
             margin: 0;
             padding: 0;
         }
-
-        /*#map {*/
-        /*    height: 600px;*/
-        /*    width: 100%;*/
-        /*}*/
 
         /* Hide display on large screens */
         .topnav {
@@ -77,7 +72,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Motorcycle trials entry, scoring and results management system.">
-    <meta name="keywords" content="Motorcycle trials management system, trials scoring, trials results, trials registration">
+    <meta name="keywords"
+          content="Motorcycle trials management system, trials scoring, trials results, trials registration">
 
     <script>
         function openSection(evt, tabName) {
@@ -115,7 +111,7 @@
         $tandc = Storage::url('files/Disclaimer.pdf');
         $privacy = Storage::url('files/Privacy.pdf');
 
-@endphp
+    @endphp
 
     <title>{{config('app.name')}}</title>
 </head>
@@ -142,10 +138,12 @@
                 <a href="/clublist" class="inline-block mt-1 mx-3 hover:underline">Club Profiles</a>
                 <a href="{{$tandc}}" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
                 <a href="{{$privacy}}" class="inline-block mt-1 mx-3 hover:underline">Data and Privacy Policy</a>
-                <a href="mailto:monster@trialmonster.uk?subject=Web Enquiry" class="inline-block mt-1 mx-3 hover:underline">Contact</a>
+                <a href="mailto:monster@trialmonster.uk?subject=Web Enquiry"
+                   class="inline-block mt-1 mx-3 hover:underline">Contact</a>
             </div>
         </x-footer-link>
-        <div class="text-sm text-center  bg-blue-800 text-white"><a href="https://oldgit.uk">©2018 - {{date("Y")}} Development by Oldgit UK</a></div>
+        <div class="text-sm text-center  bg-blue-800 text-white"><a href="https://oldgit.uk">©2018 - {{date("Y")}}
+                Development by Oldgit UK</a></div>
     </div>
 </main>
 <script>

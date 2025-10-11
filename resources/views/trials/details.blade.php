@@ -11,7 +11,7 @@
     session(['trial_id' => $trial->id]);
 //dd($trial);
 
-$methodOfMarking = $clubData->section_markers;
+    $methodOfMarking = $clubData->section_markers;
     $latitude = $trial->venue->latitude;
     $longitude = $trial->venue->longitude;
     $markerArray = array();
@@ -30,7 +30,7 @@ $methodOfMarking = $clubData->section_markers;
 
     $buttonText = "Enter NOW";
 
-    if($hasEntryLimit) {
+    if ($hasEntryLimit) {
         $entryLimit = $trial->entryLimit;
         $entriesLeft = $entryLimit - $numEntries;
     }
@@ -90,19 +90,18 @@ $methodOfMarking = $clubData->section_markers;
     }
 
 //    Entry limit
-    if($hasEntryLimit && $entriesLeft <= 0) {
+    if ($hasEntryLimit && $entriesLeft <= 0) {
         $showButton = "hidden";
         $entryStatus = "Registration is now closed as the entry limit has been reached ";
 
-        if($hasWaitingList) {
+        if ($hasWaitingList) {
             $entryStatus = "Entries for this trial are now FULL. You may register and be added to our waiting list.";
             $buttonText = "Register";
             $showButton = "";
         }
-    }
-    elseif ($hasEntryLimit && $entriesLeft == 1) {
+    } elseif ($hasEntryLimit && $entriesLeft == 1) {
         $entryStatus = "Final entry remaining!";
-    }   elseif($hasEntryLimit && $entriesLeft <= 5) {
+    } elseif ($hasEntryLimit && $entriesLeft <= 5) {
         $entryStatus = "Final $entriesLeft entries remaining! ";
     }
 
@@ -162,8 +161,6 @@ $methodOfMarking = $clubData->section_markers;
     $courselist = str_replace(',', ',', implode(',', $allCourses));
     $courseOptions = explode(',', $courselist);
     $classOptions = explode(',', $classlist);
-
-
     switch ($trial->authority) {
         case "AMCA":
             $entryConditions = "All riders must be members of an AMCA affiliated club. ";
@@ -182,7 +179,7 @@ $methodOfMarking = $clubData->section_markers;
             break;
         default:
             $entryConditions = "";
-            $methodOfMarking="";
+            $methodOfMarking = "";
             break;
     }
 
@@ -205,7 +202,8 @@ $methodOfMarking = $clubData->section_markers;
     ?>
     <div class="text-blue-800 font-semibold text-center">{{$entryStatus}}</div>
     <div class="mt-2 w-full">
-    <a class="{{$showButton}}  rounded-md bg-blue-800  px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900" href="/entries/register/{{$trial_id}}">{{$buttonText}}</a>
+        <a class="{{$showButton}}  rounded-md bg-blue-800  px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900"
+           href="/entries/register/{{$trial_id}}">{{$buttonText}}</a>
     </div>
     <div class="text-sm mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <gmp-map class="p-4  rounded-xl drop-shadow-lg "
@@ -225,13 +223,14 @@ $methodOfMarking = $clubData->section_markers;
 
 
         <div class="ml-4 mr-4 pt-0  text-black text-center ">Supplementary Regulations for the {{$trial->name}}</div>
-    @if($series != null )
-        <div class="ml-4 mr-4 mt-2 font-semibold">@php echo $series->notes; @endphp</div>
-    @endif
+        @if($series != null )
+            <div class="ml-4 mr-4 mt-2 font-semibold">@php echo $series->notes; @endphp</div>
+        @endif
         <div class="ml-4 mr-4 pt-2  text-black text-left ">{{$trial->club}} will organise
             {{$rest}} trial for solo motorcycles, held under the Rules of the {{$trial->authority}}, the following
             Supplementary Regulations and any Final Instructions issued for the meeting.
-            Please take the time to carefully read any specific Safety Procedures and Notes produced by {{$trial->club}} which
+            Please take the time to carefully read any specific Safety Procedures and Notes produced by {{$trial->club}}
+            which
             form part of the Supplementary Regulations. There will also be a Riders Briefing which all riders must
             attend ten minutes before the official start time.
         </div>
@@ -242,9 +241,9 @@ $methodOfMarking = $clubData->section_markers;
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">ELIGIBILITY: </span>{{$entryConditions}}
         </div>
-{{--        <div class="ml-4 mr-4 pt-2  text-black text-left "><span--}}
-{{--                    class="font-semibold">MACHINES: </span>{{$machines}}--}}
-{{--        </div>--}}
+        {{--        <div class="ml-4 mr-4 pt-2  text-black text-left "><span--}}
+        {{--                    class="font-semibold">MACHINES: </span>{{$machines}}--}}
+        {{--        </div>--}}
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
                     class="font-semibold">START / VENUE: </span>{{$trial->startTime}} at {{$trial->venue->name}}
             , {{$trial->venue->postcode}}
@@ -322,8 +321,9 @@ $methodOfMarking = $clubData->section_markers;
     </div>
 
 
-        <div class="ml-2 mt-4" id="buttons">
-            <a class="{{$showButton}}  rounded-md bg-blue-800  px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900" href="/entries/register/{{$trial_id}}">{{ $buttonText}}</a>
-        </div>
+    <div class="ml-2 mt-4" id="buttons">
+        <a class="{{$showButton}}  rounded-md bg-blue-800  px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900"
+           href="/entries/register/{{$trial_id}}">{{ $buttonText}}</a>
+    </div>
 
 </x-main>
