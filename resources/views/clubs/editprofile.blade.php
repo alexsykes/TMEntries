@@ -1,11 +1,11 @@
 <x-club>
-    <x-slot:heading>Add a new Club</x-slot:heading>
+    <x-slot:heading>Update Club Profile</x-slot:heading>
     <form action="/club/clubUpdate" method="POST">
         @method('PATCH')
         @csrf
         <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Clubs</div>
-            <div class="grid grid-cols-2 gap-4 px-4">
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">{{$club->name}}</div>
+            <div class="grid gap-4 px-4 mt-2">
                 <input type="hidden" name="id" value="{{ $club->id }}">
                 <x-form-field>
                     <x-form-label for="name">Club Name</x-form-label>

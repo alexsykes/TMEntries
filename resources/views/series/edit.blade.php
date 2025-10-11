@@ -9,7 +9,7 @@
         <input type="hidden" name="id" value="{{$series->id}}">
         <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Series</div>
-            <div class="grid grid-cols-2 gap-4 px-4">
+            <div class="grid gap-4 px-4">
 
 
                 <x-form-field>
