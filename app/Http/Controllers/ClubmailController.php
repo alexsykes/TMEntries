@@ -88,7 +88,7 @@ class ClubmailController extends Controller
 //        File handler
 
         $attachment = $request->file('attachment');
-        if($attachment) {
+        if ($attachment) {
             $fileName = time() . '.' . $attachment->extension();
             $attachment->move(public_path('attachments'), $fileName);
 
@@ -157,11 +157,10 @@ class ClubmailController extends Controller
 
 
                         'reply_to_address' => $request->input('reply_to_address'),
-                'reply_to_name' => $request->input('reply_to_name'),
+                        'reply_to_name' => $request->input('reply_to_name'),
 
-                ]);
-            }
-            else {
+                    ]);
+            } else {
                 $mail = DB::table('clubmails')->where('id', $request->trial_id)
                     ->update(['updated_at' => now(),
                         'category' => $request->category,
@@ -176,7 +175,7 @@ class ClubmailController extends Controller
         } elseif ($action == 'saveAsNew') {
 
             $attachment = $request->file('attachment');
-            if($attachment) {
+            if ($attachment) {
                 $fileName = time() . '.' . $attachment->extension();
                 $attachment->move(public_path('attachments'), $fileName);
 
@@ -435,5 +434,14 @@ class ClubmailController extends Controller
 
         $mailshot = Mailshot::create($attributes);
         return view('clubs.prepare', compact('mailshot'));
+    }
+
+    public function unpublish($id)
+    {
+        DB::table('clubmails')
+            ->where('id', $id)
+            ->update(['published' => false]);
+
+        return redirect('/club/mails');
     }
 }

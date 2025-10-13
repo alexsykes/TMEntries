@@ -6,7 +6,10 @@
             Mail list
         </div>
         <div>
-            <div class="mt-2 mb-2 text-center font-semibold text-violet-700">Library emails are prepared emails which can be customised for club use. Editing one of these will create a copy which will then appear in your mail list.</div>
+            <div class="mt-2 mb-2 text-center font-semibold text-violet-700">Library emails are prepared emails which
+                can be customised for club use. Editing one of these will create a copy which will then appear in your
+                mail list.
+            </div>
             <table class="w-full text-sm">
                 @foreach($mails as $mail)
                     @php
@@ -21,9 +24,18 @@
                         <td class="table-cell">{{$mail->category}}</td>
                         <td class="table-cell">{{$mail->subject}}</td>
                         <td class="table-cell">{{$mail->summary}}</td>
-                        <td class="table-cell"><a href="/usermail/edit/{{$mail->id}}"><i class="fa-solid fa-pencil"></i></a> </td>
-                        <td class="table-cell"><a href="/usermail/preview/{{$mail->id}}"><i class="fa-solid fa-eye"></i></a> </td>
-                        <td class="table-cell"><a href="/usermail/sendMail/{{$mail->id}}"><i class="fa-solid fa-envelope"></i></a></td>
+                        <td class="table-cell"><a href="/usermail/edit/{{$mail->id}}"><i class="fa-solid fa-pencil"></i></a>
+                        </td>
+                        <td class="table-cell"><a href="/usermail/preview/{{$mail->id}}"><i class="fa-solid fa-eye"></i></a>
+                        </td>
+                        <td class="table-cell"><a href="/usermail/sendMail/{{$mail->id}}"><i
+                                        class="fa-solid fa-envelope"></i></a></td>
+                        <td class="table-cell">
+                            @if(!$mail->isLibrary)
+                                <a href="/usermail/unpublish/{{$mail->id}}"><i
+                                            class="fa-solid fa-trash text-red-600"></i></a>
+                            @endif
+                        </td>
                     </tr>
 
                 @endforeach

@@ -195,7 +195,7 @@ Route::get('/usermail/preview/{id}', [ClubmailController::class, 'previewUsermai
 Route::get('/usermail/sendMail/{id}', [ClubmailController::class, 'sendMail'])->middleware(['auth', 'verified'])->name('usermail.sendMail');// Start of send -> /usermail/prepare
 Route::post('/usermail/send', [ClubmailController::class, 'send'])->middleware(['auth', 'verified'])->name('usermail.send'); // Send
 Route::post('/usermail/prepare', [ClubmailController::class, 'prepare'])->middleware(['auth', 'verified'])->name('usermail.prepare');
-
+Route::get('/usermail/unpublish/{id}', [ClubmailController::class, 'unpublish'])->middleware(['auth', 'verified']);
 // RESULT Routes
 Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');
 Route::get('/results/display/{id}', [ResultController::class, 'display'])->name('results.display.id');

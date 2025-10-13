@@ -143,6 +143,7 @@ class ClubController extends Controller
 
         $mails = DB::table('clubmails')
             ->where('club_id', $clubID)
+            ->where('published', true)
             ->orWhere('isLibrary', true)
             ->orderBy('isLibrary', 'desc')
             ->orderBy('category')
@@ -268,4 +269,5 @@ class ClubController extends Controller
         $item->save();
         return redirect('/club/profile?tab=mailinglist');
     }
+
 }
