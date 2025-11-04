@@ -49,6 +49,7 @@ class CheckForReserves extends Command
      */
     public function handle()
     {
+        info("Check for reserves");
 //        Get currently active trial IDs
         $currentTrialIDs = Trial::whereTodayOrAfter('date')
             ->where('isEntryLocked', false)

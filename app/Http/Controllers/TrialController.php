@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Club;
 use App\Models\Entry;
-use App\Models\Purchase;
 use App\Models\Series;
 use App\Models\Trial;
 use Illuminate\Http\RedirectResponse;
@@ -62,65 +61,19 @@ class TrialController extends Controller
             ->select('products.product_name', 'products.purchases', 'prices.stripe_price')
             ->get();
 
+        $numRiders = DB::table('entries')
+            ->where('trial_id', $id)
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
+            ->count();
 
         $productSales = DB::table('products')
             ->leftJoin('prices', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
             ->where('trial_id', $id)
-            ->select('products.product_category','products.product_name', 'prices.purchases', 'prices.refunds', 'prices.stripe_price')
+            ->select('products.product_category', 'products.product_name', 'prices.purchases', 'prices.refunds', 'prices.stripe_price')
             ->orderBy('products.product_category')
             ->orderBy('products.product_name')
             ->get();
-//        dd($productSales);
 
-
-//        $products = DB::table('products')
-//            ->where('products.trial_id', $id)
-//            ->whereNot('products.product_category', 'entry fee')
-//            ->orderBy('products.product_name', 'ASC')
-//            ->select('products.product_name', 'products.stripe_product_description')
-//            ->get();
-//
-//        $sales = DB::table('products')->selectRaw('sum(tme_purchases.quantity)AS quantity')
-//            ->join('purchases', 'products.stripe_product_id', '=', 'purchases.stripe_product_id')
-//            ->where('products.trial_id', $id)
-//            ->groupBy('products.stripe_product_id')
-//            ->orderBy('products.product_name', 'ASC')
-//            ->get();
-//
-//        $payments = DB::table('products')
-//            ->where('products.trial_id', $id)
-//            ->select('products.purchases', 'products.refunds')
-//            ->first();
-////        dd($payments);
-//        $purchaseData = $this->getPurchasedDetails($id);
-//
-//        foreach ($purchaseData as $purchase) {
-//    $entryIDs = $purchase;
-////    dump($entryIDs);
-//        }
-//        $purchasers = DB::table('entries')
-//            ->selectRaw('entries.name')
-//            ->whereIn('id', $purchaserIDs)
-//            ->get();
-//
-//        dd($purchasers);
-
-////        dd($products, $sales);
-//        $productIDArray = array();
-//
-//        foreach ($products as $product) {
-//            array_push($productIDArray, $product->stripe_product_id);
-//        }
-//
-//        if (sizeof($productIDArray) > 0) {
-////            foreach ($productIDs as $productID) {
-//                $purchases = DB::table('purchases')
-//                    ->selectRaw('stripe_product_id, GROUP_CONCAT(entryIDs) AS entryIDs, sum(quantity) AS quantity')
-//                    ->whereIn('stripe_product_id', $productIDArray)
-//                    ->groupBy('stripe_product_id')
-//                    ->get();
-////            }
-//        }
 
         $trial = DB::table('trials')
             ->where('id', $id)
@@ -130,7 +83,7 @@ class TrialController extends Controller
             ->where('id', $trial->venueID)
             ->first();
 
-        return view('trials.info', ['entries' => $entries, 'trial' => $trial, 'venue' => $venue, 'sales' => $productSales]);
+        return view('trials.info', ['entries' => $entries, 'trial' => $trial, 'venue' => $venue, 'sales' => $productSales, 'numRiders' => $numRiders]);
     }
 
     public function showTrialList()
@@ -667,7 +620,7 @@ class TrialController extends Controller
             ->sortBy('id');
 
         $trial = Trial::where('id', $id)->first();
-        return view('trials.entrylist', ['entries' => $entries, 'unconfirmed' => $unconfirmed,'reserves' =>$reserveList, 'trial' => $trial]);
+        return view('trials.entrylist', ['entries' => $entries, 'unconfirmed' => $unconfirmed, 'reserves' => $reserveList, 'trial' => $trial]);
     }
 
     public function adminEntryList($id)
@@ -849,10 +802,10 @@ class TrialController extends Controller
             ->where('trial_id', $id)
             ->where('ridingNumber', '>', 0)
             ->orderBy('ridingNumber')
-            ->get(['ridingNumber', 'name', 'class', 'course', 'make', 'size']);
+            ->get(['ridingNumber', 'startsAt', 'name', 'class', 'course', 'make', 'size']);
 
         $filename = "$trial->name.pdf";
-        $filename= $this->filter_filename($filename);
+        $filename = $this->filter_filename($filename);
 
         MYPDFP::SetCreator('TM UK');
         MYPDFP::SetAuthor('TrialMonster.uk');
@@ -899,6 +852,7 @@ EOD;
             foreach ($riderList as $rider) {
                 $name = $rider->name;
                 $ridingNumber = $rider->ridingNumber;
+                $startsAt = $rider->startsAt;
                 $class = $rider->class;
                 $course = $rider->course;
                 $make = trim($rider->make);
@@ -908,6 +862,7 @@ EOD;
 
                 MYPDFP::setX($indent);
                 MYPDFP::Cell(10, $rowHeight, $ridingNumber, 0, 0, 'R', false, null, 1, false, 'C' . 'M');
+                MYPDFP::Cell(10, $rowHeight, $startsAt, 0, 0, 'R', false, null, 1, false, 'C' . 'M');
                 MYPDFP::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
                 MYPDFP::Cell($nameWidth, $rowHeight, $course, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
                 MYPDFP::Cell($nameWidth, $rowHeight, $class, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
@@ -917,14 +872,28 @@ EOD;
         }
 
         MYPDFP::Close();
-        MYPDFP::Output(public_path('pdf/'.$filename), 'F');
+        MYPDFP::Output(public_path('pdf/' . $filename), 'F');
         MYPDFP::reset();
-        return response()->download('pdf/'.$filename);
+        return response()->download('pdf/' . $filename);
 
 //        return view('trials.programme', ['trial' => $trial]);
     }
 
-    public function getPurchasedDetails($id) {
+    function filter_filename($name)
+    {
+        // remove illegal file system characters https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
+        $name = str_replace(array_merge(
+            array_map('chr', range(0, 31)),
+            array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
+        ), '', $name);
+        // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
+        $ext = pathinfo($name, PATHINFO_EXTENSION);
+        $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
+        return $name;
+    }
+
+    public function getPurchasedDetails($id)
+    {
         $products = DB::table('products')
             ->where('trial_id', $id)
 //            ->where('product_category', 'other')
@@ -938,24 +907,11 @@ EOD;
                 ->select(DB::raw("GROUP_CONCAT(entryIDs) as `entryIDs`, SUM(quantity) as `quantity`"))
                 ->groupBy('stripe_product_id')
                 ->where('stripe_product_id', $productID)
-            ->get();
+                ->get();
 
             array_push($productData, $productPurchases);
         }
         return $productData;
-    }
-
-
-    function filter_filename($name) {
-        // remove illegal file system characters https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
-        $name = str_replace(array_merge(
-            array_map('chr', range(0, 31)),
-            array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
-        ), '', $name);
-        // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
-        $ext = pathinfo($name, PATHINFO_EXTENSION);
-        $name= mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
-        return $name;
     }
 }
 

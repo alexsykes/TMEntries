@@ -35,6 +35,7 @@
                     <td class="table-cell">{{$entry->course}}</td>
                     <td class="table-cell">{{$class}}</td>
                     <td class="table-cell">{{$entry->make}} {{$entry->size}}</td>
+                    <td class="table-cell">{{$entry->startsAt}}</td>
                 </tr>
             @endforeach
         </table>

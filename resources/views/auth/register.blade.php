@@ -23,7 +23,7 @@
         <!-- Name -->
         <div class="font-semibold">Motor sport can be dangerous.</div>
         <div class="font-semibold pt-2">Please remember to check the box below to confirm your acceptance of our Terms and Conditions of Use. </div>
-        <div class="pt-2">You should receive an email - check your Junk mail - wth a link to verify your email address. Once your email has been verified, you will be able to register your entry for trials.</div>
+{{--        <div class="pt-2">You should receive an email - check your Junk mail - wth a link to verify your email address. Once your email has been verified, you will be able to register your entry for trials.</div>--}}
                     <div class="mt-2"><a class="underline  text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
                         {{ __('Already registered? Go to login') }}
                     </a></div>

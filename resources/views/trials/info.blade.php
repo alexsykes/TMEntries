@@ -97,7 +97,7 @@ $numSalesItems = sizeof($sales);
 
 
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Entry list</div>
+        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Entry list ({{$numRiders}})</div>
         @foreach($entries as $entry)
             @php
                 $entryStatus = $entry->status;

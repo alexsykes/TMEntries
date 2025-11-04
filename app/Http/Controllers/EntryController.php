@@ -225,6 +225,7 @@ class EntryController extends Controller
         $entry->type = $request->type;
         $entry->size = $request->size;
         $entry->status = $request->status;
+        $entry->startsAt = $request->startsAt;
         $entry->updated_at = date('Y-m-d H:i:s');
 
         if ($request->status == 6) {
@@ -626,6 +627,13 @@ class EntryController extends Controller
             ->orderBy('id')
             ->get();
 
+
+        $numSections = DB::table('trials')
+            ->where('id', $trialid)
+            ->select('numSections')
+            ->first();
+
+
 //        $unconfirmed = DB::table('entries')
 //            ->where('trial_id', $trialid)
 //            ->where('status', 0)
@@ -635,7 +643,7 @@ class EntryController extends Controller
 //            ->get();
 
 
-        return view('entries.editRidingNumbers', ['entries' => $entries, 'trialid' => $trialid]);
+        return view('entries.editRidingNumbers', ['entries' => $entries, 'trialid' => $trialid, 'numSections' => $numSections->numSections]);
 
     }
 
@@ -643,18 +651,17 @@ class EntryController extends Controller
     {
         $trialID = $request->trialID;
 
-
         $numbers = $request->input('ridingNumber');
-
-
+        $startsAts = $request->input('startsAt');
         $entryIDs = $request->input('entryID');
         for ($i = 0; $i < count($numbers); $i++) {
             $entryID = $entryIDs[$i];
             $number = $numbers[$i];
+            $startsAt = $startsAts[$i];
 
             DB::table('entries')
                 ->where('id', $entryID)
-                ->update(['ridingNumber' => $number]);
+                ->update(['ridingNumber' => $number, 'startsAt' => $startsAt]);
         }
         return redirect("/trials/adminEntryList/{$trialID}");
     }
@@ -682,6 +689,14 @@ class EntryController extends Controller
         if (sizeof($startList) == 0) {
             exit("No entries to print");
         }
+
+        $ridingGroups = DB::table('entries')
+            ->select(DB::raw('startsAt, GROUP_CONCAT(name ORDER BY name) AS names'))
+            ->where('trial_id', $trialDetails->id)
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
+            ->groupBy('startsAt')
+            ->get();
+
 
         $filename = "Sign-on $trialDetails->name.pdf";
 
@@ -884,6 +899,45 @@ class EntryController extends Controller
 
         MYPDF::addPage();
         MYPDF::SetFontSize(18);
+        MYPDF::Text(0, 10, "Riding groups", 0, false, true, 0, 1, 'C');
+
+        MYPDF::SetFontSize(12);
+
+        MYPDF::SetMargins(10, 0);
+        $y = 3 + MYPDF::getY();
+        MYPDF::setY($y);
+        MYPDF::Write(0, "Would riders kindly start at the following sections.", '', false, 'C', true);
+        for ($i = 0; $i < count($ridingGroups); $i++) {
+            $y = 3 + MYPDF::getY();
+            MYPDF::setY($y);
+
+            $group = $ridingGroups[$i];
+            $startsAt = $group->startsAt;
+            $riders = str_replace(',', ', ', $group->names);
+
+            if ($startsAt) {
+                MYPDF::Write(0, "Section $startsAt", '', false, '', true);
+                MYPDF::Write(0, $riders, '', false, '', true);
+
+            } else {
+//                MYPDF::Write(0, "Unallocated", '', false, '', true);
+//                MYPDF::Write(0, $riders, '', false, '', true);
+            }
+        }
+        $y = 3 + MYPDF::getY();
+        MYPDF::setY($y);
+        MYPDF::SetFontSize(18);
+        MYPDF::Write(0, "Not listed?", '', false, 'C', true);
+        MYPDF::SetFontSize(12);
+        $y = 3 + MYPDF::getY();
+        MYPDF::setY($y);
+        MYPDF::Write(0, "If you have entered and your name does not appear in the list above, you will be allocated a section at random to try and spread the entry around the course. ", '', false, '', true);
+        $y = 3 + MYPDF::getY();
+        MYPDF::setY($y);
+        MYPDF::Write(0, "If you wish to be added to a particular group, please reply to this email NOT LESS THAN 24 HOURS BEFORE the trial.", '', false, '', true);
+
+        MYPDF::addPage();
+        MYPDF::SetFontSize(18);
         MYPDF::Text(0, 10, "Registration", 0, false, true, 0, 0, 'C');
 // References storage/app/public/images
         $tid = $trialDetails->id;
@@ -1013,6 +1067,7 @@ class EntryController extends Controller
         $trial = Trial::findOrFail($trial_id);
         $trial_date = date_create($trial->date);
         $ridingNumbers = $request->input('ridingNumber', null);
+        $startsAt = $request->input('startsAt');
         $names = $request->input('name');
         $makes = $request->input('make');
         $sizes = $request->input('size');
@@ -1038,6 +1093,7 @@ class EntryController extends Controller
                     'name' => $utilityController->nameize($names[$i]),
                     'ridingNumber' => $ridingNumbers[$i],
                     'make' => $makes[$i],
+                    'startsAt' => $startsAt[$i],
                     'size' => $sizes[$i],
                     'type' => $types[$i],
                     'course' => $courses[$i],
@@ -1166,6 +1222,24 @@ class EntryController extends Controller
             ->first();
         $cost = $price->stripe_price / 100;
         return view('entries.otd_confirm', ['trialid' => $trialid, 'cost' => $cost]);
+    }
+
+    public function showRidingGroups($id)
+    {
+
+        $trial = DB::table('trials')
+            ->where('id', $id)
+            ->first();
+
+        $ridingGroups = DB::table('entries')
+            ->select(DB::raw('startsAt, GROUP_CONCAT(name ORDER BY name) AS names, GROUP_CONCAT(ridingNumber ORDER BY name) AS numbers, GROUP_CONCAT(Concat(ridingNumber, \' \', name) ORDER BY name SEPARATOR \', \') AS entries'))
+            ->where('trial_id', $id)
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
+            ->groupBy('startsAt')
+            ->get();
+
+//        dd($ridingGroups);
+        return view('entries.showRidingGroups', ['ridingGroups' => $ridingGroups, 'trial' => $trial]);
     }
 }
 

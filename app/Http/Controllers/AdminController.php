@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Mail\TMLogin;
+use App\Models\AppUser;
 use App\Models\Trial;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\DB;
 use Stripe\StripeClient;
 
 class AdminController extends Controller
@@ -18,7 +20,9 @@ class AdminController extends Controller
         $users = User::orderBy('name', 'asc')
             ->paginate(50);
 
-        return view('admin.userList', ['users' => $users]);
+        $appUsers = AppUser::all();
+
+        return view('admin.userList', ['users' => $users, 'appUsers' => $appUsers]);
 
     }
 
@@ -26,25 +30,29 @@ class AdminController extends Controller
     {
         $trials = DB::table('trials')
             ->orderBy('date', 'desc')
-        ->get();
+            ->get();
         return view('admin.trialList', ['trials' => $trials]);
     }
+
     public function resultList()
     {
         $results = DB::table('trials')
             ->where('isResultPublished', 1)
             ->orderBy('date', 'desc')
-        ->get();
+            ->get();
         return view('admin.resultList', ['results' => $results]);
     }
-    public function mailList(){
+
+    public function mailList()
+    {
         $mails = DB::table('mails')
             ->orderBy('subject')
             ->get();
         return view('admin.mailList', ['mails' => $mails]);
     }
 
-    public function refundTrial($id){
+    public function refundTrial($id)
+    {
         $trialID = $id;
 
 //        Get entries with status 1
@@ -71,6 +79,7 @@ class AdminController extends Controller
             Log::info("Refund requested - $entry_id");
         }
     }
+
     public function sendMail()
     {
         $delay = 1;
@@ -84,6 +93,7 @@ class AdminController extends Controller
         }
         return redirect('/adminaccess');
     }
+
     public function closeMyAccount()
     {
         $email = request('email');
@@ -98,6 +108,7 @@ class AdminController extends Controller
         }
         return redirect('/');
     }
+
     public function adminRemove()
     {
 //        dd(request('id'));
@@ -108,11 +119,13 @@ class AdminController extends Controller
             ->delete();
         return redirect('/adminaccess');
     }
+
     public function editUser()
     {
         $user = User::find(request('id'));
         return view('admin.adminUserEdit', ['user' => $user]);
     }
+
     public function updateUser()
     {
         $user = User::find(request('id'));
@@ -122,31 +135,66 @@ class AdminController extends Controller
         return redirect('/adminaccess');
     }
 
-    public function toggleResultPublished() {
+    public function toggleResultPublished()
+    {
         $trial = Trial::find(request('id'));
         $trial->isResultPublished = !$trial->isResultPublished;
         $trial->save();
         return redirect('/admin/trials');;
     }
-    public function toggleEntry() {
+
+    public function toggleEntry()
+    {
         $trial = Trial::find(request('id'));
         $trial->isEntryLocked = !$trial->isEntryLocked;
         $trial->save();
         return redirect('/admin/trials');;
     }
-    public function toggleScoring() {
+
+    public function toggleScoring()
+    {
         $trial = Trial::find(request('id'));
         $trial->isScoringLocked = !$trial->isScoringLocked;
         $trial->save();
         return redirect('/admin/trials');;
     }
-    public function toggleLock() {
+
+    public function toggleLock()
+    {
         $trial = Trial::find(request('id'));
         $trial->isLocked = !$trial->isLocked;
         $trial->save();
         return redirect('/admin/trials');;
     }
-    public function about(){
+
+    public function about()
+    {
         return view('about.story');
+    }
+
+    public function addAppUser()
+    {
+        return view('admin.addAppUser');
+    }
+
+    public function storeAppUser(Request $request)
+    {
+        $request->validate([
+                'username' => ['required', 'string', 'max:255'],
+//                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . AppUser::class],
+                'password' => ['required', 'string', 'min:8'],
+            ]
+        );
+
+        $salt = substr("0faPWOZpvQCuEWcAj0qm1.1", 7, 22);
+        $salt = "0faPWOZpvQCuEWcAj0qm1.";
+
+        $rawPassword = $request->password;
+        $crypted = crypt($rawPassword, "$2y$10$" . $salt);
+        $user = AppUser::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => $crypted,
+        ]);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Providers\Rules\ReCaptchaV3;
+use App\Rules\ReCaptchaV3;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,7 +41,7 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Password::defaults()],
             'agree' => ['required', 'accepted'],
-//            'g-recaptcha-response' => ['required', new ReCaptchaV3('registerUser')],
+            'g-recaptcha-response' => ['required', new ReCaptchaV3('registerUser')],
         ]
     );
         $user = User::create([

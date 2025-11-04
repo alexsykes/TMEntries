@@ -9,6 +9,7 @@
 //    $courses = explode(',',$trial->courselist);
 
     $allCourses = array();
+    $numSections = $trial->numSections;
     $courses = $trial->courselist;
     $customCourses = $trial->customCourses;
 
@@ -164,6 +165,16 @@
                                     </div>
                                 </div>
                             </x-form-field>
+
+                            <x-form-field>
+                                <x-form-label for="startsAt">Section</x-form-label>
+                                <div class="mt-2">
+                                    <x-form-input name="startsAt" min="1" max="{{$numSections}}" type="number" id="startsAt" value="{{$entry->startsAt}}"
+                                                  placeholder="Section"/>
+                                    <x-form-error name="startsAt"/>
+                                </div>
+                            </x-form-field>
+
                         </div>
                     </div>
 

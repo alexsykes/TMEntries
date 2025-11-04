@@ -4,6 +4,7 @@ require __DIR__ . '/auth.php';
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\APIController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\ClubmailController;
 use App\Http\Controllers\EntryController;
@@ -24,6 +25,9 @@ use Illuminate\Support\Facades\Route;
 /*
     Front door - display list of trials currently taking entries
 */
+
+
+
 Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
 
 //Route::get('/', function () {
@@ -40,6 +44,8 @@ Route::get('/adminaccess', [AdminController::class, 'userList'])->middleware(['a
 Route::get('/admin/users', [AdminController::class, 'userList'])->middleware(['auth', 'verified']);
 Route::get('/admin/trials', [AdminController::class, 'trialList'])->middleware(['auth', 'verified']);
 Route::get('/admin/results', [AdminController::class, 'resultList'])->middleware(['auth', 'verified']);
+Route::get('/admin/addAppUser', [AdminController::class, 'addAppUser'])->middleware(['auth', 'verified']);
+Route::post('/admin/create', [AdminController::class, 'storeAppUser'])->middleware(['auth', 'verified']);
 
 /*
  * TRIAL Routes
@@ -116,6 +122,7 @@ Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->nam
 Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
 Route::post('/entries/saveRidingNumbers', [EntryController::class, 'saveRidingNumbers']);
+Route::get('/admin/entries/showRidingGroups/{id}', [EntryController::class, 'showRidingGroups']);
 Route::post('/admin/entries/storeMultiple', [EntryController::class, 'storeMultiple'])->middleware(['auth', 'verified']);
 Route::get('/otd/{trialid}', [EntryController::class, 'otd_form']);
 Route::get('/otd/confirm/{entryid}', [EntryController::class, 'otd_confirm']);

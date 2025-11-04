@@ -214,7 +214,7 @@ class ScoringController extends Controller
         $nonStarters = $this->getNonStarters($trialID, $allMissed);
 
 //        Get rider scores
-        $riderScores = Db::select("SELECT e.ridingNumber, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS sectionScores, GROUP_CONCAT(score ORDER BY lap, section SEPARATOR '') AS sequentialScores FROM ".$db_prefix."entries e JOIN ".$db_prefix."scores s ON e.ridingNumber = s.rider AND e.trial_id = s.trial_id WHERE e.trial_id = $trialID GROUP BY ridingNumber");
+        $riderScores = Db::select("SELECT e.ridingNumber, GROUP_CONCAT(score ORDER BY s.section, lap SEPARATOR '') AS sectionScores, GROUP_CONCAT(score ORDER BY lap, s.section SEPARATOR '') AS sequentialScores FROM ".$db_prefix."entries e JOIN ".$db_prefix."scores s ON e.ridingNumber = s.rider AND e.trial_id = s.trial_id WHERE e.trial_id = $trialID GROUP BY ridingNumber");
 
 //        then transfer all scores to entries
         foreach ($riderScores as $riderScore) {
