@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Events\FiveSpacesReached;
+use App\Events\TenSpacesReached;
 use App\Events\TrialFull;
 use App\Mail\EntryOffer;
 use App\Mail\InvoiceOverdue;
@@ -284,7 +284,7 @@ function onCheckoutSessionCompleted($sessionObject)
             ->increment('purchases', $quantity);
     }
 
-
+// Update entry status
     $entries = DB::table('entries')
         ->whereIn('id', $entryIDArray)
         ->update(['status' => 1,
@@ -301,11 +301,11 @@ function onCheckoutSessionCompleted($sessionObject)
 
 //  Send confirmation email with bcc: to admin
     $bcc = 'monster@trialmonster.uk';
-//    $email = 'monster@trialmonster.uk';
     Mail::to($email)
         ->bcc($bcc)
         ->send(new PaymentReceived($entries));
 
+//    Check for entry limit
     foreach ($trialIDs as $trialID) {
         $trial = Trial::findOrFail($trialID);
 
@@ -321,14 +321,15 @@ function onCheckoutSessionCompleted($sessionObject)
 //        Check for number of entries left
 //        If 5, then email registered but not paid
             $spaces = $entryLimit - $numEntries;
-            echo "Spaces: $spaces\n";
+//            echo "Spaces: $spaces\n";
             if ($spaces <= 0) {
                 // info("TrialFull ($spaces spaces) dispatched");
                 TrialFull::dispatch($trialID, $entryLimit, $numEntries);
-            } elseif ($spaces <= 10) {
-//             send LastChance email
-                FiveSpacesReached::dispatch($trialID, $entryLimit, $numEntries);
             }
+//            elseif ($spaces <= 10) {
+////             send LastChance email
+//                TenSpacesReached::dispatch($trialID, $entryLimit, $numEntries);
+//            }
         }
     }
 }
@@ -350,10 +351,10 @@ function onRefundCreated(mixed $object)
 
         $bcc = 'monster@trialmonster.uk';
 
-        foreach ($entryIDs  as $entryID) {
-        $entry = DB::table('entries')->find($entryID);
+        foreach ($entryIDs as $entryID) {
+            $entry = DB::table('entries')->find($entryID);
             $email = $entry->email;
-            echo $email.PHP_EOL;
+            echo $email . PHP_EOL;
             Mail::to($email)
                 ->bcc($bcc)
                 ->queue(new RefundRequested($entry, $reason));
@@ -497,6 +498,4 @@ class StripeEventListener
 //                // info('Received unknown event type ' . $eventType);
         }
     }
-
-
 }

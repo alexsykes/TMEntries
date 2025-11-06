@@ -922,7 +922,7 @@ class MYPDFP extends PDF
     {
         $bMargin = $this->getBreakMargin();
         // get current auto-page-break mode
-        $auto_page_break = $this->AutoPageBreak;
+        $auto_page_break = $this->getAutoPageBreak();
         // disable auto-page-break
         $this->SetAutoPageBreak(false, 0);
 

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Events\FiveSpacesReached;
+use App\Events\TenSpacesReached;
 use App\Models\Entry;
 use App\Models\Trial;
 use Illuminate\Console\Command;
@@ -65,30 +65,6 @@ class TrialNumberCheck extends Command
         }
     }
 
-    private function last10Spaces(Trial $trial, $numEntries)
-    {
-        FiveSpacesReached::dispatch($trial->id, $trial->entryLimit, $numEntries);
-    }
-    private function handleUnconfirmed(Trial $trial)
-    {
-//        $limit = $trial->entryLimit;
-////        $numEntries =
-//
-//        $spaces = $limit - $numEntries;
-//        if($spaces <= 0) {
-//
-//            $unconfirmed = Entry::where('trial_id', $trial->id)
-//                ->where('status', 0)
-//                ->count();
-//
-//            if($unconfirmed > 0) {
-////              Change status to reserve, email notification
-//            }
-//
-//            echo "Entry limit $limit\nNum Entries: $numEntries\nUnconfirmed: $unconfirmed\n\n";
-    }
-
-
     private function handleReserves(Trial $trial, $numSpares)
     {
         $trialID = $trial->id;
@@ -100,7 +76,7 @@ class TrialNumberCheck extends Command
             ->get();
 
         foreach ($reserves as $entry) {
-            echo date("h:i")." Entry ID: $entry->id status changed to 4\n";
+            echo date("h:i") . " Entry ID: $entry->id status changed to 4\n";
 
             $entryID = $entry->id;
             $entry = Entry::where('id', $entryID)->first();
@@ -115,9 +91,8 @@ class TrialNumberCheck extends Command
         }
     }
 
-
-
-    public function invoice($entry, $email, $username){
+    public function invoice($entry, $email, $username)
+    {
         $another = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $trialID = $entry->trial_id;
@@ -136,7 +111,7 @@ class TrialNumberCheck extends Command
         // Create an Invoice
         $invoice = $another->invoices->create([
             'customer' => $customerId,
-            'description' => $trialClub.' - '.$trialName,
+            'description' => $trialClub . ' - ' . $trialName,
             'collection_method' => 'send_invoice',
             'days_until_due' => 2,
             'metadata' => [
@@ -150,10 +125,34 @@ class TrialNumberCheck extends Command
             'pricing' => [
                 'price' => $entry->stripe_price_id,
             ],
-            'description' => ' Ref: '.$entryID,
+            'description' => ' Ref: ' . $entryID,
             'invoice' => $invoice->id,
         ]);
 
         $invoice->sendInvoice();
+    }
+
+    private function last10Spaces(Trial $trial, $numEntries)
+    {
+        TenSpacesReached::dispatch($trial->id, $trial->entryLimit, $numEntries);
+    }
+
+    private function handleUnconfirmed(Trial $trial)
+    {
+//        $limit = $trial->entryLimit;
+////        $numEntries =
+//
+//        $spaces = $limit - $numEntries;
+//        if($spaces <= 0) {
+//
+//            $unconfirmed = Entry::where('trial_id', $trial->id)
+//                ->where('status', 0)
+//                ->count();
+//
+//            if($unconfirmed > 0) {
+////              Change status to reserve, email notification
+//            }
+//
+//            echo "Entry limit $limit\nNum Entries: $numEntries\nUnconfirmed: $unconfirmed\n\n";
     }
 }

@@ -42,7 +42,7 @@ class OnTrialFull
         $bcc = "monster@trialmonster.uk";
         foreach ($unconfirmed as $entry) {
             array_push($ids, $entry->id);
-//                Send LastChance email
+//                Send TrialFull email
             Info("Sendmail to $entry->email");
                 Mail::to($entry->email)
                     ->bcc($bcc)
