@@ -180,27 +180,6 @@ class EntryController extends Controller
         return redirect("/entries/register/{$trial_id}");
     }
 
-//    function nameize($str, $a_char = array("'", "-", " "))
-//    {
-//        //$str contains the complete raw name string
-//        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
-//        $string = strtolower($str);
-//        foreach ($a_char as $temp) {
-//            $pos = strpos($string, $temp);
-//            if ($pos) {
-//                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
-//                $mend = '';
-//                $a_split = explode($temp, $string);
-//                foreach ($a_split as $temp2) {
-//                    //capitalize each portion of the string which was separated at a special character
-//                    $mend .= ucfirst($temp2) . $temp;
-//                }
-//                $string = substr($mend, 0, -1);
-//            }
-//        }
-//        return ucfirst($string);
-//    }
-
     public function adminEntryUpdate(Request $request)
     {
         $entryID = $request->entryID;
@@ -621,7 +600,7 @@ class EntryController extends Controller
 
         $entries = DB::table('entries')
             ->where('trial_id', $trialid)
-            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9, 10])
             ->orderBy('course')
             ->orderBy('ridingNumber')
             ->orderBy('id')
@@ -633,18 +612,7 @@ class EntryController extends Controller
             ->select('numSections')
             ->first();
 
-
-//        $unconfirmed = DB::table('entries')
-//            ->where('trial_id', $trialid)
-//            ->where('status', 0)
-//            ->orderBy('course')
-//            ->orderBy('ridingNumber')
-//            ->orderBy('id')
-//            ->get();
-
-
         return view('entries.editRidingNumbers', ['entries' => $entries, 'trialid' => $trialid, 'numSections' => $numSections->numSections]);
-
     }
 
     public function saveRidingNumbers(Request $request)
@@ -683,7 +651,7 @@ class EntryController extends Controller
 
         $startList = DB::table('entries')
             ->where('trial_id', $trialDetails->id)
-            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9, 10])
             ->orderBy('name')
             ->get();
         if (sizeof($startList) == 0) {
@@ -693,7 +661,7 @@ class EntryController extends Controller
         $ridingGroups = DB::table('entries')
             ->select(DB::raw('startsAt, GROUP_CONCAT(name ORDER BY name) AS names'))
             ->where('trial_id', $trialDetails->id)
-            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9, 10])
             ->groupBy('startsAt')
             ->get();
 
@@ -811,8 +779,8 @@ class EntryController extends Controller
                     $name = $entry->name;
                 }
                 $name = ucwords(strtolower($name), " \t\r\n\f\v'");
-                $paid = $entry->status;
-                if ($paid == 0 or $paid == 4 or $paid == 5 or $paid == 7) {
+                $status = $entry->status;
+                if ($status == 0 or $status == 4 or $status == 5 or $status == 7 or $status == 10) {
                     $name = "To pay - " . $name;
                 }
                 $id = $entry->licence;
@@ -1234,7 +1202,7 @@ class EntryController extends Controller
         $ridingGroups = DB::table('entries')
             ->select(DB::raw('startsAt, GROUP_CONCAT(name ORDER BY name) AS names, GROUP_CONCAT(ridingNumber ORDER BY name) AS numbers, GROUP_CONCAT(Concat(ridingNumber, \' \', name) ORDER BY name SEPARATOR \', \') AS entries'))
             ->where('trial_id', $id)
-            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9, 10])
             ->groupBy('startsAt')
             ->get();
 
@@ -1253,7 +1221,7 @@ class MYPDF extends PDF
         info("Header \App\Http\Controllers\MYPDF");
         $bMargin = $this->getBreakMargin();
         // get current auto-page-break mode
-        $auto_page_break = $this->AutoPageBreak;
+        $auto_page_break = $this->getAutoPageBreak();
         // disable auto-page-break
         $this->SetAutoPageBreak(false, 0);
         // set bacground image

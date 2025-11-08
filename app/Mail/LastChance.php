@@ -28,7 +28,7 @@ class LastChance extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Last Chance - '.$this->trial->name,
+            subject: 'Uncomfirmed entry - '.$this->trial->name,
         );
     }
 

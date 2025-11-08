@@ -609,7 +609,7 @@ class TrialController extends Controller
             ->sortBy('name');
 
         $unconfirmed = Entry::where('trial_id', $id)
-            ->where('status', 0)
+            ->whereIn('status', [0, 10])
             ->select('name')
             ->get();
 
@@ -639,7 +639,7 @@ class TrialController extends Controller
 
         $entries = DB::table('entries')
             ->where('trial_id', $id)
-            ->whereIn('status', [0, 1, 7, 8, 9])
+            ->whereIn('status', [0, 1, 7, 8, 9, 10])
 //            ->orderBy('status')
             ->orderBy('name')
             ->get();

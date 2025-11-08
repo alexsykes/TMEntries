@@ -17,15 +17,11 @@ class OnTrialFull
         //
     }
 
-    /**
-     * Handle the event.
-     */
     public function handle(TrialFull $event): void
     {
         $numEntries = $event->numEntries;
         $entryLimit = $event->entry_limit;
         $trialID = $event->trial_id;
-//        dump($trialID, $entryLimit, $numEntries);
 
         Info("Confirmed entries: $numEntries");
         Info("Entry limit: $entryLimit");

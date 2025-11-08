@@ -3,7 +3,7 @@
         Edit entryID: {{$entry->id}}
     </x-slot:heading>
     @php
-    $statusOptions = array(    'Unconfirmed', 'Confirmed', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
+    $statusOptions = array(    'Unconfirmed', 'Confirmed', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC', 'Unconfirmed - Reminder sent');
 
 //    $classes = explode(',',$trial->classlist);
 //    $courses = explode(',',$trial->courselist);

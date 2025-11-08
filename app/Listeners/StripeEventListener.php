@@ -319,17 +319,10 @@ function onCheckoutSessionCompleted($sessionObject)
                 ->count();
             Info("NumEntries: $numEntries");
 //        Check for number of entries left
-//        If 5, then email registered but not paid
             $spaces = $entryLimit - $numEntries;
-//            echo "Spaces: $spaces\n";
             if ($spaces <= 0) {
-                // info("TrialFull ($spaces spaces) dispatched");
                 TrialFull::dispatch($trialID, $entryLimit, $numEntries);
             }
-//            elseif ($spaces <= 10) {
-////             send LastChance email
-//                TenSpacesReached::dispatch($trialID, $entryLimit, $numEntries);
-//            }
         }
     }
 }
