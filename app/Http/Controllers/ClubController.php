@@ -89,8 +89,9 @@ class ClubController extends Controller
     public function clubUpdate(Request $request)
     {
         $attributes = $request->validate([
+            'email' => ['required', 'email:rfc,dns'],
+            'memSecEmail' =>  'email:rfc,dns',
             'name' => ['required', 'min:5', 'max:255'],
-            'email' => 'required',
             'phone' => 'required',
             'area' => 'required',
         ]);
@@ -99,6 +100,10 @@ class ClubController extends Controller
         $attributes['facebook'] = request('facebook', '');
         $attributes['description'] = request('description', '');
         $attributes['section_markers'] = request('section_markers', '');
+        $attributes['membershipSecretary'] = request('membershipSecretary', '');
+        $attributes['memSecPhone'] = request('memSecPhone', '');
+
+//        dd($attributes);
         $club = Club::find(request('id'));
 
         $club->update($attributes);
@@ -111,7 +116,8 @@ class ClubController extends Controller
     {
         $attributes = $request->validate([
             'name' => ['required', 'min:5', 'max:255'],
-            'email' => 'required',
+            'email' => ['required', 'email:rfc,dns'],
+            'memSecEmail' =>  'email:rfc,dns',
             'phone' => 'required',
             'area' => 'required',
         ]);
@@ -120,6 +126,8 @@ class ClubController extends Controller
         $attributes['facebook'] = request('facebook', '');
         $attributes['description'] = request('description', '');
         $attributes['section_markers'] = request('section_markers', '');
+        $attributes['membershipSecretary'] = request('membershipSecretary', '');
+        $attributes['memSecPhone'] = request('memSecPhone', '');
         $club = Club::find(request('id'));
 
         $club->update($attributes);

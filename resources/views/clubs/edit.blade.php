@@ -56,6 +56,42 @@
                 </x-form-field>
 
                 <x-form-field>
+                    <x-form-label for="membershipSecretary">Membership Secretary</x-form-label>
+                    <div class="mt-2 col-span-2">
+                        <x-form-input name="membershipSecretary" type="text" id="membershipSecretary" value="{{$club->membershipSecretary}}"
+                                      placeholder="Name" />
+                        <x-form-error name="membershipSecretary"/>
+                    </div>
+                    @error('membershipSecretary')
+                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
+                </x-form-field>
+
+                <x-form-field>
+                    <x-form-label for="memSecEmail">Membership Secretary email</x-form-label>
+                    <div class="mt-2 col-span-2">
+                        <x-form-input name="memSecEmail" type="email" id="memSecEmail" value="{{$club->memSecEmail}}"
+                                      placeholder="Email address" />
+                        <x-form-error name="memSecEmail"/>
+                    </div>
+                    @error('memSecEmail')
+                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
+                </x-form-field>
+
+                <x-form-field>
+                    <x-form-label for="memSecPhone">Membership Secretary phone</x-form-label>
+                    <div class="mt-2 col-span-2">
+                        <x-form-input name="memSecPhone" type="text" id="memSecPhone" value="{{$club->memSecPhone}}"
+                                      placeholder="Phone" />
+                        <x-form-error name="memSecPhone"/>
+                    </div>
+                    @error('memSecPhone')
+                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
+                </x-form-field>
+
+                <x-form-field>
                     <x-form-label for="website">Website</x-form-label>
                     <div class="mt-2 col-span-2">
                         <x-form-input name="website" type="text" id="website" value="{{$club->website}}"
@@ -66,8 +102,6 @@
                     <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
-
-
 
                 <x-form-field>
                     <x-form-label for="facebook">Facebook</x-form-label>

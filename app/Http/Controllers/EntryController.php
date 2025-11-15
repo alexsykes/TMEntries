@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TrialFull;
 use App\Mail\EntryChanged;
 use App\Mail\ReserveAdded;
 use App\Models\Entry;
@@ -212,6 +213,26 @@ class EntryController extends Controller
         }
         $entry->save();
 
+//      Entry numbers check
+
+        $trial = Trial::findOrFail($trialID);
+
+//        Check whether trial has entry limit
+        if ($trial->hasEntryLimit) {
+            // info("Trial has entryLimit");
+//        Check for full entry list
+            $entryLimit = $trial->entryLimit;
+            $numEntries = Entry::where('trial_id', $trialID)
+                ->whereIn('status', [1, 4, 7, 8, 9])
+                ->count();
+            Info("NumEntries: $numEntries");
+//        Check for number of entries left
+            $spaces = $entryLimit - $numEntries;
+            if ($spaces <= 0) {
+                TrialFull::dispatch($trialID, $entryLimit, $numEntries);
+            }
+        }
+
         return redirect("/trials/adminEntryList/{$trialID}");
     }
 
@@ -342,7 +363,7 @@ class EntryController extends Controller
         $entry = DB::table('entries')->where('id', $id)->first();
         $email = $entry->email;
         $token = $entry->token;
-        $bcc = 'admin@trialmonster.uk';
+        $bcc = 'monster@trialmonster.uk';
         Mail::to($email)
             ->bcc($bcc)
             ->send(new EntryChanged($entry, $newToken));
@@ -530,7 +551,7 @@ class EntryController extends Controller
         $username = $user->name;
         $email = $user->email;
 
-        $bcc = "admin@trialmonster.uk";
+        $bcc = "monster@trialmonster.uk";
 
         Mail::to($email)
             ->bcc($bcc)

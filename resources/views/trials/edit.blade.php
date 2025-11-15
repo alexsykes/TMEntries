@@ -830,12 +830,12 @@
             </button>
     @endif
             </div>
-<div>
-    <button type="submit" name="submitbutton" value="saveasnew"
-                    class="rounded-md ml-2 bg-green-600 px-3 py-1 text-sm font-light  border border-green-800 text-white drop-shadow-lg hover:bg-green-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-                Add as New Trial
-            </button>
-        </div>
+{{--<div>--}}
+{{--    <button type="submit" name="submitbutton" value="saveasnew"--}}
+{{--                    class="rounded-md ml-2 bg-green-600 px-3 py-1 text-sm font-light  border border-green-800 text-white drop-shadow-lg hover:bg-green-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">--}}
+{{--                Add as New Trial--}}
+{{--            </button>--}}
+{{--        </div>--}}
         </div>
     </form>
     <script>

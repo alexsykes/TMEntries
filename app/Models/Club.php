@@ -15,5 +15,8 @@ class Club extends Model
         'facebook',
         'website',
         'section_markers',
+        'membershipSecretary',
+        'memSecEmail',
+        'memSecPhone',
     ];
 }

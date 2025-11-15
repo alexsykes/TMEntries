@@ -528,8 +528,8 @@ class TrialController extends Controller
 
         $stripe->products->create([
             'name' => 'Youth Entry Fee',
-            'description' => 'Youth Entry Fee',
-            'statement_descriptor' => 'Youth Entry Fee',
+            'description' => $trial->name,
+            'statement_descriptor' => $trial->name,
             'metadata' => [
                 'category' => 'entry fee',
                 'trialid' => $trial->id,
@@ -546,8 +546,8 @@ class TrialController extends Controller
 
         $stripe->products->create([
             'name' => 'Adult Entry Fee',
-            'description' => 'Adult Entry Fee',
-            'statement_descriptor' => 'Adult Entry Fee',
+            'description' => $trial->name,
+            'statement_descriptor' => $trial->name,
             'metadata' => [
                 'category' => 'entry fee',
                 'trialid' => $trial->id,

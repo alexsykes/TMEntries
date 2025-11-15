@@ -2,7 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Events\TenSpacesReached;
 use App\Events\TrialFull;
 use App\Mail\EntryOffer;
 use App\Mail\InvoiceOverdue;
@@ -150,6 +149,10 @@ function onProductCreated($productObject)
         $product_category = $metadata['category'];
     }
 
+    if (isset($metadata['has_quantity'])) {
+        $hasQuantity = $metadata['has_quantity'];
+    }
+
     $club_id = $metadata['club_id'];
 
     $trialid = 0;
@@ -241,7 +244,7 @@ function onCheckoutSessionCompleted($sessionObject)
     $stripe_payment_intent = $sessionObject['payment_intent'];
     $entryIDs = $metadata['entryIDs'];
     $trialIDstring = $metadata['trialID'];
-    $trialIDs = explode(',', $trialIDstring);
+    $trialIDs = array_unique(explode(',', $trialIDstring));
 
 //    Create array of entryIDs
     $entryIDArray = explode(',', $entryIDs);
@@ -256,12 +259,23 @@ function onCheckoutSessionCompleted($sessionObject)
     );
 
 //  Record other items purchased
+    $containsExtras = false;
+    $product_names = array();
+    $product_quantities = array();
+
     foreach ($lineItems as $lineItem) {
         $stripe_product_id = $lineItem['price']['product'];
         $quantity = $lineItem['quantity'];
         $product = DB::table('products')
             ->where('stripe_product_id', '=', $stripe_product_id)
             ->first();
+
+        if ($product->product_category != 'entry fee') {
+            $containsExtras = true;
+            array_push($product_names, $product->product_name);
+            array_push($product_quantities, $quantity);
+        }
+
         $stripe_price_id = $lineItem['price']['id'];
 
         // info("PI: $stripe_payment_intent Qty - $quantity Product - $product->product_name");
@@ -272,8 +286,8 @@ function onCheckoutSessionCompleted($sessionObject)
             'email' => $email,
             'pi' => $stripe_payment_intent,
         ];
-        $purchase = Purchase::create($attrs);
 
+        $purchase = Purchase::create($attrs);
 
         DB::table('products')
             ->where('stripe_product_id', '=', $stripe_product_id)
@@ -282,6 +296,13 @@ function onCheckoutSessionCompleted($sessionObject)
         DB::table('prices')
             ->where('stripe_price_id', '=', $stripe_price_id)
             ->increment('purchases', $quantity);
+    }
+
+    if ($containsExtras) {
+        $names = implode(',', $product_names);
+        $quantities = implode(',', $product_quantities);
+        $trials = implode(',', $trialIDs);
+        info("Extras: $names QTY: $quantities EntryIDs: $entryIDs Trial IDs: $trials");
     }
 
 // Update entry status

@@ -706,7 +706,7 @@
                             </x-form-field>
                         </div>
 
-                        <div class="text-gray-500 font-semibold col-span-full">Additional items for purchase such as T-shirts, Pub Supper or Camping can be added. Please contact TrialMonster - admin@trialmonster.uk - with details.</div>
+                        <div class="text-gray-500 font-semibold col-span-full">Additional items for purchase such as T-shirts, Pub Supper or Camping can be added. Please contact TrialMonster - monster@trialmonster.uk - with details.</div>
 
                     </div>
                 </div>

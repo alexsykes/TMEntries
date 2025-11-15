@@ -30,7 +30,7 @@
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="adultEntryFee" type="text" id="adultEntryFee" required
                                                   value="{{old('adultEntryFee', 0)}}"
-                                                  placeholder="Omit £ signs eg. 25.00" />
+                                                  placeholder="Omit £ signs eg. 25.00"/>
                                 </div>
                                 @error('adultEntryFee')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -44,7 +44,7 @@
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="youthEntryFee" type="text" id="youthEntryFee" required
                                                   value="{{old('youthEntryFee', 0)}}"
-                                                  placeholder="Omit £ signs eg. 25.00" />
+                                                  placeholder="Omit £ signs eg. 25.00"/>
                                 </div>
                                 @error('youthEntryFee')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -73,7 +73,7 @@
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="eodSurcharge" type="text" id="eodSurcharge"
                                                   value="{{old('eodSurcharge', 0)}}"
-                                                  placeholder="Omit £ signs eg. 5.00" />
+                                                  placeholder="Omit £ signs eg. 5.00"/>
                                 </div>
                                 @error('eodSurcharge')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -81,7 +81,10 @@
                             </x-form-field>
                         </div>
 
-                        <div class="text-gray-500 font-semibold col-span-full">Additional items for purchase such as T-shirts, Pub Supper or Camping can be added. Please contact TrialMonster - admin@trialmonster.uk - with details.</div>
+                        <div class="text-gray-500 font-semibold col-span-full">Additional items for purchase such as
+                            T-shirts, Pub Supper or Camping can be added. Please contact TrialMonster -
+                            monster@trialmonster.uk - with details.
+                        </div>
 
                     </div>
                 </div>
