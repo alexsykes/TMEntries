@@ -90,7 +90,7 @@ class ClubController extends Controller
     {
         $attributes = $request->validate([
             'email' => ['required', 'email:rfc,dns'],
-            'memSecEmail' =>  'email:rfc,dns',
+            'memSecEmail' => 'email:rfc,dns',
             'name' => ['required', 'min:5', 'max:255'],
             'phone' => 'required',
             'area' => 'required',
@@ -117,7 +117,7 @@ class ClubController extends Controller
         $attributes = $request->validate([
             'name' => ['required', 'min:5', 'max:255'],
             'email' => ['required', 'email:rfc,dns'],
-            'memSecEmail' =>  'email:rfc,dns',
+            'memSecEmail' => 'email:rfc,dns',
             'phone' => 'required',
             'area' => 'required',
         ]);
@@ -181,20 +181,26 @@ class ClubController extends Controller
             'emergency_number' => 'required',
             'social' => 'required',
             'membership_type' => 'required',
-            'accept' => 'required',
+            'membership_category' => 'required',
         ]);
 
-        $attributes['social'] = implode(request('social'));
+        $attributes['accept'] = true;
+        $attributes['social'] = implode(',', request('social'));
+
+        info($attributes['membership_category']);
+
+        if ($attributes['membership_category'] == 'Life' || $attributes['membership_category'] == 'Observer') {
+            $attributes['confirmed'] = true;
+        }
+
         $member = ClubMember::create($attributes);
 
-        $product = DB::table('products')
-            ->where('club_id', $request->club_id)
-            ->where('product_category', 'membership')
-            ->first();
+//        $product = DB::table('products')
+//            ->where('club_id', $request->club_id)
+//            ->where('product_category', 'membership')
+//            ->first();
 
-//        dd($product, $member);
-
-        return redirect('/clubs/checkout', ['member' => $member, 'product' => $product]);
+        return view('/clubs/confirmRegistered', ['member' => $member]);
     }
 
     public function console(Request $request)
@@ -276,6 +282,61 @@ class ClubController extends Controller
         $item->update($attributes);
         $item->save();
         return redirect('/club/profile?tab=mailinglist');
+    }
+
+    public function confirmRegistered()
+    {
+        return view('clubs.confirmRegistered');
+    }
+
+    public function memberList()
+    {
+        $clubID = Auth::user()->club_id;
+        $clubName = DB::table('clubs')
+            ->where('id', $clubID)
+            ->select('name')
+            ->first();
+
+        $allMembers = DB::table('club_members')
+            ->where('club_id', $clubID)
+            ->orderBy('firstname', 'asc')
+            ->orderBy('lastname', 'asc')
+            ->get();
+
+        $riders = DB::table('club_members')
+            ->where('club_id', $clubID)
+            ->where('membership_category', 'rider')
+            ->orderBy('firstname', 'asc')
+            ->orderBy('lastname', 'asc')
+            ->get();
+
+        $observers = DB::table('club_members')
+            ->where('club_id', $clubID)
+            ->where('membership_category', 'observer')
+            ->orderBy('firstname', 'asc')
+            ->orderBy('lastname', 'asc')
+            ->get();
+
+        $lifers = DB::table('club_members')
+            ->where('club_id', $clubID)
+            ->where('membership_category', 'life')
+            ->orderBy('firstname', 'asc')
+            ->orderBy('lastname', 'asc')
+            ->get();
+
+        return view('clubs.memberList', ['allmembers' => $allMembers, 'riders' => $riders, 'observers' => $observers, 'clubName' => $clubName, 'lifers' => $lifers]);
+    }
+
+    public function memberDetail()
+    {
+        $clubID = Auth::user()->club_id;
+        $memberID = request('id');
+
+        $member = DB::table('club_members')
+            ->where('id', $memberID)
+            ->first();
+
+        return view('clubs.memberDetail', ['member' => $member]);
     }
 
 }

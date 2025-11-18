@@ -262,10 +262,12 @@ function onCheckoutSessionCompleted($sessionObject)
     $containsExtras = false;
     $product_names = array();
     $product_quantities = array();
+    $product_descriptions = array();
 
     foreach ($lineItems as $lineItem) {
         $stripe_product_id = $lineItem['price']['product'];
         $quantity = $lineItem['quantity'];
+        $description = $lineItem['description'];
         $product = DB::table('products')
             ->where('stripe_product_id', '=', $stripe_product_id)
             ->first();
@@ -274,6 +276,7 @@ function onCheckoutSessionCompleted($sessionObject)
             $containsExtras = true;
             array_push($product_names, $product->product_name);
             array_push($product_quantities, $quantity);
+            array_push($product_descriptions, $product->stripe_product_description);
         }
 
         $stripe_price_id = $lineItem['price']['id'];
@@ -298,11 +301,19 @@ function onCheckoutSessionCompleted($sessionObject)
             ->increment('purchases', $quantity);
     }
 
+    $msg = "";
     if ($containsExtras) {
         $names = implode(',', $product_names);
         $quantities = implode(',', $product_quantities);
         $trials = implode(',', $trialIDs);
-        info("Extras: $names QTY: $quantities EntryIDs: $entryIDs Trial IDs: $trials");
+        $descriptions = implode(',', $product_descriptions);
+
+        $msg = "<div>Your payment also included the following purchase(s):</div>";
+        for ($i = 0; $i < sizeof($product_names); $i++) {
+            $msg .= "<div>Item: $product_names[$i] Qty: $product_quantities[$i]</div>";
+        }
+
+        sendNotification($names, $quantities, $entryIDs, $descriptions);
     }
 
 // Update entry status
@@ -322,9 +333,10 @@ function onCheckoutSessionCompleted($sessionObject)
 
 //  Send confirmation email with bcc: to admin
     $bcc = 'monster@trialmonster.uk';
-    Mail::to($email)
-        ->bcc($bcc)
-        ->send(new PaymentReceived($entries));
+//    info($msg);
+//    Mail::to($email)
+//        ->bcc($bcc)
+//        ->send(new PaymentReceived($entries, $msg));;
 
 //    Check for entry limit
     foreach ($trialIDs as $trialID) {
@@ -346,6 +358,11 @@ function onCheckoutSessionCompleted($sessionObject)
             }
         }
     }
+}
+
+function sendNotification($names, $quantities, $entryIDs, $descriptions)
+{
+    echo ("Names: $names\n Quantities: $quantities\n EntryIDs: $entryIDs\nDescriptions: $descriptions\n");
 }
 
 function onRefundCreated(mixed $object)

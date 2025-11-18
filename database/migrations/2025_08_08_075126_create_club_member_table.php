@@ -25,6 +25,9 @@ return new class extends Migration
             $table->string('emergency_number');
             $table->string('social');
             $table->enum('membership_type', ['new', 'renewal']);
+            $table->enum('membership_category', ['rider', 'observer', 'life']);
+            $table->boolean('accept')->default(false);
+            $table->boolean('confirmed')->default(false);
         });
     }
 

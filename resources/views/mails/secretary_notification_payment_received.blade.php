@@ -5,19 +5,19 @@
 
         @foreach ($entryData as $entry)
             <div class="box-content box-border">
-            @php
-                $dateFormatted = date_format(date_create($entry->date), "M jS");
-            @endphp
-            <div>{{$dateFormatted}} - {{$entry->trial}}</div>
-            <div class="font-semibold">Entry Ref: {{$entry->id}} </div>
-            <div class="font-semibold">Name: {{$entry->name}}</div>
-            <div class="font-semibold">Class: {{$entry->class}}</div>
-            <div class="font-semibold">Course: {{$entry->course}}</div>
-            <div class="font-semibold">Machine: {{$entry->make}} &nbsp;{{$entry->size}}</div>
+                @php
+                    $dateFormatted = date_format(date_create($entry->date), "M jS");
+                @endphp
+                <div>{{$dateFormatted}} - {{$entry->trial}}</div>
+                <div class="font-semibold">Entry Ref: {{$entry->id}} </div>
+                <div class="font-semibold">Name: {{$entry->name}}</div>
+                <div class="font-semibold">Class: {{$entry->class}}</div>
+                <div class="font-semibold">Course: {{$entry->course}}</div>
+                <div class="font-semibold">Machine: {{$entry->make}} &nbsp;{{$entry->size}}</div>
 
-            <div><span class="text-blue-700 font-semibold underline underline-offset-4"><a
-                            href="{{config('app.url')}}/entry/useredit/?id={{$entry->id}}&token={{$entry->token}}">Click here to change the entry above</a></span>
-            </div>
+                <div><span class="text-blue-700 font-semibold underline underline-offset-4"><a
+                                href="{{config('app.url')}}/entry/useredit/?id={{$entry->id}}&token={{$entry->token}}">Click here to change the entry above</a></span>
+                </div>
 
                 <div class="mt-4">@php echo $msg; @endphp</div>
             </div>

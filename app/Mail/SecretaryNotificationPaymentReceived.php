@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 
-class PaymentReceived extends Mailable
+class SecretaryNotificationPaymentReceived extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -28,7 +28,7 @@ class PaymentReceived extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Payment Received',
+            subject: 'Payment Received Notification',
         );
     }
 
@@ -41,7 +41,6 @@ class PaymentReceived extends Mailable
             html: 'mails.payment_received',
             with: [
                 'entryData' => $this->entryData,
-                'msg' => $this->msg,
             ],
         );
     }
