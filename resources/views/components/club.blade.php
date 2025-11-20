@@ -111,51 +111,8 @@
     <title>{{config('app.name')}}</title>
 </head>
 <body class="h-full bg-violet-800 text-white">
-<header class="bg-violet-800 drop-shadow-md">
-    <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8  sm:flex sm:justify-between">
-        <h1 class="text-m sm:text-lg  font-bold tracking-tight text-white">{{ $heading }}</h1>
+@include('components.clubnav')
 
-
-        {{--        Hidden for small screens --}}
-        <div class="hidden sm:block">
-            <div class="ml-4 flex space-x-4 items-center m-auto px md:ml-6">
-                <x-nav-link href="/" :active="request()->is('/')">Public site</x-nav-link>
-                <x-nav-link href="/club/console" :active="request()->is('/club/console')">Console</x-nav-link>
-                <x-nav-link href="/clubaccess" :active="request()->is('/clubaccess')">Trials</x-nav-link>
-                {{--                    <x-nav-link href="/series/list" :active="request()->is('/series/list')">Competitions</x-nav-link>--}}
-                <x-nav-link href="/club/mails" :active="request()->is('/club/mails')">Mail</x-nav-link>
-                @guest
-                    <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>
-                    {{--                        <x-nav-link href="/register" :active="request()->is('register')">Register</x-nav-link>--}}
-                @endguest
-
-                @auth
-                    <form method="POST" action="/logout">
-                        @csrf
-                        <button type="submit"
-                                class="rounded-md ml-0 bg-violet-500 px-2 py-1 text-sm font-light  border border-white text-white drop-shadow-xl hover:bg-violet-500 focus-visible:outline focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-violet-600">
-                            Log out
-                        </button>
-                    </form>
-                @endauth
-            </div>
-        </div>
-
-
-        {{--        So - for small screens --}}
-        <div class="topnav " id="myTopnav">
-            @guest
-                <a href="/register" class="text-white"><i class="text-xl fa-solid fa-user-plus"></i></a>
-                <a href="/login" class="text-white "><i class="text-xl fa-solid fa-right-to-bracket"></i></a>
-            @endguest
-            @auth
-
-                <a href="/clubaccess" class="text-white"><i class="text-xl  fa-solid fa-list"></i></a>
-                <a href="/club/profile" class="text-white"><i class="text-xl  fa-solid fa-gear"></i></a>
-            @endauth
-        </div>
-    </div>
-</header>
 <main class="bg-violet-100 text-black">
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {{ $slot }}
@@ -179,5 +136,15 @@
         </div>
     </div>
 </main>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const button = document.querySelector('button[aria-controls="mobile-menu"]');
+        const menu = document.getElementById('mobile-menu');
+
+        button.addEventListener('click', function () {
+            menu.classList.toggle('hidden');
+        });
+    });
+</script>
 </body>
 </html>

@@ -2,7 +2,7 @@
     <x-slot:heading>Club membership</x-slot:heading>
     @php
         $membershipTypeArray = array('Renewal', 'New');
-        $membershipCategoryArray = array('Rider', 'Observer', 'Life');
+        $membershipCategoryArray = array('Competition', 'Observer', 'Life');
         $socialArray = array('No','FaceBook', 'WhatsApp', 'Other');
     @endphp
     <form action="/club/member/add" method="POST">
@@ -21,7 +21,6 @@
                         <x-form-error name="firstname"/>
                     </div>
                     @error('firstname')
-                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
 
@@ -33,7 +32,6 @@
                         <x-form-error name="lastname"/>
                     </div>
                     @error('lastname')
-                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
 
@@ -45,7 +43,6 @@
                         <x-form-error name="email"/>
                     </div>
                     @error('email')
-                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
 
@@ -57,7 +54,6 @@
                         <x-form-error name="phone"/>
                     </div>
                     @error('phone')
-                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
 
@@ -69,7 +65,6 @@
                         <x-form-error name="address"/>
                     </div>
                     @error('address')
-                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
 
@@ -81,7 +76,6 @@
                         <x-form-error name="postcode"/>
                     </div>
                     @error('postcode')
-                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
 
@@ -93,7 +87,6 @@
                         <x-form-error name="emergency_contact"/>
                     </div>
                     @error('emergency_contact')
-                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
 
@@ -105,7 +98,6 @@
                         <x-form-error name="emergency_number"/>
                     </div>
                     @error('emergency_number')
-                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
 
@@ -126,7 +118,6 @@
                     <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
-
 
                 <x-form-field>
                     <x-form-label for="membership_type">Membership Type</x-form-label>
@@ -154,7 +145,7 @@
                         @foreach($membershipCategoryArray as $membershipCategory)
                             <div>
                                 <input name="membership_category" type="radio"
-                                       value="{{$membershipCategory}}"
+                                       value="{{strtolower($membershipCategory)}}"
                                 />
                                 <label class="pl-4 pr-0" for="membership_category">{{$membershipCategory}}
                                 </label>
@@ -172,8 +163,8 @@
         <div class="text-sm px-4 py-2" id="thesmallprint">
             <x-form-label>Conditions of Membership</x-form-label>
             <div>
-                Annual membership is £10 payable through Stripe Payments. You will be transferred to Stripe when you
-                press Submit.
+                Annual Competition Membership is £10 payable through Stripe Payments. Payment should be made when
+                entering your first trial of each year. Observer and Life Members are exempt from payment.
             </div>
 
             <div>

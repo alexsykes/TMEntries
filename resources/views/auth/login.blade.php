@@ -87,6 +87,6 @@
 
     <div class="mt-4 font-semibold">Login difficulties?</div>
     <div>If you need help logging in, please drop us an email. <a class="underline"
-                                                                  href="mailto:monster@trialmonster.uk?subject=Login difficulties">Click
+                                                                  href="mailto:monster@trialmonster.uk?subject=Login&nbsp;difficulties">Click
             here</a></div>
 </x-guest-layout>

@@ -37,8 +37,8 @@ Route::get('dashboard', [TrialController::class, 'showTrialList'])->name('dashbo
 
 
 // CLUB access
-Route::get('clubaccess', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified'])->name('clubaccess');
-Route::get('adminTrials', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified'])->name('adminTrials');
+Route::get('/clubaccess', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified'])->name('clubaccess');
+Route::get('/adminTrials', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified'])->name('adminTrials');
 // ADMIN access
 Route::get('/adminaccess', [AdminController::class, 'userList'])->middleware(['auth', 'verified']);
 Route::get('/admin/users', [AdminController::class, 'userList'])->middleware(['auth', 'verified']);

@@ -168,7 +168,6 @@ class ClubController extends Controller
 
     public function addMember(Request $request)
     {
-//        dd($request->all());
         $attributes = $request->validate([
             'firstname' => ['required', 'min:2', 'max:255'],
             'lastname' => ['required', 'min:2', 'max:255'],
@@ -182,6 +181,8 @@ class ClubController extends Controller
             'social' => 'required',
             'membership_type' => 'required',
             'membership_category' => 'required',
+            'accept' => 'required',
+//            'g-recaptcha-response' => ['required', new ReCaptchaV3('register')],
         ]);
 
         $attributes['accept'] = true;
@@ -189,17 +190,13 @@ class ClubController extends Controller
 
         info($attributes['membership_category']);
 
-        if ($attributes['membership_category'] == 'Life' || $attributes['membership_category'] == 'Observer') {
+        if ($attributes['membership_category'] == 'life' || $attributes['membership_category'] == 'observer') {
             $attributes['confirmed'] = true;
+        } else {
+            $attributes['membership_category'] = 'competition';
         }
 
         $member = ClubMember::create($attributes);
-
-//        $product = DB::table('products')
-//            ->where('club_id', $request->club_id)
-//            ->where('product_category', 'membership')
-//            ->first();
-
         return view('/clubs/confirmRegistered', ['member' => $member]);
     }
 
@@ -305,7 +302,7 @@ class ClubController extends Controller
 
         $riders = DB::table('club_members')
             ->where('club_id', $clubID)
-            ->where('membership_category', 'rider')
+            ->where('membership_category', 'competition')
             ->orderBy('firstname', 'asc')
             ->orderBy('lastname', 'asc')
             ->get();

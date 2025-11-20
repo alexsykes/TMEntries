@@ -138,7 +138,7 @@
                 <a href="/clublist" class="inline-block mt-1 mx-3 hover:underline">Club Profiles</a>
                 <a href="{{$tandc}}" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
                 <a href="{{$privacy}}" class="inline-block mt-1 mx-3 hover:underline">Data and Privacy Policy</a>
-                <a href="mailto:monster@trialmonster.uk?subject=Web Enquiry"
+                <a href="mailto:monster@trialmonster.uk?subject=Web&nbsp;Enquiry"
                    class="inline-block mt-1 mx-3 hover:underline">Contact</a>
             </div>
         </x-footer-link>

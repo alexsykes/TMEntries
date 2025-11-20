@@ -166,7 +166,7 @@ function onProductCreated($productObject)
         'stripe_product_description' => $stripe_product_description,
         'isLive' => $isLive,
         'isEntryFee' => $isEntryFee,
-        'hasQuantity' => $hasQuantity,
+        'hasQuantity' => 1,
         'product_name' => $product_name,
         'product_category' => $product_category,
         'trial_id' => $trialid,
@@ -303,6 +303,7 @@ function onCheckoutSessionCompleted($sessionObject)
 
     $msg = "";
     if ($containsExtras) {
+        info("Contains Extras");
         $names = implode(',', $product_names);
         $quantities = implode(',', $product_quantities);
         $trials = implode(',', $trialIDs);
@@ -312,8 +313,10 @@ function onCheckoutSessionCompleted($sessionObject)
         for ($i = 0; $i < sizeof($product_names); $i++) {
             $msg .= "<div>Item: $product_names[$i] Qty: $product_quantities[$i]</div>";
         }
-
         sendNotification($names, $quantities, $entryIDs, $descriptions);
+    } else {
+
+        info("Doesn't contain Extras");
     }
 
 // Update entry status
@@ -334,9 +337,9 @@ function onCheckoutSessionCompleted($sessionObject)
 //  Send confirmation email with bcc: to admin
     $bcc = 'monster@trialmonster.uk';
 //    info($msg);
-//    Mail::to($email)
-//        ->bcc($bcc)
-//        ->send(new PaymentReceived($entries, $msg));;
+    Mail::to($email)
+        ->bcc($bcc)
+        ->send(new PaymentReceived($entries, $msg));
 
 //    Check for entry limit
     foreach ($trialIDs as $trialID) {
@@ -362,7 +365,7 @@ function onCheckoutSessionCompleted($sessionObject)
 
 function sendNotification($names, $quantities, $entryIDs, $descriptions)
 {
-    echo ("Names: $names\n Quantities: $quantities\n EntryIDs: $entryIDs\nDescriptions: $descriptions\n");
+    echo("Names: $names\n Quantities: $quantities\n EntryIDs: $entryIDs\nDescriptions: $descriptions\n");
 }
 
 function onRefundCreated(mixed $object)
