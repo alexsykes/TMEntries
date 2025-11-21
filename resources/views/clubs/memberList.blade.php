@@ -53,14 +53,14 @@
                             <td class="max-sm:hidden">{{$rider->phone}}</td>
                             <td>{{$rider->emergency_contact}}</td>
                             <td>{{$rider->emergency_number}}</td>
-                            <td>@if($rider->confirmed) &nbsp; @else <a href="/club/membership/confirm/{{$rider->id}}"><i class="fa-solid fa-check"></i></a>@endif
+                            <td class="pr-2">@if($rider->confirmed) &nbsp; @else <a href="/club/membership/confirm/{{$rider->id}}"><i class="fa-solid fa-check"></i></a>@endif
                             </td>
                         </tr>
                     @endforeach
                     </tbody>
                 </table>
                 <div class="text-center w-full pt-2">* - indicates new member</div>
-                <div class="sm:hidden">Rotate phone to landscape view for full member details</div>
+                <div class="p-2 sm:hidden">Rotate phone to landscape view for full member details</div>
             </div>
         </div>
     </div>
@@ -96,7 +96,7 @@
                     </tbody>
                 </table>
                 <div class="text-center w-full pt-2">* - indicates new member</div>
-                <div class="sm:hidden">Rotate phone to landscape view for full member details</div>
+                <div class="p-2 sm:hidden">Rotate phone to landscape view for full member details</div>
             </div>
         </div>
     </div>
@@ -132,7 +132,7 @@
                     </tbody>
                 </table>
                 <div class="text-center w-full pt-2">* - indicates new member</div>
-                <div class="sm:hidden">Rotate phone to landscape view for full member details</div>
+                <div class="p-2 sm:hidden">Rotate phone to landscape view for full member details</div>
             </div>
         </div>
     </div>
@@ -168,7 +168,7 @@
                     </tbody>
                 </table>
                 <div class="text-center w-full pt-2">* - indicates new member</div>
-                <div class="sm:hidden">Rotate phone to landscape view for full member details</div>
+                <div class="p-2 sm:hidden">Rotate phone to landscape view for full member details</div>
             </div>
         </div>
 

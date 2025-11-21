@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Attachment;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -16,7 +17,7 @@ class RenewalAcknowledgement extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(public object $club_member)
     {
         //
     }
@@ -38,6 +39,7 @@ class RenewalAcknowledgement extends Mailable
     {
         return new Content(
             view: 'mails.renewal_acknowledgement',
+            with: ['member' => $this->club_member],
         );
     }
 
@@ -48,6 +50,15 @@ class RenewalAcknowledgement extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        $link1 = public_path('pdf/Trials_Rule_Book_2025.pdf');
+        $link2 = public_path('pdf/YCMCC_dummy_rules.pdf');
+        return [
+            Attachment::fromPath($link1)
+                ->as('AMCA Trials Rule Book.pdf')
+                ->withMime('application/pdf'),
+            Attachment::fromPath($link2)
+                ->as('Placeholder Rules.pdf')
+                ->withMime('application/pdf'),
+        ];
     }
 }
