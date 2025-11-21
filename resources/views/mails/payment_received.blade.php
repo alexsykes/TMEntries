@@ -3,6 +3,8 @@
         <div>Your Stripe payment has been processed and I am pleased to confirm that your entry or entries listed below
             are now confirmed.<br><b>Please remember to sign-in on arrival at the event.</b></div>
 
+        <div class="mt-4">@php echo $msg; @endphp</div>
+
         @foreach ($entryData as $entry)
             <div class="box-content box-border">
             @php
@@ -18,11 +20,9 @@
             <div><span class="text-blue-700 font-semibold underline underline-offset-4"><a
                             href="{{config('app.url')}}/entry/useredit/?id={{$entry->id}}&token={{$entry->token}}">Click here to change the entry above</a></span>
             </div>
-
-                <div class="mt-4">@php echo $msg; @endphp</div>
             </div>
         @endforeach
-        <div>If you need to make any changes or withdraw from the event, please click on the link shown following the
+        <div class="font-semibold">If you need to make any changes or withdraw from the event, please click on the link shown following the
             entry.
         </div>
         <ul>

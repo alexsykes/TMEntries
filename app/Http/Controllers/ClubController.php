@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RenewalAcknowledgement;
+use App\Mail\WelcomeNewMember;
 use App\Models\Club;
 use App\Models\ClubMember;
 use App\Models\MailDistribution;
@@ -10,6 +12,7 @@ use App\Models\Trial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class ClubController extends Controller
 {
@@ -334,6 +337,31 @@ class ClubController extends Controller
             ->first();
 
         return view('clubs.memberDetail', ['member' => $member]);
+    }
+
+    public function membershipConfirm($id)
+    {
+        $club_member = ClubMember::findOrFail($id);
+        $club_member->confirmed = 1;
+        $club_member->save();
+
+        $bcc = 'monster@trialmonster.uk';
+
+        if ($club_member->membership_type == 'new') {
+            info("Send welcome email to $club_member->email");
+
+            Mail::to($club_member->email)
+                ->bcc($bcc)
+                ->send(new WelcomeNewMember($club_member));
+
+
+        } else {
+            info("Send acknowledgement email to $club_member->email");
+            Mail::to($club_member->email)
+                ->bcc($bcc)
+                ->send(new RenewalAcknowledgement($club_member));
+        }
+        return redirect('/club/member/list');
     }
 
 }

@@ -216,6 +216,7 @@ Route::get('/clubs/list', [ClubController::class, 'list']);
 Route::get('/clubs/membershipForm/{id}', [ClubController::class, 'membershipForm']);
 Route::post('/club/member/add', [ClubController::class, 'addMember']);
 Route::get('/club/member/confirmRegistered', [ClubController::class, 'confirmRegistered']);
+Route::get('/club/membership/confirm/{id}', [ClubController::class, 'membershipConfirm']);
 Route::get('/club/mails', [ClubController::class, 'mailList'])->middleware('auth', 'verified'); // Lists mails
 Route::get('/clublist', [ClubController::class, 'clublist']);
 //Route::get('/club/detail/{id}', [ClubController::class, 'detail']);

@@ -9,6 +9,7 @@ use App\Mail\PaymentReceived;
 use App\Mail\ProductCreated;
 use App\Mail\RefundConfirmed;
 use App\Mail\RefundRequested;
+use App\Mail\SecretaryNotificationPaymentReceived;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Product;
@@ -252,7 +253,6 @@ function onCheckoutSessionCompleted($sessionObject)
 
 //  Process purchased items
 //    Get all line items
-
     $lineItems = $stripe->checkout->sessions->allLineItems(
         $sessionObject['id'],
         []
@@ -263,6 +263,7 @@ function onCheckoutSessionCompleted($sessionObject)
     $product_names = array();
     $product_quantities = array();
     $product_descriptions = array();
+    $purchaseData = array();
 
     foreach ($lineItems as $lineItem) {
         $stripe_product_id = $lineItem['price']['product'];
@@ -274,14 +275,15 @@ function onCheckoutSessionCompleted($sessionObject)
 
         if ($product->product_category != 'entry fee') {
             $containsExtras = true;
-            array_push($product_names, $product->product_name);
-            array_push($product_quantities, $quantity);
-            array_push($product_descriptions, $product->stripe_product_description);
+            $product_name = $product->product_name;
+            $qty = $quantity;
+            $description = $description;
+
+            array_push($purchaseData, array("product" => $product_name, "quantity" => $qty, "description" => $description));
         }
 
         $stripe_price_id = $lineItem['price']['id'];
 
-        // info("PI: $stripe_payment_intent Qty - $quantity Product - $product->product_name");
         $attrs = [
             'stripe_product_id' => $stripe_product_id,
             'quantity' => $quantity,
@@ -304,18 +306,18 @@ function onCheckoutSessionCompleted($sessionObject)
     $msg = "";
     if ($containsExtras) {
         info("Contains Extras");
-        $names = implode(',', $product_names);
-        $quantities = implode(',', $product_quantities);
-        $trials = implode(',', $trialIDs);
-        $descriptions = implode(',', $product_descriptions);
 
         $msg = "<div>Your payment also included the following purchase(s):</div>";
-        for ($i = 0; $i < sizeof($product_names); $i++) {
-            $msg .= "<div>Item: $product_names[$i] Qty: $product_quantities[$i]</div>";
+        $items = "";
+        for ($i = 0; $i < sizeof($purchaseData); $i++) {
+            $item = $purchaseData[$i]['description'];
+            $qty = $purchaseData[$i]['quantity'];
+            $items .= "<div class='pl-4 font-semibold'>Item: $item Qty: $qty</div>";
         }
-        sendNotification($names, $quantities, $entryIDs, $descriptions);
-    } else {
 
+        $msg .= $items;
+        sendNotification($items, $entryIDs);
+    } else {
         info("Doesn't contain Extras");
     }
 
@@ -363,9 +365,23 @@ function onCheckoutSessionCompleted($sessionObject)
     }
 }
 
-function sendNotification($names, $quantities, $entryIDs, $descriptions)
+function sendNotification($items, $entryIDs)
 {
-    echo("Names: $names\n Quantities: $quantities\n EntryIDs: $entryIDs\nDescriptions: $descriptions\n");
+    $bcc = "monster@trialmonster.uk";
+//    $email = "ammnewhouse@gmail.com";
+    $email = "alex@alexsykes.net";
+    $entryIDArray = explode(',', $entryIDs);
+
+    $riderNames = DB::table('entries')
+        ->whereIn('id', $entryIDArray)
+        ->orderBy('name')
+        ->pluck('name')->toArray();
+
+    $riders = implode(', ', $riderNames);
+
+    Mail::to($email)
+        ->bcc($bcc)
+        ->send(new SecretaryNotificationPaymentReceived($riders, $items));
 }
 
 function onRefundCreated(mixed $object)

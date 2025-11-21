@@ -17,7 +17,7 @@ class SecretaryNotificationPaymentReceived extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public Collection $entryData, public String $msg)
+    public function __construct(public String $riders, public String $msg)
     {
 
     }
@@ -38,9 +38,10 @@ class SecretaryNotificationPaymentReceived extends Mailable
     public function content(): Content
     {
         return new Content(
-            html: 'mails.payment_received',
+            html: 'mails.secretary_notification_payment_received',
             with: [
-                'entryData' => $this->entryData,
+                'riders' => $this->riders,
+                'msg' => $this->msg,
             ],
         );
     }

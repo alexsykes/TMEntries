@@ -20,7 +20,7 @@ class CheckEntries extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Check entries at 1am each night. Send LastChance email when less than 48 hours to trial';
 
     /**
      * Execute the console command.
@@ -52,13 +52,13 @@ class CheckEntries extends Command
 
                 Info('Trial ' . $trial->name . ' has ' . sizeof($unconfirmed) . ' unconfirmed entries');
 
-                foreach ($unconfirmed as $entry) {
-                    Mail::to($entry->email)->send(new LastChance($trial));
-                    $entry->status = 10;
-                    $entry->updated_at = date("Y-m-d H:i:s");
-                    $entry->save();
-                    Info('EntryID:' . $entry->id . ' Last Chance email sent to ' . $entry->email);
-                }
+//                foreach ($unconfirmed as $entry) {
+//                    Mail::to($entry->email)->send(new LastChance($trial));
+//                    $entry->status = 10;
+//                    $entry->updated_at = date("Y-m-d H:i:s");
+//                    $entry->save();
+//                    Info('EntryID:' . $entry->id . ' Last Chance email sent to ' . $entry->email);
+//                }
             }
         }
     }
