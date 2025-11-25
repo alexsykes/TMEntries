@@ -10,6 +10,7 @@ use App\Mail\ProductCreated;
 use App\Mail\RefundConfirmed;
 use App\Mail\RefundRequested;
 use App\Mail\SecretaryNotificationPaymentReceived;
+use App\Models\Club;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Product;
@@ -368,9 +369,12 @@ function onCheckoutSessionCompleted($sessionObject)
 function sendNotification($items, $entryIDs)
 {
     $bcc = "monster@trialmonster.uk";
-//    $email = "ammnewhouse@gmail.com";
-    $email = "alex@alexsykes.net";
+    $email = "ammnewhouse@gmail.com";
+//    $email = "alex@alexsykes.net";
     $entryIDArray = explode(',', $entryIDs);
+
+
+//    $clubIDArray = explode(',', $items['clubIDs']);
 
     $riderNames = DB::table('entries')
         ->whereIn('id', $entryIDArray)
@@ -379,9 +383,21 @@ function sendNotification($items, $entryIDs)
 
     $riders = implode(', ', $riderNames);
 
+    $club = Club::findOrFail(5);
+    $confirmed = explode(',', $club->confirmed_list);
+    $merged = array_unique(array_merge($riderNames, $confirmed));
+
+    asort($merged);
+    $sortedS = implode(',', $merged);
+
+    $club->confirmed_list = $sortedS;
+    $club->save();
+
     Mail::to($email)
         ->bcc($bcc)
         ->send(new SecretaryNotificationPaymentReceived($riders, $items));
+
+    info("SecretaryNotificationPaymentReceived sent");
 }
 
 function onRefundCreated(mixed $object)

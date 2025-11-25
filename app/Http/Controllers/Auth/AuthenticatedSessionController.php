@@ -25,15 +25,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-//        dd($request->all());
-//        $request->validate([
-//            'g-recaptcha-response' => ['required', new ReCaptchaV3('login')],
-//        ]);
+        $request->validate([
+            'g-recaptcha-response' => ['required', new ReCaptchaV3('login')],
+        ]);
 
         $request->authenticate();
         $request->session()->regenerate();
 
-//        dd(Auth::user()->isClubUser);
         if (Auth::user()->isClubUser) {
             return redirect()->intended(route('clubaccess', absolute: false));
         }

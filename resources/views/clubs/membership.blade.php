@@ -157,6 +157,14 @@
                     <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
+                <div class="flex mt-4">
+                    <x-text-input id="accept" class="border-1 border-blue-600  mt-1"
+                                  type="checkbox"
+                                  name="accept" required/>
+                    <x-input-label class="ml-2 font-semibold" for="accept"
+                                   :value="__('I accept the Conditions of Membership below')"/>
+                </div>
+
             </div>
         </div>
 
@@ -220,13 +228,7 @@
                 Any member requiring all or part of his or her data to be removed should send a request to the
                 Membership Secretary detailing which part/s they require to be removed.
             </div>
-            <div class="flex mt-4">
-                <x-text-input id="accept" class="border-1 border-blue-600  mt-1"
-                              type="checkbox"
-                              name="accept" required/>
-                <x-input-label class="ml-2 font-semibold" for="accept"
-                               :value="__('I accept the Conditions of Membership above')"/>
-            </div>
+
         </div>
         {{--            <div class="ml-4 text-blue-800 font-semibold">--}}
         {{--                You will now be taken to the Stripe Checkout. Please have your payment card details ready--}}

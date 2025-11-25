@@ -4,7 +4,6 @@ require __DIR__ . '/auth.php';
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\APIController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\ClubmailController;
 use App\Http\Controllers\EntryController;
@@ -25,7 +24,6 @@ use Illuminate\Support\Facades\Route;
 /*
     Front door - display list of trials currently taking entries
 */
-
 
 
 Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
@@ -215,6 +213,8 @@ Route::get('/results/getResultsPDF/{id}', [ResultController::class, 'getResultsP
 Route::get('/clubs/list', [ClubController::class, 'list']);
 Route::get('/clubs/membershipForm/{id}', [ClubController::class, 'membershipForm']);
 Route::post('/club/member/add', [ClubController::class, 'addMember']);
+Route::get('/club/member/approve', [ClubController::class, 'memberApprove'])->middleware(['auth', 'verified']);
+Route::post('/club/member/approve', [ClubController::class, 'memberApprovalUpdate'])->middleware(['auth', 'verified']);
 Route::get('/club/member/confirmRegistered', [ClubController::class, 'confirmRegistered']);
 Route::get('/club/membership/confirm/{id}', [ClubController::class, 'membershipConfirm']);
 Route::get('/club/mails', [ClubController::class, 'mailList'])->middleware('auth', 'verified'); // Lists mails
@@ -233,8 +233,8 @@ Route::get('/club/distribution/add', [ClubController::class, 'addDistribution'])
 Route::get('/club/distribution/edit/{id}', [ClubController::class, 'editDistribution'])->middleware(['auth', 'verified']);
 Route::post('/club/distribution/store', [ClubController::class, 'storeDistribution'])->middleware(['auth', 'verified']);
 Route::patch('/club/distribution/update', [ClubController::class, 'updateDistribution'])->middleware(['auth', 'verified']);
-Route::get('/club/member/list/', [ClubController::class, 'memberList'])->middleware(['auth', 'verified'])   ;
-Route::get('/club/member/detail/{id}', [ClubController::class, 'memberDetail'])->middleware(['auth', 'verified'])   ;
+Route::get('/club/member/list/', [ClubController::class, 'memberList'])->middleware(['auth', 'verified']);
+Route::get('/club/member/detail/{id}', [ClubController::class, 'memberDetail'])->middleware(['auth', 'verified']);
 
 // SERIES Routes
 Route::get('/series/list', [SeriesController::class, 'list'])->middleware(['auth', 'verified']);

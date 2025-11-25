@@ -53,8 +53,8 @@
                             <td class="max-sm:hidden">{{$rider->phone}}</td>
                             <td>{{$rider->emergency_contact}}</td>
                             <td>{{$rider->emergency_number}}</td>
-                            <td class="pr-2">@if($rider->confirmed) &nbsp; @else <a href="/club/membership/confirm/{{$rider->id}}"><i class="fa-solid fa-check"></i></a>@endif
-                            </td>
+{{--                            <td class="pr-2">@if($rider->confirmed) &nbsp; @else <a href="/club/membership/confirm/{{$rider->id}}"><i class="fa-solid fa-check"></i></a>@endif--}}
+{{--                            </td>--}}
                         </tr>
                     @endforeach
                     </tbody>

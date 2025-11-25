@@ -191,10 +191,10 @@ class ClubController extends Controller
         $attributes['accept'] = true;
         $attributes['social'] = implode(',', request('social'));
 
-        info($attributes['membership_category']);
+//        info($attributes['membership_category']);
 
         if ($attributes['membership_category'] == 'life' || $attributes['membership_category'] == 'observer') {
-            $attributes['confirmed'] = true;
+//            $attributes['confirmed'] = true;
         } else {
             $attributes['membership_category'] = 'competition';
         }
@@ -346,12 +346,14 @@ class ClubController extends Controller
         $club_member->save();
 
         $bcc = 'monster@trialmonster.uk';
+        $amanda = 'ammnewhouse@gmail.com';
 
         if ($club_member->membership_type == 'new') {
             info("Send welcome email to $club_member->email");
 
             Mail::to($club_member->email)
                 ->bcc($bcc)
+//                ->bcc($amanda)
                 ->send(new WelcomeNewMember($club_member));
 
 
@@ -359,9 +361,73 @@ class ClubController extends Controller
             info("Send acknowledgement email to $club_member->email");
             Mail::to($club_member->email)
                 ->bcc($bcc)
+//                ->bcc($amanda)
                 ->send(new RenewalAcknowledgement($club_member));
         }
         return redirect('/club/member/list');
     }
 
+    public function memberApprove()
+    {
+        $user = Auth::user();
+        if($user->isClubUser) {
+            $clubID = $user->club_id;
+            $clubName = DB::table('clubs')
+                ->where('id', $clubID)
+                ->select('name')
+                ->first();
+
+            $paidNames = DB::table('clubs')
+                ->where('id', 5)
+                ->select('confirmed_list')
+                ->first();
+
+            $membersToApprove = DB::table('club_members')
+                ->where('club_id', $clubID)
+                ->where('confirmed', false)
+                ->orderBy('firstname', 'asc')
+                ->get();
+
+            return view('clubs.memberApprove', ['club' => $clubName, 'membersToApprove' => $membersToApprove, 'paidNames' => $paidNames]);
+        } else {
+            return redirect('/');
+        }
+    }
+
+    public function memberApprovalUpdate(Request $request)
+    {
+        if(Auth::user()->isClubUser) {
+        $clubID = Auth::user()->club_id;
+
+        $memberIDs = request('approved');
+        if ($memberIDs != null) {
+            foreach ($memberIDs as $memberID) {
+                $club_member = ClubMember::findOrFail($memberID);
+                $club_member->confirmed = true;
+                $club_member->save();
+
+                $bcc = 'monster@trialmonster.uk';
+                $amanda = 'ammnewhouse@gmail.com';
+
+                if ($club_member->membership_type == 'new') {
+                    info("Send welcome email to $club_member->email");
+
+                    Mail::to($club_member->email)
+                        ->bcc($bcc)
+//                ->bcc($amanda)
+                        ->send(new WelcomeNewMember($club_member));
+
+
+                } else {
+                    info("Send acknowledgement email to $club_member->email");
+                    Mail::to($club_member->email)
+                        ->bcc($bcc)
+//                ->bcc($amanda)
+                        ->send(new RenewalAcknowledgement($club_member));
+                }
+            }
+        }
+        return redirect('/club/member/approve');
+        }
+    }
 }

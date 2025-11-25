@@ -2,7 +2,7 @@
 
     @php
         $APP_URL = config('app.url');
-         $approvalLink = $APP_URL."/club/member/list";
+         $approvalLink = $APP_URL."/club/member/approve";
     @endphp
     <div class="space-y-2">
         <div>A payment has been made which includes items other than entry fees.</div>

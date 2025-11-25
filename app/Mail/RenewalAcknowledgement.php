@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Attachment;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -28,6 +29,9 @@ class RenewalAcknowledgement extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            replyTo: [
+                new Address('ammnewhouse@gmail.com', 'Amanda Newhouse'),
+            ],
             subject: 'Renewal Acknowledgement',
         );
     }
@@ -51,14 +55,14 @@ class RenewalAcknowledgement extends Mailable
     public function attachments(): array
     {
         $link1 = public_path('pdf/Trials_Rule_Book_2025.pdf');
-        $link2 = public_path('pdf/YCMCC_dummy_rules.pdf');
+//        $link2 = public_path('pdf/YCMCC_dummy_rules.pdf');
         return [
             Attachment::fromPath($link1)
                 ->as('AMCA Trials Rule Book.pdf')
                 ->withMime('application/pdf'),
-            Attachment::fromPath($link2)
-                ->as('Placeholder Rules.pdf')
-                ->withMime('application/pdf'),
+//            Attachment::fromPath($link2)
+//                ->as('Placeholder Rules.pdf')
+//                ->withMime('application/pdf'),
         ];
     }
 }
