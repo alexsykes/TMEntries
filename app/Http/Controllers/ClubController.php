@@ -200,6 +200,24 @@ class ClubController extends Controller
         }
 
         $member = ClubMember::create($attributes);
+//        Add to Observer mailing list
+        if ($attributes['membership_category'] == 'observer') {
+            $email = trim($attributes['email']);
+
+            $observerList = MailDistribution::where('club_id', $request->club_id)
+                ->where('name', 'Observers')
+                ->first();
+
+            $addressList = $observerList['to'];
+            $addressListArray = explode(',', $addressList);
+            array_push($addressListArray, $email);
+            $addressListArray = array_unique($addressListArray);
+            $addressList = implode(',', $addressListArray);
+
+            $observerList->to = $addressList;
+            $observerList->update();
+        }
+
         return view('/clubs/confirmRegistered', ['member' => $member]);
     }
 
@@ -370,7 +388,7 @@ class ClubController extends Controller
     public function memberApprove()
     {
         $user = Auth::user();
-        if($user->isClubUser) {
+        if ($user->isClubUser) {
             $clubID = $user->club_id;
             $clubName = DB::table('clubs')
                 ->where('id', $clubID)
@@ -396,38 +414,38 @@ class ClubController extends Controller
 
     public function memberApprovalUpdate(Request $request)
     {
-        if(Auth::user()->isClubUser) {
-        $clubID = Auth::user()->club_id;
+        if (Auth::user()->isClubUser) {
+            $clubID = Auth::user()->club_id;
 
-        $memberIDs = request('approved');
-        if ($memberIDs != null) {
-            foreach ($memberIDs as $memberID) {
-                $club_member = ClubMember::findOrFail($memberID);
-                $club_member->confirmed = true;
-                $club_member->save();
+            $memberIDs = request('approved');
+            if ($memberIDs != null) {
+                foreach ($memberIDs as $memberID) {
+                    $club_member = ClubMember::findOrFail($memberID);
+                    $club_member->confirmed = true;
+                    $club_member->save();
 
-                $bcc = 'monster@trialmonster.uk';
-                $amanda = 'ammnewhouse@gmail.com';
+                    $bcc = 'monster@trialmonster.uk';
+                    $amanda = 'ammnewhouse@gmail.com';
 
-                if ($club_member->membership_type == 'new') {
-                    info("Send welcome email to $club_member->email");
+                    if ($club_member->membership_type == 'new') {
+                        info("Send welcome email to $club_member->email");
 
-                    Mail::to($club_member->email)
-                        ->bcc($bcc)
+                        Mail::to($club_member->email)
+                            ->bcc($bcc)
 //                ->bcc($amanda)
-                        ->send(new WelcomeNewMember($club_member));
+                            ->send(new WelcomeNewMember($club_member));
 
 
-                } else {
-                    info("Send acknowledgement email to $club_member->email");
-                    Mail::to($club_member->email)
-                        ->bcc($bcc)
+                    } else {
+                        info("Send acknowledgement email to $club_member->email");
+                        Mail::to($club_member->email)
+                            ->bcc($bcc)
 //                ->bcc($amanda)
-                        ->send(new RenewalAcknowledgement($club_member));
+                            ->send(new RenewalAcknowledgement($club_member));
+                    }
                 }
             }
-        }
-        return redirect('/club/member/approve');
+            return redirect('/club/member/approve');
         }
     }
 }

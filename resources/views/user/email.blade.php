@@ -1,19 +1,4 @@
 <x-club>
-
-{{--    <script type="text/javascript">--}}
-
-{{--        function yesNoCheck() {--}}
-{{--            // var test = this.valueOf();--}}
-{{--            selected = event.currentTarget.value;--}}
-{{--            if (selected == "Test") {--}}
-{{--                document.getElementById('testAddressDiv').style.display = 'block';--}}
-{{--            }--}}
-{{--            else document.getElementById('testAddressDiv').style.display = 'none';--}}
-
-{{--        }--}}
-
-{{--    </script>--}}
-
     <x-slot:heading>Compose email</x-slot:heading>
     @php
         $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
@@ -46,7 +31,7 @@
                 <x-form-field>
                     <x-form-label for="attachment">Attachment</x-form-label>
                     <div class="mt-2 col-span-2">
-                        <input name="attachment" type="file" id="attachment" value="" />
+                        <input name="attachment" type="file" id="attachment" value=""/>
                         <x-form-error name="attachment"/>
                     </div>
                     @error('attachment')
@@ -83,7 +68,7 @@
                     <x-form-label for="reply_to_name">Reply to (Name)</x-form-label>
                     <div class="mt-2 col-span-2">
                         <x-form-input name="reply_to_name" type="text" id="reply_to_name" value=""
-                                      placeholder="Optional" />
+                                      placeholder="Optional"/>
                         <x-form-error name="reply_to_name"/>
                     </div>
                     @error('reply_to_name')
@@ -95,7 +80,7 @@
                     <x-form-label for="reply_to_address">Reply to (Email address)</x-form-label>
                     <div class="mt-2 col-span-2">
                         <x-form-input name="reply_to_address" type="email" id="reply_to_address" value=""
-                                      placeholder="Optional" />
+                                      placeholder="Optional"/>
                         <x-form-error name="reply_to_address"/>
                     </div>
                     @error('reply_to_address')

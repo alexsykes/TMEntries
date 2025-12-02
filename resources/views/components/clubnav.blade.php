@@ -13,7 +13,7 @@
                                 site</a>
 
                             <a href="/club/console"
-                               class="text-white bg-violet-700 border-white border  hover:bg-violet-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Profile</a>
+                               class="text-white bg-violet-700 border-white border  hover:bg-violet-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Console</a>
                             <a href="/clubaccess"
                                class="text-white bg-violet-700 border-white border  hover:bg-violet-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Trials</a>
                             <a href="/club/mails"

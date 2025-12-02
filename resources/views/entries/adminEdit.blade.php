@@ -96,6 +96,18 @@
                             </x-form-field>
 
                             <x-form-field>
+                                <x-form-label for="dob">Date of Birth</x-form-label>
+                                <div class="mt-2 col-span-2">
+                                    <x-form-input name="dob" type="date" id="dob" value="{{$entry->dob}}"
+                                                   required/>
+                                    <x-form-error name="dob"/>
+                                </div>
+                                @error('make')
+                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                                @enderror
+                            </x-form-field>
+
+                            <x-form-field>
                                 <x-form-label for="size">Capacity</x-form-label>
                                 <div class="mt-2">
                                     <x-form-input name="size" type="text" id="size" value="{{$entry->size}}"

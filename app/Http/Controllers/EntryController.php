@@ -206,6 +206,7 @@ class EntryController extends Controller
         $entry->size = $request->size;
         $entry->status = $request->status;
         $entry->startsAt = $request->startsAt;
+        $entry->dob = $request->dob;
         $entry->updated_at = date('Y-m-d H:i:s');
 
         if ($request->status == 6) {

@@ -19,7 +19,7 @@
                     <td class="text-sm pl-2 table-cell"><a href="/trial/details/{{$trial->id}}">{{$trial->name}}</a>
                     </td>
                     <td title="Entry list" class="text-sm underline table-cell"><a
-                                href="/trial/{{$trial->id}}/entrylist">Entry list</a></td>
+                                href="/trial/entrylist/{{$trial->id}}">Entry list</a></td>
                     {{--                        <td title="Enter" class="table-cell "><a href="/trial/details/{{$trial->id}}"><span><i class="text-xl  fa-solid fa-circle-info"></i></span></a></td>--}}
                 </tr>
             @endforeach

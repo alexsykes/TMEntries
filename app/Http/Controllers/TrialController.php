@@ -613,6 +613,11 @@ class TrialController extends Controller
             ->select('name')
             ->get();
 
+        $orderedList = Entry::where('trial_id', $id)
+            ->where('ridingNumber', '>', 0)
+            ->get()
+        ->sortBy('ridingNumber');
+
         $reserveList = Entry::where('trial_id', $id)
             ->whereIn('status', [4, 5])
             ->select('name')
@@ -620,7 +625,7 @@ class TrialController extends Controller
             ->sortBy('id');
 
         $trial = Trial::where('id', $id)->first();
-        return view('trials.entrylist', ['entries' => $entries, 'unconfirmed' => $unconfirmed, 'reserves' => $reserveList, 'trial' => $trial]);
+        return view('trials.entrylist', ['entries' => $entries, 'unconfirmed' => $unconfirmed, 'reserves' => $reserveList, 'trial' => $trial, 'orderedList' => $orderedList]);
     }
 
     public function adminEntryList($id)

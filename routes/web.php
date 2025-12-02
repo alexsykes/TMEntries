@@ -74,6 +74,7 @@ Route::get('/trials/edit/{id}', [TrialController::class, 'edit'])->middleware(['
 Route::get('/trials', [TrialController::class, 'showTrialList'])->name('trials');
 Route::get('/trial/details/{trial_id}', [TrialController::class, 'details'])->name('details');
 Route::get('/trial/{trial_id}/entrylist', [TrialController::class, 'entryList'])->name('entrylist');
+Route::get('/trial/entrylist/{trial_id}', [TrialController::class, 'entryList'])->name('entrylistnew');
 
 Route::get('/trials/toggleVisibility/{id}', [TrialController::class, 'toggleVisibility'])->middleware(['auth', 'verified'])->name('toggleVisibility');
 Route::get('/trials/remove/{id}', [TrialController::class, 'remove'])->middleware(['auth', 'verified'])->name('remove');
