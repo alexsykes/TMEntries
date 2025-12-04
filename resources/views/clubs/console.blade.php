@@ -115,16 +115,12 @@
             <div class="text-sm  pl-2 pr-2">
                 @php $index = 0; @endphp
                 @foreach($distributionLists as $item)
-
-                    <div class="flex pb-2 w-full  ">
-                        <div class="w-1/5 text-purple-700"><a class="underline font-semibold"
-                                    href="/club/distribution/edit/{{$item->id}}">{{$item->name}}</a>
-                                ({{$countItemsArray[$index]}})</div>
-                        <div class="w-1/5">{{$item->description}}</div>
-                        <div class="w-3/5 overflow-clip">{{$item->to}}</div>
-                    </div>
-
+                    <details>
+                        <summary class="font-semibold  text-violet-600 bg-white p-2 pb-2"><a class="underline font-semibold"  href="/club/distribution/edit/{{$item->id}}">{{$item->name}}</a>
+                                ({{$countItemsArray[$index]}})</summary>
+                    <div class="pl-4 pr-4 overflow-clip">{{$item->to}}</div>
                     @php $index++; @endphp
+                    </details>
                 @endforeach
             </div>
         </div>
