@@ -2,6 +2,7 @@
     <x-slot:heading>Email update</x-slot:heading>
     @php
         $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
+        $categoryArray = array('AGM','Committee Meetings','Trials','Social Events ','Other');
         $distributionArray = array("Trial Entrants", "Past Entrants", "All Users");
 
 //        dd($mail);

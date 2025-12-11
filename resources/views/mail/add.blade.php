@@ -2,6 +2,8 @@
     <x-slot:heading>Compose a new email</x-slot:heading>
     @php
         $categoryArray = array("Trial Announcement", "Result Published", "General Announcement");
+        $categoryArray = array('AGM','Committee Meetings','Trials','Social Events ','Other');
+
         $distributionArray = array("Trial Entrants", "Past Entrants", "All Users");
     @endphp
     <form action="/mail/store" method="POST">
@@ -60,14 +62,14 @@
                 </div>
 
                 <div id="mailBodyTextDiv" class=" col-span-3 mt-2">
-                <x-form-field>
-                    <x-form-label for="bodyText">Email body</x-form-label>
-                    <div class="mt-2 ">
+                    <x-form-field>
+                        <x-form-label for="bodyText">Email body</x-form-label>
+                        <div class="mt-2 ">
                         <textarea class="withEditor" name="bodyText" type="text" id="bodyText">
                                                   {{old('bodyText')}}
                         </textarea>
-                    </div>
-                </x-form-field>
+                        </div>
+                    </x-form-field>
                 </div>
             </div>
         </div>

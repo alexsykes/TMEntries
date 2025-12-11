@@ -2,7 +2,7 @@
     <x-slot:heading>Compose email</x-slot:heading>
     @php
         $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
-//        $addressToArray = array("Test", "Entry List", "Unconfirmed Entries", "Previous Entrants", "Other");
+        $categoryArray = array('AGM','Committee Meetings','Trials','Social Events ','Other');
     @endphp
     <form action="/usermail/store" method="POST" enctype="multipart/form-data">
         @csrf

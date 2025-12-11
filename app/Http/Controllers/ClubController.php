@@ -152,6 +152,7 @@ class ClubController extends Controller
         $user = Auth::user();
         $clubID = $user->club_id;
 
+        /* Removed
         $mails = DB::table('clubmails')
             ->where('club_id', $clubID)
             ->where('published', true)
@@ -160,9 +161,34 @@ class ClubController extends Controller
             ->orderBy('category')
             ->orderBy('subject')
             ->get();
+        */
 
-        return view('clubs.maillist', ['mails' => $mails]);
+        $categoryArray = array('AGM', 'Committee Meetings', 'Trials', 'Social Events ', 'Other');
+
+        $mails = DB::table('clubmails')
+            ->where('club_id', $clubID)
+            ->where('published', true)
+            ->where('isLibrary', false)
+            ->orderBy('category')
+            ->orderBy('subject')
+            ->get();
+
+        $mailData = array();
+        foreach ($categoryArray as $category) {
+            $mails = DB::table('clubmails')
+                ->where('club_id', $clubID)
+                ->where('published', true)
+                ->where('category', $category)
+                ->orderBy('updated_at', 'desc')
+                ->get(['id', 'updated_at', 'subject', 'summary']);
+
+            if (count($mails) > 0) {
+                $mailData[$category] = $mails;
+            }
+        }
+        return view('clubs.maillist', ['mails' => $mails, 'categoryArray' => $categoryArray, 'mailData' => $mailData]);
     }
+
 
     public function membershipForm($id)
     {
