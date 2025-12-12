@@ -157,13 +157,17 @@
                     <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
+
+                <x-form-field>
                 <div class="flex mt-4">
-                    <x-text-input id="accept" class="border-1 border-blue-600  mt-1"
+                    <x-text-input id="accept"
+                                  class="border-1 border-blue-600  mt-1"
                                   type="checkbox"
                                   name="accept" required/>
                     <x-input-label class="ml-2 font-semibold" for="accept"
                                    :value="__('I accept the Conditions of Membership below')"/>
                 </div>
+                </x-form-field>
 
             </div>
         </div>
