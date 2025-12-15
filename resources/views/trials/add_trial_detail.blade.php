@@ -1,8 +1,12 @@
 <x-club>
+    @php
+        $venueIDSelected = old('venueID');
+    @endphp
     <x-slot:heading>
         Create a new trial for {{$club->name}}
     </x-slot:heading>
     <script>
+        //      function to populate trial name based on series selection
         function competitionSelected() {
             if (series_id.options[series_id.selectedIndex].text != "Other") {
                 console.log(series_id.options[series_id.selectedIndex].text);
@@ -12,19 +16,6 @@
             }
         }
     </script>
-    @php
-        $courseArray = array("Expert", "Intermediate", "Hard Novice", "Novice", "50/50", "Easy", "Clubman", "Clubman A", "Clubman B");
-        $classArray = array("Adult", "Youth", "Twinshock", "Pre-65", "Air-cooled Monoshock", "Over 40", "Over 50", "Youth A", "Youth B", "Youth C", "Youth D");
-        $entryMethodArray = array("Enter on day", "TrialMonster", "Online");
-        $entrySelectionArray = array("Order of Payment", "Ballot", "Selection", "Other");
-        $scoringModeArray = array("Observer", "App", "Punch Cards", "Other");
-        $stopAllowedArray = array("Stop permitted", "Non-stop");
-        $authorityArray = array("ACU", "AMCA", "Other");
-        $restrictionArray = array("Open", "Centre", "Closed to Club", "Other Restriction");
-
-    @endphp
-
-
     <form action="/trials/save" method="POST">
         <input type="hidden" value="detail" id="task" name="task">
         <input type="hidden" name="club" id="club" value="{{$club->name}}">
@@ -46,25 +37,17 @@
                             @enderror
                         </x-form-field>
 
-                        {{--                        <x-form-field>--}}
-                        {{--                            <x-form-label for="club">Organising Club</x-form-label>--}}
-                        {{--                            <div class="mt-2 col-span-2">--}}
-                        {{--                                <x-form-input name="club" type="text" id="club"--}}
-                        {{--                                              value="{{$club->name}}"--}}
-                        {{--                                              placeholder="Club name" required/>--}}
-                        {{--                                <x-form-error name="club"/>--}}
-                        {{--                            </div>--}}
-                        {{--                            @error('club')--}}
-                        {{--                            <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>--}}
-                        {{--                            @enderror--}}
-                        {{--                        </x-form-field>--}}
-
                         <x-form-field class="mt-2 col-span-2 sm:col-span-3">
                             <x-form-label for="venue">Trial / Series</x-form-label>
-                            <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-blue-600 sm:max-w-md" >
-                                <select onchange="competitionSelected()" class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0" name="series_id" id="series_id">
+                            <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-blue-600 sm:max-w-md">
+                                <select onchange="competitionSelected()"
+                                        class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0"
+                                        name="series_id" id="series_id">
                                     @foreach($series as $item)
-                                        <option value="{{$item->id}}">{{$item->name}}</option>
+
+                                        <option value="{{$item->id}}"
+                                                {{--                                                @php if($item->name == "Charity Trials") {echo 'selected';} @endphp--}}
+                                        >{{$item->name}}</option>
                                     @endforeach
                                     <option value="0">Other</option>
                                 </select>
@@ -73,8 +56,6 @@
                             <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                             @enderror
                         </x-form-field>
-
-
 
                         <x-form-field>
                             <x-form-label for="name">Event Name</x-form-label>
@@ -130,7 +111,8 @@
                         <x-form-field>
                             <x-form-label for="startTime">Start time</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="startTime" type="text" id="startTime" placeholder="Trial starting time"
+                                <x-form-input name="startTime" type="text" id="startTime"
+                                              placeholder="Trial starting time"
 
                                               value="{{old('startTime')}}"
                                               required/>
@@ -144,7 +126,8 @@
                         <x-form-field>
                             <x-form-label for="contactName ">Organiser</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="contactName" type="text" id="contactName  " placeholder="Contact name "
+                                <x-form-input name="contactName" type="text" id="contactName  "
+                                              placeholder="Contact name "
 
                                               value="{{old('contactName')}}"
                                               required/>
@@ -171,7 +154,8 @@
                         <x-form-field>
                             <x-form-label for="phone">Phone</x-form-label>
                             <div class="mt-2 col-span-2 ">
-                                <x-form-input name="phone" type="text" id="phone" placeholder="Contact phone" value="{{old('phone')}}" required/>
+                                <x-form-input name="phone" type="text" id="phone" placeholder="Contact phone"
+                                              value="{{old('phone')}}" required/>
                                 <x-form-error name="phone"/>
                             </div>
                             @error('phone')
@@ -179,16 +163,26 @@
                             @enderror
                         </x-form-field>
 
+                        @php
 
+                                @endphp
                         <x-form-field class="mt-2 col-span-2 sm:col-span-3">
                             <x-form-label for="venue">Venue</x-form-label>
-                            <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-blue-600 sm:max-w-md" >
-                                <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0" name="venueID" id="venueID">
+                            <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-blue-600 sm:max-w-md">
+                                <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0"
+                                        name="venueID" id="venueID">
                                     <option value="0">Other</option>
                                     @foreach($venues as $venue)
-                                        <option value="{{$venue->id}}">{{$venue->name}}</option>
-                                    @endforeach
+                                        <option value="{{$venue->id}}"
 
+                                                @php if($venue->id == $venueIDSelected) {
+                                                echo "selected";
+                                                }
+                                                @endphp
+                                        >
+                                            {{$venue->name}}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                             @error('venue')
@@ -199,7 +193,8 @@
                         <x-form-field>
                             <x-form-label for="otherVenue">Venue if not listed</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="otherVenue" type="text" id="otherVenue" placeholder="Venue name" value="{{old('otherVenue')}}"/>
+                                <x-form-input name="otherVenue" type="text" id="otherVenue" placeholder="Venue name"
+                                              value="{{old('otherVenue')}}"/>
                                 <x-form-error name="otherVenue"/>
                             </div>
 

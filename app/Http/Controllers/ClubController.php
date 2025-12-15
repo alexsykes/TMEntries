@@ -152,26 +152,7 @@ class ClubController extends Controller
         $user = Auth::user();
         $clubID = $user->club_id;
 
-        /* Removed
-        $mails = DB::table('clubmails')
-            ->where('club_id', $clubID)
-            ->where('published', true)
-            ->orWhere('isLibrary', true)
-            ->orderBy('isLibrary', 'desc')
-            ->orderBy('category')
-            ->orderBy('subject')
-            ->get();
-        */
-
         $categoryArray = array('AGM', 'Committee Meetings', 'Trials', 'Social Events ', 'Other');
-
-        $mails = DB::table('clubmails')
-            ->where('club_id', $clubID)
-            ->where('published', true)
-            ->where('isLibrary', false)
-            ->orderBy('category')
-            ->orderBy('subject')
-            ->get();
 
         $mailData = array();
         foreach ($categoryArray as $category) {
@@ -189,10 +170,28 @@ class ClubController extends Controller
         return view('clubs.maillist', ['mails' => $mails, 'categoryArray' => $categoryArray, 'mailData' => $mailData]);
     }
 
-
-    public function membershipForm($id)
+    public function mailList_()
     {
-        return view('clubs.membership', ['club_id' => $id]);
+        $user = Auth::user();
+        $clubID = $user->club_id;
+
+        $mails = DB::table('clubmails')
+            ->where('club_id', $clubID)
+            ->where('published', true)
+            ->orWhere('isLibrary', true)
+            ->orderBy('isLibrary', 'desc')
+            ->orderBy('category')
+            ->orderBy('subject')
+            ->get();
+
+        return view('clubs.maillist', ['mails' => $mails]);
+    }
+
+
+    public function membershipForm(Request $request, $id)
+    {
+        $oldValues = $request->old();
+        return view('clubs.membership', ['club_id' => $id, 'oldValues' => $oldValues]);
     }
 
     public function addMember(Request $request)

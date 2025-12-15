@@ -26,6 +26,7 @@ class User extends Authenticatable
         'email',
         'password',
         'club_id',
+        'last_login',
     ];
 
     /**

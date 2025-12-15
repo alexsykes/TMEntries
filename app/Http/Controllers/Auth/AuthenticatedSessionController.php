@@ -32,6 +32,10 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
+        $user = Auth::user();
+        $user->last_login = now();
+        $user->save();
+
         if (Auth::user()->isClubUser) {
             return redirect()->intended(route('clubaccess', absolute: false));
         }

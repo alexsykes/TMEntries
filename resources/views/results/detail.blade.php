@@ -44,7 +44,8 @@
                 onclick="openSection(event, 'Class')">
             Class Results
         </button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-1" onclick="openSection(event, 'New Scores')">Scores
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-1"
+                onclick="openSection(event, 'New Scores')">Scores
         </button>
         {{--        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Classes')">Class Results</button>--}}
     </div>
@@ -295,7 +296,6 @@
             @endfor
         @endif
     </div>
-
 
     <div class="text-black  pt-0 text-sm">
         <div id="pdfDownload"><a href="{{$download_link}}">Click here for download</a></div>

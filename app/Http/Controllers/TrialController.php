@@ -222,12 +222,12 @@ class TrialController extends Controller
             case 'detail':
                 $attrs = request()->validate([
                     'permit' => 'required',
-                    'name' => 'required',
+                    'name' => ['required'],
                     'club' => 'required',
                     'date' => ['required', Rule::date()->after(today()->addDays(1)),],
                     'startTime' => 'required',
                     'contactName' => 'required',
-                    'email' => ['required', 'email',],
+                    'email' => ['required', 'email:rfc,dns',],
                     'phone' => ['required',],
                     'otherVenue' => Rule::requiredIf(request('venueID') == 0),
                     'numDays' => Rule::requiredIf(request('isMultiDay') == 1),
@@ -237,7 +237,6 @@ class TrialController extends Controller
                 $attrs['created_by'] = $user->id;
                 $attrs['status'] = request('status', "Open");
                 $attrs['centre'] = request('centre');
-                $attrs['extras'] = request('extras');
                 $attrs['otherRestrictions'] = request('otherRestrictions');
                 $attrs['notes'] = request('notes');
                 $attrs['options'] = request('options');
@@ -435,7 +434,6 @@ class TrialController extends Controller
         $attrs['status'] = request('status', "Open");
         $attrs['centre'] = request('centre');
         $attrs['coc'] = request('coc');
-        $attrs['extras'] = request('extras');
         $attrs['otherRestrictions'] = request('otherRestrictions');
         $attrs['notes'] = request('notes');
         $attrs['options'] = request('options');
@@ -446,6 +444,7 @@ class TrialController extends Controller
 
         $attrs['club_id'] = request('club_id');
         $attrs['series_id'] = request('series_id');
+        $attrs['extras'] = request('extras');
 
 
         if (request('customClasses')) {
@@ -616,7 +615,7 @@ class TrialController extends Controller
         $orderedList = Entry::where('trial_id', $id)
             ->where('ridingNumber', '>', 0)
             ->get()
-        ->sortBy('ridingNumber');
+            ->sortBy('ridingNumber');
 
         $reserveList = Entry::where('trial_id', $id)
             ->whereIn('status', [4, 5])
@@ -624,8 +623,21 @@ class TrialController extends Controller
             ->get()
             ->sortBy('id');
 
+        $sectionList = Entry::where('trial_id', $id)
+            ->whereIn('status', [1, 7, 8, 9])
+//            ->select('name')
+            ->get()
+            ->sortBy('startsAt');
+
+        $ridingGroups = DB::table('entries')
+            ->select(DB::raw('startsAt, GROUP_CONCAT(name ORDER BY name) AS names, GROUP_CONCAT(ridingNumber ORDER BY name) AS numbers, GROUP_CONCAT(Concat(ridingNumber, \' \', name) ORDER BY name SEPARATOR \', \') AS entries'))
+            ->where('trial_id', $id)
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9, 10])
+            ->groupBy('startsAt')
+            ->get();
+
         $trial = Trial::where('id', $id)->first();
-        return view('trials.entrylist', ['entries' => $entries, 'unconfirmed' => $unconfirmed, 'reserves' => $reserveList, 'trial' => $trial, 'orderedList' => $orderedList]);
+        return view('trials.entrylist', ['entries' => $entries, 'unconfirmed' => $unconfirmed, 'reserves' => $reserveList, 'trial' => $trial, 'orderedList' => $orderedList, 'sectionList' => $sectionList, 'ridingGroups' => $ridingGroups]);
     }
 
     public function adminEntryList($id)
@@ -703,7 +715,7 @@ class TrialController extends Controller
         $attrs['status'] = request('status', "Open");
         $attrs['centre'] = request('centre');
         $attrs['coc'] = request('coc');
-        $attrs['extras'] = request('extras');
+//        $attrs['extras'] = request('extras');
         $attrs['otherRestrictions'] = request('otherRestrictions');
         $attrs['notes'] = request('notes');
         $attrs['options'] = request('options');

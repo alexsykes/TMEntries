@@ -15,6 +15,7 @@ use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\TrialController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UnsubscribeRequestController;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
@@ -173,6 +174,7 @@ Route::get('/stripe/usercheckout', [StripePaymentController::class, 'stripeUserC
 Route::get('/user/removeEntry/{id}', [UserController::class, 'removeEntry'])->middleware(['auth', 'verified']); // First stage in rentry withdrawal
 //Route::get('/user/confirmRemoveEntry', [UserController::class, 'confirmRemoveEntry'])->middleware(['auth', 'verified']); // Second stage
 Route::get('/user/withdraw/{id}', [UserController::class, 'userWithdraw'])->middleware(['auth', 'verified']); // Final stage
+Route::get('/unsubscribe', [UnsubscribeRequestController::class, 'store'])->name('user.unsubscribe');
 
 // ADMIN Routes
 Route::get('/admin/user/remove/{id}', [AdminController::class, 'adminRemove'])->middleware(['auth', 'verified'])->name('admin.remove');

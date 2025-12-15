@@ -1,7 +1,7 @@
 <x-admin>
     <x-slot:heading>Compose a new email</x-slot:heading>
     @php
-        $categoryArray = array("Trial Announcement", "Result Published", "General Announcement");
+//        $categoryArray = array("Trial Announcement", "Result Published", "General Announcement");
         $categoryArray = array('AGM','Committee Meetings','Trials','Social Events ','Other');
 
         $distributionArray = array("Trial Entrants", "Past Entrants", "All Users");

@@ -649,6 +649,7 @@ class EntryController extends Controller
             $number = $numbers[$i];
             $startsAt = $startsAts[$i];
 
+
             DB::table('entries')
                 ->where('id', $entryID)
                 ->update(['ridingNumber' => $number, 'startsAt' => $startsAt]);

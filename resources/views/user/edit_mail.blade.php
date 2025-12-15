@@ -23,9 +23,10 @@
     </script>
     <x-slot:heading>Edit email</x-slot:heading>
     @php
-        $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
-        $addressToArray = array("Test", "Entry List", "Unconfirmed Entries", "Previous Entrants", "Other");
-        if($mail->originalName == "") { $hasAttachment = false; } else { $hasAttachment = true; }
+        //        $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
+                $categoryArray = array('AGM','Committee Meetings','Trials','Social Events ','Other');
+                $addressToArray = array("Test", "Entry List", "Unconfirmed Entries", "Previous Entrants", "Other");
+                if($mail->originalName == "") { $hasAttachment = false; } else { $hasAttachment = true; }
     @endphp
     <form action="/usermail/update" method="POST" enctype="multipart/form-data">
         {{--        @method('PATCH')--}}
@@ -55,10 +56,12 @@
                 </div>
 
                 <div id="attachDiv" class=" col-span-3 mt-2">
-{{--                @if($mail->originalName != "")--}}
-                        <div class="font-semibold text-blue-700 col-span-3 mt-2">Attachment <span class="font-normal text-black">{{$mail->originalName}}</span></div>
-                        <a class="text-red-600" onclick="removeAttachment()"><i class="fa-solid fa-trash text-red-600 ml-2 mr-2"></i>Remove attachment</a>
-{{--                @else--}}
+                    {{--                @if($mail->originalName != "")--}}
+                    <div class="font-semibold text-blue-700 col-span-3 mt-2">Attachment <span
+                                class="font-normal text-black">{{$mail->originalName}}</span></div>
+                    <a class="text-red-600" onclick="removeAttachment()"><i
+                                class="fa-solid fa-trash text-red-600 ml-2 mr-2"></i>Remove attachment</a>
+                    {{--                @else--}}
                     <x-form-field>
                         <x-form-label for="attachment">Attachment <span
                                     class="font-normal text-black">{{$mail->originalName}}</span></x-form-label>
@@ -70,7 +73,7 @@
                         <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                         @enderror
                     </x-form-field>
-{{--                @endif--}}
+                    {{--                @endif--}}
                 </div>
 
                 <x-form-field>
