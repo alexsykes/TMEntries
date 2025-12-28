@@ -29,8 +29,12 @@
         <div class="mx-auto max-w-7xl sm: lg:">
             <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
 
-                <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Competition
-                    members
+                <div class="flex justify-between font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
+                    <div class="">Competition
+                        members
+                    </div>
+                    <div class=""><a href="/club/member/approve">Go to Approvals</a>
+                    </div>
                 </div>
                 <table class="w-full">
                     <tbody>

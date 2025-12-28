@@ -80,6 +80,8 @@
             // Declare all variables
             var i, tabcontent, tablinks;
 
+            document.cookie = "selectedTab=" + tabName;
+
             // Get all elements with class="tabcontent" and hide them
             tabcontent = document.getElementsByClassName("tabcontent");
             for (i = 0; i < tabcontent.length; i++) {

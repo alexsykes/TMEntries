@@ -45,8 +45,10 @@
         @csrf
         <div class="space-y-12">
             <div class="mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl font-semibold  text-white bg-violet-600">
-                    Rider {{$entry->ridingNumber}}</div>
+                <div class="flex justify-between  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl font-semibold  text-white bg-violet-600">
+                    <div>Rider {{$entry->ridingNumber}}</div>
+                    <div><a href="/entry/changeNumber/{{$entry->id}}">Change Riding Number</a></div>
+                </div>
                 <div class="grid grid-cols-1 p-4 gap-x-6 gap-y-4 sm:grid-cols-6">
                     <x-form-field>
                         <x-form-label for="name">Name</x-form-label>

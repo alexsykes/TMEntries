@@ -219,9 +219,10 @@ class ClubController extends Controller
 //        info($attributes['membership_category']);
 
         if ($attributes['membership_category'] == 'life' || $attributes['membership_category'] == 'observer') {
-//            $attributes['confirmed'] = true;
+            $attributes['confirmed'] = true;
         } else {
             $attributes['membership_category'] = 'competition';
+            $attributes['confirmed'] = false;
         }
 
         $member = ClubMember::create($attributes);

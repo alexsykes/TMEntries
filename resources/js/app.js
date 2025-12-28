@@ -7,7 +7,7 @@ import './bootstrap';
 // import 'tinymce/themes/silver/theme';
 // import 'tinymce/models/dom/model';
 // import 'tinymce/plugins/lists';
-
+// import './myscript.js'
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;

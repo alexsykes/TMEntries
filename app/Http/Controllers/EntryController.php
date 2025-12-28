@@ -1232,6 +1232,19 @@ class EntryController extends Controller
 //        dd($ridingGroups);
         return view('entries.showRidingGroups', ['ridingGroups' => $ridingGroups, 'trial' => $trial]);
     }
+
+    public function changeNumber(string $id)
+    {
+        $entry = DB::table('entries')->where('id', $id)->first();
+        $trialid = $entry->trial_id;
+        $trial = DB::table('trials')->where('id', $trialid)->first();
+        return view('entries.changeNumber', ['entry' => $entry, 'trial' => $trial]);
+    }
+
+    public function updateRiderNumber(Request $request)
+    {
+        dd($request->all());
+    }
 }
 
 class MYPDF extends PDF

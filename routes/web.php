@@ -14,8 +14,8 @@ use App\Http\Controllers\ScoringController;
 use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\TrialController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\UnsubscribeRequestController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
@@ -103,6 +103,7 @@ Route::patch('/entries/userupdate', [EntryController::class, 'userupdate']);
 
 Route::get('/entry/withdraw', [EntryController::class, 'withdraw']);
 Route::get('/entry/withdrawConfirm/{id}', [EntryController::class, 'withdrawConfirm']);
+Route::get('/entry/changeNumber/{id}', [EntryController::class, 'changeNumber'])->middleware(['auth', 'verified']);
 
 
 Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->middleware('auth', 'verified')->name('entries.edit');
@@ -258,6 +259,9 @@ Route::post('/import', [ImportController::class, 'importEntries'])->name('import
 
 // Utility routes
 Route::get('/createResultPDF/{id}', [UtilityController::class, 'createResultPDF'])->middleware(['auth', 'verified']);
+Route::patch('/riderNumber/update', [EntryController::class, 'updateRiderNumber'])->middleware(['auth', 'verified']);
+
+
 // MIDDLEWARE
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -265,3 +269,5 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::patch('/preferences.update', [ProfileController::class, 'updatePreferences'])->name('preferences.update');
 });
+
+Route::post('/fetchScores', [ScoringController::class, 'fetchScores']);

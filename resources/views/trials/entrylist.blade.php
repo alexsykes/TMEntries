@@ -14,17 +14,14 @@
         $reserveNames = implode(', ', $tmp);
 
         $numEntries = sizeof($entries) + sizeof($unconfirmed);
-    @endphp
-    @php
-        $selectedTab = 'alpha';
-            $selectedTab .= "Tab";
+
+        $cookie_name = 'selectedTab';
+        $selectedTab = 'alphaTab';
+        if(isset($_COOKIE[$cookie_name])) {
+            $selectedTab = $_COOKIE[$cookie_name]. "Tab";
+        }
     @endphp
 
-    {{--    <style>--}}
-    {{--        .active {--}}
-    {{--            background-color: white;--}}
-    {{--        }--}}
-    {{--    </style>--}}
 
     <script>
         // Get the element with id="defaultOpen" and click on it
@@ -51,7 +48,7 @@
 
 
         <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-200  p-1"
-                id="numericTab"
+                id="sectionsTab"
                 onclick="openSection(event, 'sections')">
             Groups
         </button>
@@ -127,7 +124,7 @@
                 </table>
 
             @else
-                <div class="mt-4 w-full text-center ">…will appear here when numbers are
+                <div class="w-full text-sm  pl-4 mt-2 pr-6">…will appear here when riding numbers have been
                     assigned
                 </div>
             @endif
@@ -137,19 +134,25 @@
         <div class=" mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Groups</div>
             <div class="pl-4 space-y-2">
+                @if(count($ridingGroups) >0)
+                    @foreach($ridingGroups as $group)
+                        @php
+                            $startsAt = "Unallocated";
+                            if($group->startsAt) {
+                                $startsAt = "Section: ".$group->startsAt;
+                            }
+                        @endphp
+                        <div class="font-semibold pt-2  text-blue-700">{{$startsAt}}</div>
+                        {{--                @foreach($entries as $entry)--}}
+                        <span>{{$group->entries}}</span>
+                        {{--                @endforeach--}}
+                    @endforeach
 
-                @foreach($ridingGroups as $group)
-                    @php
-                        $startsAt = "Unallocated";
-                        if($group->startsAt) {
-                            $startsAt = "Section: ".$group->startsAt;
-                        }
-                    @endphp
-                    <div class="font-semibold pt-2  text-blue-700">{{$startsAt}}</div>
-                    {{--                @foreach($entries as $entry)--}}
-                    <span>{{$group->entries}}</span>
-                    {{--                @endforeach--}}
-                @endforeach
+                @else
+                    <div class="w-full text-sm  pl-0 mt-2 pr-6">…will appear here when riding groups have been
+                        assigned
+                    </div>
+                @endif
 
             </div>
 

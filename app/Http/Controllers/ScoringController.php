@@ -6,8 +6,6 @@ use App\Models\Trial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\ResultController;
 
 class ScoringController extends Controller
 {
@@ -15,7 +13,7 @@ class ScoringController extends Controller
     public function setup($trialID)
     {
         $trial = Trial::find($trialID);
-        if($trial->isScoringSetup) {
+        if ($trial->isScoringSetup) {
 
 //            dd($trial->isScoringSetup);
             return redirect("/scores/grid/{$trial->id}");
@@ -70,9 +68,26 @@ class ScoringController extends Controller
         $trial = Trial::find($trialID);
         $riderNumbers = $this->getRiderNumbers($trialID);
 
-        $scores = DB::select("SELECT rider, GROUP_CONCAT( IF(score IS NULL, '.',score) ORDER BY section, lap SEPARATOR '') AS scoreData FROM ".$db_prefix."scores WHERE trial_id = {$trialID} GROUP BY rider  ORDER BY rider");
+        $scores = DB::select("SELECT rider, GROUP_CONCAT( IF(score IS NULL, '.',score) ORDER BY section, lap SEPARATOR '') AS scoreData FROM " . $db_prefix . "scores WHERE trial_id = {$trialID} GROUP BY rider  ORDER BY rider");
 
         return view('scoring.grid', ['scores' => $scores, 'trial' => $trial, 'riderNumbers' => $riderNumbers]);
+    }
+
+    public function getRiderNumbers($id)
+    {
+        $riderNumbers = DB::table('entries')
+            ->where('trial_id', $id)
+            ->whereIn('status', [1, 7, 8, 9])
+            ->get('ridingNumber');
+
+        $riderNumberArray = array();
+
+        foreach ($riderNumbers as $riderNumber) {
+            array_push($riderNumberArray, $riderNumber->ridingNumber);
+        }
+
+        return $riderNumberArray;
+
     }
 
     public function sectionScores($trialid, $section)
@@ -80,7 +95,7 @@ class ScoringController extends Controller
         $db_prefix = Config::get('database.connections.mysql.prefix');
         $trial = Trial::find($trialid);
 
-        $scores = DB::select("SELECT rider, GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM ".$db_prefix."scores WHERE trial_id = {$trialid} AND section = {$section}  GROUP BY rider  ORDER BY rider	;");
+        $scores = DB::select("SELECT rider, GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM " . $db_prefix . "scores WHERE trial_id = {$trialid} AND section = {$section}  GROUP BY rider  ORDER BY rider	;");
 //        dd($scores);
         return view('scoring.section_score_grid', ['scores' => $scores, 'trial' => $trial, 'section' => $section]);
     }
@@ -90,9 +105,9 @@ class ScoringController extends Controller
         $db_prefix = Config::get('database.connections.mysql.prefix');
         $trial = Trial::find($trialID);
         $numLaps = $trial->numLaps;
-        $scores = DB::select("SELECT  GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM ".$db_prefix."scores WHERE trial_id = {$trialID} AND section = {$section}  AND  rider	= {$rider}  GROUP BY rider  ORDER BY rider;");
+        $scores = DB::select("SELECT  GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM " . $db_prefix . "scores WHERE trial_id = {$trialID} AND section = {$section}  AND  rider	= {$rider}  GROUP BY rider  ORDER BY rider;");
 
-        return view('scoring.editRiderSectionScore', ['scores' => $scores, 'rider' => $rider, 'section' => $section,'numLaps' => $numLaps,  'trialID' => $trialID]);
+        return view('scoring.editRiderSectionScore', ['scores' => $scores, 'rider' => $rider, 'section' => $section, 'numLaps' => $numLaps, 'trialID' => $trialID]);
     }
 
     public function updateSectionScores(Request $request)
@@ -104,25 +119,25 @@ class ScoringController extends Controller
 //        dd($trialID, $scores, $scoreIDs);
 
         for ($index = 0; $index < count($scores); $index++) {
-            $riderScoresForSection =  $scores[$index];
+            $riderScoresForSection = $scores[$index];
             $scoreIDsForSection = $scoreIDs[$index];
 
 
 //  Check out settype here
 //             if ($riderScoresForSection != '') {
 //                dd($riderScoresForSection);
-                $riderscoresForLap = str_split($riderScoresForSection);
-                $scoreIdsForLap = explode(',', $scoreIDsForSection);
+            $riderscoresForLap = str_split($riderScoresForSection);
+            $scoreIdsForLap = explode(',', $scoreIDsForSection);
 
-                for ($lap = 0; $lap < sizeof($riderscoresForLap); $lap++) {
-                    DB::table('scores')
-                        ->where('id', $scoreIdsForLap[$lap])
-                        ->update([
-                            'score' => $riderscoresForLap[$lap],
-                            'updated_at' => now(),
-                        ]);
-                }
+            for ($lap = 0; $lap < sizeof($riderscoresForLap); $lap++) {
+                DB::table('scores')
+                    ->where('id', $scoreIdsForLap[$lap])
+                    ->update([
+                        'score' => $riderscoresForLap[$lap],
+                        'updated_at' => now(),
+                    ]);
             }
+        }
 //        }
         return redirect("/scores/grid/{$trialID}");
     }
@@ -150,52 +165,23 @@ class ScoringController extends Controller
         return redirect("/scores/grid/{$trialID}");
     }
 
-    public function getRiderNumbers($id){
-        $riderNumbers = DB::table('entries')
-            ->where('trial_id', $id)
-            ->whereIn('status', [1, 7, 8, 9])
-            ->get('ridingNumber');
-
-        $riderNumberArray = array();
-
-        foreach($riderNumbers as $riderNumber){
-            array_push($riderNumberArray, $riderNumber->ridingNumber);
-        }
-
-        return $riderNumberArray;
-
-    }
-
-    public function getNonStarters($id, $allMissed){
-    $riders = DB::table('entries')
-        ->where('trial_id', $id)
-        ->whereIn('status', [1, 7, 8, 9])
-        ->where('name', '!=',"")
-        ->where('sectionScores',$allMissed)
-        ->get('name');
-
-    $nonStarters = array();
-
-    foreach($riders as $rider){
-        array_push($nonStarters, $rider->name);
-    }
-
-    return$nonStarters;
-}
-
     public function publish(Request $request)
     {
         $db_prefix = Config::get('database.connections.mysql.prefix');
 //        Get trial details
         $trialID = $request->trialID;
         $trial = DB::table('trials')->where('id', $trialID)->first();
+
+//        Calculate cutoff for non-finishers - 75%
         $numLaps = $trial->numLaps;
         $numSections = $trial->numSections;
-        $numPossibleScores = $trial->numSections * $trial->numLaps;
+        $numPossibleScores = $numSections * $numLaps;
         $cutoff = $numPossibleScores * 0.25;
+
+//      Non-starter - all 'x'
         $allMissed = str_pad('', $numPossibleScores, 'x', STR_PAD_LEFT);
 
-
+//      Get penalty for missed section
         $authority = $trial->authority;
         if ($authority == 'ACU') {
             $missedValue = 10;
@@ -210,11 +196,10 @@ class ScoringController extends Controller
             ->update(['score' => 'x']);
 
 //        Get confirmed rider numbers
-        $riderNumbers = $this->getRiderNumbers($trialID);
         $nonStarters = $this->getNonStarters($trialID, $allMissed);
 
 //        Get rider scores
-        $riderScores = Db::select("SELECT e.ridingNumber, GROUP_CONCAT(score ORDER BY s.section, lap SEPARATOR '') AS sectionScores, GROUP_CONCAT(score ORDER BY lap, s.section SEPARATOR '') AS sequentialScores FROM ".$db_prefix."entries e JOIN ".$db_prefix."scores s ON e.ridingNumber = s.rider AND e.trial_id = s.trial_id WHERE e.trial_id = $trialID GROUP BY ridingNumber");
+        $riderScores = Db::select("SELECT e.ridingNumber, GROUP_CONCAT(score ORDER BY s.section, lap SEPARATOR '') AS sectionScores, GROUP_CONCAT(score ORDER BY lap, s.section SEPARATOR '') AS sequentialScores FROM " . $db_prefix . "entries e JOIN " . $db_prefix . "scores s ON e.ridingNumber = s.rider AND e.trial_id = s.trial_id WHERE e.trial_id = $trialID GROUP BY ridingNumber");
 
 //        then transfer all scores to entries
         foreach ($riderScores as $riderScore) {
@@ -262,20 +247,55 @@ class ScoringController extends Controller
         return redirect("/results/display/{$trialID}");
     }
 
+    public function getNonStarters($id, $allMissed)
+    {
+        $riders = DB::table('entries')
+            ->where('trial_id', $id)
+            ->whereIn('status', [1, 7, 8, 9])
+            ->where('name', '!=', "")
+            ->where('sectionScores', $allMissed)
+            ->get('name');
 
-    public function locktrial($trialID){
+        $nonStarters = array();
+
+        foreach ($riders as $rider) {
+            array_push($nonStarters, $rider->name);
+        }
+
+        return $nonStarters;
+    }
+
+    public function locktrial($trialID)
+    {
         DB::table('trials')
             ->where('id', $trialID)
-            ->update(['isEntryLocked' => 1, 'isScoringLocked' => 1, 'isLocked' => 1,  'isResultPublished' => 1]);
+            ->update(['isEntryLocked' => 1, 'isScoringLocked' => 1, 'isLocked' => 1, 'isResultPublished' => 1]);
     }
-    public function updateTrial($trialID){
+
+    public function updateTrial($trialID)
+    {
         DB::table('trials')
             ->where('id', $trialID)
             ->update(['updated_at' => NOW()]);
     }
-        public function confirmPublish(Request $request)
-        {
+
+    public function confirmPublish(Request $request)
+    {
         return view('scoring.confirmPublish', ['trialID' => $request->trialID]);
-        }
+    }
+
+    public function fetchScores(Request $request)
+    {
+        info($request->trialID);
+        info($request->ridingNumber);
+
+        $scores = DB::table('scores')
+            ->where('rider', $request->ridingNumber)
+            ->where('trial_id', $request->trialID)
+            ->orderBy('section', 'ASC')
+            ->orderBy('lap', 'ASC')
+            ->get('score');
+        return $scores;
+    }
 
 }
