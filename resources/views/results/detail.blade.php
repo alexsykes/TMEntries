@@ -80,8 +80,22 @@
                                     $class="";
                                 }
                                 $dnf = $courseResult->resultStatus;
-                                $pos = $dnf == 0 ? $courseResult->pos : "DNF";
-                                $total = $dnf == 0 ? $courseResult->total : "";
+                                        $pos = $courseResult->pos ;
+                                        $total = $courseResult->total;
+                                switch ($dnf) {
+                                    case 0 :
+
+                                    break;
+                                    case 1 :
+                                        $pos = "DNF";
+                                        $total = "";
+                                        break;
+                                        case 2:
+                                        $pos = "N/S";
+                                        $total = "";
+                                        break;
+                                }
+
                             @endphp
                             <tr class="pr-4 odd:bg-white  even:bg-gray-50  border-b ">
                                 <td class="pl-2 text-right w-10  table-cell font-semibold">{{$pos}}</td>

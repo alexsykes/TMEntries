@@ -146,7 +146,7 @@ class ResultController extends Controller
     {
         $db_prefix = Config::get('database.connections.mysql.prefix');
         $query = "SELECT id AS entryID, DATE_FORMAT(created_at, '%d/%m/%Y %h:%i%p') AS created_at, RANK() OVER ( ORDER BY resultStatus ASC, total, dob) AS pos,
-id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id FROM ".$db_prefix."entries WHERE trial_id = $id AND ridingNumber > 0 AND resultStatus < 2 AND course = '" . $course . "'";
+id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id FROM ".$db_prefix."entries WHERE trial_id = $id AND ridingNumber > 0 AND resultStatus < 3 AND course = '" . $course . "'";
         $courseResult = DB::select($query);
         return $courseResult;
     }
@@ -176,7 +176,7 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
     {
         $db_prefix = Config::get('database.connections.mysql.prefix');
         $query = "SELECT id AS entryID, DATE_FORMAT(created_at, '%d/%m/%Y %h:%i%p') AS created_at, RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos,
-id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id FROM ".$db_prefix."entries WHERE trial_id = $id AND ridingNumber > 0 AND resultStatus < 2 AND course = '" . $course . "'";
+id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id FROM ".$db_prefix."entries WHERE trial_id = $id AND ridingNumber > 0 AND resultStatus < 3 AND course = '" . $course . "'";
         $courseResult = DB::select($query);
         return $courseResult;
     }

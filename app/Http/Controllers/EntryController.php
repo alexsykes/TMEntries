@@ -1243,7 +1243,58 @@ class EntryController extends Controller
 
     public function updateRiderNumber(Request $request)
     {
-        dd($request->all());
+
+        $entryid = $request->entryID;
+        $entry = Entry::where('id', $entryid)->first();
+        $entry->ridingNumber = $request->newNumber;
+        $entry->sectionScores = $request->sectionScores;
+        $entry->sequentialScores = $request->sequentialScores;
+
+        $trialid = $entry->trial_id;
+        $trial = DB::table('trials')->where('id', $trialid)->first();
+        $authority = $trial->authority;
+        $numLaps = $trial->numLaps;
+        $numSections = $trial->numSections;
+        $numPossibleScores = $numSections * $numLaps;
+        $cutoff = $numPossibleScores * 0.25;
+
+        //      Get penalty for missed section
+        $authority = $trial->authority;
+        if ($authority == 'ACU') {
+            $missedValue = 10;
+        } else {
+            $missedValue = 5;
+        }
+
+        $sectionScores = $request->sectionScores;
+        $cleans = substr_count($sectionScores, '0', 0);
+        $ones = substr_count($sectionScores, '1', 0);
+        $twos = substr_count($sectionScores, '2', 0);
+        $threes = substr_count($sectionScores, '3', 0);
+        $fives = substr_count($sectionScores, '5', 0);
+        $missed = substr_count($sectionScores, 'x', 0);
+        $total = $ones + 2 * ($twos) + 3 * ($threes) + 5 * ($fives) + $missedValue * ($missed);
+        $resultStatus = 0;
+        if ($missed > $cutoff) {
+            $resultStatus = 1;
+        }
+        if ($missed == $numPossibleScores) {
+            $resultStatus = 2;
+        }
+
+        $entry->cleans = $cleans;
+        $entry->ones = $ones;
+        $entry->twos = $twos;
+        $entry->threes = $threes;
+        $entry->fives = $fives;
+        $entry->missed = $missed;
+        $entry->total = $total;
+        $entry->resultStatus = $resultStatus;
+
+        $entry->updated_at = now();
+        $entry->save();
+
+        return redirect('/results/display/' . $trialid);
     }
 }
 

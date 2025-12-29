@@ -140,7 +140,7 @@
                     @method('PATCH')
                     @csrf
                     <input type="hidden" name="entryID" value="{{$entry->id}}">
-                    <input type="hidden" name="newNumberInput" id="newNumberInput" value="">
+                    <input type="hidden" name="newNumber" id="newNumberInput" value="">
                     <input type="hidden" name="sectionScores" id="sectionScoresInput" value="">
                     <input type="hidden" name="sequentialScores" id="sequentialScoresInput" value="">
 
