@@ -3,6 +3,8 @@
         <div>Your Stripe payment has been processed and I am pleased to confirm that your entry or entries listed below
             are now confirmed.<br><b>Please remember to sign-in on arrival at the event.</b></div>
 
+        <div><b>If you have not aleady submitted your full contact details for 2026, you are requested to complete the online registration form - <a href="https://trialmonster.uk/clubs/membershipForm/5">click here</a></b></div>
+
         <div class="mt-4">@php echo $msg; @endphp</div>
 
         @foreach ($entryData as $entry)

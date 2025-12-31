@@ -13,3 +13,4 @@ Artisan::command('inspire', function () {
 
 // Check for unconfirmed entries
 Schedule::command( CheckEntries::class)->dailyAt('01:00');
+//Schedule::command( CheckEntries::class)->everyMinute();
