@@ -2,19 +2,11 @@
 
 namespace App\Listeners;
 
-use App\Mail\PaymentReceived;
-use App\Mail\EntryOffer;
+use App\Events\EntryWithdrawn;
 use App\Models\Entry;
-use App\Models\Price;
 use App\Models\Trial;
 use App\Models\User;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
-
-use App\Events\EntryWithdrawn;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Stripe\StripeClient;
 
 class OnEntryWithdrawn
@@ -44,11 +36,11 @@ class OnEntryWithdrawn
 
         $numEntries = Entry::where('trial_id', $trialID)
             ->whereIn('status', [1, 4, 7, 8, 9])
-                ->count();
+            ->count();
 
 //  Check for vacancy created
         info("Trial limit: $entryLimit \n TrialID: $trialID \n Trial hasLmit: $hasLimit \n NumEntries: $numEntries \n");
-        if($hasLimit && $entryLimit > $numEntries) {
+        if ($hasLimit && $entryLimit > $numEntries) {
             $vacancies = $entryLimit - $numEntries;
 
 //            Get reserve entry
@@ -85,7 +77,8 @@ class OnEntryWithdrawn
 
     }
 
-    public function invoice($entry, $email, $username){
+    public function invoice($entry, $email, $username)
+    {
         $another = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $trialID = $entry->trial_id;
@@ -104,7 +97,7 @@ class OnEntryWithdrawn
         // Create an Invoice
         $invoice = $another->invoices->create([
             'customer' => $customerId,
-            'description' => $trialClub.' - '.$trialName,
+            'description' => $trialClub . ' - ' . $trialName,
             'collection_method' => 'send_invoice',
             'days_until_due' => 3,
             'metadata' => [
@@ -118,11 +111,11 @@ class OnEntryWithdrawn
             'pricing' => [
                 'price' => $entry->stripe_price_id,
             ],
-            'description' => ' Ref: '.$entryID,
+            'description' => ' Ref: ' . $entryID,
             'invoice' => $invoice->id,
         ]);
 
-    info('Invoice - $entryID' );
+        info('Invoice - $entryID');
 
         $invoice->sendInvoice();
     }

@@ -139,7 +139,7 @@ class UserController extends Controller
                 $interval = $trial_date->diff($birthDate);
                 $ageInYears = $interval->format('%y');
 
-                if($ageInYears < 18) {
+                if ($ageInYears < 18) {
                     $entry->isYouth = 1;
                     $entry->stripe_price_id = $youthPriceID;
                     $entry->stripe_product_id = $youthProductID;
@@ -148,7 +148,6 @@ class UserController extends Controller
                     $entry->stripe_price_id = $adultPriceID;
                     $entry->stripe_product_id = $adultProductID;
                 }
-
 
 
                 $entry->save();

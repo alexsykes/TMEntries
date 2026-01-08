@@ -1,24 +1,38 @@
 <x-club>
+    <script>
+        function attachmentChanged(event) {
+            // event.preventDefault();
+            const fileInput = document.getElementById("attachment");
+            const filenamesDiv = document.getElementById('filenames');
+            filenamesDiv.innerHTML = '';
+            selectedFiles = fileInput.files;
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                name = selectedFiles[i].name;
+                console.log(name);
+                var line = "<div>" + name + " - <button onclick=\"doSomething(" + i + ")\" class=\"font-semibold underline text-violet-800\">Remove</button></div>";
+
+                // console.log(line);
+                const newDiv = document.createElement('div');
+                newDiv.innerHTML = line;
+                filenamesDiv.appendChild(newDiv);
+            }
+        }
+
+        function doSomething(i) {
+            event.preventDefault()
+
+            console.log("clicked: " + i);
+            console.log(selectedFiles);
+
+            console.log("Length: " + selectedFiles.length);
+        }
+    </script>
     <x-slot:heading>Compose email</x-slot:heading>
     @php
         $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
         $categoryArray = array('AGM','Committee Meetings','Trials','Social Events ','Other');
     @endphp
-    <script>
-        function clearInput(sender) {
-            console.log("Sender: " + sender);
-            event.preventDefault();
-            event.stopPropagation();
-            document.getElementById('attachment' + sender).value = '';
-        }
-
-        function attachmentChanged(sender) {
-            console.log("Sender: " + sender);
-            console.log(" Attachment changed");
-            let clearFile = document.getElementById("clearFile" + sender);
-            clearFile.style.display = "inline-block";
-        }
-    </script>
     <form action="/usermail/store" method="POST" enctype="multipart/form-data">
         @csrf
         <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
@@ -32,9 +46,7 @@
                             @foreach($categoryArray as $option)
                                 <input name="category" type="radio" id="category"
                                        value="{{$option}}"
-                                       {{ (old('category') == $option) ? ' checked' : '' }}
-
-                                       required
+                                        {{ (old('category') == $option) ? ' checked' : '' }}
                                 >
                                 <label class="pl-1 pr-4" for="category">{{$option}}</label>
                             @endforeach
@@ -46,53 +58,20 @@
                 </div>
 
                 <x-form-field>
-                    <x-form-label for="attachment">Attachment(s) - PDF only</x-form-label>
-                    <div class="flex justify-start mt-2 col-span-2">
-                        <input name="attachment[]" accept="application/pdf" onchange="attachmentChanged('1')"
-                               type="file"
-                               id="attachment1" value=""/>
+                    <x-form-label for="attachment">Attachment(s) - PDF files only</x-form-label>
+                    <div class="mt-2 col-span-2">
+                        <input name="attachment" onchange="attachmentChanged()" type="file" id="attachment"
+                               multiple
+                               value=""/>
                         <x-form-error name="attachment"/>
-                        <button id="clearFile1" class="hidden font-semibold text-violet-700"
-                                onclick="clearInput(1)">
-                            Remove
-                        </button>
                     </div>
                     @error('attachment')
                     <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                     @enderror
                 </x-form-field>
-                <x-form-field>
-                    {{--                    <x-form-label for="attachment">Attachment - PDF only</x-form-label>--}}
-                    <div class="flex justify-start mt-2 col-span-2">
-                        <input name="attachment[]" accept="application/pdf" onchange="attachmentChanged('2')"
-                               type="file"
-                               id="attachment2" value=""/>
-                        <x-form-error name="attachment"/>
-                        <button id="clearFile2" class="hidden font-semibold text-violet-700"
-                                onclick="clearInput('2')">
-                            Remove
-                        </button>
-                    </div>
-                    @error('attachment')
-                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                    @enderror
-                </x-form-field>
-                <x-form-field>
-                    {{--                    <x-form-label for="attachment">Attachment - PDF only</x-form-label>--}}
-                    <div class="flex justify-start mt-2 col-span-2">
-                        <input name="attachment[]" accept="application/pdf" onchange="attachmentChanged('3')"
-                               type="file"
-                               id="attachment3" value=""/>
-                        <x-form-error name="attachment"/>
-                        <button id="clearFile3" class="hidden font-semibold text-violet-700"
-                                onclick="clearInput('3')">
-                            Remove
-                        </button>
-                    </div>
-                    @error('attachment')
-                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                    @enderror
-                </x-form-field>
+
+                <div id="filenames" class="mt-2 col-span-2">
+                </div>
 
                 <x-form-field>
                     <x-form-label for="summary">Summary - brief description of email message</x-form-label>

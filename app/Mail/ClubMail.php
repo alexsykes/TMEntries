@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
@@ -17,7 +16,7 @@ class ClubMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public Object $mailshot, )
+    public function __construct(public object $mailshot)
     {
         //
     }
@@ -28,7 +27,7 @@ class ClubMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('moonster@trialmonster.uk', 'Moonster'),
+            from: new Address('monster@trialmonster.uk', 'Monster'),
             subject: $this->mailshot->subject,
         );
     }
@@ -40,8 +39,8 @@ class ClubMail extends Mailable
     {
         return new Content(
             html: 'mails.clubmail', with: [
-                'content' => $this->mailshot->bodyText,
-            ]
+            'content' => $this->mailshot->bodyText,
+        ]
         );
     }
 

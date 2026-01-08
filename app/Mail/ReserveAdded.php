@@ -4,12 +4,10 @@ namespace App\Mail;
 
 use App\Models\Trial;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Config;
 
 class ReserveAdded extends Mailable
 {
@@ -18,7 +16,7 @@ class ReserveAdded extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public  Object $entry, public  Trial $trial)
+    public function __construct(public object $entry, public Trial $trial)
     {
         //
     }
@@ -29,7 +27,7 @@ class ReserveAdded extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reserve Entry - '.$this->trial->name,
+            subject: 'Reserve Entry - ' . $this->trial->name,
         );
     }
 

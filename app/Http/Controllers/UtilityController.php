@@ -2,20 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Trial;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PDF;
 
 class UtilityController extends Controller
 {
-    public function getTrialDetails($id) {
+    public function getTrialDetails($id)
+    {
         $trialDetails = DB::table('trials')
             ->join('venues', 'trials.venueID', '=', 'venues.id')
             ->where('trials.id', $id)
             ->get(['trials.*', 'venues.name as venue']);
         return $trialDetails;
     }
+
+    public function createResultPDF($id)
+    {
+        $this->saveResultsPDF($id);
+    }
+
     public function saveResultsPDF($id)
     {
         $resultController = new ResultController();
@@ -58,7 +63,7 @@ class UtilityController extends Controller
         $courses = explode(',', $courselist);
         $classes = explode(',', $classlist);
 
-    $trialName = trim($trial->name);
+        $trialName = trim($trial->name);
         $trialName = trim($trial->name);
         $filename = "$trial->id $trialName.pdf";
         $filename = str_replace(' ', '_', $filename);
@@ -93,12 +98,12 @@ EOD;
         MYPDFG::SetMargins(0, 20);
 
         MYPDFG::setHeaderCallback(function () {
-            MYPDFG::SetXY(10,10);
+            MYPDFG::SetXY(10, 10);
         });
 
         MYPDFG::setFooterCallback(function () {
-            MYPDFG::Cell(0,0, 'x indicates a missed section', 0, true, 'C');
-            MYPDFG::Cell(0, 0, 'Provisional Results updated '. now(), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            MYPDFG::Cell(0, 0, 'x indicates a missed section', 0, true, 'C');
+            MYPDFG::Cell(0, 0, 'Provisional Results updated ' . now(), 0, false, 'L', 0, '', 0, false, 'T', 'M');
             MYPDFG::Cell(0, 0, 'Page ' . MYPDFG::getAliasNumPage() . ' of ' . MYPDFG::getAliasNbPages(), 0, true, 'R', 0, '', 0, false, 'T', 'M');
         });
 
@@ -116,7 +121,7 @@ EOD;
                     foreach ($resultList[$i][2] as $result) {
                         $remaining = $this->printLine($result, $numSections, $numLaps);
 
-                        if($remaining < 40){
+                        if ($remaining < 40) {
                             MYPDFG::AddPage('L', 'A4');
                             $this->printClassHeader($course, $class, $rowHeight, $numSections);
                         }
@@ -134,8 +139,16 @@ EOD;
 
     }
 
-    public function createResultPDF($id){
-            $this->saveResultsPDF($id);
+    function filter_filename($name)
+    {
+        $name = str_replace(array_merge(
+            array_map('chr', range(0, 31)),
+            array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
+        ), '', $name);
+        // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
+        $ext = pathinfo($name, PATHINFO_EXTENSION);
+        $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
+        return $name;
     }
 
     function printClassHeader($course, $class, $rowHeight, $numSections)
@@ -155,6 +168,7 @@ EOD;
         }
         MYPDFG::Cell('', '', '', '', 1);
     }
+
     function printLine($result, $numSections, $numLaps)
     {
         $pos = $result->pos;
@@ -204,17 +218,6 @@ EOD;
         PDF::Cell('', '', '', '', 1);
         $remaining = 210 - MYPDFG::getY();
         return $remaining;
-    }
-    function filter_filename($name)
-    {
-        $name = str_replace(array_merge(
-            array_map('chr', range(0, 31)),
-            array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
-        ), '', $name);
-        // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
-        $ext = pathinfo($name, PATHINFO_EXTENSION);
-        $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
-        return $name;
     }
 
     function nameize($str, $a_char = array("'", "-", " "))

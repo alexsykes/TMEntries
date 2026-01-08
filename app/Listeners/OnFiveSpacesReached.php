@@ -4,10 +4,8 @@ namespace App\Listeners;
 
 use App\Events\FiveSpacesReached;
 use App\Mail\LastChance;
-use App\Mail\ReserveAdded;
 use App\Models\Entry;
 use App\Models\Trial;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Mail;
 
 class OnFiveSpacesReached
@@ -35,24 +33,24 @@ class OnFiveSpacesReached
 
 //        Handle unconfirmed if 5 entries left
 //        if($entryLimit - $numEntries == 5) {
-            $unconfirmed = Entry::where("status", 0)
-                ->leftJoin("users", "users.id", "=", "entries.created_by")
-                ->select('entries.id', 'entries.name', 'users.email')
-                ->where("trial_id", $trialID)
-                ->get();
+        $unconfirmed = Entry::where("status", 0)
+            ->leftJoin("users", "users.id", "=", "entries.created_by")
+            ->select('entries.id', 'entries.name', 'users.email')
+            ->where("trial_id", $trialID)
+            ->get();
 
-            $ids = array();
-            $trial = Trial::findOrFail($trialID);
-            $bcc = "monster@trialmonster.uk";
+        $ids = array();
+        $trial = Trial::findOrFail($trialID);
+        $bcc = "monster@trialmonster.uk";
 
-            foreach ($unconfirmed as $entry) {
+        foreach ($unconfirmed as $entry) {
 //                Send LastChance email
-                $entry->status = 11;
-                $entry->updated_at = now();
-                $entry->save();
-                echo "LastChance to $entry->email\n";
-                Mail::to($entry->email)->send(new LastChance($trial));
-            }
+            $entry->status = 11;
+            $entry->updated_at = now();
+            $entry->save();
+            echo "LastChance to $entry->email\n";
+            Mail::to($entry->email)->send(new LastChance($trial));
         }
+    }
 //    }
 }

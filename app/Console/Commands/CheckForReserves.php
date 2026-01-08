@@ -2,16 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Mail\EntryOffer;
 use App\Models\Entry;
 use App\Models\Trial;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Stripe\StripeClient;
-use function Pest\Laravel\get;
 
 /* Paid status
     0 - New entry within limit, not paid
@@ -68,7 +64,7 @@ class CheckForReserves extends Command
             $numReserves = count($reserves);
 
 //            If there are reserve riders, check for spaces available
-            if($numReserves > 0) {
+            if ($numReserves > 0) {
                 $entries = DB::table('entries')
                     ->where('trial_id', $trialID)
                     ->whereIn('status', [1, 4, 7, 8, 9])
@@ -76,18 +72,18 @@ class CheckForReserves extends Command
 
                 $numEntries = count($entries);
 
-                $numSpaces =  $entryLimit - $numEntries;
-                if($numSpaces > 0 && $numReserves > 0) {
+                $numSpaces = $entryLimit - $numEntries;
+                if ($numSpaces > 0 && $numReserves > 0) {
 //                    info("Get $numSpaces reserve(s) for trial $trialID");
                     $entriesForOffer = DB::table('entries')
                         ->where('trial_id', $trialID)
                         ->where('status', 5)
                         ->orderBy('updated_at')
                         ->limit(1)
-                    ->get();
+                        ->get();
 
 //                    Offer entry to each reserve
-                    foreach($entriesForOffer as $entry) {
+                    foreach ($entriesForOffer as $entry) {
                         $entryID = $entry->id;
 
 //                        $entry = DB::table('entries')->where('id', $entryID)->first();
@@ -102,15 +98,15 @@ class CheckForReserves extends Command
 
                         $this->invoice($entry, $email, $entrantName);
                     }
-                }
-                else {
+                } else {
 //                    info("\nTrialID: $trialID \nlimit: $entryLimit\nNumber of entries: $numEntries \nNumber of reserves: $numReserves\nNumSpaces: $numSpaces\n");
                 }
             }
         }
     }
 
-    public function invoice($entry, $email, $username){
+    public function invoice($entry, $email, $username)
+    {
         $another = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $trialID = $entry->trial_id;
@@ -129,7 +125,7 @@ class CheckForReserves extends Command
         // Create an Invoice
         $invoice = $another->invoices->create([
             'customer' => $customerId,
-            'description' => $trialClub.' - '.$trialName,
+            'description' => $trialClub . ' - ' . $trialName,
             'collection_method' => 'send_invoice',
             'days_until_due' => 2,
             'metadata' => [
@@ -143,7 +139,7 @@ class CheckForReserves extends Command
             'pricing' => [
                 'price' => $entry->stripe_price_id,
             ],
-            'description' => ' Ref: '.$entryID,
+            'description' => ' Ref: ' . $entryID,
             'invoice' => $invoice->id,
         ]);
 

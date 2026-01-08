@@ -1,20 +1,13 @@
 <x-club>
-
-    {{--    <script type="text/javascript">--}}
-
-    {{--        function yesNoCheck() {--}}
-    {{--            // var test = this.valueOf();--}}
-    {{--            selected = event.currentTarget.value;--}}
-    {{--            if (selected == "Test") {--}}
-    {{--                document.getElementById('testAddressDiv').style.display = 'block';--}}
-    {{--            }--}}
-    {{--            else document.getElementById('testAddressDiv').style.display = 'none';--}}
-
-    {{--        }--}}
-
-    {{--    </script>--}}
-
     {{--    @dump($mail)--}}
+    @php
+        $mimeTypes = explode(',', $mail->mimeType);
+        $fileNames = explode(',', $mail->fileName);
+        $originalNames = explode(',', $mail->originalName);
+//
+//        dump($fileNames, $originalNames, $mimeTypes);
+
+    @endphp
     <script>
         function removeAttachment() {
             document.getElementById('attachDiv').style.display = "none";
@@ -31,7 +24,7 @@
     <form action="/usermail/update" method="POST" enctype="multipart/form-data">
         {{--        @method('PATCH')--}}
         @csrf
-        <input type="hidden" id="mail_id" name="trial_id" value="{{$mail->id}}">
+        <input type="hidden" id="mail_id" name="mail_id" value="{{$mail->id}}">
         <input type="hidden" id="hasAttachment" name="hasAttachment" value="{{$hasAttachment}}">
         <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">{{$mail->summary}}</div>
@@ -54,22 +47,32 @@
                         @enderror
                     </x-form-field>
                 </div>
-
+                @if($hasAttachment)
+                    <div id="attachmentsDiv" class=" col-span-3 mt-2">
+                        <div class="font-semibold text-blue-700 col-span-3 mt-2">Attachments</div>
+                        @for($i = 0; $i < sizeof($fileNames); $i++)
+                            <div class="flex">
+                                <div class="pl-2">{{$originalNames[$i]}}</div>
+                                <div class="pl-4"><input
+                                            type="checkbox" name="fileToRemove[]"
+                                            id="fileToRemove$i"
+                                            value="{{$i}}">
+                                    <label
+                                            class="font-semibold text-red-600"
+                                            for="fileToRemove$i">Remove</label>
+                                </div>
+                            </div>
+                        @endfor
+                    </div>
+                @endif
                 <div id="attachDiv" class=" col-span-3 mt-2">
-                    {{--                @if($mail->originalName != "")--}}
-                    <div class="font-semibold text-blue-700 col-span-3 mt-2">Attachment <span
-                                class="font-normal text-black">{{$mail->originalName}}</span></div>
-                    <a class="text-red-600" onclick="removeAttachment()"><i
-                                class="fa-solid fa-trash text-red-600 ml-2 mr-2"></i>Remove attachment</a>
-                    {{--                @else--}}
                     <x-form-field>
-                        <x-form-label for="attachment">Attachment <span
-                                    class="font-normal text-black">{{$mail->originalName}}</span></x-form-label>
+                        <x-form-label for="fileToAdd">Add Attachment - PDF only</x-form-label>
                         <div class="mt-2 col-span-2">
-                            <input name="attachment" type="file" id="attachment" value=""/>
-                            <x-form-error name="attachment"/>
+                            <input name="fileToAdd" accept="application/pdf" type="file" id="fileToAdd" value=""/>
+                            <x-form-error name="fileToAdd"/>
                         </div>
-                        @error('attachment')
+                        @error('fileToAdd')
                         <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                         @enderror
                     </x-form-field>

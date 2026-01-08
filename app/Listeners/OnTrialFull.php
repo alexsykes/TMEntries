@@ -27,7 +27,7 @@ class OnTrialFull
         Info("Confirmed entries: $numEntries");
         Info("Entry limit: $entryLimit");
 
-        $unconfirmed = Entry::whereIn("status", [0,10])
+        $unconfirmed = Entry::whereIn("status", [0, 10])
             ->join("users", "users.id", "=", "entries.created_by")
             ->select('entries.id', 'entries.name', 'users.email')
             ->where("trial_id", $trialID)
@@ -41,9 +41,9 @@ class OnTrialFull
             array_push($ids, $entry->id);
 //                Send TrialFull email
             Info("Send Trial Full mail to $entry->email");
-                Mail::to($entry->email)
-                    ->bcc($bcc)
-                    ->send(new \App\Mail\TrialFull($trial));
+            Mail::to($entry->email)
+                ->bcc($bcc)
+                ->send(new \App\Mail\TrialFull($trial));
         }
         Entry::whereIn('entries.id', $ids)
             ->update(['entries.status' => 5,

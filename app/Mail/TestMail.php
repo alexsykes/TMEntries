@@ -17,6 +17,7 @@ class TestMail extends Mailable
 
     public $mailshot;
 
+
     /**
      * Create a new message instance.
      */
@@ -24,6 +25,7 @@ class TestMail extends Mailable
     {
         //
         $this->mailshot = $mailshot;
+
     }
 
     /**
@@ -34,10 +36,10 @@ class TestMail extends Mailable
         if ($this->mailshot->reply_to_address != null && $this->mailshot->reply_to_name != null) {
             return new Envelope(
                 from: new Address('monster@trialmonster.uk', 'TrialMonster'),
-            replyTo: [
-                new Address($this->mailshot->reply_to_address,
-                $this->mailshot->reply_to_name,),
-            ],
+                replyTo: [
+                    new Address($this->mailshot->reply_to_address,
+                        $this->mailshot->reply_to_name,),
+                ],
                 subject: $this->mailshot->subject
             );
 
@@ -69,13 +71,28 @@ class TestMail extends Mailable
      */
     public function attachments(): array
     {
+        $fileNames = explode(',', $this->mailshot->fileName);
+        $originalNames = explode(',', $this->mailshot->originalName);
+        $mimeTypes = explode(',', $this->mailshot->mimeType);
 
-        if($this->mailshot->fileName) {
-            return [
-                Attachment::fromPath(public_path('attachments/' . $this->mailshot->fileName))
-                    ->as($this->mailshot->originalName)
-                    ->withMime($this->mailshot->mimeType),
-            ];
+//        dd($fileNames, $originalNames, $mimeTypes);
+
+        $attachments = array();
+
+        for ($i = 0; $i < count($fileNames); $i++) {
+            $attachment =
+                Attachment::fromPath(public_path('attachments/' . $fileNames[$i]))
+                    ->as($originalNames[$i])
+                    ->withMime($mimeTypes[$i]);
+            array_push($attachments, $attachment);
+        }
+
+        if ($this->mailshot->fileName) {
+            return
+//                Attachment::fromPath(public_path('attachments/' . $this->mailshot->fileName))
+//                    ->as($this->mailshot->originalName)
+//                    ->withMime($this->mailshot->mimeType),
+                $attachments;
         } else {
             return [];
         }

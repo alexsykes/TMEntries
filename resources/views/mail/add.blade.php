@@ -1,10 +1,11 @@
 <x-admin>
+    @dump($request)
     <x-slot:heading>Compose a new email</x-slot:heading>
     @php
-//        $categoryArray = array("Trial Announcement", "Result Published", "General Announcement");
-        $categoryArray = array('AGM','Committee Meetings','Trials','Social Events ','Other');
+        //        $categoryArray = array("Trial Announcement", "Result Published", "General Announcement");
+                $categoryArray = array('AGM','Committee Meetings','Trials','Social Events ','Other');
 
-        $distributionArray = array("Trial Entrants", "Past Entrants", "All Users");
+                $distributionArray = array("Trial Entrants", "Past Entrants", "All Users");
     @endphp
     <form action="/mail/store" method="POST">
         @csrf
@@ -12,7 +13,6 @@
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Email details</div>
             <div class="grid grid-cols-2 gap-4 px-4">
                 <input type="hidden" name="isLibrary" value="true">
-
                 <div id="categoryDiv" class=" col-span-3 mt-2">
                     <x-form-field>
                         <x-form-label for="category">Category</x-form-label>
@@ -31,14 +31,14 @@
                     </x-form-field>
                 </div>
 
-                <div id="mailSummaryiv" class=" col-span-3 mt-2">
+                <div id="mailSummaryDiv" class=" col-span-3 mt-2">
                     <x-form-field>
                         <x-form-label for="summary">Summary</x-form-label>
                         <div class="mt-2 col-span-2">
                             <x-form-input name="summary" type="text" id="summary"
                                           value="{{old('summary')}}"
                                           placeholder="Brief summary of email" required/>
-                            <x-form-error name="summary"/>
+{{--                            <x-form-error name="summary"/>--}}
                         </div>
                         @error('summary')
                         <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -53,7 +53,7 @@
                             <x-form-input name="subject" type="text" id="subject"
                                           value="{{old('subject')}}"
                                           placeholder="Subject line - eg. Final Instructions" required/>
-                            <x-form-error name="subject"/>
+{{--                            <x-form-error name="subject"/>--}}
                         </div>
                         @error('subject')
                         <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>

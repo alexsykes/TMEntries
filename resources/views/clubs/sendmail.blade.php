@@ -18,6 +18,11 @@
     </script>
     @php
         $distributionArray = array("Test", "Trial Entrants", "Past Entrants", "Distribution List");
+        $attachmentRealNames = $mail->originalName;
+        $attachmentFileNames = $mail->fileName;
+
+        $realNames = explode(',', $attachmentRealNames);
+        $filenames = explode(',', $attachmentFileNames);
 
     @endphp
     <x-slot:heading>Send mail</x-slot:heading>
@@ -26,9 +31,17 @@
             Preview - {{$mail->summary}}
         </div>
         <div id="mailPreview" class="text-sm m-4">
-            <div id="subject"><span class="font-semibold">Subject: </span>{{$mail->subject}}
-            </div>
+            {{--            Subject line--}}
+            <div id="subject"><span class="font-semibold">Subject: </span>{{$mail->subject}}</div>
+
+            {{--            Attachments list--}}
+            <div id="attachments" class="mt-4 font-semibold">Attachments</div>
+            @foreach($realNames as $realname)
+                <div>{{$realname}}</div>
+            @endforeach
+
             <div id="bodyText" class="mt-4">
+                <div id="message" class="mt-4 font-semibold">Message</div>
                 @php
                     echo $mail->bodyText;
                 @endphp
@@ -51,7 +64,7 @@
                             @foreach($distributionArray as $option)
                                 <input name="distribution" type="radio" id="distribution"
                                        @if ($option =="Test") {
-                                        {{"checked"}}
+                                       {{"checked"}}
                                        }
                                        @endif
                                        onclick="Javascript:yesNoCheck()"
@@ -85,7 +98,7 @@
                             <div class="pb-2 pt-2    sm:col-span-2">
                                 <select class="ml-2 bg-white  space-x-4 border-none" name="trial_id" id="trial_id">
                                     @foreach($clubTrials as $trial)
-                                        <option value="{{$trial->id}}" >{{$trial->name}}</option>
+                                        <option value="{{$trial->id}}">{{$trial->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -98,9 +111,10 @@
                         <x-form-label class="pb-2" for="course">Distribution List</x-form-label>
                         <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
                             <div class="pb-2 pt-2    sm:col-span-2">
-                                <select class="ml-2 bg-white  space-x-4 border-none" name="distribution_id" id="trial_id">
+                                <select class="ml-2 bg-white  space-x-4 border-none" name="distribution_id"
+                                        id="trial_id">
                                     @foreach($distributions as $distribution)
-                                        <option value="{{$distribution->id}}" >{{$distribution->name}}</option>
+                                        <option value="{{$distribution->id}}">{{$distribution->name}}</option>
                                     @endforeach
                                 </select>
                             </div>

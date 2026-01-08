@@ -38,8 +38,8 @@ class TMLogin extends Mailable
     public function content(): Content
     {
         return new Content(
-            html: 'mails.new_site',with: [
-                'user' => $this->user,
+            html: 'mails.new_site', with: [
+            'user' => $this->user,
         ]
         );
     }

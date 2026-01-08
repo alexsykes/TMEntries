@@ -60,7 +60,6 @@ class ClubmailController extends Controller
         return redirect('/admin/mails');
     }
 
-
     public function composeUserEmail()
     {
 //        Check for ownership
@@ -85,26 +84,39 @@ class ClubmailController extends Controller
     {
         $user = Auth::user();
         $clubID = $user->club_id;
-//        File handler
 
-        $attachment = $request->file('attachment');
-        if ($attachment) {
-            $fileName = time() . '.' . $attachment->extension();
-            $attachment->move(public_path('attachments'), $fileName);
-
-            $originalName = $attachment->getClientOriginalName();
-            $mimeType = $attachment->getClientMimeType();
-            $attributes['originalName'] = $originalName;
-            $attributes['mimeType'] = $mimeType;
-            $attributes['fileName'] = $fileName;
-        }
         $attributes = $request->validate([
             'category' => 'required',
-            'subject' => ['required', 'min:5', 'max:63'],
+            'subject' => ['required', 'min:3', 'max:63'],
             'bodyText' => 'required',
-            'summary' => ['required', 'min:5', 'max:255'],
+            'summary' => ['required', 'min:3', 'max:255'],
         ]);
 
+//        File handler
+        if ($request->attachment) {
+            $names = array();
+            $types = array();
+            $fileNames = array();
+            foreach ($request->attachment as $attachment) {
+
+                $originalName = $attachment->getClientOriginalName();
+                $mimeType = $attachment->getClientMimeType();
+                $extension = $attachment->getClientOriginalExtension();
+
+//              Save file under unique id
+                $fileName = uniqid() . '.' . $extension;
+
+                $attachment->move(public_path('attachments'), $fileName);
+
+                array_push($types, $mimeType);
+                array_push($names, $originalName);
+                array_push($fileNames, $fileName);
+            }
+//  Add file data to attributes as CSV data
+            $attributes['originalName'] = implode(',', $names);
+            $attributes['mimeType'] = implode(',', $types);
+            $attributes['fileName'] = implode(',', $fileNames);
+        }
 
         $attributes['trial_id'] = $request->trial_id;
         $attributes['isLibrary'] = false;
@@ -124,54 +136,78 @@ class ClubmailController extends Controller
     {
         $action = $request->input('action');
 
+        $originalNames = array();
+        $fileNames = array();
+        $mimeTypes = array();
+
         $attributes = $request->validate([
-            'trial_id' => 'required',
+            'mail_id' => 'required',
             'category' => 'required',
-            'subject' => ['required', 'min:5', 'max:63'],
+            'subject' => ['required', 'min:3', 'max:63'],
             'bodyText' => 'required',
-            'summary' => ['required', 'min:5', 'max:255'],
+            'summary' => ['required', 'min:3', 'max:255'],
         ]);
 
+        $mail = DB::table('clubmails')
+            ->where('id', $request->mail_id)
+            ->first();
+
+//        Get file data in case it doesn't change - may be empty
+        $originalName = $mail->originalName;
+        $mimeType = $mail->mimeType;
+        $fileName = $mail->fileName;
+
+        if ($originalName != '') {
+            $originalNames = explode(',', $originalName);
+            $fileNames = explode(',', $fileName);
+            $mimeTypes = explode(',', $mimeType);
+        }
+        
         if ($action == 'update') {
-            if ($request->attachment) {
-                $attachment = $request->file('attachment');
-                $fileName = time() . '.' . $attachment->extension();
-                $attachment->move(public_path('attachments'), $fileName);
+            if ($request->fileToRemove) {
+
+                $fileToRemove = $request->fileToRemove;
+                for ($i = 0; $i < count($fileToRemove); $i++) {
+                    unset($originalNames[$i]);
+                    unset($fileNames[$i]);
+                    unset($mimeTypes[$i]);
+                }
+            }
+            if ($request->fileToAdd) {
+//                dd($request->fileToAdd);
+                $attachment = $request->file('fileToAdd');
 
                 $originalName = $attachment->getClientOriginalName();
                 $mimeType = $attachment->getClientMimeType();
 
-                $attributes['originalName'] = $originalName;
-                $attributes['mimeType'] = $mimeType;
-                $attributes['fileName'] = $fileName;
-
-                $mail = DB::table('clubmails')->where('id', $request->trial_id)
-                    ->update(['updated_at' => now(),
-                        'category' => $request->category,
-                        'subject' => $request->subject,
-                        'bodyText' => $request->bodyText,
-                        'summary' => $request->summary,
-                        'originalName' => $originalName,
-                        'mimeType' => $mimeType,
-                        'fileName' => $fileName,
+                $extension = $attachment->getClientOriginalExtension();
+                $fileName = uniqid() . '.' . $extension;
+                $attachment->move(public_path('attachments'), $fileName);
 
 
-                        'reply_to_address' => $request->input('reply_to_address'),
-                        'reply_to_name' => $request->input('reply_to_name'),
+                array_push($originalNames, $originalName);
+                array_push($fileNames, $fileName);
+                array_push($mimeTypes, $mimeType);
 
-                    ]);
-            } else {
-                $mail = DB::table('clubmails')->where('id', $request->trial_id)
-                    ->update(['updated_at' => now(),
-                        'category' => $request->category,
-                        'subject' => $request->subject,
-                        'bodyText' => $request->bodyText,
-                        'summary' => $request->summary,
 
-                        'reply_to_address' => $request->input('reply_to_address'),
-                        'reply_to_name' => $request->input('reply_to_name'),
-                    ]);
             }
+            $originalName = implode(',', $originalNames);
+            $fileName = implode(',', $fileNames);
+            $mimeType = implode(',', $mimeTypes);
+            $mail = DB::table('clubmails')->where('id', $request->mail_id)
+                ->update(['updated_at' => now(),
+                    'category' => $request->category,
+                    'subject' => $request->subject,
+                    'bodyText' => $request->bodyText,
+                    'summary' => $request->summary,
+                    'originalName' => $originalName,
+                    'mimeType' => $mimeType,
+                    'fileName' => $fileName,
+
+                    'reply_to_address' => $request->input('reply_to_address'),
+                    'reply_to_name' => $request->input('reply_to_name'),
+                ]);
+
         } elseif ($action == 'saveAsNew') {
 
             $attachment = $request->file('attachment');

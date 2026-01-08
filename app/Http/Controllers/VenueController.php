@@ -7,25 +7,29 @@ use App\Models\Venue;
 class VenueController extends Controller
 {
     //
-    public function list() {
+    public function list()
+    {
         $venues = Venue::all()->sortBy('name');
 //        dd($venues);
         return view('venues.list', ['venues' => $venues]);
     }
 
-    public function edit() {
+    public function edit()
+    {
         $venueID = request()->id;
 
         $venue = \DB::table('venues')->where('id', $venueID)->first();
         return view('venues.edit', ['venue' => $venue]);
     }
 
-    public function add() {
+    public function add()
+    {
         $venues = Venue::all()->sortBy('name');
         return view('venues.add', ['venues' => $venues]);
     }
 
-    public function save(){
+    public function save()
+    {
 //        dd(request()->all());
         $id = request()->id;
         $attrs = request()->validate([
@@ -34,8 +38,8 @@ class VenueController extends Controller
             'phone' => 'required',
             'directions' => 'required',
             'landowner' => 'required',
-            'latitude' => 'required','decimal:6',
-            'longitude' => 'required','decimal:6',
+            'latitude' => 'required', 'decimal:6',
+            'longitude' => 'required', 'decimal:6',
         ]);
 
         $attrs['w3w'] = request('w3w', '');
@@ -50,15 +54,16 @@ class VenueController extends Controller
         return redirect()->route('venues');
     }
 
-    public function store(){
+    public function store()
+    {
         $attrs = request()->validate([
             'name' => 'required',
             'address' => 'required',
             'phone' => 'required',
             'directions' => 'required',
             'landowner' => 'required',
-            'latitude' => 'required','decimal:6',
-            'longitude' => 'required','decimal:6',
+            'latitude' => 'required', 'decimal:6',
+            'longitude' => 'required', 'decimal:6',
         ]);
 
         $attrs['w3w'] = request('w3w', '');
