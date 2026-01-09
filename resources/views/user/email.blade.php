@@ -1,5 +1,5 @@
 <x-club>
-    <x-slot:heading>Compose email</x-slot:heading>
+
     @php
         $categoryArray = array("Trial Announcement", "Result Published", "General Announcement", 'Other');
         $categoryArray = array('AGM','Committee Meetings','Trials','Social Events ','Other');
@@ -19,35 +19,38 @@
             clearFile.style.display = "inline-block";
         }
     </script>
+    <x-slot:heading>Compose email</x-slot:heading>
     <form action="/usermail/store" method="POST" enctype="multipart/form-data">
         @csrf
+
+
         <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Email content</div>
-            <div class="grid grid-cols-2 gap-4 px-4">
 
-                <div id="categoryDiv" class=" col-span-3 mt-2">
-                    <x-form-field>
-                        <x-form-label for="category">Category</x-form-label>
-                        <div class="mt-2 col-span-2">
-                            @foreach($categoryArray as $option)
-                                <input name="category" type="radio" id="category"
-                                       value="{{$option}}"
-                                       {{ (old('category') == $option) ? ' checked' : '' }}
+            <div class="space-y-4 px-4">
 
-                                       required
-                                >
-                                <label class="pl-1 pr-4" for="category">{{$option}}</label>
-                            @endforeach
-                        </div>
-                        @error('category')
-                        <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                        @enderror
-                    </x-form-field>
-                </div>
+                {{--                <div id="categoryDiv" class="  mt-2">--}}
+                <x-form-field>
+                    <x-form-label for="category">Category</x-form-label>
+                    <div class="mt-2">
+                        @foreach($categoryArray as $option)
+                            <input name="category" type="radio" id="category" required
+                                   value="{{$option}}"
+                                    {{ (old('category') == $option) ? ' checked' : '' }}
+                            >
+                            <label class="pl-1 pr-4" for="category">{{$option}}</label>
+                        @endforeach
+                    </div>
+                    @error('category')
+                    <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
+                </x-form-field>
+                {{--                </div>--}}
 
                 <x-form-field>
                     <x-form-label for="attachment">Attachment(s) - PDF only</x-form-label>
-                    <div class="flex justify-start mt-2 col-span-2">
+                    <div class="flex justify-start mt-2">
                         <input name="attachment[]" accept="application/pdf" onchange="attachmentChanged('1')"
                                type="file"
                                id="attachment1" value=""/>

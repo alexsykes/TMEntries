@@ -21,6 +21,9 @@
         relative_urls : false,
         remove_script_host : false,
         convert_urls : true,
+        mobile: {
+            menubar: true
+        },
     });
 </script>
 
