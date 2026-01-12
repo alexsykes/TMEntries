@@ -217,7 +217,9 @@ class ClubController extends Controller
         $attributes['lastname'] = $this->nameize($attributes['lastname']);
 
         $attributes['accept'] = true;
+
         $attributes['social'] = implode(',', request('social'));
+
 
 //        info($attributes['membership_category']);
 
@@ -252,6 +254,27 @@ class ClubController extends Controller
         }
 
         return view('/clubs/confirmRegistered', ['member' => $member]);
+    }
+
+    public function nameize($str, $a_char = array("'", "-", " "))
+    {
+        //$str contains the complete raw name string
+        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
+        $string = strtolower($str);
+        foreach ($a_char as $temp) {
+            $pos = strpos($string, $temp);
+            if ($pos) {
+                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
+                $mend = '';
+                $a_split = explode($temp, $string);
+                foreach ($a_split as $temp2) {
+                    //capitalize each portion of the string which was separated at a special character
+                    $mend .= ucfirst($temp2) . $temp;
+                }
+                $string = substr($mend, 0, -1);
+            }
+        }
+        return ucfirst($string);
     }
 
     public function console(Request $request)
@@ -482,25 +505,90 @@ class ClubController extends Controller
         }
     }
 
-
-   public  function nameize($str, $a_char = array("'", "-", " "))
+    public function addManual(Request $request)
     {
-        //$str contains the complete raw name string
-        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
-        $string = strtolower($str);
-        foreach ($a_char as $temp) {
-            $pos = strpos($string, $temp);
-            if ($pos) {
-                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
-                $mend = '';
-                $a_split = explode($temp, $string);
-                foreach ($a_split as $temp2) {
-                    //capitalize each portion of the string which was separated at a special character
-                    $mend .= ucfirst($temp2) . $temp;
-                }
-                $string = substr($mend, 0, -1);
-            }
+        $user = Auth::user();
+        $clubID = Auth::user()->club_id;
+
+        $attributes = $request->validate([
+            'firstname' => ['required', 'min:2', 'max:255'],
+            'lastname' => ['required', 'min:2', 'max:255'],
+            'club_id' => 'required',
+            'email' => ['required', 'email'],
+            'phone' => 'required',
+            'membership_type' => 'required',
+            'membership_category' => 'required',
+        ]);
+
+        $attributes['firstname'] = $this->nameize($attributes['firstname']);
+        $attributes['lastname'] = $this->nameize($attributes['lastname']);
+
+        $attributes['accept'] = true;
+
+        if (is_null($request->social)) {
+            $attributes['social'] = "TBA";
+        } else {
+            $attributes['social'] = implode(',', request('social'));
         }
-        return ucfirst($string);
+
+        if (is_null($request->address)) {
+            $attributes['address'] = "TBA";
+        } else {
+            $attributes['address'] = request('address');
+        }
+
+        if (is_null($request->postcode)) {
+            $attributes['postcode'] = "TBA";
+        } else {
+            $attributes['postcode'] = request('postcode');
+        }
+        if (is_null($request->emergency_contact)) {
+            $attributes['emergency_contact'] = "TBA";
+        } else {
+            $attributes['emergency_contact'] = request('emergency_contact');
+        }
+
+        if (is_null($request->emergency_number)) {
+            $attributes['emergency_number'] = "TBA";
+        } else {
+            $attributes['emergency_number'] = request('emergency_number');
+        }
+
+        if ($attributes['membership_category'] == 'life' || $attributes['membership_category'] == 'observer') {
+            $attributes['confirmed'] = true;
+        } elseif ($attributes['membership_category'] == 'associate') {
+            $attributes['confirmed'] = false;
+
+        } else {
+            $attributes['membership_category'] = 'competition';
+            $attributes['confirmed'] = false;
+        }
+
+
+        if (!is_null($request->confirmed)) {
+            $attributes['confirmed'] = true;
+        }
+
+
+        $member = ClubMember::create($attributes);
+//        Add to Observer mailing list
+        if ($attributes['membership_category'] == 'observer') {
+            $email = trim($attributes['email']);
+
+            $observerList = MailDistribution::where('club_id', $request->club_id)
+                ->where('name', 'Observers')
+                ->first();
+
+            $addressList = $observerList['to'];
+            $addressListArray = explode(',', $addressList);
+            array_push($addressListArray, $email);
+            $addressListArray = array_unique($addressListArray);
+            $addressList = implode(',', $addressListArray);
+
+            $observerList->to = $addressList;
+            $observerList->update();
+        }
+        return redirect('/club/member/list');
+
     }
 }

@@ -239,6 +239,7 @@ Route::post('/club/distribution/store', [ClubController::class, 'storeDistributi
 Route::patch('/club/distribution/update', [ClubController::class, 'updateDistribution'])->middleware(['auth', 'verified']);
 Route::get('/club/member/list/', [ClubController::class, 'memberList'])->middleware(['auth', 'verified']);
 Route::get('/club/member/detail/{id}', [ClubController::class, 'memberDetail'])->middleware(['auth', 'verified']);
+Route::post('/club/member/addManual', [ClubController::class, 'addManual'])->middleware(['auth', 'verified']);
 
 // SERIES Routes
 Route::get('/series/list', [SeriesController::class, 'list'])->middleware(['auth', 'verified']);
