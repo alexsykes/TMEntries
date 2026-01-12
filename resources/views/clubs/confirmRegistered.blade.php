@@ -7,10 +7,9 @@
         <div class="p-4 space-y-2 bg-slate-50">
             <div class="font-semibold text-lg text-center">What do I do next?</div>
             <div class="">If you are either an <span
-                        class="font-semibold">Observer or Life Member</span> - you do not need to do anything further, as your membership is Free of Charge.
-            </div>
-            <div class="">If you have registered as an <span
-                        class="font-semibold">Associate Member</span> - you should receive an emailed invoice for your membership fee.
+                        class="font-semibold">Observer or Life Member</span> - you do not need to do anything further,
+                as
+                your membership is Free of Charge.
             </div>
             <div class=" ">If you are a <span class="font-semibold">Newcomer</span> to the club, you are
                 invited to enjoy

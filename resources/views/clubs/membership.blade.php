@@ -2,7 +2,7 @@
     <x-slot:heading>Club membership</x-slot:heading>
     @php
         $membershipTypeArray = array('Renewal', 'New');
-        $membershipCategoryArray = array('Competition', 'Associate',  'Observer', 'Life');
+        $membershipCategoryArray = array('Competition', 'Observer', 'Life');
         $socialArray = array('No','FaceBook', 'WhatsApp', 'Other');
 
 //        Validation stuff
