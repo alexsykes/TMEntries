@@ -213,6 +213,9 @@ class ClubController extends Controller
 //            'g-recaptcha-response' => ['required', new ReCaptchaV3('register')],
         ]);
 
+        $attributes['firstname'] = $this->nameize($attributes['firstname']);
+        $attributes['lastname'] = $this->nameize($attributes['lastname']);
+
         $attributes['accept'] = true;
         $attributes['social'] = implode(',', request('social'));
 
@@ -220,10 +223,14 @@ class ClubController extends Controller
 
         if ($attributes['membership_category'] == 'life' || $attributes['membership_category'] == 'observer') {
             $attributes['confirmed'] = true;
+        } elseif ($attributes['membership_category'] == 'associate') {
+            $attributes['confirmed'] = false;
+
         } else {
             $attributes['membership_category'] = 'competition';
             $attributes['confirmed'] = false;
         }
+
 
         $member = ClubMember::create($attributes);
 //        Add to Observer mailing list
@@ -473,5 +480,27 @@ class ClubController extends Controller
             }
             return redirect('/club/member/approve');
         }
+    }
+
+
+   public  function nameize($str, $a_char = array("'", "-", " "))
+    {
+        //$str contains the complete raw name string
+        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
+        $string = strtolower($str);
+        foreach ($a_char as $temp) {
+            $pos = strpos($string, $temp);
+            if ($pos) {
+                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
+                $mend = '';
+                $a_split = explode($temp, $string);
+                foreach ($a_split as $temp2) {
+                    //capitalize each portion of the string which was separated at a special character
+                    $mend .= ucfirst($temp2) . $temp;
+                }
+                $string = substr($mend, 0, -1);
+            }
+        }
+        return ucfirst($string);
     }
 }
