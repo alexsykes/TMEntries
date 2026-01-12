@@ -1,11 +1,9 @@
 <x-club>
     {{--    @dump($mail)--}}
     @php
-        $mimeTypes = explode(',', $mail->mimeType);
-        $fileNames = explode(',', $mail->fileName);
-        $originalNames = explode(',', $mail->originalName);
-//
-//        dump($fileNames, $originalNames, $mimeTypes);
+        $mimeTypes = explode('|', $mail->mimeType);
+        $fileNames = explode('|', $mail->fileName);
+        $originalNames = explode('|', $mail->originalName);
 
     @endphp
     <script>

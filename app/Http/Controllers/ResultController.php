@@ -60,7 +60,7 @@ class ResultController extends Controller
         $utilityController = new UtilityController();
         $trialName = trim($trial->name);
         $filename = "$trial->id $trialName.pdf";
-        $filename = str_replace(' ', '_', $filename);
+//        $filename = str_replace(' ', '_', $filename);
         $filename = $utilityController->filter_filename($filename);
 
 

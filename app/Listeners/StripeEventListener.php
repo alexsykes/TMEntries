@@ -155,7 +155,10 @@ function onProductCreated($productObject)
         $hasQuantity = $metadata['has_quantity'];
     }
 
-    $club_id = $metadata['club_id'];
+    $club_id = 0;
+    if (isset($metadata['club_id'])) {
+        $club_id = $metadata['club_id'];
+    }
 
     $trialid = 0;
     if (isset($metadata['trialid'])) {

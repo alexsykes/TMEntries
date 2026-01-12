@@ -21,8 +21,8 @@
         $attachmentRealNames = $mail->originalName;
         $attachmentFileNames = $mail->fileName;
 
-        $realNames = explode(',', $attachmentRealNames);
-        $filenames = explode(',', $attachmentFileNames);
+        $realNames = explode('|', $attachmentRealNames);
+//        $filenames = explode('|', $attachmentFileNames);
 
     @endphp
     <x-slot:heading>Send mail</x-slot:heading>
@@ -90,6 +90,7 @@
                         @enderror
                     </x-form-field>
                 </div>
+                npm run build
 
                 <div id="trialSelectDiv" class="hidden col-span-3 mt-2">
                     <x-form-field>

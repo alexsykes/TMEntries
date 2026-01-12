@@ -71,9 +71,9 @@ class TestMail extends Mailable
      */
     public function attachments(): array
     {
-        $fileNames = explode(',', $this->mailshot->fileName);
-        $originalNames = explode(',', $this->mailshot->originalName);
-        $mimeTypes = explode(',', $this->mailshot->mimeType);
+        $fileNames = explode('|', $this->mailshot->fileName);
+        $originalNames = explode('|', $this->mailshot->originalName);
+        $mimeTypes = explode('|', $this->mailshot->mimeType);
 
 //        dd($fileNames, $originalNames, $mimeTypes);
 

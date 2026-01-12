@@ -66,7 +66,7 @@ class UtilityController extends Controller
         $trialName = trim($trial->name);
         $trialName = trim($trial->name);
         $filename = "$trial->id $trialName.pdf";
-        $filename = str_replace(' ', '_', $filename);
+//        $filename = str_replace(' ', '_', $filename);
         $filename = $this->filter_filename($filename);
 
 //        PDF setup
@@ -143,7 +143,7 @@ EOD;
     {
         $name = str_replace(array_merge(
             array_map('chr', range(0, 31)),
-            array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
+            array('<', '>', ':', '"', '/', '\\', '|', '?', '*', ',')
         ), '', $name);
         // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
         $ext = pathinfo($name, PATHINFO_EXTENSION);
@@ -249,7 +249,7 @@ class MYPDFG extends PDF
     {
         $bMargin = $this->getBreakMargin();
         // get current auto-page-break mode
-        $auto_page_break = $this->AutoPageBreak;
+        $auto_page_break = $this->GetAutoPageBreak();
         // disable auto-page-break
         $this->SetAutoPageBreak(false, 0);
 
