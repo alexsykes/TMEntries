@@ -5,11 +5,11 @@
             defer>
     </script>
     <x-slot:heading>
-        {{$trial->name}}
+        {{$trial->venue->name}} - {{$trial->name}}
     </x-slot:heading>
     <?php
     session(['trial_id' => $trial->id]);
-//dd($trial);
+//    dd($trial);
 
     $methodOfMarking = $clubData->section_markers;
     $latitude = $trial->venue->latitude;
@@ -19,7 +19,7 @@
     array_push($markerArray, $marker);
 
 
-    // Trial details
+// Trial details
 //  Get parameters
     $hasClosingDate = $trial->hasClosingDate;
     $hasOpeningDate = $trial->hasOpeningDate;

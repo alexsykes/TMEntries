@@ -3,7 +3,7 @@
         Club Control Panel
     </x-slot:heading>
     @php
-        // dd($trials);
+        //        dd($trials);
     @endphp
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <div class="flex justify-between  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
@@ -37,8 +37,8 @@
                 @endphp
                 <tr class="flex-auto odd:bg-white even:bg-gray-50  border-b ">
                     <td class="pl-4  pt-1  pb-1   hidden  md:table-cell">{{$trial->date}}</td>
-                    <td class="hidden md:table-cell">{{$trial->club}}</td>
                     <td class="pl-2 table-cell">{{$trial->name}}</td>
+                    <td class="hidden md:table-cell">{{$trial->venueName}}</td>
 
                     <td class="pl-2 table-cell">
                         <a href="/scores/setup/{{$trial->id}}">Scores

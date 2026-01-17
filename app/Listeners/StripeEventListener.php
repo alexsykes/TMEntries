@@ -181,7 +181,7 @@ function onProductCreated($productObject)
         'version' => 1,
     ]);
 
-    // info("Product created" . $product->product_name);
+    info("Product created :: " . $product->product_name);
 //    echo "ClubID: $product->club_id";
     $email = 'monster@trialmonster.uk';
     Mail::to($email)->send(new ProductCreated($product));
@@ -237,6 +237,7 @@ function onProductUpdated($productObject)
         ->where('stripe_product_id', '=', $stripe_product_id)
         ->increment('version');
 
+    info("Product updated :: " . $product->product_name);
 }
 
 function onCheckoutSessionCompleted($sessionObject)

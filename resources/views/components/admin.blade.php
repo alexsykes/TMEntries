@@ -4,8 +4,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <x-head.tinymce-config/>
 {{--    <script src="https://cdn.tailwindcss.com"></script>--}}
-    <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{{--    <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>--}}
+{{--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">--}}
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <style>
         html,

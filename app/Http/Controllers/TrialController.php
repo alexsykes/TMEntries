@@ -89,9 +89,11 @@ class TrialController extends Controller
     public function showTrialList()
     {
         $trials = DB::table('trials')->where('published', 1)
+            ->leftJoin('venues', 'trials.venueID', '=', 'venues.id')
             ->where('isResultPublished', false)
             ->whereTodayOrAfter('date', '>', date('Y-m-d'))
             ->orderBy('date')
+            ->select('trials.name', 'trials.id', 'trials.club', 'trials.date', 'venues.name as venueName')
             ->get();
         return view('trials.trial_list', ['trials' => $trials]);
     }
@@ -103,6 +105,12 @@ class TrialController extends Controller
         $trials = Trial::all()
             ->where('created_by', $userID)
             ->sortByDesc('date');
+
+        $trials = DB::table("trials")->where('created_by', $userID)
+            ->leftJoin('venues', 'trials.venueID', '=', 'venues.id')
+            ->orderBy('date', 'desc')
+            ->select('trials.*', 'venues.name as venueName')
+            ->get();
 
         return view('trials.admin_trial_list', ['trials' => $trials]);
     }
@@ -528,7 +536,7 @@ class TrialController extends Controller
         $stripe->products->create([
             'name' => 'Youth Entry Fee',
             'description' => $trial->name,
-            'statement_descriptor' => $trial->name,
+//            'statement_descriptor' => $trial->name,
             'metadata' => [
                 'category' => 'entry fee',
                 'trialid' => $trial->id,
@@ -546,7 +554,7 @@ class TrialController extends Controller
         $stripe->products->create([
             'name' => 'Adult Entry Fee',
             'description' => $trial->name,
-            'statement_descriptor' => $trial->name,
+//            'statement_descriptor' => $trial->name,
             'metadata' => [
                 'category' => 'entry fee',
                 'trialid' => $trial->id,
@@ -567,7 +575,7 @@ class TrialController extends Controller
     {
         $trial = Trial::findOrFail($id);
         $series = Series::where('id', $trial->series_id)->first();
-        return view('trials/add_trial_trial', ['trial' => $trial, 'series' => $series]);;
+        return view('trials/add_trial_trial', ['trial' => $trial, 'series' => $series]);
     }
 
     public function addTrialEntry($id)

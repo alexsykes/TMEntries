@@ -2,9 +2,9 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>
+{{--    <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>--}}
     <x-head.tinymce-config/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{{--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">--}}
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

@@ -16,14 +16,25 @@
 
 
     <div class="tab pl-8">
-        <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-2" id="defaultOpen" onclick="openSection(event, 'Details')">
+        <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-2" id="defaultOpen"
+                onclick="openSection(event, 'Details')">
             Detail
         </button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Trial')">Trial</button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Entries')">Entries</button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Scoring')">Scoring</button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Regulations')">Regulations</button>
-        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  " onclick="openSection(event, 'Fees')">Fees</button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  "
+                onclick="openSection(event, 'Trial')">Trial
+        </button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  "
+                onclick="openSection(event, 'Entries')">Entries
+        </button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  "
+                onclick="openSection(event, 'Scoring')">Scoring
+        </button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  "
+                onclick="openSection(event, 'Regulations')">Regulations
+        </button>
+        <button class="tablinks border border-black border-b-0 rounded-t-lg    hover:bg-blue-500 p-2  "
+                onclick="openSection(event, 'Fees')">Fees
+        </button>
     </div>
     <form action="/trials/store" method="POST">
 
@@ -49,6 +60,7 @@
                             <x-form-label for="name">Event Name</x-form-label>
                             <div class="mt-2 col-span-2">
                                 <x-form-input name="name" type="text" id="name"
+                                              pattern="\w{5,22}"
                                               placeholder="Name" required/>
                                 <x-form-error name="name"/>
                             </div>
@@ -72,7 +84,7 @@
                         <x-form-field>
                             <x-form-label for="date">Date</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="date" type="date" min="{{date('Y-m-d')}}" id="date"  required/>
+                                <x-form-input name="date" type="date" min="{{date('Y-m-d')}}" id="date" required/>
                                 <x-form-error name="date"/>
                             </div>
                             @error('date')
@@ -83,7 +95,7 @@
                         <x-form-field>
                             <x-form-label for="isMultiDay">Multi-day event</x-form-label>
                             <div class="mt-2">
-                                <input name="isMultiDay" type="checkbox" value="1" id="isMultiDay" />
+                                <input name="isMultiDay" type="checkbox" value="1" id="isMultiDay"/>
                                 <x-form-error name="isMultiDay"/>
                             </div>
                             @error('isMultiDay')
@@ -107,7 +119,8 @@
                         <x-form-field>
                             <x-form-label for="startTime">Start time</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="startTime" type="text" id="startTime" placeholder="Trial starting time" required/>
+                                <x-form-input name="startTime" type="text" id="startTime"
+                                              placeholder="Trial starting time" required/>
                                 <x-form-error name="startTime"/>
                             </div>
                             @error('startTime')
@@ -118,7 +131,8 @@
                         <x-form-field>
                             <x-form-label for="contactName ">Organiser</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="contactName" type="text" id="contactName  " placeholder="Contact name " required/>
+                                <x-form-input name="contactName" type="text" id="contactName  "
+                                              placeholder="Contact name " required/>
                                 <x-form-error name="contactName"/>
                             </div>
                             @error('contactName')
@@ -129,7 +143,8 @@
                         <x-form-field>
                             <x-form-label for="email">Email</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="email" type="email" id="email" placeholder="Contact email" required/>
+                                <x-form-input name="email" type="email" id="email" placeholder="Contact email"
+                                              required/>
                                 <x-form-error name="email"/>
                             </div>
                             @error('email')
@@ -151,8 +166,9 @@
 
                         <x-form-field class="mt-2 col-span-2 sm:col-span-3">
                             <x-form-label for="venue">Venue</x-form-label>
-                            <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-blue-600 sm:max-w-md" >
-                                <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0" name="venueID" id="venueID">
+                            <div class="flex mt-2 rounded-md shadow-sm ring-1 ring-inset outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 focus-within:ring-2  focus-within:ring-inset focus-within:ring-blue-600 sm:max-w-md">
+                                <select class="border-0  pl-2 pt-2  bg-transparent pb-1 space-x-4 :focus border-0"
+                                        name="venueID" id="venueID">
                                     <option value="0">Other</option>
                                     @foreach($venues as $venue)
                                         <option value="{{$venue->id}}">{{$venue->name}}</option>
@@ -168,7 +184,7 @@
                         <x-form-field>
                             <x-form-label for="otherVenue">Venue if not listed</x-form-label>
                             <div class="mt-2 col-span-2">
-                                <x-form-input name="otherVenue" type="text" id="otherVenue" placeholder="Venue name" />
+                                <x-form-input name="otherVenue" type="text" id="otherVenue" placeholder="Venue name"/>
                                 <x-form-error name="otherVenue"/>
                             </div>
                             @error('otherVenue')
@@ -191,8 +207,9 @@
                                 <div class=" pl-2 pr-0">
                                     @foreach($courseArray as $course)
                                         <div>
-                                            <input  name="courselist[]" type="checkbox" id="courselist[]" value="{{$course}}"/>
-                                            <label  class="pl-4 pr-0" for="courselist">{{$course}}
+                                            <input name="courselist[]" type="checkbox" id="courselist[]"
+                                                   value="{{$course}}"/>
+                                            <label class="pl-4 pr-0" for="courselist">{{$course}}
                                             </label>
                                         </div>
                                     @endforeach
@@ -208,7 +225,7 @@
                                 <x-form-label for="customCourses">Custom courses</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="customCourses" type="checkboxes" id="customCourses"
-                                                  placeholder="List of courses separated by commas" />
+                                                  placeholder="List of courses separated by commas"/>
                                     <x-form-error name="customCourses"/>
                                 </div>
                                 @error('customCourses')
@@ -224,8 +241,9 @@
                                     @foreach($classArray as $class)
 
                                         <div>
-                                            <input  name="classlist[]" type="checkbox" id="classlist" value="{{$class}}"/>
-                                            <label  class="pl-4 pr-2" for="classlist">{{$class}}</label>
+                                            <input name="classlist[]" type="checkbox" id="classlist"
+                                                   value="{{$class}}"/>
+                                            <label class="pl-4 pr-2" for="classlist">{{$class}}</label>
                                         </div>
                                     @endforeach
                                     <x-form-error name="classlist[]"/>
@@ -239,7 +257,7 @@
                                 <x-form-label for="customClasses">Custom classes</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="customClasses" type="text" id="customClasses"
-                                                  placeholder="List of classes separated by commas" />
+                                                  placeholder="List of classes separated by commas"/>
                                     <x-form-error name="customClasses"/>
                                 </div>
                                 @error('customClasses')
@@ -251,7 +269,7 @@
                             <x-form-field>
                                 <x-form-label for="hasTimePenalty">Time and Observation</x-form-label>
                                 <div class="mt-2 col-span-2">
-                                    <input name="hasTimePenalty" type="checkbox" id="hasTimePenalty" value="1" />
+                                    <input name="hasTimePenalty" type="checkbox" id="hasTimePenalty" value="1"/>
                                     <x-form-error name="hasTimePenalty"/>
                                 </div>
                                 @error('hasTimePenalty')
@@ -265,7 +283,7 @@
                                 <x-form-label for="startInterval">Start interval (seconds)</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="startInterval" type="text" id="startInterval"
-                                                  placeholder="Start interval in seconds" />
+                                                  placeholder="Start interval in seconds"/>
                                     <x-form-error name="startInterval"/>
                                 </div>
                                 @error('startInterval')
@@ -279,7 +297,7 @@
                                 <x-form-label for="penaltyDelta">Penalty tariff</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="penaltyDelta" type="text" id="penaltyDelta"
-                                                  placeholder="Number of seconds per point lost" />
+                                                  placeholder="Number of seconds per point lost"/>
                                     <x-form-error name="penaltyDelta"/>
                                 </div>
                                 @error('penaltyDelta')
@@ -303,8 +321,9 @@
                                 <div class="mt-2 pl-2 pr-0">
                                     @foreach($entryMethodArray as $entryMethod)
                                         <div>
-                                            <input  name="entryMethod[]" type="checkbox" id="entryMethod[]" value="{{$entryMethod}}" />
-                                            <label  class="pl-4 pr-0" for="entryMethod">{{$entryMethod}}
+                                            <input name="entryMethod[]" type="checkbox" id="entryMethod[]"
+                                                   value="{{$entryMethod}}"/>
+                                            <label class="pl-4 pr-0" for="entryMethod">{{$entryMethod}}
                                             </label>
                                         </div>
                                     @endforeach
@@ -320,7 +339,8 @@
                             <x-form-field>
                                 <x-form-label for="name">Online entry link</x-form-label>
                                 <div class="mt-2 col-span-2">
-                                    <x-form-input name="onlineEntryLink" type="text" id="onlineEntryLink" placeholder="Entry URL here"/>
+                                    <x-form-input name="onlineEntryLink" type="text" id="onlineEntryLink"
+                                                  placeholder="Entry URL here"/>
                                     <x-form-error name="onlineEntryLink"/>
                                 </div>
                                 @error('onlineEntryLink')
@@ -333,7 +353,7 @@
                             <x-form-field>
                                 <x-form-label for="hasEntryLimit">Has entry limit</x-form-label>
                                 <div class="mt-2">
-                                    <input name="hasEntryLimit" type="checkbox" value="1" id="hasEntryLimit"  />
+                                    <input name="hasEntryLimit" type="checkbox" value="1" id="hasEntryLimit"/>
                                     <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasEntryLimit')
@@ -347,7 +367,7 @@
                                 <x-form-label for="club">Entry limit</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="entryLimit" type="text" id="entryLimit"
-                                                  placeholder="Entry limit" />
+                                                  placeholder="Entry limit"/>
                                     <x-form-error name="entryLimit"/>
                                 </div>
                                 @error('entryLimit')
@@ -356,12 +376,13 @@
                             </x-form-field>
                         </div>
 
-                        <div  id="entrySelectionBasisDiv"  class=" col-span-3 mt-2">
+                        <div id="entrySelectionBasisDiv" class=" col-span-3 mt-2">
                             <x-form-field>
                                 <x-form-label for="entrySelectionBasis">Entry selection</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     @foreach($entrySelectionArray as $option)
-                                        <input name="entrySelectionBasis" type="radio" id="entrySelectionBasis" value="{{$option}}">
+                                        <input name="entrySelectionBasis" type="radio" id="entrySelectionBasis"
+                                               value="{{$option}}">
                                         <label class="pl-1 pr-4" for="entrySelectionBasis">{{$option}}</label>
                                     @endforeach
                                     <x-form-error name="entrySelectionBasis"/>
@@ -376,7 +397,7 @@
                             <x-form-field>
                                 <x-form-label for="hasWaitingList">Enable waiting list if entry full</x-form-label>
                                 <div class="mt-2">
-                                    <input name="hasWaitingList" type="checkbox" value="1" id="hasWaitingList"  />
+                                    <input name="hasWaitingList" type="checkbox" value="1" id="hasWaitingList"/>
                                     <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasWaitingList')
@@ -389,7 +410,7 @@
                             <x-form-field>
                                 <x-form-label for="hasOpeningDate">Has opening date/time for entries</x-form-label>
                                 <div class="mt-2">
-                                    <input name="hasOpeningDate" type="checkbox" value="1" id="hasOpeningDate"  />
+                                    <input name="hasOpeningDate" type="checkbox" value="1" id="hasOpeningDate"/>
                                     <x-form-error name="hasOpeningDate"/>
                                 </div>
                                 @error('hasOpeningDate')
@@ -399,10 +420,11 @@
                         </div>
 
                         <div id="openingDateDiv" class=" col-span-3 mt-2">
-                            <x-form-field >
+                            <x-form-field>
                                 <x-form-label for="openingDate">Opening date/time for entries</x-form-label>
                                 <div class="mt-2 col-span-2">
-                                    <x-form-input name="openingDate" type="datetime-local" min="{{date('Y-m-d')}}" id="openingDate" />
+                                    <x-form-input name="openingDate" type="datetime-local" min="{{date('Y-m-d')}}"
+                                                  id="openingDate"/>
                                     <x-form-error name="openingDate"/>
                                 </div>
                                 @error('openingDate')
@@ -415,7 +437,7 @@
                             <x-form-field>
                                 <x-form-label for="hasClosingDate">Has closing date/time for entries</x-form-label>
                                 <div class="mt-2">
-                                    <input name="hasClosingDate" type="checkbox" value="1" id="hasClosingDate" />
+                                    <input name="hasClosingDate" type="checkbox" value="1" id="hasClosingDate"/>
                                     <x-form-error name="openingDate"/>
                                 </div>
                                 @error('hasClosingDate')
@@ -428,7 +450,8 @@
                             <x-form-field>
                                 <x-form-label for="closingDate">Closing date/time for entries</x-form-label>
                                 <div class="mt-2 col-span-2">
-                                    <x-form-input name="closingDate" type="datetime-local" min="{{date('Y-m-d')}}" id="closingDate" />
+                                    <x-form-input name="closingDate" type="datetime-local" min="{{date('Y-m-d')}}"
+                                                  id="closingDate"/>
                                     <x-form-error name="closingDate"/>
                                 </div>
                                 @error('closingDate')
@@ -445,7 +468,6 @@
             <div class="space-y-12">
                 <div class="px-4 py-4 mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                     <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-
 
 
                         <div id="scoringModeDiv" class="col-span-3">
@@ -469,7 +491,8 @@
                                 <x-form-label for="stopNonStop">Stop permitted/Non-stop</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     @foreach($stopAllowedArray as $option)
-                                        <input name="stopNonStop" type="radio" id="stopNonStop" value="{{$option}}" required>
+                                        <input name="stopNonStop" type="radio" id="stopNonStop" value="{{$option}}"
+                                               required>
                                         <label class="pl-1 pr-4" for="{{$option}}">{{$option}}</label>
                                     @endforeach
                                     <x-form-error name="stopNonStop"/>
@@ -485,7 +508,7 @@
                                 <x-form-label for="numSections">Number of sections</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="numSections" type="text" id="numSections"
-                                                  placeholder="Number of sections" />
+                                                  placeholder="Number of sections"/>
                                     <x-form-error name="numSections"/>
                                 </div>
                                 @error('numSections')
@@ -499,7 +522,7 @@
                                 <x-form-label for="numLaps">Number of laps</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="numLaps" type="text" id="numLaps"
-                                                  placeholder="Number of laps" />
+                                                  placeholder="Number of laps"/>
                                     <x-form-error name="numLaps"/>
                                 </div>
                                 @error('numLaps')
@@ -513,7 +536,7 @@
                                 <x-form-label for="numRows">Number of rows in scoresheet</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="numRows" type="text" id="numRows"
-                                                  placeholder="Number of rows" />
+                                                  placeholder="Number of rows"/>
                                     <x-form-error name="numRows"/>
                                 </div>
                                 @error('numRows')
@@ -527,7 +550,7 @@
                                 <x-form-label for="numColumns">Number of columns in scoresheet</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="numColumns" type="text" id="numColumns"
-                                                  placeholder="Number of columns" />
+                                                  placeholder="Number of columns"/>
                                     <x-form-error name="numColumns"/>
                                 </div>
                                 @error('numColumns')
@@ -552,7 +575,7 @@
                                 <x-form-label for="authority">Permit Authority</x-form-label>
                                 <div class="mt-2">
                                     @foreach($authorityArray as $option)
-                                        <input name="authority" type="radio" id="authority" value="{{$option}}" >
+                                        <input name="authority" type="radio" id="authority" value="{{$option}}">
                                         <label class="pl-1 pr-4" for="authority">{{$option}}</label>
                                     @endforeach
                                     <x-form-error name="authority"/>
@@ -568,7 +591,7 @@
                                 <x-form-label for="centre">Centre</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="centre" type="text" id="centre"
-                                                  placeholder="Optional" />
+                                                  placeholder="Optional"/>
                                     <x-form-error name="centre"/>
                                 </div>
                                 @error('centre')
@@ -576,7 +599,6 @@
                                 @enderror
                             </x-form-field>
                         </div>
-
 
 
                         <div id="statusDiv" class="mt-2 col-span-3">
@@ -596,13 +618,12 @@
                         </div>
 
 
-
                         <div id="otherRestrictionDiv" class="mt-2 col-span-3">
                             <x-form-field>
                                 <x-form-label for="coc">Other Restriction</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="otherRestriction" type="text" id="otherRestriction"
-                                                  placeholder="Please give details" />
+                                                  placeholder="Please give details"/>
                                     <x-form-error name="otherRestriction"/>
                                 </div>
                                 @error('otherRestriction')
@@ -612,13 +633,12 @@
                         </div>
 
 
-
                         <div id="cocDiv" class="mt-2 col-span-3">
                             <x-form-field>
                                 <x-form-label for="coc">Clerk of Course</x-form-label>
                                 <div class="mt-2 col-span-2">
                                     <x-form-input name="coc" type="text" id="coc" required
-                                                  placeholder="Clerk of the course (please include licence number)" />
+                                                  placeholder="Clerk of the course (please include licence number)"/>
                                     <x-form-error name="coc"/>
                                 </div>
                                 @error('coc')
@@ -628,12 +648,12 @@
                         </div>
 
 
-
                         <div id="notesDiv" class="mt-4 col-span-full">
                             <x-form-field>
                                 <x-form-label for="notes">Additional notes</x-form-label>
                                 <div class="mt-2 ">
-                                    <textarea name="notes" type="text" id="notes" placeholder="Add any additional notes"></textarea>
+                                    <textarea name="notes" type="text" id="notes"
+                                              placeholder="Add any additional notes"></textarea>
                                 </div>
                                 @error('notes')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -655,7 +675,7 @@
                                 <x-form-label for="adultEntryFee">Adult entry fee</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="adultEntryFee" type="text" id="adultEntryFee" required
-                                                  placeholder="Omit £ signs eg. 25.00" />
+                                                  placeholder="Omit £ signs eg. 25.00"/>
                                     <x-form-error name="adultEntryFee"/>
                                 </div>
                                 @error('adultEntryFee')
@@ -669,7 +689,7 @@
                                 <x-form-label for="youthEntryFee">Youth entry fee</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="youthEntryFee" type="text" id="youthEntryFee" required
-                                                  placeholder="Omit £ signs eg. 25.00" />
+                                                  placeholder="Omit £ signs eg. 25.00"/>
                                     <x-form-error name="youthEntryFee"/>
                                 </div>
                                 @error('youthEntryFee')
@@ -683,7 +703,7 @@
                             <x-form-field>
                                 <x-form-label for="hasEodSurcharge">Surcharge for Entry on the Day</x-form-label>
                                 <div class="mt-2 col-span-3">
-                                    <input name="hasEodSurcharge" type="checkbox" value="1" id="hasEodSurcharge"  />
+                                    <input name="hasEodSurcharge" type="checkbox" value="1" id="hasEodSurcharge"/>
                                     <x-form-error name="hasEodSurcharge"/>
                                 </div>
                                 @error('hasEodSurcharge')
@@ -697,7 +717,7 @@
                                 <x-form-label for="eodSurcharge">Surcharge</x-form-label>
                                 <div class="mt-2 col-span-3">
                                     <x-form-input name="eodSurcharge" type="text" id="eodSurcharge"
-                                                  placeholder="Omit £ signs eg. 5.00" />
+                                                  placeholder="Omit £ signs eg. 5.00"/>
                                     <x-form-error name="eodSurcharge"/>
                                 </div>
                                 @error('eodSurcharge')
@@ -706,7 +726,10 @@
                             </x-form-field>
                         </div>
 
-                        <div class="text-gray-500 font-semibold col-span-full">Additional items for purchase such as T-shirts, Pub Supper or Camping can be added. Please contact TrialMonster - monster@trialmonster.uk - with details.</div>
+                        <div class="text-gray-500 font-semibold col-span-full">Additional items for purchase such as
+                            T-shirts, Pub Supper or Camping can be added. Please contact TrialMonster -
+                            monster@trialmonster.uk - with details.
+                        </div>
 
                     </div>
                 </div>

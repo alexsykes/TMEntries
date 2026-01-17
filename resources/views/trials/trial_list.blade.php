@@ -1,4 +1,5 @@
 <x-main>
+
     <x-slot:heading>
         {{config('app.name')}}
     </x-slot:heading>
@@ -16,7 +17,8 @@
                     </td>
                     <td class="text-sm hidden md:table-cell"><a
                                 href="/trial/details/{{$trial->id}}">{{$trial->club}}</a></td>
-                    <td class="text-sm pl-2 table-cell"><a href="/trial/details/{{$trial->id}}">{{$trial->name}}</a>
+                    <td class="text-sm pl-2 table-cell"><a href="/trial/details/{{$trial->id}}">{{$trial->venueName}}
+                            - {{$trial->name}}</a>
                     </td>
                     <td title="Entry list" class="text-sm underline table-cell"><a
                                 href="/trial/entrylist/{{$trial->id}}">Entry list</a></td>
