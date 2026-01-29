@@ -189,12 +189,12 @@ class TrialController extends Controller
         $trial->published = !$published;
         $trial->save();
 
-
-        $trials = DB::table('trials')
-            ->orderBy('date', 'desc')
-            ->get();
-
-        return redirect('adminTrials')->with('trials', $trials);
+        return redirect('/clubaccess');
+//        $trials = DB::table('trials')
+//            ->orderBy('date', 'desc')
+//            ->get();
+//
+//        return redirect('adminTrials')->with('trials', $trials);
     }
 
     /**
@@ -395,7 +395,7 @@ class TrialController extends Controller
                 $trial->update($attrs);
                 $this->addStripeProducts($trial, $attrs['youthEntryFee'], $attrs['adultEntryFee']);
 
-                return redirect("adminTrials");
+                return redirect("/adminTrials");
             default:
                 break;
         }
@@ -605,10 +605,7 @@ class TrialController extends Controller
 
     public function entrylist($id)
     {
-//        $entries = Entry::where('trial_id', $id)
-//            ->where('status', 1)
-//            ->get()
-//            ->sortBy('name');
+        $trial = Trial::findOrFail($id);
 
         $entries = Entry::where('trial_id', $id)
             ->whereIn('status', [1, 7, 8, 9])

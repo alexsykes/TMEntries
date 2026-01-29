@@ -351,6 +351,4 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
         $results = DB::select($query);
         return $results;
     }
-
-
 }

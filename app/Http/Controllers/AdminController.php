@@ -140,7 +140,7 @@ class AdminController extends Controller
         $trial = Trial::find(request('id'));
         $trial->isResultPublished = !$trial->isResultPublished;
         $trial->save();
-        return redirect('/admin/trials');;
+        return redirect('/admin/trials');
     }
 
     public function toggleEntry()
@@ -148,7 +148,7 @@ class AdminController extends Controller
         $trial = Trial::find(request('id'));
         $trial->isEntryLocked = !$trial->isEntryLocked;
         $trial->save();
-        return redirect('/admin/trials');;
+        return redirect('/admin/trials');
     }
 
     public function toggleScoring()
@@ -156,7 +156,7 @@ class AdminController extends Controller
         $trial = Trial::find(request('id'));
         $trial->isScoringLocked = !$trial->isScoringLocked;
         $trial->save();
-        return redirect('/admin/trials');;
+        return redirect('/admin/trials');
     }
 
     public function toggleLock()
@@ -164,7 +164,7 @@ class AdminController extends Controller
         $trial = Trial::find(request('id'));
         $trial->isLocked = !$trial->isLocked;
         $trial->save();
-        return redirect('/admin/trials');;
+        return redirect('/admin/trials');
     }
 
     public function about()
@@ -196,5 +196,52 @@ class AdminController extends Controller
             'email' => $request->email,
             'password' => $crypted,
         ]);
+    }
+
+    public function trialEdit(string $id)
+    {
+        $trial = Trial::find($id);
+        $club = $trial->club()->first();
+        $venue = $trial->venue()->first();
+        return view('admin.trial.edit', ['trial' => $trial, 'club' => $club, 'venue' => $venue]);
+    }
+
+    public function trialUpdate(Request $request)
+    {
+        $trial = Trial::find($request->id);
+
+        $trial->published = isset($request->published);
+        $trial->isEntryLocked = isset($request->isEntryLocked);
+        $trial->isScoringLocked = isset($request->isScoringLocked);
+        $trial->isLocked = isset($request->isLocked);
+        $trial->isResultPublished = isset($request->isResultPublished);
+
+        $trial->update();
+        return redirect('/admin/trials');
+    }
+
+    public function unpublish(Request $request)
+    {
+        $trial = Trial::find($request->id);
+        $trial->isEntryLocked = false;
+        $trial->isResultPublished = false;
+        $trial->isScoringLocked = false;
+        $trial->isLocked = false;
+
+        $trial->update();
+    }
+
+    public function archive(Request $request)
+    {
+
+        $prefix = config('database.connections.mysql.prefix');
+        $rawQuery = "INSERT INTO " . $prefix . "score_backup SELECT * FROM " . $prefix . "scores WHERE `trial_id` = '" . $request->id . "'";
+        $result = DB::select($rawQuery);
+        dump($result);
+    }
+
+    public function refund(Request $request)
+    {
+        dd($request->all());
     }
 }

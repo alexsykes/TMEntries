@@ -18,85 +18,68 @@ use App\Http\Controllers\UnsubscribeRequestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\VenueController;
+use App\Http\Middleware\CheckClubUser;
+use App\Http\Middleware\IsAdminUser;
 use Illuminate\Support\Facades\Route;
 
-//NOTE: wilcards {} should go at end!!!
-
-/*
-    Front door - display list of trials currently taking entries
-*/
-
-
+// Public routes
 Route::get('/', [TrialController::class, 'showTrialList'])->name('triallist');
-
-//Route::get('/', function () {
-//    return view('trials.trial_list');
-//});
 Route::get('dashboard', [TrialController::class, 'showTrialList'])->name('dashboard');
+Route::get('/trial/details/{trial_id}', [TrialController::class, 'details'])->name('details');
+Route::get('/trial/{trial_id}/entrylist', [TrialController::class, 'entryList'])->name('entrylist');
+Route::get('/trial/entrylist/{trial_id}', [TrialController::class, 'entryList'])->name('entrylistnew');
+Route::get('/trials', [TrialController::class, 'showTrialList'])->name('trials');
+Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');
+Route::get('/results/display/{id}', [ResultController::class, 'display'])->name('results.display.id');
+
+Route::get('/trial/programme/{id}', [TrialController::class, 'programme']);
 
 
 // CLUB access
-Route::get('/clubaccess', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified'])->name('clubaccess');
-Route::get('/adminTrials', [TrialController::class, 'adminTrials'])->middleware(['auth', 'verified'])->name('adminTrials');
+Route::get('/clubaccess', [TrialController::class, 'adminTrials'])->middleware(CheckClubUser::class)->name('clubaccess');
+Route::get('/adminTrials', [TrialController::class, 'adminTrials'])->middleware(IsAdminUser::class)->name('adminTrials');
+
+
 // ADMIN access
-Route::get('/adminaccess', [AdminController::class, 'userList'])->middleware(['auth', 'verified']);
-Route::get('/admin/users', [AdminController::class, 'userList'])->middleware(['auth', 'verified']);
-Route::get('/admin/trials', [AdminController::class, 'trialList'])->middleware(['auth', 'verified']);
-Route::get('/admin/results', [AdminController::class, 'resultList'])->middleware(['auth', 'verified']);
-Route::get('/admin/addAppUser', [AdminController::class, 'addAppUser'])->middleware(['auth', 'verified']);
-Route::post('/admin/create', [AdminController::class, 'storeAppUser'])->middleware(['auth', 'verified']);
+Route::get('/adminaccess', [AdminController::class, 'userList'])->middleware(IsAdminUser::class);
+Route::get('/admin/users', [AdminController::class, 'userList'])->middleware(IsAdminUser::class);
+Route::get('/admin/trials', [AdminController::class, 'trialList'])->middleware(IsAdminUser::class);
+Route::get('/admin/results', [AdminController::class, 'resultList'])->middleware(IsAdminUser::class);
+Route::get('/admin/addAppUser', [AdminController::class, 'addAppUser'])->middleware(IsAdminUser::class);
+Route::post('/admin/create', [AdminController::class, 'storeAppUser'])->middleware(IsAdminUser::class);
+
+Route::patch('/admin/trial/archive', [AdminController::class, 'archive'])->middleware(IsAdminUser::class);
+Route::patch('/admin/trial/unpublish', [AdminController::class, 'unpublish'])->middleware(IsAdminUser::class);
+Route::patch('/admin/trial/refund', [AdminController::class, 'refund'])->middleware(IsAdminUser::class);
 
 /*
  * TRIAL Routes
  */
-Route::get('/trial/programme/{id}', [TrialController::class, 'programme']);
-Route::get('/trials/adminEntryList/{id}', [TrialController::class, 'adminEntryList'])->middleware(['auth', 'verified']);
-Route::get('/admin/entry/edit/{id}', [EntryController::class, 'adminEdit'])->middleware(['auth', 'verified']);
-//Route::get('/admin/entry/edit/{id}', [EntryController::class, 'adminEdit'])->middleware(['auth', 'verified']);
-Route::get('/admin/entry/cancel/{id}', [EntryController::class, 'adminCancel'])->middleware(['auth', 'verified']);
-Route::get('/admin/entries/editRidingNumbers/{id}', [EntryController::class, 'editRidingNumbers'])->middleware(['auth', 'verified']);
-Route::patch('/admin/entries/update', [EntryController::class, 'adminEntryUpdate'])->middleware(['auth', 'verified']);
-Route::post('/admin/entries/store', [EntryController::class, 'adminEntryStore'])->middleware(['auth', 'verified']);
-//Route::get('/admin/entries/delete/{id}', [EntryController::class, 'adminEntryDelete'])->middleware(['auth', 'verified']);
-Route::get('/admin/entries/printSignOnSheets/{id}', [EntryController::class, 'printSignOnSheets'])->middleware(['auth', 'verified']);
-Route::get('/admin/sendMail', [AdminController::class, 'sendMail'])->middleware(['auth', 'verified']);
-
-Route::get('/admin/trial/toggleLock/{id}', [AdminController::class, 'toggleLock'])->middleware(['auth', 'verified']);
-Route::get('/admin/trial/toggleEntry/{id}', [AdminController::class, 'toggleEntry'])->middleware(['auth', 'verified']);
-Route::get('/admin/trial/toggleScoring/{id}', [AdminController::class, 'toggleScoring'])->middleware(['auth', 'verified']);
-Route::get('/admin/trial/toggleResultPublished/{id}', [AdminController::class, 'toggleResultPublished'])->middleware(['auth', 'verified']);
-
-Route::get('/admin/trial/refund/{id}', [AdminController::class, 'refundTrial'])->middleware(['auth', 'verified']);
-//
-
-Route::get('/trials/edit/{id}', [TrialController::class, 'edit'])->middleware(['auth', 'verified'])->name('edit');
-
-// Public
-Route::get('/trials', [TrialController::class, 'showTrialList'])->name('trials');
-Route::get('/trial/details/{trial_id}', [TrialController::class, 'details'])->name('details');
-Route::get('/trial/{trial_id}/entrylist', [TrialController::class, 'entryList'])->name('entrylist');
-Route::get('/trial/entrylist/{trial_id}', [TrialController::class, 'entryList'])->name('entrylistnew');
-
-Route::get('/trials/toggleVisibility/{id}', [TrialController::class, 'toggleVisibility'])->middleware(['auth', 'verified'])->name('toggleVisibility');
-Route::get('/trials/remove/{id}', [TrialController::class, 'remove'])->middleware(['auth', 'verified'])->name('remove');
-Route::patch('/trials/update', [TrialController::class, 'update'])->middleware(['auth', 'verified'])->name('update');
-Route::post('/trials/store', [TrialController::class, 'store'])->middleware(['auth', 'verified'])->name('store');
-Route::post('/trials/save', [TrialController::class, 'save'])->middleware(['auth', 'verified'])->name('save');
-//Route::post('/trials/edit/saveasnew', [TrialController::class, 'saveasnew'])->middleware(['auth', 'verified'])->name('saveasnew');
+Route::get('/trials/adminEntryList/{id}', [TrialController::class, 'adminEntryList'])->middleware(CheckClubUser::class);
+Route::get('/trials/edit/{id}', [TrialController::class, 'edit'])->middleware(CheckClubUser::class)->name('edit');
 
 
-Route::get('/trials/add', [TrialController::class, 'add'])->middleware(['auth', 'verified'])->name('add');
-Route::get('/trials/addTrialDetail/{id}', [TrialController::class, 'addTrialTrial'])->middleware(['auth', 'verified']);
-Route::get('/trials/addTrialEntry/{id}', [TrialController::class, 'addTrialEntry'])->middleware(['auth', 'verified']);
-Route::get('/trials/addTrialScoring/{id}', [TrialController::class, 'addTrialScoring'])->middleware(['auth', 'verified']);
-Route::get('/trials/addTrialRegs/{id}', [TrialController::class, 'addTrialRegs'])->middleware(['auth', 'verified']);
-Route::get('/trials/addTrialFees/{id}', [TrialController::class, 'addTrialFees'])->middleware(['auth', 'verified']);
-Route::get('/trials/info/{id}', [TrialController::class, 'info'])->middleware(['auth', 'verified']);
+// Usage - initial trial setup
+Route::post('/trials/save', [TrialController::class, 'save'])->middleware(CheckClubUser::class)->name('save');
+
+
+Route::get('/trials/add', [TrialController::class, 'add'])->middleware(CheckClubUser::class)->name('add');
+Route::get('/trials/addTrialDetail/{id}', [TrialController::class, 'addTrialTrial'])->middleware(CheckClubUser::class);
+Route::get('/trials/addTrialEntry/{id}', [TrialController::class, 'addTrialEntry'])->middleware(CheckClubUser::class);
+Route::get('/trials/addTrialScoring/{id}', [TrialController::class, 'addTrialScoring'])->middleware(CheckClubUser::class);
+Route::get('/trials/addTrialRegs/{id}', [TrialController::class, 'addTrialRegs'])->middleware(CheckClubUser::class);
+Route::get('/trials/addTrialFees/{id}', [TrialController::class, 'addTrialFees'])->middleware(CheckClubUser::class);
+Route::get('/trials/info/{id}', [TrialController::class, 'info'])->middleware(CheckClubUser::class);
+
+Route::get('/trials/remove/{id}', [TrialController::class, 'remove'])->middleware(CheckClubUser::class)->name('remove');
+Route::patch('/trials/update', [TrialController::class, 'update'])->middleware(CheckClubUser::class)->name('update');
+Route::post('/trials/store', [TrialController::class, 'store'])->middleware(CheckClubUser::class)->name('store');
+Route::get('/trials/toggleVisibility/{id}', [TrialController::class, 'toggleVisibility'])->middleware(CheckClubUser::class)->name('toggleVisibility');
 
 
 /*
 ENTRY Routes
-*/// Entry gateway -
+*/// Entry gateway for users
 Route::get('/userEntryList', [EntryController::class, 'userEntryList'])->middleware(['auth', 'verified'])->name('userEntryList');
 Route::get('/entries/register/{trialid}', [EntryController::class, 'register'])->middleware(['auth', 'verified']);
 Route::patch('/entries/userupdate', [EntryController::class, 'userupdate']);
@@ -152,17 +135,17 @@ Route::view('/checkout/cancel', [UserController::class, 'entryList'])->name('che
 Route::post('/entries/checkout', [EntryController::class, 'checkout']);
 
 // SCORING routes
-Route::get('/scores/setup/{id}', [ScoringController::class, 'setup'])->name('scores.setup');
-Route::post('/scores/setup', [ScoringController::class, 'setupscoregrid'])->name('scores.setupgrid');
-Route::get('/scores/grid/{id}', [ScoringController::class, 'grid'])->name('scores.grid');
+Route::get('/scores/setup/{id}', [ScoringController::class, 'setup'])->middleware(CheckClubUser::class)->name('scores.setup');
+Route::post('/scores/setup', [ScoringController::class, 'setupscoregrid'])->middleware(CheckClubUser::class)->name('scores.setupgrid');
+Route::get('/scores/grid/{id}', [ScoringController::class, 'grid'])->middleware(CheckClubUser::class)->name('scores.grid');
 //Route::get('/scores/section/{id}', [ScoringController::class, 'section'])->name('scores.section');
-Route::get('/scores/sectionScoresForRider/{trialid}/{rider}/{section}', [ScoringController::class, 'sectionScoresForRider'])->name('scores.sectionScoreForRider');
-Route::get('/scores/sectionScores/{id}/{section}', [ScoringController::class, 'sectionScores'])->name('scores.sectionScores');
+Route::get('/scores/sectionScoresForRider/{trialid}/{rider}/{section}', [ScoringController::class, 'sectionScoresForRider'])->middleware(CheckClubUser::class)->name('scores.sectionScoreForRider');
+Route::get('/scores/sectionScores/{id}/{section}', [ScoringController::class, 'sectionScores'])->middleware(CheckClubUser::class)->name('scores.sectionScores');
 
-Route::patch('/scores/updateSectionScores', [ScoringController::class, 'updateSectionScores'])->name('scores.updateSectionScores');
-Route::post('/scores/updateSectionScoreForRider', [ScoringController::class, 'updateSectionScoreForRider'])->name('scores.updateSectionScoreForRider');
-Route::post('/scores/confirmPublish', [ScoringController::class, 'confirmPublish'])->name('scores.confirmPublish');
-Route::post('/scores/publish', [ScoringController::class, 'publish'])->name('scores.publish');
+Route::patch('/scores/updateSectionScores', [ScoringController::class, 'updateSectionScores'])->middleware(CheckClubUser::class)->name('scores.updateSectionScores');
+Route::post('/scores/updateSectionScoreForRider', [ScoringController::class, 'updateSectionScoreForRider'])->middleware(CheckClubUser::class)->name('scores.updateSectionScoreForRider');
+Route::post('/scores/confirmPublish', [ScoringController::class, 'confirmPublish'])->middleware(CheckClubUser::class)->name('scores.confirmPublish');
+Route::post('/scores/publish', [ScoringController::class, 'publish'])->middleware(CheckClubUser::class)->name('scores.publish');
 
 // USER Routes
 Route::post('/user/checkout', [UserController::class, 'checkout']);
@@ -178,9 +161,30 @@ Route::get('/user/withdraw/{id}', [UserController::class, 'userWithdraw'])->midd
 Route::get('/unsubscribe', [UnsubscribeRequestController::class, 'store'])->name('user.unsubscribe');
 
 // ADMIN Routes
-Route::get('/admin/user/remove/{id}', [AdminController::class, 'adminRemove'])->middleware(['auth', 'verified'])->name('admin.remove');
-Route::get('/admin/editUser/{id}', [AdminController::class, 'editUser'])->middleware(['auth', 'verified'])->name('admin.editUser');
-Route::patch('/admin/updateUser', [AdminController::class, 'updateUser'])->middleware(['auth', 'verified'])->name('admin.updateUser');
+Route::get('/admin/user/remove/{id}', [AdminController::class, 'adminRemove'])->middleware(IsAdminUser::class)->name('admin.remove');
+Route::get('/admin/editUser/{id}', [AdminController::class, 'editUser'])->middleware(IsAdminUser::class)->name('admin.editUser');
+Route::patch('/admin/updateUser', [AdminController::class, 'updateUser'])->middleware(IsAdminUser::class)->name('admin.updateUser');
+
+
+Route::get('/admin/entry/edit/{id}', [EntryController::class, 'adminEdit'])->middleware(CheckClubUser::class);
+//Route::get('/admin/entry/edit/{id}', [EntryController::class, 'adminEdit'])->middleware(CheckClubUser::class);
+Route::get('/admin/entry/cancel/{id}', [EntryController::class, 'adminCancel'])->middleware(CheckClubUser::class);
+Route::get('/admin/entries/editRidingNumbers/{id}', [EntryController::class, 'editRidingNumbers'])->middleware(CheckClubUser::class);
+Route::patch('/admin/entries/update', [EntryController::class, 'adminEntryUpdate'])->middleware(CheckClubUser::class);
+Route::post('/admin/entries/store', [EntryController::class, 'adminEntryStore'])->middleware(CheckClubUser::class);
+//Route::get('/admin/entries/delete/{id}', [EntryController::class, 'adminEntryDelete'])->middleware(['auth', 'verified']);
+Route::get('/admin/entries/printSignOnSheets/{id}', [EntryController::class, 'printSignOnSheets'])->middleware(CheckClubUser::class);
+Route::get('/admin/sendMail', [AdminController::class, 'sendMail'])->middleware(CheckClubUser::class);
+
+
+Route::get('/admin/trial/edit/{id}', [AdminController::class, 'trialEdit'])->middleware(IsAdminUser::class);
+Route::patch('/admin/trial/update', [AdminController::class, 'trialUpdate'])->middleware(IsAdminUser::class);
+Route::get('/admin/trial/toggleLock/{id}', [AdminController::class, 'toggleLock'])->middleware(IsAdminUser::class);
+Route::get('/admin/trial/toggleEntry/{id}', [AdminController::class, 'toggleEntry'])->middleware(IsAdminUser::class);
+Route::get('/admin/trial/toggleScoring/{id}', [AdminController::class, 'toggleScoring'])->middleware(IsAdminUser::class);
+Route::get('/admin/trial/toggleResultPublished/{id}', [AdminController::class, 'toggleResultPublished'])->middleware(IsAdminUser::class);
+
+Route::get('/admin/trial/refund/{id}', [AdminController::class, 'refundTrial'])->middleware(IsAdminUser::class);
 
 // MAIL Routes
 Route::get('/admin/mails', [AdminController::class, 'mailList'])->middleware(['auth', 'verified'])->name('admin.mails');
@@ -206,8 +210,6 @@ Route::post('/usermail/send', [ClubmailController::class, 'send'])->middleware([
 Route::post('/usermail/prepare', [ClubmailController::class, 'prepare'])->middleware(['auth', 'verified'])->name('usermail.prepare');
 Route::get('/usermail/unpublish/{id}', [ClubmailController::class, 'unpublish'])->middleware(['auth', 'verified']);
 // RESULT Routes
-Route::get('/results/list', [ResultController::class, 'list'])->name('results.list');
-Route::get('/results/display/{id}', [ResultController::class, 'display'])->name('results.display.id');
 Route::get('/result/edit/{id}', [ResultController::class, 'edit']);
 Route::patch('/results/update', [ResultController::class, 'update']);
 
@@ -242,12 +244,12 @@ Route::get('/club/member/detail/{id}', [ClubController::class, 'memberDetail'])-
 Route::post('/club/member/addManual', [ClubController::class, 'addManual'])->middleware(['auth', 'verified']);
 
 // SERIES Routes
-Route::get('/series/list', [SeriesController::class, 'list'])->middleware(['auth', 'verified']);
+Route::get('/series/list', [SeriesController::class, 'list'])->middleware(CheckClubUser::class);
 Route::get('/series/detail', [SeriesController::class, 'detail']);
-Route::get('/series/add', [SeriesController::class, 'add'])->middleware(['auth', 'verified']);
-Route::get('/series/edit/{id}', [SeriesController::class, 'edit'])->middleware(['auth', 'verified']);
-Route::post('/series/store', [SeriesController::class, 'store'])->middleware(['auth', 'verified']);
-Route::patch('/series/update', [SeriesController::class, 'update'])->middleware(['auth', 'verified']);
+Route::get('/series/add', [SeriesController::class, 'add'])->middleware(CheckClubUser::class);
+Route::get('/series/edit/{id}', [SeriesController::class, 'edit'])->middleware(CheckClubUser::class);
+Route::post('/series/store', [SeriesController::class, 'store'])->middleware(CheckClubUser::class);
+Route::patch('/series/update', [SeriesController::class, 'update'])->middleware(CheckClubUser::class);
 
 
 //ABOUT Routes
@@ -255,12 +257,12 @@ Route::get('/about', [AboutController::class, 'about']);
 
 
 //Import routes
-Route::get('/import', [ImportController::class, 'showImportForm'])->name('import.form');
-Route::post('/import', [ImportController::class, 'importEntries'])->name('import.process');
+Route::get('/import', [ImportController::class, 'showImportForm'])->middleware(CheckClubUser::class)->name('import.form');
+Route::post('/import', [ImportController::class, 'importEntries'])->middleware(CheckClubUser::class)->name('import.process');
 
 // Utility routes
 Route::get('/createResultPDF/{id}', [UtilityController::class, 'createResultPDF'])->middleware(['auth', 'verified']);
-Route::patch('/riderNumber/update', [EntryController::class, 'updateRiderNumber'])->middleware(['auth', 'verified']);
+Route::patch('/riderNumber/update', [EntryController::class, 'updateRiderNumber'])->middleware(CheckClubUser::class);
 
 
 // MIDDLEWARE

@@ -15,7 +15,6 @@
                     If($fifty_fifty != "") {
                         $hasFifty = true;
                         $fiftyArray = explode(",", $fifty_fifty);
-
                     }
                     $courselist = $trial->courselist;
                     $classlist = $trial->classlist;
