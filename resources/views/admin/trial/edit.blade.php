@@ -79,8 +79,60 @@
                 </div>
             </div>
         </form>
+    </div>
 
+    <div class=" mt-00 mb-4  bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+        <div class="font-bold uppercase text-center w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">
+            Danger! The following
+            actions may result in loss
+            of data or income. A
+            full backup
+            should be made before selecting any
+            of them.
+        </div>
         <div class="grid sm:grid-cols-2 gap-x-4 p-2 pr-2">
+
+            <div class="col-span-full">
+                <form action="/admin/trial/backupTrial" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" value="{{$trial->id}}" name="id" id="id">
+                    <div class="col-span-full">
+                        <div class="font-semibold pt-2 text-red-700">
+                            Backup score data
+                        </div>
+                        <div class="">Download a backup of the score and entry data for this trial.
+                        </div>
+                        <button type="submit" name="resetScoringButton" value="apply"
+                                class="rounded-md mt-2 bg-slate-900  px-3 py-1 text-sm font-light  border border-black text-white drop-shadow-lg hover:bg-gray-300 hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
+                            Backup scoring data
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            @if($trial->isScoringSetup)
+                <div class="col-span-1">
+                    <form action="/admin/trial/resetScoring" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" value="{{$trial->id}}" name="id" id="id">
+                        <div class="col-span-1">
+                            <div class="font-semibold pt-2 text-red-700">
+                                Reset scoring
+                            </div>
+                            <div class="">
+                                Resetting the scoring for a trial will remove the current scoring setup and should only
+                                be used if there has been a major change to the number of sections, laps etc.
+                            </div>
+                            <button type="submit" name="resetScoringButton" value="apply"
+                                    class="rounded-md mt-2 bg-slate-900  px-3 py-1 text-sm font-light  border border-black text-white drop-shadow-lg hover:bg-gray-300 hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
+                                Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            @endif
             @if($trial->isResultPublished)
                 <div class="col-span-1">
                     <form action="/admin/trial/unpublish" method="POST">

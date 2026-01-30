@@ -51,6 +51,8 @@ Route::post('/admin/create', [AdminController::class, 'storeAppUser'])->middlewa
 Route::patch('/admin/trial/archive', [AdminController::class, 'archive'])->middleware(IsAdminUser::class);
 Route::patch('/admin/trial/unpublish', [AdminController::class, 'unpublish'])->middleware(IsAdminUser::class);
 Route::patch('/admin/trial/refund', [AdminController::class, 'refund'])->middleware(IsAdminUser::class);
+Route::patch('/admin/trial/backupTrial', [AdminController::class, 'backupTrial'])->middleware(IsAdminUser::class);
+Route::patch('/admin/trial/resetScoring', [AdminController::class, 'resetScoring'])->middleware(IsAdminUser::class);
 
 /*
  * TRIAL Routes

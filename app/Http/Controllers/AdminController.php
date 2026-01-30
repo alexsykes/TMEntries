@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TrialBackupCompleted;
 use App\Mail\TMLogin;
 use App\Models\AppUser;
 use App\Models\Trial;
@@ -243,5 +244,43 @@ class AdminController extends Controller
     public function refund(Request $request)
     {
         dd($request->all());
+    }
+
+    public function backupTrial(Request $request)
+    {
+        $id = $request->id;
+        $exportDir = "backups/$id/";
+
+        if (!file_exists($exportDir)) {
+            mkdir($exportDir, 0777, true);
+        }
+
+        $trial = Trial::find($id)
+            ->toJson();
+
+//        Get all score data for trial
+        $scores = Trial::find($request->id)->scores()->get()
+            ->toJson();
+
+//        Get relevant entry data for trial
+        $entries = Trial::find($request->id)->entries()
+            ->select('name', 'class', 'course', 'sectionScores', 'sequentialScores', 'make', 'size', 'ridingNumber', 'dob')
+            ->get()
+            ->toJson();
+
+        $filename = "Scores.json";
+        file_put_contents($exportDir . $filename, $scores);
+        $filename = "Trial.json";
+        file_put_contents($exportDir . $filename, $trial);
+        $filename = "Entries.json";
+        file_put_contents($exportDir . $filename, $entries);
+
+        TrialBackupCompleted::dispatch($id);
+        return redirect('/admin/trial/edit/' . $id);
+    }
+
+    public function resetScoring(Request $request)
+    {
+
     }
 }

@@ -3,19 +3,30 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Models\Club;
-use App\Models\Venue;
 
 class Trial extends Model
 {
-    public function venue(): HasOne {
+    protected $guarded = ['id'];
+
+    public function venue(): HasOne
+    {
         return $this->hasOne(Venue::class, 'id', 'venueID');
     }
 
-    public function club(): HasOne {
+    public function club(): HasOne
+    {
         return $this->hasOne(Club::class, 'id', 'club_id');
     }
 
-    protected $guarded = ['id'];
+    public function scores(): HasMany
+    {
+        return $this->hasMany(Score::class);
+    }
+
+    public function entries(): HasMany
+    {
+        return $this->hasMany(Entry::class);
+    }
 }

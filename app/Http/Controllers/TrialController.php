@@ -637,6 +637,7 @@ class TrialController extends Controller
         $ridingGroups = DB::table('entries')
             ->select(DB::raw('startsAt, GROUP_CONCAT(name ORDER BY name) AS names, GROUP_CONCAT(ridingNumber ORDER BY name) AS numbers, GROUP_CONCAT(Concat(ridingNumber, \' \', name) ORDER BY name SEPARATOR \', \') AS entries'))
             ->where('trial_id', $id)
+            ->where('startsAt', '>', 0)
             ->whereIn('status', [0, 1, 4, 5, 7, 8, 9, 10])
             ->groupBy('startsAt')
             ->get();
