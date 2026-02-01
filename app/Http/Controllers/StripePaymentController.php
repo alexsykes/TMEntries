@@ -48,7 +48,6 @@ class StripePaymentController extends Controller
             ->whereNot('extras', '')
             ->first();
 
-
         $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
@@ -67,50 +66,49 @@ class StripePaymentController extends Controller
         }
 
 //        if ($extras) {
-            $extraProductIDs = array_unique(explode(",", $extras->extras));
+        $extraProductIDs = array_unique(explode(",", $extras->extras));
 
 
-
-            if (sizeof($extraProductIDs) > 0) {
-                foreach ($extraProductIDs as $extra) {
-                    $optionalItem =
-                        ['price' => $extra,
-                            'quantity' => $numEntries,
-                            'adjustable_quantity' => [
-                                'enabled' => true,
-                                'minimum' => 0,
-                                'maximum' => $numEntries,
-                            ],
-                        ];
-                    array_push($optionalItems, $optionalItem);
-                }
+        if (sizeof($extraProductIDs) > 0) {
+            foreach ($extraProductIDs as $extra) {
+                $optionalItem =
+                    ['price' => $extra,
+                        'quantity' => $numEntries,
+                        'adjustable_quantity' => [
+                            'enabled' => true,
+                            'minimum' => 0,
+                            'maximum' => $numEntries,
+                        ],
+                    ];
+                array_push($optionalItems, $optionalItem);
             }
+        }
 //        }
 
-        if($extras->extras) {
-        $requestArray = [
-            'success_url' => $redirectUrl,
-            'cancel_url' => $cancelUrl,
+        if ($extras->extras) {
+            $requestArray = [
+                'success_url' => $redirectUrl,
+                'cancel_url' => $cancelUrl,
 
-            'consent_collection' => ['terms_of_service' => 'required'],
-            'custom_text' => ['terms_of_service_acceptance' =>
-                ['message' => 'I agree to the Terms and Conditions as displayed on the TrialMonster website',],
-            ],
-            'line_items' => [
-                $lineItems
-            ],
-            'optional_items' => [
-                $optionalItems
-            ],
-            'phone_number_collection' => ['enabled' => true],
-            'mode' => 'payment',
-            'allow_promotion_codes' => false,
-            'metadata' => [
-                'entryIDs' => $request->entryIDs,
-                'trialID' => $trialIDString,
-            ]
-        ]; }
-        else {
+                'consent_collection' => ['terms_of_service' => 'required'],
+                'custom_text' => ['terms_of_service_acceptance' =>
+                    ['message' => 'I agree to the Terms and Conditions as displayed on the TrialMonster website',],
+                ],
+                'line_items' => [
+                    $lineItems
+                ],
+                'optional_items' => [
+                    $optionalItems
+                ],
+                'phone_number_collection' => ['enabled' => true],
+                'mode' => 'payment',
+                'allow_promotion_codes' => false,
+                'metadata' => [
+                    'entryIDs' => $request->entryIDs,
+                    'trialID' => $trialIDString,
+                ]
+            ];
+        } else {
             $requestArray = [
                 'success_url' => $redirectUrl,
                 'cancel_url' => $cancelUrl,

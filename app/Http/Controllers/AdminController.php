@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Stripe\StripeClient;
+use Stripe\Exception\InvalidRequestException;
 
 class AdminController extends Controller
 {
@@ -234,16 +235,12 @@ class AdminController extends Controller
 
     public function archive(Request $request)
     {
-
         $prefix = config('database.connections.mysql.prefix');
         $rawQuery = "INSERT INTO " . $prefix . "score_backup SELECT * FROM " . $prefix . "scores WHERE `trial_id` = '" . $request->id . "'";
         $result = DB::select($rawQuery);
-        dump($result);
-    }
 
-    public function refund(Request $request)
-    {
-        dd($request->all());
+        $deleted = DB::table('scores')->where('trial_id', $request->id)->delete();
+        return redirect('/admin/trial/edit/' . $request->id);
     }
 
     public function backupTrial(Request $request)
@@ -281,6 +278,79 @@ class AdminController extends Controller
 
     public function resetScoring(Request $request)
     {
+        $id = $request->id;
 
+        $affected = DB::table('scores')
+            ->where('trial_id', $id)
+            ->update(['score' => null, 'updated_at' => null]);
+        return redirect('/admin/trial/edit/' . $id);
+    }
+
+    public function refund(Request $request)
+    {
+        $trialID = $request->id;
+// Get product data for trial
+        $productArray = DB::table('products')
+            ->where('trial_id', $trialID)
+            ->where('product_category', 'entry fee')
+            ->select('stripe_product_id')
+            ->get()
+            ->toArray();
+
+        $productIDs = array_column($productArray, 'stripe_product_id');
+
+//        Find intents for entries
+        $intents = DB::table('purchases')
+            ->whereIn('stripe_product_id', $productIDs)
+            ->distinct()
+            ->get('pi')
+            ->toArray();
+
+        $intentIDs = array_column($intents, 'pi');
+
+
+        foreach ($intentIDs as $intentID) {
+            $refundValue = 0;
+            $lineItems = "";
+            $purchases = DB::table('purchases')
+                ->join('prices', 'purchases.stripe_product_id', '=', 'prices.stripe_product_id')
+                ->join('products', 'purchases.stripe_product_id', '=', 'products.stripe_product_id')
+                ->where('pi', $intentID)
+                ->select('quantity', 'purchases.stripe_product_id', 'prices.stripe_price', 'products.product_name')
+                ->get();
+
+            foreach ($purchases as $purchase) {
+                $quantity = $purchase->quantity;
+                $itemValue = $purchase->stripe_price * $quantity;
+                $lineValuePounds = $itemValue / 100;
+                $itemValuePounds = $purchase->stripe_price / 100;
+                $line = "$purchase->product_name($quantity) - £$itemValuePounds - £$lineValuePounds \n";
+
+                $lineItems .= $line;
+
+                $refundValue += $itemValue;
+            }
+
+
+            $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
+
+            try {
+                $result = $stripe->refunds->create([
+                    'payment_intent' => $intentID,
+                    'amount' => $refundValue,        // Need to get amount of item
+                    'metadata' => [
+                        'line_items' => $lineItems,
+                        'refunded_amount' => $refundValue,
+                    ]
+                ]);
+//            dd($result);
+            } catch (InvalidRequestException $e) {
+//                dump($e);
+                $message = $e->getMessage();
+                Info("Refund failed - $message");
+            }
+        }
+
+        return redirect('/admin/trial/edit/' . $trialID);
     }
 }

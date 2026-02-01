@@ -425,7 +425,6 @@ class EntryController extends Controller
 
     public function store(Request $request)
     {
-//        $trial_id = session('trial_id');
         $trial_id = $request->trial_id;
         $trial = Trial::findOrFail($trial_id);
 
@@ -455,7 +454,6 @@ class EntryController extends Controller
 
 //        Check for entry limit
         $hasEntryLimit = $trial->hasEntryLimit;
-
 
         $status = 0;
 
@@ -523,6 +521,8 @@ class EntryController extends Controller
 
         $attributes['dob'] = $request->dob;
         $entry = Entry::create($attributes);
+
+//        Entry has Stripe product and price codes entered at time of entry
 
 //        $trial = Trial::findOrFail($attributes['trial_id']);
 
