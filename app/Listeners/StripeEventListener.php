@@ -374,7 +374,7 @@ function sendNotification($items, $entryIDs)
 {
     $bcc = "monster@trialmonster.uk";
     $email = "ammnewhouse@gmail.com";
-//    $email = "alex@alexsykes.net";
+    $email = "alex@alexsykes.net";
     $entryIDArray = explode(',', $entryIDs);
 
 

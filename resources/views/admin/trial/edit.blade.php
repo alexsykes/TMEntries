@@ -193,10 +193,19 @@
                             An
                             optional administration fee (up to £3) can be retained to cover costs.
                         </div>
-                        <button type="submit" name="submitbutton" value="apply"
-                                class="rounded-md mt-2 bg-slate-900  px-3 py-1 text-sm font-light  border border-black text-white drop-shadow-lg hover:bg-gray-300 hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
-                            Refund
-                        </button>
+                        <div><label class="font-semibold text-red-700" for="fee">Admin Fee (£)</label>
+                            <input class="w-12 pl-2" type="text" name="fee" id="fee"/></div>
+
+                        <div class="mt-2">
+                            <button type="submit" name="submitbutton" value="refund"
+                                    class="rounded-md mt-2 bg-slate-900  px-3 py-1 text-sm font-light  border border-black text-white drop-shadow-lg hover:bg-gray-300 hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
+                                Refund entry fees
+                            </button>
+                            <button type="submit" name="submitbutton" value="refundAll"
+                                    class="ml-2 rounded-md mt-2 bg-slate-900  px-3 py-1 text-sm font-light  border border-black text-white drop-shadow-lg hover:bg-gray-300 hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black">
+                                Refund all payments
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>

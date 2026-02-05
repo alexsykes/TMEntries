@@ -488,7 +488,6 @@ class ClubController extends Controller
 
                         Mail::to($club_member->email)
                             ->bcc($bcc)
-//                ->bcc($amanda)
                             ->send(new WelcomeNewMember($club_member));
 
 
@@ -496,7 +495,6 @@ class ClubController extends Controller
                         info("Send acknowledgement email to $club_member->email");
                         Mail::to($club_member->email)
                             ->bcc($bcc)
-//                ->bcc($amanda)
                             ->send(new RenewalAcknowledgement($club_member));
                     }
                 }
@@ -567,10 +565,28 @@ class ClubController extends Controller
 
         if (!is_null($request->confirmed)) {
             $attributes['confirmed'] = true;
+
         }
 
 
         $member = ClubMember::create($attributes);
+
+        if ($member->confirmed) {
+            if ($member->membership_type == 'new') {
+                info("Send welcome email to $member->email");
+
+                Mail::to($member->email)
+                    ->send(new WelcomeNewMember($member));
+
+
+            } else {
+                info("Send acknowledgement email to $member->email");
+                Mail::to($member->email)
+                    ->send(new RenewalAcknowledgement($member));
+            }
+        }
+
+
 //        Add to Observer mailing list
         if ($attributes['membership_category'] == 'observer') {
             $email = trim($attributes['email']);

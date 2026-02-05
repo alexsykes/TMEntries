@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Stripe\StripeClient;
 use Stripe\Exception\InvalidRequestException;
+use Stripe\StripeClient;
 
 class AdminController extends Controller
 {
@@ -289,6 +289,45 @@ class AdminController extends Controller
     public function refund(Request $request)
     {
         $trialID = $request->id;
+
+        $task = $request->submitbutton;
+        $adminFee = $request->fee;
+
+        switch ($task) {
+            case 'refund':
+                $pis = DB::select("SELECT stripe_payment_intent pi, email,  GROUP_CONCAT(e.name SEPARATOR ', ') AS names, SUM(p.stripe_price) AS entryIDs 
+FROM `tme_entries` e
+JOIN tme_prices p ON e.`stripe_price_id` = p.`stripe_price_id`
+WHERE e.`trial_id` = $trialID AND e.status = 1 
+GROUP BY `stripe_payment_intent`, `email`");
+
+                foreach ($pis as $pi) {
+//                    Change entry status to 2
+                    $entryIDs = $pi->entryIDs;
+                    $entries = DB::table('entries')
+                        ->update(['status' => 2, 'updated_at' => date('Y-m-d H:i:s')]);
+
+//                    Request refund from Stripe
+
+
+                }
+
+                break;
+            case 'refundAll':
+
+
+                break;
+            default:
+                break;
+
+        }
+        return redirect('/admin/trial/edit/' . $trialID);
+    }
+
+
+    public function refund_(Request $request)
+    {
+        $trialID = $request->id;
 // Get product data for trial
         $productArray = DB::table('products')
             ->where('trial_id', $trialID)
@@ -308,49 +347,61 @@ class AdminController extends Controller
 
         $intentIDs = array_column($intents, 'pi');
 
+        $numRefunds = count($intents);
+        info("$numRefunds refunds to process");
 
         foreach ($intentIDs as $intentID) {
+//            Reset for each intent
             $refundValue = 0;
             $lineItems = "";
+            $entryIDarray = array();
+
+//            Get purchases for intent
             $purchases = DB::table('purchases')
                 ->join('prices', 'purchases.stripe_product_id', '=', 'prices.stripe_product_id')
                 ->join('products', 'purchases.stripe_product_id', '=', 'products.stripe_product_id')
                 ->where('pi', $intentID)
-                ->select('quantity', 'purchases.stripe_product_id', 'prices.stripe_price', 'products.product_name')
+                ->select('quantity', 'purchases.entryIDs as entryIDs', 'purchases.stripe_product_id', 'prices.stripe_price', 'products.product_name')
                 ->get();
 
+//            Get details of each purchase and prepare for
+//              * Stripe transcation
+//              * Email notification
             foreach ($purchases as $purchase) {
                 $quantity = $purchase->quantity;
                 $itemValue = $purchase->stripe_price * $quantity;
                 $lineValuePounds = $itemValue / 100;
                 $itemValuePounds = $purchase->stripe_price / 100;
                 $line = "$purchase->product_name($quantity) - £$itemValuePounds - £$lineValuePounds \n";
+                array_push($entryIDarray, $purchase->entryIDs);
 
                 $lineItems .= $line;
 
                 $refundValue += $itemValue;
             }
-
+            $entryIDs = $entryIDarray[0];
 
             $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
+            info("Entry IDs: $entryIDs");
             try {
                 $result = $stripe->refunds->create([
                     'payment_intent' => $intentID,
                     'amount' => $refundValue,        // Need to get amount of item
                     'metadata' => [
+                        'reason' => 'cancellation',
                         'line_items' => $lineItems,
                         'refunded_amount' => $refundValue,
+                        'pi' => $intentID,
+                        'entryIDs' => $entryIDs,
                     ]
                 ]);
-//            dd($result);
+//                Catch error if, for example, refund has already been made
             } catch (InvalidRequestException $e) {
-//                dump($e);
                 $message = $e->getMessage();
                 Info("Refund failed - $message");
             }
         }
-
         return redirect('/admin/trial/edit/' . $trialID);
     }
 }

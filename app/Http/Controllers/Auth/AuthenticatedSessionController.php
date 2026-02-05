@@ -36,6 +36,10 @@ class AuthenticatedSessionController extends Controller
         $user->last_login = now();
         $user->save();
 
+        if (Auth::user()->isAdminUser) {
+            return redirect()->intended(route('admintrials', absolute: false));
+        }
+
         if (Auth::user()->isClubUser) {
             return redirect()->intended(route('clubaccess', absolute: false));
         }

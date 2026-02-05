@@ -41,9 +41,9 @@ Route::get('/adminTrials', [TrialController::class, 'adminTrials'])->middleware(
 
 
 // ADMIN access
-Route::get('/adminaccess', [AdminController::class, 'userList'])->middleware(IsAdminUser::class);
+Route::get('/adminaccess', [AdminController::class, 'userList'])->middleware(IsAdminUser::class)->name('adminaccess');
 Route::get('/admin/users', [AdminController::class, 'userList'])->middleware(IsAdminUser::class);
-Route::get('/admin/trials', [AdminController::class, 'trialList'])->middleware(IsAdminUser::class);
+Route::get('/admin/trials', [AdminController::class, 'trialList'])->middleware(IsAdminUser::class)->name('admintrials');
 Route::get('/admin/results', [AdminController::class, 'resultList'])->middleware(IsAdminUser::class);
 Route::get('/admin/addAppUser', [AdminController::class, 'addAppUser'])->middleware(IsAdminUser::class);
 Route::post('/admin/create', [AdminController::class, 'storeAppUser'])->middleware(IsAdminUser::class);
