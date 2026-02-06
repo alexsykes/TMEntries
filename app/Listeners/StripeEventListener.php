@@ -3,6 +3,8 @@
 namespace App\Listeners;
 
 use App\Events\TrialFull;
+use App\Mail\CancellationRefundConfirmed;
+use App\Mail\CancellationRefundRequested;
 use App\Mail\EntryOffer;
 use App\Mail\InvoiceOverdue;
 use App\Mail\PaymentReceived;
@@ -406,8 +408,12 @@ function sendNotification($items, $entryIDs)
 
 function onRefundCreated(mixed $object)
 {
+
+    $bcc = "monster@trialmonster.uk";
+    $reason = $object['metadata']['reason'];
+
 //    Get the entryID from the metadata
-    if (isset($object['metadata']['entry_id'])) {
+    if ($reason == 'user_request') {
         $entryID = $object['metadata']['entry_id'];
         $reason = $object['metadata']['reason'];
         $status = $object['status'];
@@ -429,13 +435,39 @@ function onRefundCreated(mixed $object)
                 ->bcc($bcc)
                 ->queue(new RefundRequested($entry, $reason));
         }
+    } elseif ($reason == 'cancellation') {
+//           get all metadata
+        $entryIDs = $object['metadata']['entryIDs'];
+        $names = $object['metadata']['names'];
+        $email = $object['metadata']['email'];
+        $refunded_amount = $object['metadata']['refunded_amount'];
+        $adminFee = $object['metadata']['admin_fee'];
+
+        $nameArray = explode(',', $names);
+        $idArray = explode(',', $entryIDs);
+
+        $entryData = "";
+        for ($i = 0; $i < count($idArray); $i++) {
+            $entryData .= "Ref: " . $idArray[$i] . " - " . $nameArray[$i] . "\n";
+        }
+
+        $entryIDs = explode(',', $entryIDs);
+        $entries = DB::table('entries')->whereIn('id', $entryIDs)
+            ->update(['status' => 2, 'updated_at' => now()]);
+
+        Mail::to($email)
+            ->bcc($bcc)
+            ->queue(new CancellationRefundRequested($refunded_amount, $adminFee, $entryData));
     }
 }
 
 function onRefundUpdated(mixed $object)
 {
-    //    Get the entryID from the metadata
-    if (isset($object['metadata']['entry_id'])) {
+    $bcc = "monster@trialmonster.uk";
+    $reason = $object['metadata']['reason'];
+
+//    Get the entryID from the metadata
+    if ($reason == 'user_request') {
         $entryID = $object['metadata']['entry_id'];
         $reason = $object['metadata']['reason'];
         $status = $object['status'];
@@ -467,7 +499,36 @@ function onRefundUpdated(mixed $object)
                 ->bcc($bcc)
                 ->queue(new RefundConfirmed($entry, $reason));
         }
+    } elseif ($reason == 'cancellation') {
+        //           get all metadata
+        $entryIDs = $object['metadata']['entryIDs'];
+        $names = $object['metadata']['names'];
+        $email = $object['metadata']['email'];
+        $refunded_amount = $object['metadata']['refunded_amount'];
+        $adminFee = $object['metadata']['admin_fee'];
+
+        $nameArray = explode(',', $names);
+        $idArray = explode(',', $entryIDs);
+
+        $entryData = "";
+        for ($i = 0; $i < count($idArray); $i++) {
+            $entryData .= "Ref: " . $idArray[$i] . " - " . $nameArray[$i] . "\n";
+        }
+
+        $entryIDs = explode(',', $entryIDs);
+        $entries = DB::table('entries')->whereIn('id', $entryIDs)
+            ->update(['status' => 3, 'updated_at' => now()]);
+
+        Mail::to($email)
+            ->bcc($bcc)
+            ->queue(new CancellationRefundConfirmed($refunded_amount, $adminFee, $entryData));
+
     }
+}
+
+function onRefundFailed(mixed $object)
+{
+    info("RefundFailed");
 }
 
 function onPaymentIntentSucceeded()
@@ -509,6 +570,11 @@ class StripeEventListener
                 if ($status == 'succeeded') {
                     onRefundUpdated($object);
                 }
+                break;
+
+            case 'refund.failed':
+                $object = $event->payload['data']['object'];
+                onRefundFailed($object);
                 break;
 
             case 'checkout.session.completed':

@@ -291,27 +291,53 @@ class AdminController extends Controller
         $trialID = $request->id;
 
         $task = $request->submitbutton;
-        $adminFee = $request->fee;
+        $adminFee = is_null($request->fee) ? 0 : 100 * $request->fee;
 
         switch ($task) {
             case 'refund':
-                $pis = DB::select("SELECT stripe_payment_intent pi, email,  GROUP_CONCAT(e.name SEPARATOR ', ') AS names, SUM(p.stripe_price) AS entryIDs 
+                $pis = DB::select("SELECT stripe_payment_intent AS pi, 
+       email,  
+       GROUP_CONCAT(e.name SEPARATOR ', ') AS names, 
+       GROUP_CONCAT(e.id SEPARATOR ',') AS entryIDs, 
+       SUM(p.stripe_price) AS value 
 FROM `tme_entries` e
 JOIN tme_prices p ON e.`stripe_price_id` = p.`stripe_price_id`
 WHERE e.`trial_id` = $trialID AND e.status = 1 
 GROUP BY `stripe_payment_intent`, `email`");
 
+
                 foreach ($pis as $pi) {
 //                    Change entry status to 2
+//                    $entries = DB::table('entries')
+//                        ->update(['status' => 2, 'updated_at' => date('Y-m-d H:i:s')]);
+
+                    $intent = $pi->pi;
+                    $value = $pi->value - $adminFee;
                     $entryIDs = $pi->entryIDs;
-                    $entries = DB::table('entries')
-                        ->update(['status' => 2, 'updated_at' => date('Y-m-d H:i:s')]);
-
+                    $names = $pi->names;
+                    $email = $pi->email;
 //                    Request refund from Stripe
-
-
+                    $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
+                    try {
+                        $result = $stripe->refunds->create([
+                            'payment_intent' => $intent,
+                            'amount' => $value,        // Need to get amount of item
+                            'metadata' => [
+                                'reason' => 'cancellation',
+                                'refunded_amount' => $value,
+                                'pi' => $intent,
+                                'entryIDs' => $entryIDs,
+                                'names' => $names,
+                                'email' => $email,
+                                'admin_fee' => $adminFee,
+                            ]
+                        ]);
+//                Catch error if, for example, refund has already been made
+                    } catch (InvalidRequestException $e) {
+                        $message = $e->getMessage();
+                        Info("Refund failed - $message");
+                    }
                 }
-
                 break;
             case 'refundAll':
 
@@ -319,7 +345,6 @@ GROUP BY `stripe_payment_intent`, `email`");
                 break;
             default:
                 break;
-
         }
         return redirect('/admin/trial/edit/' . $trialID);
     }

@@ -67,7 +67,7 @@
                                        {{"checked"}}
                                        }
                                        @endif
-                                       onclick="Javascript:yesNoCheck()"
+                                       onclick="yesNoCheck()"
                                        value="{{$option}}">
                                 <label class="pl-1 pr-4" for="distribution">{{$option}}</label>
                             @endforeach
@@ -90,7 +90,6 @@
                         @enderror
                     </x-form-field>
                 </div>
-                npm run build
 
                 <div id="trialSelectDiv" class="hidden col-span-3 mt-2">
                     <x-form-field>

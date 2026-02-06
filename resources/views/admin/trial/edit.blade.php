@@ -112,7 +112,7 @@
             </div>
 
             @if($trial->isScoringSetup)
-                <div class="col-span-1">
+                <div class="col-span-1 mt-2">
                     <form action="/admin/trial/resetScoring" method="POST">
                         @csrf
                         @method('PATCH')
@@ -134,7 +134,7 @@
                 </div>
             @endif
             @if($trial->isResultPublished)
-                <div class="col-span-1">
+                <div class="col-span-1 mt-2">
                     <form action="/admin/trial/unpublish" method="POST">
                         @csrf
                         @method('PATCH')
@@ -158,7 +158,7 @@
             @endif
 
             @if($trial->isResultPublished)
-                <div class="col-span-1">
+                <div class="col-span-1 mt-2">
                     <form action="/admin/trial/archive" method="POST">
                         @csrf
                         @method('PATCH')
@@ -180,7 +180,7 @@
                 </div>
             @endif
 
-            <div class="col-span-1">
+            <div class="col-span-1 mt-2">
                 <form action="/admin/trial/refund" method="POST">
                     @csrf
                     @method('PATCH')
@@ -194,7 +194,7 @@
                             optional administration fee (up to £3) can be retained to cover costs.
                         </div>
                         <div><label class="font-semibold text-red-700" for="fee">Admin Fee (£)</label>
-                            <input class="w-12 pl-2" type="text" name="fee" id="fee"/></div>
+                            <input class="w-16 pl-2" type="text" name="fee" id="fee"/></div>
 
                         <div class="mt-2">
                             <button type="submit" name="submitbutton" value="refund"
