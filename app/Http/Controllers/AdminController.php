@@ -307,7 +307,7 @@ GROUP BY `stripe_payment_intent`, `email`");
 
 
                 foreach ($pis as $pi) {
-//                    Change entry status to 2
+//                    Change entry status to 2 - now moved to StripeListener
 //                    $entries = DB::table('entries')
 //                        ->update(['status' => 2, 'updated_at' => date('Y-m-d H:i:s')]);
 
@@ -316,6 +316,7 @@ GROUP BY `stripe_payment_intent`, `email`");
                     $entryIDs = $pi->entryIDs;
                     $names = $pi->names;
                     $email = $pi->email;
+
 //                    Request refund from Stripe
                     $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
                     try {
@@ -330,12 +331,13 @@ GROUP BY `stripe_payment_intent`, `email`");
                                 'names' => $names,
                                 'email' => $email,
                                 'admin_fee' => $adminFee,
+                                'trial_id' => $trialID,
                             ]
                         ]);
 //                Catch error if, for example, refund has already been made
                     } catch (InvalidRequestException $e) {
                         $message = $e->getMessage();
-                        Info("Refund failed - $message");
+                        Info("Refund failed - $message, PI: $intent");
                     }
                 }
                 break;

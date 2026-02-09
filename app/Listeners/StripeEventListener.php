@@ -410,6 +410,7 @@ function onRefundCreated(mixed $object)
 {
 
     $bcc = "monster@trialmonster.uk";
+    $bcc = "alexs130151@gmail.com";
     $reason = $object['metadata']['reason'];
 
 //    Get the entryID from the metadata
@@ -436,12 +437,20 @@ function onRefundCreated(mixed $object)
                 ->queue(new RefundRequested($entry, $reason));
         }
     } elseif ($reason == 'cancellation') {
+        $trial = Trial::findOrFail($object['metadata']['trial_id']);
+        $trialName = $trial->name;
+        $trialClub = $trial->club;
 //           get all metadata
         $entryIDs = $object['metadata']['entryIDs'];
         $names = $object['metadata']['names'];
         $email = $object['metadata']['email'];
-        $refunded_amount = $object['metadata']['refunded_amount'];
+        $refunded_amount = $object['metadata']['refunded_amount'] / 100;
         $adminFee = $object['metadata']['admin_fee'];
+
+        $refundText = " A full refund has been requested and you should receive a credit of £";
+        if ($adminFee > 0) {
+            $refundText = " As stated in our Terms and Conditions an Admin fee of £" . $adminFee / 100 . " will be retained. You should receive a credit of £";
+        }
 
         $nameArray = explode(',', $names);
         $idArray = explode(',', $entryIDs);
@@ -455,9 +464,11 @@ function onRefundCreated(mixed $object)
         $entries = DB::table('entries')->whereIn('id', $entryIDs)
             ->update(['status' => 2, 'updated_at' => now()]);
 
+        $html = "<div>Dear $email,</div><div>As you may know, " . $trialClub . "'s " . $trialName . " has unfortunately been cancelled." . $refundText . $refunded_amount . " to your account.</div><div>This refund is for the following entries: $entryData</div><div>You will be sent a further confirmation email when the refund is completed. If you have any queries, please reply to this email.</div><div>Thank you for entering with TrialMonster.</div>";
+//        echo $html;
         Mail::to($email)
             ->bcc($bcc)
-            ->queue(new CancellationRefundRequested($refunded_amount, $adminFee, $entryData));
+            ->send(mailable: new CancellationRefundRequested($email, $trialName, $trialClub, $refundText, $refunded_amount, $entryData));
     }
 }
 

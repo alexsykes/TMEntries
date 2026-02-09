@@ -16,7 +16,7 @@ class CancellationRefundRequested extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public $refunded_amount, public $adminFee, public $entryData)
+    public function __construct(public $email, public  $trialName, public $trialClub, public $refundText,  public $refunded_amount, public $entryData )
     {
 
     }
@@ -38,7 +38,7 @@ class CancellationRefundRequested extends Mailable
     {
         return new Content(
             view: 'mails.cancellation_refund_requested',
-            with: ['refunded_amount' => $this->refunded_amount, 'adminFee' => $this->adminFee, 'entryData' => $this->entryData],
+            with: ['entryData' => $this->entryData, 'trialName' => $this->trialName, 'trialClub' => $this->trialClub, 'refundText' => $this->refundText, 'refunded_amount' => $this->refunded_amount, 'email' => $this->email],
         );
     }
 

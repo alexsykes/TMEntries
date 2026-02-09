@@ -1,14 +1,7 @@
 <?php
-
-$adminFee = $adminFee / 100;
-$amount = $refunded_amount / 100;
-if ($adminFee > 0) {
-    $amount = $amount - $adminFee;
-}
-$refundText = "A refund of £" . $amount . " has been requested and will shortly be transferred to your account."
+$html = "<p><b>Dear $email,</b></p><p>As you may know, " . $trialClub . "'s " . $trialName . " has unfortunately been cancelled." . $refundText . $refunded_amount . " to your account.</p><p>This refund is for the following entries: $entryData</p><p>You will be sent a further confirmation email when the refund is completed. If you have any queries, please reply to this email.</p><p><b>Thank you for entering with TrialMonster.</b></p>";
 ?>
-<x-automail><p>Dear Entrant, </p>
-    <p>As you may have already heard, we have reluctantly been forced to cancel this event. {{$refundText}}</p>
-    <p>The entries were: <?php echo $entryData; ?></p>
-    <p>Thank you for entering with TrialMonster</p>
-</x-automail>
+<x-email.new>
+    <?php echo $html;
+    ?>
+</x-email.new>

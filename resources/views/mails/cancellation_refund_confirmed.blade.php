@@ -5,10 +5,10 @@ $amount = $refunded_amount / 100;
 if ($adminFee > 0) {
     $amount = $amount - $adminFee;
 }
-$refundText = "A refund of £" . $amount . " has now been transferred to your account."
+$refundText = "a refund of £" . $amount . " has now been transferred to your account."
 ?>
-<x-automail><p>Dear Entrant, </p>
-    <p>As you may have already heard, we have reluctantly been forced to cancel this event. {{$refundText}}</p>
+<x-email.new><p><b>Dear Entrant, </b></p>
+    <p>Further to our recent email, we can confirm that {{$refundText}}</p>
     <p>The entries were: <?php echo $entryData; ?></p>
-    <p>Thank you for entering with TrialMonster</p>
-</x-automail>
+    <p><b>Thank you for entering with TrialMonster</b></p>
+</x-email.new>
