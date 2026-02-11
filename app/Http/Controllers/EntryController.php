@@ -98,7 +98,10 @@ class EntryController extends Controller
             ->where('trial_id', $trial_id)
             ->whereIn('status', [4, 5]);
 
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves]);
+//        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves]);
+
+
+        return view('entries.create', ['trial' => $trial, 'entry' => new Entry()]);
     }
 
 //     From editing from list on register page
