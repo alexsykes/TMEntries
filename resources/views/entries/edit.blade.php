@@ -50,6 +50,9 @@ $selected_name = $entry->name;
         $trial_date = date_create($trial->date);
         $offset = DateInterval::createFromDateString('4 years');
         $maxDob = $trial_date->sub($offset)->format("Y-m-d");
+
+        //    Check for extras
+        $hasExtras = is_null($membership) ? false : true;
     @endphp
 
     <script>
@@ -83,6 +86,24 @@ $selected_name = $entry->name;
                 <div class="px-4 py-2 mt-2 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
 
                     <div class="mt-2 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+
+                        @if($hasExtras)
+                            <x-form-field>
+                                <div class="font-semibold text-lg text-red-500">Not paid your 2026 YCMCC membership
+                                    yet?
+                                </div>
+                                <div class="flex col-span-3 justify-normal space-x-4 align-middle">
+                                    <div class="font-normal  text-black" for="extras">Tick this box to include payment
+                                        (£10) with this entry
+                                    </div>
+                                    <input name="extras" type="checkbox" value="{{$membership->stripe_price_id}}"
+                                           id="extras"
+                                            {{$entry->extras == $membership->stripe_price_id ? 'checked' :''}}
+                                    />
+                                </div>
+                            </x-form-field>
+
+                        @endif
 
 
                         <x-form-field>

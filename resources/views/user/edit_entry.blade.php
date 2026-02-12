@@ -37,6 +37,10 @@ if($customClasses != "") {
 
     $types = array("2 stroke", "4 stroke", "e-bike");
 
+        //    Check for extras
+        $hasExtras = is_null($membership) ? false : true;
+
+//        dd($membership);
 //    dump($entry);
     @endphp
     <x-slot:heading>{{$entry->club}} {{$entry->trial_name}}</x-slot:heading>
@@ -57,9 +61,26 @@ if($customClasses != "") {
                     for {{$entry->name}}</div>
 
                 <div class="mt-2   mb-2 ml-4 ">
-                    <div class="text-blue-800 font-semibold">Entry status: {{$statusOptions[$entry->status]}}</div>
+                    <div class="text-blue-800 mb-2 font-semibold">Entry status: {{$statusOptions[$entry->status]}}</div>
 
                     @if($entry->status == 0)
+                        @if($hasExtras)
+                            <x-form-field>
+                                <div class="mt-4 font-semibold  text-blue-800">2026 YCMCC membership
+                                </div>
+                                <div class="flex mb-4 col-span-3 justify-normal space-x-4 align-middle">
+                                    <div class="font-normal  text-black" for="extras">Tick this box to include payment
+                                        (£10) with this entry
+                                    </div>
+                                    <input name="extras" type="checkbox" value="{{$membership->stripe_price_id}}"
+                                           id="extras"
+                                            {{$entry->extras == $membership->stripe_price_id ? 'checked' :''}}
+                                    />
+                                </div>
+                            </x-form-field>
+
+                        @endif
+
                         <x-form-field>
                             <x-form-label for="isYouth">Date of Birth</x-form-label>
                             <div class="mt-2">
@@ -175,9 +196,9 @@ if($customClasses != "") {
                     Withdraw
                 </button>
 
-{{--                <a href="/user/removeEntry/{{$entry->id}}"--}}
-{{--                   class="rounded-md bg-red-600 ml-2 px-3 py-2  text-sm  text-white shadow-sm hover:bg-red-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900">Withdraw--}}
-{{--                    entry</a>--}}
+                {{--                <a href="/user/removeEntry/{{$entry->id}}"--}}
+                {{--                   class="rounded-md bg-red-600 ml-2 px-3 py-2  text-sm  text-white shadow-sm hover:bg-red-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900">Withdraw--}}
+                {{--                    entry</a>--}}
             </div>
 
         </form>

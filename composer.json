@@ -11,6 +11,7 @@
   "require": {
     "php": "^8.2",
     "aws/aws-sdk-php": "^3.342",
+    "ddfsn/blade-components": "*",
     "elibyy/tcpdf-laravel": "^11.4",
     "endroid/qr-code": "^6.0",
     "laravel/cashier": "^15.6",
