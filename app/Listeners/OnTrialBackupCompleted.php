@@ -24,7 +24,7 @@ class OnTrialBackupCompleted
      */
     public function handle(TrialBackupCompleted $event): void
     {
-        info('OnTrialBackupCompleted' . $event->id);
+        info('OnTrialBackupCompleted - trialID: ' . $event->id);
         $trialID = $event->id;
         $trial = Trial::where('id', $trialID)
             ->select('contactName', 'email')

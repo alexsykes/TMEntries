@@ -287,8 +287,30 @@ class AdminController extends Controller
                 $data = DB::table($table)
                     ->where('trial_id', $requestID)
                     ->get();
-//                $csvFileName = $exportDir . $table . '.csv';
-                $csvFileName = $exportDir  . $table . ".csv";
+
+
+                $size = sizeof($data);
+                if ($size > 0) {
+                    $csvFileName = $exportDir . $table . ".csv";
+                    $csvFile = fopen($csvFileName, 'w');
+                    $headers = array_keys((array)$data[0]); // Get the column headers from the first row
+                    fputcsv($csvFile, $headers);
+
+                    foreach ($data as $row) {
+                        fputcsv($csvFile, (array)$row);
+                    }
+                    fclose($csvFile);
+                }
+            }
+//            Trial as key field is `id`
+            $table = 'trials';
+            $data = DB::table($table)
+                ->where('id', $requestID)
+                ->get();
+
+            $size = sizeof($data);
+            if ($size > 0) {
+                $csvFileName = $exportDir . $table . ".csv";
                 $csvFile = fopen($csvFileName, 'w');
                 $headers = array_keys((array)$data[0]); // Get the column headers from the first row
                 fputcsv($csvFile, $headers);
@@ -298,24 +320,8 @@ class AdminController extends Controller
                 }
                 fclose($csvFile);
             }
-//            Trial as key field is `id`
-            $table = 'trials';
-            $data = DB::table($table)
-                ->where('id', $requestID)
-                ->get();
-//dd($data);
-//                $csvFileName = $exportDir . $table . '.csv';
-            $csvFileName = $exportDir . $table . ".csv";
-            $csvFile = fopen($csvFileName, 'w');
-            $headers = array_keys((array)$data[0]); // Get the column headers from the first row
-            fputcsv($csvFile, $headers);
-
-            foreach ($data as $row) {
-                fputcsv($csvFile, (array)$row);
-            }
-            fclose($csvFile);
-
         }
+//        dd();
     }
 
     public function resetScoring(Request $request)
