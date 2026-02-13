@@ -125,7 +125,7 @@ if($customClasses != "") {
                                 <select class="ml-2 bg-white  space-x-4 border-none" name="type" id="type" required>
                                     <option value="">Select your engine type</option>
                                     @foreach($types as $type)
-                                        <option value="{{$type}}" {{$type==$entry->type ? "selected" : ""}}>{{$type}}</option>
+                                        <option value="{{$type}}" {{$type==$entry->type ? " selected " : ""}}>{{$type}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -143,7 +143,7 @@ if($customClasses != "") {
                                         required>
                                     <option value="">Select your course</option>
                                     @foreach($courseOptions as $course)
-                                        <option value="{{$course}}" {{$course==$entry->course ? "selected" : ""}}>{{$course}}</option>
+                                        <option value="{{$course}}" {{$course==$entry->course ? " selected " : ""}}>{{$course}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -161,7 +161,7 @@ if($customClasses != "") {
                                         required>
                                     <option value="">Select your class</option>
                                     @foreach($classOptions as $class)
-                                        <option value="{{$class}}" {{$class==$entry->class ? "selected" : ""}}>{{$class}}</option>
+                                        <option value="{{$class}}" {{$class==$entry->class ? " selected " : ""}}>{{$class}}</option>
                                     @endforeach
                                 </select>
                             </div>

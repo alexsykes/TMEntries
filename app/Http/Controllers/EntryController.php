@@ -89,10 +89,11 @@ class EntryController extends Controller
 
         $trial = Trial::findorfail($trial_id);
         $club_id = $trial->club_id;
-//
+//dd($club_id);
 
         $membership = DB::table('products')
-            ->where('products.club_id', 5)
+            ->where('products.club_id', $club_id)
+            ->where('products.product_category', 'membership')
             ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
             ->orderBy('prices.updated_at', 'desc')
             ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
@@ -109,6 +110,7 @@ class EntryController extends Controller
             ->where('trial_id', $trial_id)
             ->whereIn('status', [4, 5]);
 
+//        dd($membership);
         return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership]);
 
 
@@ -448,8 +450,9 @@ class EntryController extends Controller
         $trial_id = $request->trial_id;
         $trial = Trial::findOrFail($trial_id);
 
+        $club_id = $trial->club_id;
 
-        $membership = Product::where('club_id', 5)
+        $membership = Product::where('club_id', $club_id)
             ->where('product_category', 'membership')
             ->orderBy('updated_at', 'desc')
             ->first();
@@ -642,9 +645,11 @@ class EntryController extends Controller
         $entry = Entry::findorfail($request->entry);
         $trialid = session('trial_id');
         $trial = Trial::findorfail($trialid);
+        $club_id = $trial->club_id;
 
         $membership = DB::table('products')
-            ->where('products.club_id', 5)
+            ->where('products.club_id', $club_id)
+            ->where('products.product_category', 'membership')
             ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
             ->orderBy('prices.updated_at', 'desc')
             ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);

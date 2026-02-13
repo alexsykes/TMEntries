@@ -82,7 +82,8 @@ class UserController extends Controller
 //
 
         $membership = DB::table('products')
-            ->where('products.club_id', 5)
+            ->where('products.club_id', $club_id)
+            ->where('products.product_category', 'membership')
             ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
             ->orderBy('prices.updated_at', 'desc')
             ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
