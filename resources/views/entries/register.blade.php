@@ -9,8 +9,7 @@
             }
         }
 
-
-        document.addEventListener("DOMContentLoaded", function(event) {
+        document.addEventListener("DOMContentLoaded", function (event) {
             // Your code to run since DOM is loaded and ready
             const input = document.querySelector('input[name="name"]');
 
@@ -67,7 +66,10 @@
     $entryIDs = array();
 
     $userID = Auth::user()->id;
-    //dump($entries);
+
+//    Check for extras
+        $hasExtras = is_null($membership) ? false : true;
+
     @endphp
     <x-slot:heading>
         Registration for {{$trial->name}}
@@ -78,19 +80,11 @@
     @enderror
     @if(sizeof($entries) > 0)
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Unconfirmed Entries - your entry is not confirmed until payment is completed
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Unconfirmed Entries -
+                your entry is not confirmed until payment is completed
             </div>
 
             <table class="w-full">
-                {{--                <tr>--}}
-                {{--                    <th class="">Ref</th>--}}
-                {{--                    <th class="pl-2">Name</th>--}}
-                {{--                    <th class="pl-2 hidden sm:table-cell">Course</th>--}}
-                {{--                    <th class="pl-2 hidden sm:table-cell">Class</th>--}}
-                {{--                    <th class="pl-2 hidden md:table-cell">Bike</th>--}}
-                {{--                    <th class="pl-2"></th>--}}
-                {{--                    <th class="pl-2"></th>--}}
-                {{--                </tr>--}}
                 @foreach($entries as $entry)
                     @php
                         $entryID = $entry->id ;
@@ -116,8 +110,11 @@
 
         <form action="/stripe/checkout" method="post">
             @csrf
-            <button type="submit" class="mt-2 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Go to Payment</button>
-            <input type="hidden" id="entryIDs" name="entryIDs" value="{{implode(',',$entryIDs)}}" >
+            <button type="submit"
+                    class="mt-2 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                Go to Payment
+            </button>
+            <input type="hidden" id="entryIDs" name="entryIDs" value="{{implode(',',$entryIDs)}}">
         </form>
         {{--        <form action="/entries/checkout" method="post">--}}
 
@@ -128,7 +125,8 @@
     @endif
     @if(sizeof($reserves) > 0)
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Reserves - you will receive an email notification if a space becomes available.
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Reserves - you will
+                receive an email notification if a space becomes available.
             </div>
 
             <table class="w-full">
@@ -176,6 +174,24 @@
 
                     <div class="mt-2 px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
+
+                        @if($hasExtras)
+                            <x-form-field>
+                                <div class="font-semibold text-lg text-red-500">Not paid your 2026 YCMCC membership
+                                    yet?
+                                </div>
+                                <div class="flex col-span-3 justify-normal space-x-4 align-middle">
+                                    <div class="font-normal  text-black" for="extras">Tick this box to include payment
+                                        (£10) with this entry
+                                    </div>
+                                    <input name="extras" type="checkbox" value="{{$membership->stripe_price_id}}"
+                                           id="extras"
+                                            {{old('extras') != null ? 'checked' :''}}
+                                    />
+                                </div>
+                            </x-form-field>
+
+                        @endif
                         <x-form-field>
                             <x-form-label for="name">Name</x-form-label>
                             <div class="mt-2 ">
@@ -198,19 +214,20 @@
                             </div>
                         </x-form-field>
 
-{{--                        <x-form-field>--}}
-{{--                            <x-form-label for="isYouth">Under-18</x-form-label>--}}
-{{--                            <div class="ml-2 mt-2 col-span-full">--}}
-{{--                                <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth"/>--}}
-{{--                                <x-form-error name="isYouth"/>--}}
-{{--                            </div>--}}
-{{--                        </x-form-field>--}}
+                        {{--                        <x-form-field>--}}
+                        {{--                            <x-form-label for="isYouth">Under-18</x-form-label>--}}
+                        {{--                            <div class="ml-2 mt-2 col-span-full">--}}
+                        {{--                                <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth"/>--}}
+                        {{--                                <x-form-error name="isYouth"/>--}}
+                        {{--                            </div>--}}
+                        {{--                        </x-form-field>--}}
 
                         <div id="dateInput" class=" col-span-full">
                             <x-form-field>
                                 <x-form-label for="dob">Date of Birth</x-form-label>
                                 <div class="mt-2  max-w-40 col-span-full">
-                                    <x-form-input type="date" max="{{$maxDob}}"  required name="dob" id="dob" :value="old('dob')"/>
+                                    <x-form-input type="date" max="{{$maxDob}}" required name="dob" id="dob"
+                                                  :value="old('dob')"/>
                                 </div>
                                 @error('dob')
                                 <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
@@ -286,16 +303,17 @@
                                 </div>
                             </div>
                         </x-form-field>
+
+
                     </div>
                 </div>
-
 
                 <div class="mt-4" id="buttons">
                     <a href="/"
                        class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
                     <button type="submit"
                             class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
-                       Register
+                        Register
                     </button>
                 </div>
             </div>

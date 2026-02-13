@@ -49,16 +49,37 @@ class TrialBackupCompletedMail extends Mailable
     public function attachments(): array
     {
 
-        $link1 = public_path('pdf/Trials_Rule_Book_2025.pdf');
+        $attachments = array();
         $entryFilename = public_path("/backups/$this->trialID/Entries.json");
         $scoreFilename = public_path("/backups/$this->trialID/Scores.json");
         $trialFilename = public_path("/backups/$this->trialID/Trial.json");
+        $entryCSVFilename = public_path("/backups/$this->trialID/entries.csv");
+        $scoreCSVFilename = public_path("/backups/$this->trialID/scores.csv");
+        $trialCSVFilename = public_path("/backups/$this->trialID/trials.csv");
 
-        info($entryFilename);
-        return [
-            Attachment::fromPath($entryFilename),
-            Attachment::fromPath($trialFilename),
-            Attachment::fromPath($scoreFilename)
-        ];
+        if (file_exists($entryFilename)) {
+            array_push($attachments, Attachment::fromPath($entryFilename));
+        }
+
+        if (file_exists($scoreFilename)) {
+            array_push($attachments, Attachment::fromPath($scoreFilename));
+        }
+
+        if (file_exists($trialFilename)) {
+            array_push($attachments, Attachment::fromPath($trialFilename));
+        }
+
+        if (file_exists($entryCSVFilename)) {
+            array_push($attachments, Attachment::fromPath($entryCSVFilename));
+        }
+
+        if (file_exists($scoreCSVFilename)) {
+            array_push($attachments, Attachment::fromPath($scoreCSVFilename));
+        }
+
+        if (file_exists($trialCSVFilename)) {
+            array_push($attachments, Attachment::fromPath($trialCSVFilename));
+        }
+        return $attachments;
     }
 }

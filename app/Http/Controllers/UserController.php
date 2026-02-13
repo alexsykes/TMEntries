@@ -77,10 +77,22 @@ class UserController extends Controller
             ->get(['entries.*', 'trials.name as trial_name', 'trials.club as club', 'trials.classlist', 'trials.courselist', 'trials.customClasses', 'trials.customCourses', 'trials.isEntryLocked', 'trials.date as trialdate'])
             ->first();
 
+        $trial = Trial::findorfail($entry->trial_id);
+        $club_id = $trial->club_id;
+//
+
+        $membership = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.product_category', 'membership')
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('prices.updated_at', 'desc')
+            ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
+//        dd($membership);
+
         if ($entry == null) {
             abort(404);
         }
-        return view('user.edit_entry', ['entry' => $entry]);
+        return view('user.edit_entry', ['entry' => $entry, 'membership' => $membership]);
     }
 
 //    Update entry from My Entries page
@@ -149,6 +161,11 @@ class UserController extends Controller
                     $entry->stripe_product_id = $adultProductID;
                 }
 
+                if (!is_null($request->extras)) {
+                    $entry->extras = $request->extras;
+                } else {
+                    $entry->extras = null;
+                }
 
                 $entry->save();
                 return redirect('/user/entries');

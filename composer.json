@@ -13,6 +13,7 @@
     "aws/aws-sdk-php": "^3.342",
     "elibyy/tcpdf-laravel": "^11.4",
     "endroid/qr-code": "^6.0",
+    "ifsnop/mysqldump-php": "^2.12",
     "laravel/cashier": "^15.6",
     "laravel/framework": "^12.0.1",
     "laravel/sanctum": "^4.0",

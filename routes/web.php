@@ -275,4 +275,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/preferences.update', [ProfileController::class, 'updatePreferences'])->name('preferences.update');
 });
 
+
+//Route::get('phpmyinfo', function () {
+//    phpinfo();
+//})->name('phpmyinfo');
+
 Route::post('/fetchScores', [ScoringController::class, 'fetchScores']);

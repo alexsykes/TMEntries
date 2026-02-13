@@ -272,8 +272,56 @@ class AdminController extends Controller
         $filename = "Entries.json";
         file_put_contents($exportDir . $filename, $entries);
 
+        $tables = ['entries', 'scores'];
+
+        $this->exportToCsv($request->id, $tables, $exportDir);
+
         TrialBackupCompleted::dispatch($id);
         return redirect('/admin/trial/edit/' . $id);
+    }
+
+    private function exportToCsv($requestID, mixed $tables, string $exportDir)
+    {
+        if ($tables) {
+            foreach ($tables as $table) {
+                $data = DB::table($table)
+                    ->where('trial_id', $requestID)
+                    ->get();
+
+
+                $size = sizeof($data);
+                if ($size > 0) {
+                    $csvFileName = $exportDir . $table . ".csv";
+                    $csvFile = fopen($csvFileName, 'w');
+                    $headers = array_keys((array)$data[0]); // Get the column headers from the first row
+                    fputcsv($csvFile, $headers);
+
+                    foreach ($data as $row) {
+                        fputcsv($csvFile, (array)$row);
+                    }
+                    fclose($csvFile);
+                }
+            }
+//            Trial as key field is `id`
+            $table = 'trials';
+            $data = DB::table($table)
+                ->where('id', $requestID)
+                ->get();
+
+            $size = sizeof($data);
+            if ($size > 0) {
+                $csvFileName = $exportDir . $table . ".csv";
+                $csvFile = fopen($csvFileName, 'w');
+                $headers = array_keys((array)$data[0]); // Get the column headers from the first row
+                fputcsv($csvFile, $headers);
+
+                foreach ($data as $row) {
+                    fputcsv($csvFile, (array)$row);
+                }
+                fclose($csvFile);
+            }
+        }
+//        dd();
     }
 
     public function resetScoring(Request $request)

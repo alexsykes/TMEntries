@@ -7,6 +7,7 @@ use App\Mail\EntryChanged;
 use App\Mail\ReserveAdded;
 use App\Models\Entry;
 use App\Models\Price;
+use App\Models\Product;
 use App\Models\Trial;
 use App\Rules\NoDuplicates;
 use Auth;
@@ -87,27 +88,37 @@ class EntryController extends Controller
         $user_id = Auth::user()->id;
 
         $trial = Trial::findorfail($trial_id);
+        $club_id = $trial->club_id;
+//dd($club_id);
+
+        $membership = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.product_category', 'membership')
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('prices.updated_at', 'desc')
+            ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
 
         $entries = Entry::all()
             ->where('created_by', $user_id)
             ->where('trial_id', $trial_id)
             ->where('status', 0);
 
+//        dd($entries);
+
         $reserves = Entry::all()
             ->where('created_by', $user_id)
             ->where('trial_id', $trial_id)
             ->whereIn('status', [4, 5]);
 
-//        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves]);
+//        dd($membership);
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership]);
 
 
-        return view('entries.create', ['trial' => $trial, 'entry' => new Entry()]);
+//        return view('entries.create', ['trial' => $trial, 'entry' => new Entry()]);
     }
 
-//     From editing from list on register page
     public function updateEntry(Request $request)
     {
-//        $accept = session('accept');
         //        Get product/price IDs
 
         $request->validate([
@@ -151,7 +162,6 @@ class EntryController extends Controller
 //        dd($trial_id, $adultProductID, $adultPriceID, $youthProductID, $youthPriceID);
         $utilityController = new UtilityController();
 
-
         $entry->name = $utilityController->nameize($request->name);
         $entry->class = $request->class;
         $entry->course = $request->course;
@@ -167,8 +177,8 @@ class EntryController extends Controller
         $birthDate = date_create($request->dob);
 
         $interval = $trial_date->diff($birthDate);
-//dump($interval->y);
-//        Calculation for yout goes here
+
+//        Calculation for youth goes here
         if ($interval->y < 18) {
             $entry->isYouth = 1;
             $entry->stripe_price_id = $youthPriceID;
@@ -179,10 +189,18 @@ class EntryController extends Controller
             $entry->stripe_product_id = $adultProductID;
         }
 
+        if (!is_null($request->extras)) {
+            $entry->extras = $request->extras;
+        } else {
+            $entry->extras = null;
+        }
+
         $entry->save();
 //        dd($entry);
         return redirect("/entries/register/{$trial_id}");
     }
+
+//     From editing from list on registration page
 
     public function adminEntryUpdate(Request $request)
     {
@@ -271,17 +289,18 @@ class EntryController extends Controller
         return redirect("/trials/adminEntryList/{$trialID}");
     }
 
-    /*   User updates entry - from email
-        Show screen for entry with form for updated fields
-        Limited changes can be made
-    */
-
     public function create($id)
     {
         session(['trial_id' => $id]);
         $trial = Trial::findOrFail($id);
         return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry()]);
     }
+
+    /*   User updates entry - from email
+        Show screen for entry with form for updated fields
+        Limited changes can be made
+    */
+
 
     /*
      * Email confirmation of entry changes
@@ -431,6 +450,13 @@ class EntryController extends Controller
         $trial_id = $request->trial_id;
         $trial = Trial::findOrFail($trial_id);
 
+        $club_id = $trial->club_id;
+
+        $membership = Product::where('club_id', $club_id)
+            ->where('product_category', 'membership')
+            ->orderBy('updated_at', 'desc')
+            ->first();
+
 //        Get product and price data
 //        Get product/price IDs
         $youthProductID = DB::table('products')
@@ -496,6 +522,7 @@ class EntryController extends Controller
             'dob' => 'required',
         ]);
 
+        $attributes['extras'] = $request->extras;
         $utilityController = new UtilityController();
         $attributes['name'] = $utilityController->nameize($request->name);
         $attributes['IPaddress'] = $IPaddress;
@@ -545,7 +572,9 @@ class EntryController extends Controller
             ->where('trial_id', $trial_id)
             ->whereIn('status', [4, 5])
             ->where('created_by', $attributes['created_by']);
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves]);
+//        dd($membership);
+
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership]);
     }
 
     function sendReserveEmail(Entry $entry, Trial $trial)
@@ -616,7 +645,16 @@ class EntryController extends Controller
         $entry = Entry::findorfail($request->entry);
         $trialid = session('trial_id');
         $trial = Trial::findorfail($trialid);
-        return view('entries.edit', ['entry' => $entry, 'trial' => $trial]);
+        $club_id = $trial->club_id;
+
+        $membership = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.product_category', 'membership')
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('prices.updated_at', 'desc')
+            ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
+
+        return view('entries.edit', ['entry' => $entry, 'trial' => $trial, 'membership' => $membership]);
     }
 
     public function editRidingNumbers(Request $request)
