@@ -7,9 +7,7 @@ use App\Mail\EntryChanged;
 use App\Mail\ReserveAdded;
 use App\Models\Entry;
 use App\Models\Price;
-use App\Models\Product;
 use App\Models\Trial;
-use App\Rules\NoDuplicates;
 use Auth;
 use DateTime;
 use Endroid\QrCode\Builder\Builder;
@@ -19,12 +17,12 @@ use Endroid\QrCode\Label\Font\OpenSans;
 use Endroid\QrCode\Label\LabelAlignment;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use PDF;
 use Stripe\StripeClient;
-
 
 class EntryController extends Controller
 {
@@ -36,26 +34,6 @@ class EntryController extends Controller
         $trial_id = request('id');
         session(['trial_id' => $trial_id]);
         return view('entries.get_user_details');
-    }
-
-//  Used to display user's current entries
-    public function showUserData(Request $request)
-    {
-
-        $email = session('email');
-        $phone = session('phone');
-        $trial_id = session('trial_id');
-        $user_id = Auth::user()->id;
-        $entries = Entry::all()
-            ->where('created_by', $user_id)
-            ->where('trial_id', $trial_id)
-            ->where('status', 0);
-//        $entries = Entry::all();
-
-//        dump($entries);
-        $trial = Trial::findorfail($trial_id);
-
-        return view('entries.userdata', ['entries' => $entries, 'trial' => $trial]);
     }
 
     public function userEntryList(Request $request)
@@ -89,32 +67,57 @@ class EntryController extends Controller
 
         $trial = Trial::findorfail($trial_id);
         $club_id = $trial->club_id;
-//dd($club_id);
 
-        $membership = DB::table('products')
-            ->where('products.club_id', $club_id)
-            ->where('products.product_category', 'membership')
-            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
-            ->orderBy('prices.updated_at', 'desc')
-            ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
+        $membership = $this->getMembership($club_id);
+        $allOptions = $this->getOptions($club_id, $trial_id);
 
         $entries = Entry::all()
             ->where('created_by', $user_id)
             ->where('trial_id', $trial_id)
             ->where('status', 0);
 
-//        dd($entries);
-
         $reserves = Entry::all()
             ->where('created_by', $user_id)
             ->where('trial_id', $trial_id)
             ->whereIn('status', [4, 5]);
 
-//        dd($membership);
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership]);
+//        dd('Options' . $allOptions);
 
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'options' => $allOptions, 'membership' => $membership]);
+    }
 
-//        return view('entries.create', ['trial' => $trial, 'entry' => new Entry()]);
+    public function getMembership($club_id)
+    {
+        $membership = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.product_category', 'membership')
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('prices.updated_at', 'desc')
+            ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
+        return $membership;
+    }
+
+//     From editing from list on registration page
+
+    private function getOptions($club_id, $trial_id)
+    {
+        $allOptions = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.trial_id', 0)
+            ->where('products.product_category', 'merchandise')
+            ->orWhere(function (QueryBuilder $query) use ($trial_id, $club_id) {
+                $query->where('products.club_id', $club_id)
+                    ->where('products.trial_id', $trial_id)
+                    ->where('products.product_category', 'merchandise');
+            }
+            )
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('products.product_category')
+            ->orderBy('products.hasQuantity')
+            ->orderBy('products.product_name')
+            ->get(['products.product_name AS name', 'products.hasQuantity', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
+
+        return $allOptions;
     }
 
     public function updateEntry(Request $request)
@@ -137,6 +140,52 @@ class EntryController extends Controller
         $trial_date = date_create($trial->date);
 
 //        Get product/price IDs
+//        getPrices
+
+        $prices = $this->getPrices($trial_id);
+
+        $utilityController = new UtilityController();
+
+        $entry->name = $utilityController->nameize($request->name);
+        $entry->class = $request->class;
+        $entry->course = $request->course;
+        $entry->licence = $request->licence;
+
+        $entry->make = $request->make;
+        $entry->type = $request->type;
+
+        $entry->size = $request->size;
+//        $entry->accept = $accept;
+        $entry->dob = $request->dob;
+
+        $birthDate = date_create($request->dob);
+
+        $interval = $trial_date->diff($birthDate);
+
+//        Calculation for youth goes here
+        if ($interval->y < 18) {
+            $entry->isYouth = 1;
+            $entry->stripe_price_id = $prices['youthPriceID'];
+            $entry->stripe_product_id = $prices['youthProductID'];
+        } else {
+            $entry->isYouth = 0;
+            $entry->stripe_price_id = $prices['adultPriceID'];
+            $entry->stripe_product_id = $prices['adultProductID'];
+        }
+
+        if (!is_null($request->extras)) {
+            $entry->extras = $request->extras;
+        } else {
+            $entry->extras = null;
+        }
+
+        $entry->save();
+//        dd($entry);
+        return redirect("/entries/register/$trial_id");
+    }
+
+    private function getPrices($trial_id)
+    {
         $youthProductID = DB::table('products')
             ->where('trial_id', $trial_id)
             ->where('isYouth', true)
@@ -159,48 +208,8 @@ class EntryController extends Controller
             ->where('stripe_product_id', $adultProductID)
             ->value('stripe_price_id');
 
-//        dd($trial_id, $adultProductID, $adultPriceID, $youthProductID, $youthPriceID);
-        $utilityController = new UtilityController();
-
-        $entry->name = $utilityController->nameize($request->name);
-        $entry->class = $request->class;
-        $entry->course = $request->course;
-        $entry->licence = $request->licence;
-
-        $entry->make = $request->make;
-        $entry->type = $request->type;
-
-        $entry->size = $request->size;
-//        $entry->accept = $accept;
-        $entry->dob = $request->dob;
-
-        $birthDate = date_create($request->dob);
-
-        $interval = $trial_date->diff($birthDate);
-
-//        Calculation for youth goes here
-        if ($interval->y < 18) {
-            $entry->isYouth = 1;
-            $entry->stripe_price_id = $youthPriceID;
-            $entry->stripe_product_id = $youthProductID;
-        } else {
-            $entry->isYouth = 0;
-            $entry->stripe_price_id = $adultPriceID;
-            $entry->stripe_product_id = $adultProductID;
-        }
-
-        if (!is_null($request->extras)) {
-            $entry->extras = $request->extras;
-        } else {
-            $entry->extras = null;
-        }
-
-        $entry->save();
-//        dd($entry);
-        return redirect("/entries/register/{$trial_id}");
+        return compact('youthProductID', 'adultProductID', 'youthPriceID', 'adultPriceID');
     }
-
-//     From editing from list on registration page
 
     public function adminEntryUpdate(Request $request)
     {
@@ -255,7 +264,7 @@ class EntryController extends Controller
             }
         }
 
-        return redirect("/trials/adminEntryList/{$trialID}");
+        return redirect("/trials/adminEntryList/$trialID");
     }
 
     public function adminEntryStore(Request $request)
@@ -286,8 +295,12 @@ class EntryController extends Controller
         }
 
         $entry = Entry::create($attributes);
-        return redirect("/trials/adminEntryList/{$trialID}");
+        return redirect("/trials/adminEntryList/$trialID");
     }
+
+    /*
+     * Entry is loaded based on entry ID and token emailed in link on entry confirmation
+     */
 
     public function create($id)
     {
@@ -296,15 +309,7 @@ class EntryController extends Controller
         return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry()]);
     }
 
-    /*   User updates entry - from email
-        Show screen for entry with form for updated fields
-        Limited changes can be made
-    */
-
-
-    /*
-     * Email confirmation of entry changes
-     */
+//  Not sure if currently used
 
     public function withdrawConfirm(Request $request)
     {
@@ -351,9 +356,8 @@ class EntryController extends Controller
         return redirect("/");
     }
 
-    /*
-     * Entry is loaded based on entry ID and token emailed in link on entry confirmation
-     */
+//  Store from Register page
+//    Store first record then pass email and trial_id to create_another view
 
     public function userupdate(Request $request)
     {
@@ -378,8 +382,6 @@ class EntryController extends Controller
         $this->emailConfirmation($id, $newToken);
         return redirect("/");
     }
-
-//  Not sure if currently used
 
     public function emailConfirmation($id, $newToken)
     {
@@ -427,9 +429,6 @@ class EntryController extends Controller
         }
     }
 
-//  Store from Register page
-//    Store first record then pass email and trial_id to create_another view
-
     public function checkout(Request $request)
     {
         $user_id = Auth::user()->id;
@@ -452,34 +451,11 @@ class EntryController extends Controller
 
         $club_id = $trial->club_id;
 
-        $membership = Product::where('club_id', $club_id)
-            ->where('product_category', 'membership')
-            ->orderBy('updated_at', 'desc')
-            ->first();
+        $membership = $this->getMembership($club_id);
 
 //        Get product and price data
 //        Get product/price IDs
-        $youthProductID = DB::table('products')
-            ->where('trial_id', $request->trial_id)
-            ->where('isYouth', true)
-            ->where('product_category', 'entry fee')
-            ->value('stripe_product_id');
-
-
-        $adultProductID = DB::table('products')
-            ->where('trial_id', $request->trial_id)
-            ->where('isYouth', false)
-            ->where('product_category', 'entry fee')
-            ->value('stripe_product_id');
-
-
-        $youthPriceID = DB::table('prices')
-            ->where('stripe_product_id', $youthProductID)
-            ->value('stripe_price_id');
-
-        $adultPriceID = DB::table('prices')
-            ->where('stripe_product_id', $adultProductID)
-            ->value('stripe_price_id');
+        $prices = $this->getPrices($trial_id);
 
 //        Check for entry limit
         $hasEntryLimit = $trial->hasEntryLimit;
@@ -504,7 +480,28 @@ class EntryController extends Controller
             }
         }
 
-        $trial_date = date_create($trial->date);
+        $extrasArray = array();
+        if (!is_null($request->extras)) {
+            $extras = $request->extras;
+
+            foreach ($extras as $extra) {
+                array_push($extrasArray, [$extra => 1]);
+            }
+        }
+
+        $numExtras = count($request->priceID);
+
+        for ($i = 0; $i < $numExtras; $i++) {
+            $priceID = $request->priceID[$i];
+            $quantity = intval($request->quantity[$i]);
+            if ($quantity > 0) {
+                array_push($extrasArray, [$priceID => $quantity]);
+            }
+        }
+
+        $extraJSON = json_encode($extrasArray);
+//        dump($request->all());
+//        dd($extraJSON);
 
         $IPaddress = $request->ip();
         $request->session()->put('trial_id', $request->trial_id);
@@ -522,7 +519,7 @@ class EntryController extends Controller
             'dob' => 'required',
         ]);
 
-        $attributes['extras'] = $request->extras;
+        $attributes['extras'] = $extraJSON;
         $utilityController = new UtilityController();
         $attributes['name'] = $utilityController->nameize($request->name);
         $attributes['IPaddress'] = $IPaddress;
@@ -533,19 +530,20 @@ class EntryController extends Controller
         $attributes['status'] = $status;
         $attributes['created_by'] = Auth::user()->id;
 
+//      Age calculation
         $birthDate = date_create($request->dob);
-
+        $trial_date = date_create($trial->date);
         $interval = $trial_date->diff($birthDate);
         $ageInYears = $interval->format('%y');
 
         if ($ageInYears < 18) {
             $attributes['isYouth'] = 1;
-            $attributes['stripe_price_id'] = $youthPriceID;
-            $attributes['stripe_product_id'] = $youthProductID;
+            $attributes['stripe_price_id'] = $prices['youthPriceID'];
+            $attributes['stripe_product_id'] = $prices['youthProductID'];
         } else {
             $attributes['isYouth'] = 0;
-            $attributes['stripe_price_id'] = $adultPriceID;
-            $attributes['stripe_product_id'] = $adultProductID;
+            $attributes['stripe_price_id'] = $prices['adultPriceID'];
+            $attributes['stripe_product_id'] = $prices['adultProductID'];
         }
 
 
@@ -553,8 +551,7 @@ class EntryController extends Controller
         $entry = Entry::create($attributes);
 
 //        Entry has Stripe product and price codes entered at time of entry
-
-//        $trial = Trial::findOrFail($attributes['trial_id']);
+        $allOptions = $this->getOptions($club_id, $trial_id);
 
         if ($entry->status == 5) {
             $this->sendReserveEmail($entry, $trial);
@@ -572,9 +569,8 @@ class EntryController extends Controller
             ->where('trial_id', $trial_id)
             ->whereIn('status', [4, 5])
             ->where('created_by', $attributes['created_by']);
-//        dd($membership);
 
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership]);
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'options' => $allOptions, 'membership' => $membership]);
     }
 
     function sendReserveEmail(Entry $entry, Trial $trial)
@@ -599,17 +595,6 @@ class EntryController extends Controller
         $entry->save();
 
         return redirect('entries/register/' . session('trial_id'));
-    }
-
-    public function list(Request $request)
-    {
-        $email = session('email');
-        $trial_id = $request->input('trial_id');
-        $trial = Trial::findOrFail($trial_id);
-        $phone = session('phone');
-        $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('paid', 0);
-//        dd($entries);
-        return view('entries.userdata', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
     }
 
     public function adminEntries(Request $request)
@@ -647,12 +632,7 @@ class EntryController extends Controller
         $trial = Trial::findorfail($trialid);
         $club_id = $trial->club_id;
 
-        $membership = DB::table('products')
-            ->where('products.club_id', $club_id)
-            ->where('products.product_category', 'membership')
-            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
-            ->orderBy('prices.updated_at', 'desc')
-            ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
+        $membership = $this->getMembership($club_id);
 
         return view('entries.edit', ['entry' => $entry, 'trial' => $trial, 'membership' => $membership]);
     }
