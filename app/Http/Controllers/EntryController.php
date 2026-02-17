@@ -633,8 +633,9 @@ class EntryController extends Controller
         $club_id = $trial->club_id;
 
         $membership = $this->getMembership($club_id);
+        $options = $this->getOptions($club_id, $trialid);
 
-        return view('entries.edit', ['entry' => $entry, 'trial' => $trial, 'membership' => $membership]);
+        return view('entries.edit', ['entry' => $entry, 'trial' => $trial, 'membership' => $membership, 'options' => $options]);
     }
 
     public function editRidingNumbers(Request $request)

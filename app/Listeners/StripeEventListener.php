@@ -184,7 +184,6 @@ function onProductCreated($productObject)
     ]);
 
     info("Product created :: " . $product->product_name);
-//    echo "ClubID: $product->club_id";
     $email = 'monster@trialmonster.uk';
     Mail::to($email)->send(new ProductCreated($product));
 }
@@ -196,10 +195,10 @@ function onProductUpdated($productObject)
     $stripe_product_id = $productObject['id'];
     $stripe_product_description = $productObject['description'];
     $isLive = $productObject['livemode'];
+
     $isEntryFee = false;
     $hasQuantity = false;
     $product_name = $productObject['name'];
-
 
     $youth = false;
     if (isset($metadata['isYouth'])) {
@@ -239,7 +238,7 @@ function onProductUpdated($productObject)
         ->where('stripe_product_id', '=', $stripe_product_id)
         ->increment('version');
 
-    info("Product updated :: " . $product->product_name);
+    info("Product updated :: " . $product_name);
 }
 
 function onCheckoutSessionCompleted($sessionObject)

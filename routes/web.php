@@ -98,11 +98,11 @@ Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails
 
 
 Route::get('/entry/useredit', [EntryController::class, 'useredit']);
-Route::post('entries/userdata', [EntryController::class, 'showUserData']);
+//Route::post('entries/userdata', [EntryController::class, 'showUserData']);
 
 Route::patch('/entries/update/{id}', [EntryController::class, 'updateEntry']);
 //Route::get('entries/saveddata', [EntryController::class, 'showSavedData']);
-Route::get('/entries/entrylist', [EntryController::class, 'list']);
+//Route::get('/entries/entrylist', [EntryController::class, 'list']);
 Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->name('entries.create');
 //Route::get('/entries/create_another', [EntryController::class, 'create_another'])->name('entries.create_another');
 Route::post('/entries/store', [EntryController::class, 'store']);
