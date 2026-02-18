@@ -14,10 +14,8 @@ class OnEntryLimitReached implements ShouldQueue
     /**
      * Create the event listener.
      */
-//    public int $trial_id;
-    public function __construct()
-    {
-    }
+    //    public int $trial_id;
+    public function __construct() {}
 
     /**
      * Handle the event.
@@ -27,24 +25,24 @@ class OnEntryLimitReached implements ShouldQueue
         $numEntries = $event->numEntries;
         $entryLimit = $event->entry_limit;
         $trialID = $event->trial_id;
-//        dump($trialID, $entryLimit, $numEntries);
+        //        dump($trialID, $entryLimit, $numEntries);
 
         Info("Confirmed entries: $numEntries");
         Info("Entry limit: $entryLimit");
 
-//        Handle unconfirmed if 5 entries left
+        //        Handle unconfirmed if 5 entries left
         if ($entryLimit - $numEntries <= 5) {
-            $unconfirmed = Entry::where("status", 0)
-                ->join("users", "users.id", "=", "entries.created_by")
+            $unconfirmed = Entry::where('status', 0)
+                ->join('users', 'users.id', '=', 'entries.created_by')
                 ->select('entries.id', 'entries.name', 'users.email')
-                ->where("trial_id", $trialID)
+                ->where('trial_id', $trialID)
                 ->get();
 
-            $ids = array();
+            $ids = [];
             $trial = Trial::findOrFail($trialID);
-            $bcc = "monster@trialmonster.uk";
+            $bcc = 'monster@trialmonster.uk';
             foreach ($unconfirmed as $entry) {
-//                Send LastChance email
+                //                Send LastChance email
                 Info("Sendmail to $entry->email");
                 Mail::to($entry->email)
                     ->bcc($bcc)
@@ -55,11 +53,9 @@ class OnEntryLimitReached implements ShouldQueue
 
     public function moveToReserveList(Entry $entry): void
     {
-//        Mail
+        //        Mail
 
-
-//        Downgrade
-
+        //        Downgrade
 
     }
 }

@@ -17,10 +17,7 @@ class PaymentReceived extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public Collection $entryData, public String $msg)
-    {
-
-    }
+    public function __construct(public Collection $entryData, public string $msg) {}
 
     /**
      * Get the message envelope.

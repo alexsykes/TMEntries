@@ -13,7 +13,7 @@ class SeriesController extends Controller
     public function list()
     {
         $user = auth()->user();
-        if (!$user->isClubUser) {
+        if (! $user->isClubUser) {
             abort(403);
         }
 
@@ -51,6 +51,7 @@ class SeriesController extends Controller
             ->where('series.id', request('id'))
             ->select('series.*', 'clubs.name as club')
             ->first();
+
         return view('series.edit', ['series' => $series]);
     }
 
@@ -76,6 +77,7 @@ class SeriesController extends Controller
             'description' => 'required',
         ]);
         $series = Series::create($attributes);
+
         return redirect('/club/profile?tab=competitions');
     }
 
@@ -92,6 +94,7 @@ class SeriesController extends Controller
         ]);
         $series->update($attributes);
         $series->save();
+
         return redirect('/club/profile?tab=competitions');
     }
 }

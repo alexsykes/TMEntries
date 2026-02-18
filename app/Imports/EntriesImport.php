@@ -19,21 +19,21 @@ class EntriesImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
-//        dd($row);
-        $entryOptions = explode(" - ", $row['class']);
+        //        dd($row);
+        $entryOptions = explode(' - ', $row['class']);
 
         if (is_numeric($row['membership_number_write_xxx_if_not_known_non_members_can_ride_1_event_per_year_without_membership_please_complete'])) {
             $licence = $row['membership_number_write_xxx_if_not_known_non_members_can_ride_1_event_per_year_without_membership_please_complete'];
         } else {
-            $licence = "";
+            $licence = '';
         }
 
         $xlDate = $row['date_of_birth'];
         $UNIX_DATE = ($xlDate - 25569) * 86400;
-        $dob = (gmdate("Y-m-d", $UNIX_DATE));
-        $rawName = $row['first_name'] . ' ' . $row['surname'];
+        $dob = (gmdate('Y-m-d', $UNIX_DATE));
+        $rawName = $row['first_name'].' '.$row['surname'];
 
-        $utilityController = new UtilityController();
+        $utilityController = new UtilityController;
         $name = $utilityController->nameize($rawName);
 
         return new Entry([
@@ -52,5 +52,5 @@ class EntriesImport implements ToModel, WithHeadingRow
             'licence' => $licence,
         ]);
     }
-//    }
+    //    }
 }

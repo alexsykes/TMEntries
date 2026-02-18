@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->string('name');
-            $table->string('area')->nullable();;
+            $table->string('area')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('description')->nullable();

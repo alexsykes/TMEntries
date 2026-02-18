@@ -20,11 +20,11 @@ class EmailRateLimit
             ->block(2)
             ->allow(10)
             ->every(2)
-            ->then(function() use($job, $next) {
+            ->then(function () use ($job, $next) {
                 $next($job);
             },
-                function() use($job) {
-                $job->release(30);
+                function () use ($job) {
+                    $job->release(30);
                 }
 
             );

@@ -14,9 +14,7 @@ class TestMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-
     public $mailshot;
-
 
     /**
      * Create a new message instance.
@@ -38,7 +36,7 @@ class TestMail extends Mailable
                 from: new Address('monster@trialmonster.uk', 'TrialMonster'),
                 replyTo: [
                     new Address($this->mailshot->reply_to_address,
-                        $this->mailshot->reply_to_name,),
+                        $this->mailshot->reply_to_name, ),
                 ],
                 subject: $this->mailshot->subject
             );
@@ -75,13 +73,13 @@ class TestMail extends Mailable
         $originalNames = explode('|', $this->mailshot->originalName);
         $mimeTypes = explode('|', $this->mailshot->mimeType);
 
-//        dd($fileNames, $originalNames, $mimeTypes);
+        //        dd($fileNames, $originalNames, $mimeTypes);
 
-        $attachments = array();
+        $attachments = [];
 
         for ($i = 0; $i < count($fileNames); $i++) {
             $attachment =
-                Attachment::fromPath(public_path('attachments/' . $fileNames[$i]))
+                Attachment::fromPath(public_path('attachments/'.$fileNames[$i]))
                     ->as($originalNames[$i])
                     ->withMime($mimeTypes[$i]);
             array_push($attachments, $attachment);

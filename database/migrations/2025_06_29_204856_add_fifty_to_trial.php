@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('trials', function (Blueprint $table) {
             //
 
-            $table->String('fifty_fifty')->nullable()->default("");
+            $table->String('fifty_fifty')->nullable()->default('');
         });
     }
 

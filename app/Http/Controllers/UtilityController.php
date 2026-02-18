@@ -13,6 +13,7 @@ class UtilityController extends Controller
             ->join('venues', 'trials.venueID', '=', 'venues.id')
             ->where('trials.id', $id)
             ->get(['trials.*', 'venues.name as venue']);
+
         return $trialDetails;
     }
 
@@ -23,7 +24,7 @@ class UtilityController extends Controller
 
     public function saveResultsPDF($id)
     {
-        $resultController = new ResultController();
+        $resultController = new ResultController;
         $data = $resultController->getResultList($id);
 
         $trial = $data['trial'];
@@ -32,13 +33,13 @@ class UtilityController extends Controller
 
         $resultList = $data['results'];
 
-        $allCourses = array();
+        $allCourses = [];
         $courses = $trial->courselist;
         $customCourses = $trial->customCourses;
         $numLaps = $trial->numLaps;
         $numSections = $trial->numSections;
 
-        $allClasses = array();
+        $allClasses = [];
         $classes = $trial->classlist;
         $customClasses = $trial->customClasses;
 
@@ -66,15 +67,15 @@ class UtilityController extends Controller
         $trialName = trim($trial->name);
         $trialName = trim($trial->name);
         $filename = "$trial->id $trialName.pdf";
-//        $filename = str_replace(' ', '_', $filename);
+        //        $filename = str_replace(' ', '_', $filename);
         $filename = $this->filter_filename($filename);
 
-//        PDF setup
+        //        PDF setup
         MYPDFG::SetCreator('TM UK');
         MYPDFG::SetAuthor('TrialMonster.uk');
         MYPDFG::SetTitle('Entry list');
-        MYPDFG::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', 8));
-        MYPDFG::SetFooterFont(array(PDF_FONT_NAME_MAIN, '', 8));
+        MYPDFG::SetHeaderFont([PDF_FONT_NAME_MAIN, '', 8]);
+        MYPDFG::SetFooterFont([PDF_FONT_NAME_MAIN, '', 8]);
         MYPDFG::SetPrintHeader(false);
         MYPDFG::SetPrintFooter(true);
         MYPDFG::AddPage('L', 'A4');
@@ -84,7 +85,7 @@ $trial->name
 $trial->club are grateful to the landowners at $trial->venue, observers, other officials and riders without whose support this trial could not go ahead.
 EOD;
 
-// print a block of text using Write()
+        // print a block of text using Write()
         MYPDFG::SetFontSize(10);
         MYPDFG::SetFont(PDF_FONT_NAME_MAIN, 'B', 12);
         MYPDFG::Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
@@ -92,7 +93,7 @@ EOD;
         MYPDFG::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
         MYPDFG::SetHeaderMargin(15);
         MYPDFG::SetFooterMargin(15);
-        MYPDFG::SetAutoPageBreak(TRUE, 20);
+        MYPDFG::SetAutoPageBreak(true, 20);
         MYPDFG::SetCellHeightRatio(1.5);
 
         MYPDFG::SetMargins(0, 20);
@@ -103,21 +104,21 @@ EOD;
 
         MYPDFG::setFooterCallback(function () {
             MYPDFG::Cell(0, 0, 'x indicates a missed section', 0, true, 'C');
-            MYPDFG::Cell(0, 0, 'Provisional Results updated ' . now(), 0, false, 'L', 0, '', 0, false, 'T', 'M');
-            MYPDFG::Cell(0, 0, 'Page ' . MYPDFG::getAliasNumPage() . ' of ' . MYPDFG::getAliasNbPages(), 0, true, 'R', 0, '', 0, false, 'T', 'M');
+            MYPDFG::Cell(0, 0, 'Provisional Results updated '.now(), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            MYPDFG::Cell(0, 0, 'Page '.MYPDFG::getAliasNumPage().' of '.MYPDFG::getAliasNbPages(), 0, true, 'R', 0, '', 0, false, 'T', 'M');
         });
 
         $rowHeight = 9;
 
-//        Results output starts here
+        //        Results output starts here
 
         $i = 0;
         foreach ($courses as $course) {
             foreach ($classes as $class) {
 
-                if (sizeof($resultList[$i][2]) > 0) {
+                if (count($resultList[$i][2]) > 0) {
                     $this->printClassHeader($course, $class, $rowHeight, $numSections);
-//                    Then result list
+                    //                    Then result list
                     foreach ($resultList[$i][2] as $result) {
                         $remaining = $this->printLine($result, $numSections, $numLaps);
 
@@ -132,44 +133,44 @@ EOD;
         }
 
         MYPDFG::Close();
-        MYPDFG::Output(public_path('pdf/results/' . $filename), 'F');
+        MYPDFG::Output(public_path('pdf/results/'.$filename), 'F');
         MYPDFG::reset();
-//        return response()->download('pdf/results/' . $filename);
-        return;
+        //        return response()->download('pdf/results/' . $filename);
 
     }
 
-    function filter_filename($name)
+    public function filter_filename($name)
     {
         $name = str_replace(array_merge(
             array_map('chr', range(0, 31)),
-            array('<', '>', ':', '"', '/', '\\', '|', '?', '*', ',')
+            ['<', '>', ':', '"', '/', '\\', '|', '?', '*', ',']
         ), '', $name);
         // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
         $ext = pathinfo($name, PATHINFO_EXTENSION);
-        $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
+        $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)).($ext ? '.'.$ext : '');
+
         return $name;
     }
 
-    function printClassHeader($course, $class, $rowHeight, $numSections)
+    public function printClassHeader($course, $class, $rowHeight, $numSections)
     {
         $y = MYPDFG::GetY();
         MYPDFG::SetY($y + $rowHeight);
-//                    Output class header
+        //                    Output class header
         MYPDFG::SetFont('', 'B', 9, '', true);
         MYPDFG::setX(10);
-        MYPDFG::Cell(0, 0, "$course - $class", 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+        MYPDFG::Cell(0, 0, "$course - $class", 0, 0, 'L', false, null, 0, false, 'C'.'M');
         MYPDFG::setX(100);
-        MYPDFG::Cell(10, 0, "Total", 0, 0, 'C', false, null, 0, false, 'C' . 'M');
+        MYPDFG::Cell(10, 0, 'Total', 0, 0, 'C', false, null, 0, false, 'C'.'M');
 
         $sectionWidth = 177 / $numSections;
         for ($index = 1; $index <= $numSections; $index++) {
-            MYPDFG::Cell($sectionWidth, 0, $index, 0, 0, 'C', false, null, 0, false, 'C' . 'M');
+            MYPDFG::Cell($sectionWidth, 0, $index, 0, 0, 'C', false, null, 0, false, 'C'.'M');
         }
         MYPDFG::Cell('', '', '', '', 1);
     }
 
-    function printLine($result, $numSections, $numLaps)
+    public function printLine($result, $numSections, $numLaps)
     {
         $pos = $result->pos;
         $number = $result->rider;
@@ -180,71 +181,73 @@ EOD;
         $sectionScores = str_split($result->sectionScores, $numLaps);
         $resultStatus = $result->resultStatus;
         if ($resultStatus == 1) {
-            $pos = "DNF";
+            $pos = 'DNF';
         }
 
         PDF::setFontSize(9);
 
         PDF::setX(10);
         PDF::SetFont('', 'B', 9, '', true);
-        PDF::Cell(9, 0, $pos, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+        PDF::Cell(9, 0, $pos, 0, 0, 'R', false, null, 0, false, 'C'.'M');
         PDF::SetFont('', '', 9, '', true);
         PDF::setX(19);
-        PDF::Cell(9, 0, $number, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+        PDF::Cell(9, 0, $number, 0, 0, 'R', false, null, 0, false, 'C'.'M');
         PDF::setX(28);
-        PDF::Cell(40, 0, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+        PDF::Cell(40, 0, $name, 0, 0, 'L', false, null, 1, false, 'C'.'M');
         PDF::setX(68);
-        PDF::Cell(32, 0, $machine, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+        PDF::Cell(32, 0, $machine, 0, 0, 'L', false, null, 1, false, 'C'.'M');
 
         $startScores = 100;
-//          Only print total for finishers
+        //          Only print total for finishers
         if ($resultStatus == 0) {
             $total = $total;
         } else {
             $total = '';
         }
         PDF::SetFont('', 'B', 9, '', true);
-        PDF::Cell(10, 0, $total, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+        PDF::Cell(10, 0, $total, 0, 0, 'R', false, null, 0, false, 'C'.'M');
         PDF::SetFont('', '', 9, '', true);
 
         $sectionWidth = 177 / $numSections;
         for ($index = 1; $index <= $numSections; $index++) {
 
-//            PDF::setX($startScores + 10 * $index);
-            PDF::Cell($sectionWidth, 0, str_replace('o', '', $sectionScores[$index - 1]), 0, 0, 'C', false, null, 0, false, 'C' . 'M');
-//            PDF::Cell($sectionWidth, 0, $sectionScores[$index - 1], 0, 0, 'C', false, null, 0, false, 'C' . 'M');
+            //            PDF::setX($startScores + 10 * $index);
+            PDF::Cell($sectionWidth, 0, str_replace('o', '', $sectionScores[$index - 1]), 0, 0, 'C', false, null, 0, false, 'C'.'M');
+            //            PDF::Cell($sectionWidth, 0, $sectionScores[$index - 1], 0, 0, 'C', false, null, 0, false, 'C' . 'M');
         }
-//      Add line break
+        //      Add line break
         PDF::Cell('', '', '', '', 1);
         $remaining = 210 - MYPDFG::getY();
+
         return $remaining;
     }
 
-    function nameize($str, $a_char = array("'", "-", " "))
+    public function nameize($str, $a_char = ["'", '-', ' '])
     {
-        //$str contains the complete raw name string
-        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
+        // $str contains the complete raw name string
+        // $a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
         $string = strtolower($str);
         foreach ($a_char as $temp) {
             $pos = strpos($string, $temp);
             if ($pos) {
-                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
+                // we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
                 $mend = '';
                 $a_split = explode($temp, $string);
                 foreach ($a_split as $temp2) {
-                    //capitalize each portion of the string which was separated at a special character
-                    $mend .= ucfirst($temp2) . $temp;
+                    // capitalize each portion of the string which was separated at a special character
+                    $mend .= ucfirst($temp2).$temp;
                 }
                 $string = substr($mend, 0, -1);
             }
         }
+
         return ucfirst($string);
     }
 }
 
 class MYPDFG extends PDF
 {
-    //Page header
+    // Page header
     public function Header()
     {
         $bMargin = $this->getBreakMargin();
@@ -267,11 +270,10 @@ class MYPDFG extends PDF
     public function Footer()
     {
         // Position at 15 mm from bottom
-//        $this->SetY(-15);
-//        // Set font
-//        $this->SetFont('helvetica', 'I', 8);
-//        // Page number
-//        $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        //        $this->SetY(-15);
+        //        // Set font
+        //        $this->SetFont('helvetica', 'I', 8);
+        //        // Page number
+        //        $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
     }
 }
-

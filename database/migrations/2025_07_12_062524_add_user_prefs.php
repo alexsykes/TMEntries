@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->binary('preferences', 8)->nullable()->default("11111111");
+            $table->binary('preferences', 8)->nullable()->default('11111111');
         });
     }
 

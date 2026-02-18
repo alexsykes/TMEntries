@@ -2,11 +2,8 @@
 
 namespace App\Listeners;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
-
-use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Log;
 
 class OnLogin
 {
@@ -25,7 +22,7 @@ class OnLogin
     {
         //
         $user = $event->user;
-        Log::info($user->name." with ID (".$user->id.") successfully logged in.");
-//        Log::info("Club admin ".$user->isClubUser);
+        Log::info($user->name.' with ID ('.$user->id.') successfully logged in.');
+        //        Log::info("Club admin ".$user->isClubUser);
     }
 }

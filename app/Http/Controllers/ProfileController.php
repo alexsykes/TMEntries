@@ -58,17 +58,17 @@ class ProfileController extends Controller
         return Redirect::to('/');
     }
 
-    public function updatePreferences(Request $request): RedirectResponse {
-//        dd($request->all());
+    public function updatePreferences(Request $request): RedirectResponse
+    {
+        //        dd($request->all());
         $user = $request->user();
         $currentPreferences = $user->preferences;
 
-        if($request->receive_emails) {
+        if ($request->receive_emails) {
             $receive_emails = true;
         } else {
             $receive_emails = false;
         }
-
 
         $user->receive_emails = $receive_emails;
         $user->save();

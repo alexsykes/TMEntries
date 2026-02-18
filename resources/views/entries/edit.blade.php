@@ -36,7 +36,9 @@ array_push($allClasses, $customClasses);
             $hasOptions = true;
         }
 
-$extraArray  = json_decode(($entry->extras));
+$extraArray  = json_decode($entry->extras);
+$priceArray = array_column($extraArray, 'priceID');
+$qtyArray = array_column($extraArray, 'qty');
 
 $classlist = str_replace(',',',',implode(',', $allClasses));
 $courselist   = str_replace(',',',',implode(',', $allCourses));
@@ -64,6 +66,7 @@ $classOptions = explode(',', $classlist);
 
         //    Check for extras
         $hasExtras = is_null($membership) ? false : true;
+
     @endphp
 
     <script>
@@ -97,25 +100,6 @@ $classOptions = explode(',', $classlist);
         <div class="px-4 py-2 mt-2 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
 
             <div class="mt-2 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-
-                {{--                @if($hasExtras)--}}
-                {{--                    <x-form-field>--}}
-                {{--                        <div class="font-semibold text-lg text-red-500">Not paid your 2026 YCMCC membership--}}
-                {{--                            yet?--}}
-                {{--                        </div>--}}
-                {{--                        <div class="flex col-span-3 justify-normal space-x-4 align-middle">--}}
-                {{--                            <div class="font-normal  text-black" for="extras">Tick this box to include payment--}}
-                {{--                                (£10) with this entry--}}
-                {{--                            </div>--}}
-                {{--                            <input name="extras" type="checkbox" value="{{$membership->stripe_price_id}}"--}}
-                {{--                                   id="extras"--}}
-                {{--                                    {{$entry->extras == $membership->stripe_price_id ? 'checked' :''}}--}}
-                {{--                            />--}}
-                {{--                        </div>--}}
-                {{--                    </x-form-field>--}}
-
-                {{--                @endif--}}
-
 
                 <x-form-field>
                     <x-form-label for="name">Name</x-form-label>
@@ -231,10 +215,6 @@ $classOptions = explode(',', $classlist);
                     </div>
                 </x-form-field>
             </div>
-            @php
-
-                dump($extraArray[$extraArray[0]]);
-            @endphp
             @if($hasMembership)
                 <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                     <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add
@@ -243,11 +223,14 @@ $classOptions = explode(',', $classlist);
                     <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
                         @php
 
+                            $membershipFee = $membership->price / 100;
 
-                            //                        $qty = $extraArray["$membership->stripe_price_id"]->value;
-                            //
-                           $membershipFee = $membership->price / 100;
-                           $key = $membership->stripe_price_id;
+                            $priceID = $membership->stripe_price_id;
+                            if(in_array($priceID, $priceArray)) {
+                                $checked = " checked ";
+                            } else {
+                                $checked = "";
+                            }
 
                         @endphp
                         <x-form-field>
@@ -257,10 +240,9 @@ $classOptions = explode(',', $classlist);
                                 </div>
 
                                 <div class="pl-2">
-                                    <input name="extras[]" class="p-2" type="checkbox"
-                                           value="{{$membership->stripe_price_id}}"
-                                           id="extras"
-                                            {{--                                            {{$qty > 0 ? 'checked' :''}}--}}
+                                    <input name="checkbox[]" class="p-2" type="checkbox"
+                                           {{$checked}}
+                                           value="{{$priceID}}"
                                     />
                                 </div>
                             </div>
@@ -287,6 +269,14 @@ $classOptions = explode(',', $classlist);
                             @endphp
                             @if($type=="checkbox")
                                 <x-form-field>
+                                    @php
+                                        $priceID = $option->stripe_price_id;
+                                        if(in_array($priceID, $priceArray)) {
+                                            $checked = " checked ";
+                                        } else {
+                                            $checked = "";
+                                        }
+                                    @endphp
 
                                     <div class="flex justify-normal col-span-3">
                                         <div class="font-semibold text text-blue-700">{{$option->name}}
@@ -294,22 +284,33 @@ $classOptions = explode(',', $classlist);
                                         </div>
 
                                         <div class="pl-2">
-                                            <input name="extras[]" type="checkbox" value="{{$option->stripe_price_id}}"
-                                                   id="extras"
+                                            <input name="checkbox[]" type="checkbox"
+                                                   value="{{$option->stripe_price_id}}"
+                                                    {{ $checked }}
                                             />
                                         </div>
                                     </div>
                                 </x-form-field>
 
                             @elseif($type="number")
-                                <x-form-field>
+                                <x-form-field>                                    @php
+                                        $priceID = $option->stripe_price_id;
+                                        if(in_array($priceID, $priceArray)) {
+                                            $index = array_search($priceID, $priceArray);
+                                            $quantity = $qtyArray[$index];
+                                        } else {
+                                            $quantity = 0;
+                                        }
+                                    @endphp
                                     <div class="flex col-span-3 justify-normal space-x-4">
                                         <div class="pt-2 font-semibold text text-blue-700">{{$option->name}}
                                             (£{{ $price  }})
                                         </div>
                                         <div class="">
                                             <input type="hidden" value="{{$option->stripe_price_id}}" name="priceID[]">
-                                            <input type="number" id="quantity" name="quantity[]" class="w-24 sm:w-full"
+                                            <input type="number" min="0" id="quantity" name="quantity[]"
+                                                   class="w-24 sm:w-full"
+                                                   value="{{$quantity}}"
                                                    placeholder="Quantity">
                                         </div>
                                     </div>

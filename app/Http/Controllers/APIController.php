@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 class APIController extends Controller
 {
     //
@@ -11,9 +9,8 @@ class APIController extends Controller
     public function appLogin()
     {
 
-//        dd($request->all());
+        //        dd($request->all());
         response()->json(['success' => 'success'], 200);
-
 
     }
 }

@@ -32,15 +32,15 @@ class UserController extends Controller
             ->where('created_by', $userID)
             ->whereIn('trial_id', $todaysTrials->pluck('id'))
             ->get();
-//
-//
-//        $allEntries = DB::table('entries')
-//            ->join('trials', 'entries.trial_id', '=', 'trials.id')
-//            ->where('entries.created_by', Auth::user()->id)
-//            ->get(['entries.name', 'entries.class', 'entries.course', 'trials.name as trial', 'trials.date as date']);
-//        dump($allEntries);
+        //
+        //
+        //        $allEntries = DB::table('entries')
+        //            ->join('trials', 'entries.trial_id', '=', 'trials.id')
+        //            ->where('entries.created_by', Auth::user()->id)
+        //            ->get(['entries.name', 'entries.class', 'entries.course', 'trials.name as trial', 'trials.date as date']);
+        //        dump($allEntries);
 
-        $futureTrialsArray = array();
+        $futureTrialsArray = [];
         foreach ($futureTrials as $futureTrial) {
             array_push($futureTrialsArray, $futureTrial->id);
         }
@@ -79,7 +79,7 @@ class UserController extends Controller
 
         $trial = Trial::findorfail($entry->trial_id);
         $club_id = $trial->club_id;
-//
+        //
 
         $membership = DB::table('products')
             ->where('products.club_id', $club_id)
@@ -87,15 +87,16 @@ class UserController extends Controller
             ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
             ->orderBy('prices.updated_at', 'desc')
             ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
-//        dd($membership);
+        //        dd($membership);
 
         if ($entry == null) {
             abort(404);
         }
+
         return view('user.edit_entry', ['entry' => $entry, 'membership' => $membership]);
     }
 
-//    Update entry from My Entries page
+    //    Update entry from My Entries page
     public function updateEntry(Request $request)
     {
         $id = $request->entryID;
@@ -115,13 +116,11 @@ class UserController extends Controller
                     ->where('product_category', 'entry fee')
                     ->value('stripe_product_id');
 
-
                 $adultProductID = DB::table('products')
                     ->where('trial_id', $trial_id)
                     ->where('isYouth', false)
                     ->where('product_category', 'entry fee')
                     ->value('stripe_product_id');
-
 
                 $youthPriceID = DB::table('prices')
                     ->where('stripe_product_id', $youthProductID)
@@ -130,7 +129,6 @@ class UserController extends Controller
                 $adultPriceID = DB::table('prices')
                     ->where('stripe_product_id', $adultProductID)
                     ->value('stripe_price_id');
-
 
                 $request->validate([
                     'class' => 'required',
@@ -145,7 +143,7 @@ class UserController extends Controller
                 $entry->type = $request->type;
                 $entry->size = $request->size;
 
-//                Adjust product etc. for dob
+                //                Adjust product etc. for dob
                 $birthDate = date_create($request->dob);
 
                 $interval = $trial_date->diff($birthDate);
@@ -161,13 +159,14 @@ class UserController extends Controller
                     $entry->stripe_product_id = $adultProductID;
                 }
 
-                if (!is_null($request->extras)) {
+                if (! is_null($request->extras)) {
                     $entry->extras = $request->extras;
                 } else {
                     $entry->extras = null;
                 }
 
                 $entry->save();
+
                 return redirect('/user/entries');
                 break;
 
@@ -183,7 +182,8 @@ class UserController extends Controller
                 break;
 
             default:
-                dd("None");
+                dd('None');
+
                 return redirect('/user/entries');
                 break;
         }
@@ -194,10 +194,10 @@ class UserController extends Controller
         $userID = auth()->user()->id;
         $entry = Entry::findorfail($id);
 
-
         if ($userID != $entry->created_by) {
             abort(403);
         }
+
         return view('user.confirm_remove_entry', ['entry' => $entry]);
     }
 
@@ -212,7 +212,7 @@ class UserController extends Controller
 
         if ($entry->status == 1) {
 
-//        Get payment details
+            //        Get payment details
             $pi = $entry->stripe_payment_intent;
             $price = Price::where('stripe_price_id', $entry->stripe_price_id)->first();
             $cost = $price->stripe_price;
@@ -221,21 +221,20 @@ class UserController extends Controller
             $entry->status = 2;
             $entry->save();
 
-//        dd($id, $entry->stripe_payment_intent);
-//                    Request request
-            require('../vendor/autoload.php');
-            require('../vendor/stripe/stripe-php/lib/StripeClient.php');
+            //        dd($id, $entry->stripe_payment_intent);
+            //                    Request request
+            require '../vendor/autoload.php';
+            require '../vendor/stripe/stripe-php/lib/StripeClient.php';
             $stripe = new StripeClient(config('stripe.stripe_secret_key'));
 
-            $stripe->refunds->create
-            ([
+            $stripe->refunds->create([
                 'payment_intent' => $pi,
                 'amount' => $cost - 300,
-//                'amount' => 1,
+                //                'amount' => 1,
                 'metadata' => [
                     'entry_id' => $entry->id,
-                    'reason' => 'user_request'
-                ]
+                    'reason' => 'user_request',
+                ],
             ]);
         } elseif ($entry->status == 0) {
             $entry->updated_at = now();
@@ -244,14 +243,13 @@ class UserController extends Controller
         }
 
         EntryWithdrawn::dispatch($id);
+
         return redirect('user/entries');
     }
 
     public function checkout()
     {
 
-
         return redirect('stripe/usercheckout');
     }
-
 }

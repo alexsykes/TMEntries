@@ -16,7 +16,7 @@ class RefundRequested extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public Object $entry, public $reason)
+    public function __construct(public object $entry, public $reason)
     {
         //
     }

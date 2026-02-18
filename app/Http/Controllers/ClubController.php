@@ -22,13 +22,14 @@ class ClubController extends Controller
     {
         $clubs = Club::all()
             ->sortBy('name');
+
         return view('clubs.list', compact('clubs'));
     }
 
     public function profile(Request $request)
     {
         $user = Auth::user();
-        if (!$user->isClubUser) {
+        if (! $user->isClubUser) {
             abort(code: 404);
         }
         $clubID = $user->club_id;
@@ -36,7 +37,7 @@ class ClubController extends Controller
         $club = Club::findOrfail($clubID);
         $series = Series::where('clubID', $clubID)
             ->get();
-//        dd($series);
+        //        dd($series);
 
         return view('clubs.profile', ['club' => $club, 'series' => $series]);
     }
@@ -55,14 +56,15 @@ class ClubController extends Controller
         return view('clubs.clublist', ['clubs' => $clubs]);
     }
 
-//    public function detail(Request $request) {
-//        $club = Club::find(request('id'));
-////        dd($club);
-//        return view('clubs.detail', ['club' => $club]);
-//    }
+    //    public function detail(Request $request) {
+    //        $club = Club::find(request('id'));
+    // //        dd($club);
+    //        return view('clubs.detail', ['club' => $club]);
+    //    }
     public function edit(Request $request)
     {
         $club = Club::find(request('id'));
+
         return view('clubs.edit', ['club' => $club]);
     }
 
@@ -86,6 +88,7 @@ class ClubController extends Controller
         $attributes['section_markers'] = request('section_markers', '');
 
         $club = Club::create($attributes);
+
         return redirect('/club/profile?tab=profile');
     }
 
@@ -106,7 +109,7 @@ class ClubController extends Controller
         $attributes['membershipSecretary'] = request('membershipSecretary', '');
         $attributes['memSecPhone'] = request('memSecPhone', '');
 
-//        dd($attributes);
+        //        dd($attributes);
         $club = Club::find(request('id'));
 
         $club->update($attributes);
@@ -144,6 +147,7 @@ class ClubController extends Controller
         $user = Auth::user();
         $clubID = $user->club_id;
         $club = Club::find($clubID);
+
         return view('clubs.editprofile', ['club' => $club]);
     }
 
@@ -152,9 +156,9 @@ class ClubController extends Controller
         $user = Auth::user();
         $clubID = $user->club_id;
 
-        $categoryArray = array('AGM', 'Committee Meetings', 'Trials', 'Social Events ', 'Other');
+        $categoryArray = ['AGM', 'Committee Meetings', 'Trials', 'Social Events ', 'Other'];
 
-        $mailData = array();
+        $mailData = [];
         foreach ($categoryArray as $category) {
             $mails = DB::table('clubmails')
                 ->where('club_id', $clubID)
@@ -167,6 +171,7 @@ class ClubController extends Controller
                 $mailData[$category] = $mails;
             }
         }
+
         return view('clubs.maillist', ['mails' => $mails, 'categoryArray' => $categoryArray, 'mailData' => $mailData]);
     }
 
@@ -187,10 +192,10 @@ class ClubController extends Controller
         return view('clubs.maillist', ['mails' => $mails]);
     }
 
-
     public function membershipForm(Request $request, $id)
     {
         $oldValues = $request->old();
+
         return view('clubs.membership', ['club_id' => $id, 'oldValues' => $oldValues]);
     }
 
@@ -210,7 +215,7 @@ class ClubController extends Controller
             'membership_type' => 'required',
             'membership_category' => 'required',
             'accept' => 'required',
-//            'g-recaptcha-response' => ['required', new ReCaptchaV3('register')],
+            //            'g-recaptcha-response' => ['required', new ReCaptchaV3('register')],
         ]);
 
         $attributes['firstname'] = $this->nameize($attributes['firstname']);
@@ -220,8 +225,7 @@ class ClubController extends Controller
 
         $attributes['social'] = implode(',', request('social'));
 
-
-//        info($attributes['membership_category']);
+        //        info($attributes['membership_category']);
 
         if ($attributes['membership_category'] == 'life' || $attributes['membership_category'] == 'observer') {
             $attributes['confirmed'] = true;
@@ -233,9 +237,8 @@ class ClubController extends Controller
             $attributes['confirmed'] = false;
         }
 
-
         $member = ClubMember::create($attributes);
-//        Add to Observer mailing list
+        //        Add to Observer mailing list
         if ($attributes['membership_category'] == 'observer') {
             $email = trim($attributes['email']);
 
@@ -256,30 +259,31 @@ class ClubController extends Controller
         return view('/clubs/confirmRegistered', ['member' => $member]);
     }
 
-    public function nameize($str, $a_char = array("'", "-", " "))
+    public function nameize($str, $a_char = ["'", '-', ' '])
     {
-        //$str contains the complete raw name string
-        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
+        // $str contains the complete raw name string
+        // $a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
         $string = strtolower($str);
         foreach ($a_char as $temp) {
             $pos = strpos($string, $temp);
             if ($pos) {
-                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
+                // we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
                 $mend = '';
                 $a_split = explode($temp, $string);
                 foreach ($a_split as $temp2) {
-                    //capitalize each portion of the string which was separated at a special character
-                    $mend .= ucfirst($temp2) . $temp;
+                    // capitalize each portion of the string which was separated at a special character
+                    $mend .= ucfirst($temp2).$temp;
                 }
                 $string = substr($mend, 0, -1);
             }
         }
+
         return ucfirst($string);
     }
 
     public function console(Request $request)
     {
-        $selectedTab = "Profile";
+        $selectedTab = 'Profile';
         if (isset($request->tab)) {
             $selectedTab = $request->tab;
         }
@@ -300,10 +304,10 @@ class ClubController extends Controller
             ->orderBy('name')
             ->get();
 
-        $countItemsArray = array();
+        $countItemsArray = [];
         foreach ($distributionLists as $distributionList) {
-            $to = explode(",", $distributionList->to);
-            array_push($countItemsArray, sizeof($to));
+            $to = explode(',', $distributionList->to);
+            array_push($countItemsArray, count($to));
         }
 
         $trials = DB::table('trials')
@@ -324,6 +328,7 @@ class ClubController extends Controller
     public function editDistribution($id)
     {
         $listItem = MailDistribution::findOrFail($id);
+
         return view('clubs.editDistributionList', ['listItem' => $listItem]);
     }
 
@@ -341,6 +346,7 @@ class ClubController extends Controller
         $attributes['club_id'] = $club_id;
         $attributes['created_by'] = $created_by;
         MailDistribution::create($attributes);
+
         return redirect('/club/profile?tab=mailinglist');
     }
 
@@ -355,6 +361,7 @@ class ClubController extends Controller
 
         $item->update($attributes);
         $item->save();
+
         return redirect('/club/profile?tab=mailinglist');
     }
 
@@ -430,7 +437,6 @@ class ClubController extends Controller
 //                ->bcc($amanda)
                 ->send(new WelcomeNewMember($club_member));
 
-
         } else {
             info("Send acknowledgement email to $club_member->email");
             Mail::to($club_member->email)
@@ -438,6 +444,7 @@ class ClubController extends Controller
 //                ->bcc($amanda)
                 ->send(new RenewalAcknowledgement($club_member));
         }
+
         return redirect('/club/member/list');
     }
 
@@ -490,7 +497,6 @@ class ClubController extends Controller
                             ->bcc($bcc)
                             ->send(new WelcomeNewMember($club_member));
 
-
                     } else {
                         info("Send acknowledgement email to $club_member->email");
                         Mail::to($club_member->email)
@@ -499,6 +505,7 @@ class ClubController extends Controller
                     }
                 }
             }
+
             return redirect('/club/member/approve');
         }
     }
@@ -524,30 +531,30 @@ class ClubController extends Controller
         $attributes['accept'] = true;
 
         if (is_null($request->social)) {
-            $attributes['social'] = "TBA";
+            $attributes['social'] = 'TBA';
         } else {
             $attributes['social'] = implode(',', request('social'));
         }
 
         if (is_null($request->address)) {
-            $attributes['address'] = "TBA";
+            $attributes['address'] = 'TBA';
         } else {
             $attributes['address'] = request('address');
         }
 
         if (is_null($request->postcode)) {
-            $attributes['postcode'] = "TBA";
+            $attributes['postcode'] = 'TBA';
         } else {
             $attributes['postcode'] = request('postcode');
         }
         if (is_null($request->emergency_contact)) {
-            $attributes['emergency_contact'] = "TBA";
+            $attributes['emergency_contact'] = 'TBA';
         } else {
             $attributes['emergency_contact'] = request('emergency_contact');
         }
 
         if (is_null($request->emergency_number)) {
-            $attributes['emergency_number'] = "TBA";
+            $attributes['emergency_number'] = 'TBA';
         } else {
             $attributes['emergency_number'] = request('emergency_number');
         }
@@ -562,12 +569,10 @@ class ClubController extends Controller
             $attributes['confirmed'] = false;
         }
 
-
-        if (!is_null($request->confirmed)) {
+        if (! is_null($request->confirmed)) {
             $attributes['confirmed'] = true;
 
         }
-
 
         $member = ClubMember::create($attributes);
 
@@ -578,7 +583,6 @@ class ClubController extends Controller
                 Mail::to($member->email)
                     ->send(new WelcomeNewMember($member));
 
-
             } else {
                 info("Send acknowledgement email to $member->email");
                 Mail::to($member->email)
@@ -586,8 +590,7 @@ class ClubController extends Controller
             }
         }
 
-
-//        Add to Observer mailing list
+        //        Add to Observer mailing list
         if ($attributes['membership_category'] == 'observer') {
             $email = trim($attributes['email']);
 
@@ -604,6 +607,7 @@ class ClubController extends Controller
             $observerList->to = $addressList;
             $observerList->update();
         }
+
         return redirect('/club/member/list');
 
     }

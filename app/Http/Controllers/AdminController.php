@@ -33,6 +33,7 @@ class AdminController extends Controller
         $trials = DB::table('trials')
             ->orderBy('date', 'desc')
             ->get();
+
         return view('admin.trialList', ['trials' => $trials]);
     }
 
@@ -42,6 +43,7 @@ class AdminController extends Controller
             ->where('isResultPublished', 1)
             ->orderBy('date', 'desc')
             ->get();
+
         return view('admin.resultList', ['results' => $results]);
     }
 
@@ -50,6 +52,7 @@ class AdminController extends Controller
         $mails = DB::table('mails')
             ->orderBy('subject')
             ->get();
+
         return view('admin.mailList', ['mails' => $mails]);
     }
 
@@ -57,7 +60,7 @@ class AdminController extends Controller
     {
         $trialID = $id;
 
-//        Get entries with status 1
+        //        Get entries with status 1
         $entryData = DB::table('entries')
             ->select('stripe_payment_intent', DB::raw('group_concat(id) as ids'))
             ->groupBy('stripe_payment_intent')
@@ -75,9 +78,9 @@ class AdminController extends Controller
                 'payment_intent' => $paymentIntent,
                 'amount' => 1,
                 'metadata' => ['entry_id' => $entry_id,
-                    'reason' => 'cancellation']
+                    'reason' => 'cancellation'],
             ]);
-//        payment intents to refund
+            //        payment intents to refund
             Log::info("Refund requested - $entry_id");
         }
     }
@@ -93,6 +96,7 @@ class AdminController extends Controller
             $delay++;
             info("sendMail - delay: $delay");
         }
+
         return redirect('/adminaccess');
     }
 
@@ -108,23 +112,26 @@ class AdminController extends Controller
         } else {
             abort(404);
         }
+
         return redirect('/');
     }
 
     public function adminRemove()
     {
-//        dd(request('id'));
+        //        dd(request('id'));
         $id = request('id');
         $user = User::find($id)
             ->where('id', $id)
             ->where('isSuperUser', '!=', 1)
             ->delete();
+
         return redirect('/adminaccess');
     }
 
     public function editUser()
     {
         $user = User::find(request('id'));
+
         return view('admin.adminUserEdit', ['user' => $user]);
     }
 
@@ -134,38 +141,43 @@ class AdminController extends Controller
         $user->name = request('name');
         $user->email = request('email');
         $user->save();
+
         return redirect('/adminaccess');
     }
 
     public function toggleResultPublished()
     {
         $trial = Trial::find(request('id'));
-        $trial->isResultPublished = !$trial->isResultPublished;
+        $trial->isResultPublished = ! $trial->isResultPublished;
         $trial->save();
+
         return redirect('/admin/trials');
     }
 
     public function toggleEntry()
     {
         $trial = Trial::find(request('id'));
-        $trial->isEntryLocked = !$trial->isEntryLocked;
+        $trial->isEntryLocked = ! $trial->isEntryLocked;
         $trial->save();
+
         return redirect('/admin/trials');
     }
 
     public function toggleScoring()
     {
         $trial = Trial::find(request('id'));
-        $trial->isScoringLocked = !$trial->isScoringLocked;
+        $trial->isScoringLocked = ! $trial->isScoringLocked;
         $trial->save();
+
         return redirect('/admin/trials');
     }
 
     public function toggleLock()
     {
         $trial = Trial::find(request('id'));
-        $trial->isLocked = !$trial->isLocked;
+        $trial->isLocked = ! $trial->isLocked;
         $trial->save();
+
         return redirect('/admin/trials');
     }
 
@@ -182,17 +194,17 @@ class AdminController extends Controller
     public function storeAppUser(Request $request)
     {
         $request->validate([
-                'username' => ['required', 'string', 'max:255'],
-//                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . AppUser::class],
-                'password' => ['required', 'string', 'min:8'],
-            ]
+            'username' => ['required', 'string', 'max:255'],
+            //                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . AppUser::class],
+            'password' => ['required', 'string', 'min:8'],
+        ]
         );
 
-        $salt = substr("0faPWOZpvQCuEWcAj0qm1.1", 7, 22);
-        $salt = "0faPWOZpvQCuEWcAj0qm1.";
+        $salt = substr('0faPWOZpvQCuEWcAj0qm1.1', 7, 22);
+        $salt = '0faPWOZpvQCuEWcAj0qm1.';
 
         $rawPassword = $request->password;
-        $crypted = crypt($rawPassword, "$2y$10$" . $salt);
+        $crypted = crypt($rawPassword, '$2y$10$'.$salt);
         $user = AppUser::create([
             'username' => $request->username,
             'email' => $request->email,
@@ -205,6 +217,7 @@ class AdminController extends Controller
         $trial = Trial::find($id);
         $club = $trial->club()->first();
         $venue = $trial->venue()->first();
+
         return view('admin.trial.edit', ['trial' => $trial, 'club' => $club, 'venue' => $venue]);
     }
 
@@ -219,6 +232,7 @@ class AdminController extends Controller
         $trial->isResultPublished = isset($request->isResultPublished);
 
         $trial->update();
+
         return redirect('/admin/trials');
     }
 
@@ -236,11 +250,12 @@ class AdminController extends Controller
     public function archive(Request $request)
     {
         $prefix = config('database.connections.mysql.prefix');
-        $rawQuery = "INSERT INTO " . $prefix . "score_backup SELECT * FROM " . $prefix . "scores WHERE `trial_id` = '" . $request->id . "'";
+        $rawQuery = 'INSERT INTO '.$prefix.'score_backup SELECT * FROM '.$prefix."scores WHERE `trial_id` = '".$request->id."'";
         $result = DB::select($rawQuery);
 
         $deleted = DB::table('scores')->where('trial_id', $request->id)->delete();
-        return redirect('/admin/trial/edit/' . $request->id);
+
+        return redirect('/admin/trial/edit/'.$request->id);
     }
 
     public function backupTrial(Request $request)
@@ -248,36 +263,37 @@ class AdminController extends Controller
         $id = $request->id;
         $exportDir = "backups/$id/";
 
-        if (!file_exists($exportDir)) {
+        if (! file_exists($exportDir)) {
             mkdir($exportDir, 0777, true);
         }
 
         $trial = Trial::find($id)
             ->toJson();
 
-//        Get all score data for trial
+        //        Get all score data for trial
         $scores = Trial::find($request->id)->scores()->get()
             ->toJson();
 
-//        Get relevant entry data for trial
+        //        Get relevant entry data for trial
         $entries = Trial::find($request->id)->entries()
             ->select('name', 'class', 'course', 'sectionScores', 'sequentialScores', 'make', 'size', 'ridingNumber', 'dob')
             ->get()
             ->toJson();
 
-        $filename = "Scores.json";
-        file_put_contents($exportDir . $filename, $scores);
-        $filename = "Trial.json";
-        file_put_contents($exportDir . $filename, $trial);
-        $filename = "Entries.json";
-        file_put_contents($exportDir . $filename, $entries);
+        $filename = 'Scores.json';
+        file_put_contents($exportDir.$filename, $scores);
+        $filename = 'Trial.json';
+        file_put_contents($exportDir.$filename, $trial);
+        $filename = 'Entries.json';
+        file_put_contents($exportDir.$filename, $entries);
 
         $tables = ['entries', 'scores'];
 
         $this->exportToCsv($request->id, $tables, $exportDir);
 
         TrialBackupCompleted::dispatch($id);
-        return redirect('/admin/trial/edit/' . $id);
+
+        return redirect('/admin/trial/edit/'.$id);
     }
 
     private function exportToCsv($requestID, mixed $tables, string $exportDir)
@@ -288,40 +304,39 @@ class AdminController extends Controller
                     ->where('trial_id', $requestID)
                     ->get();
 
-
-                $size = sizeof($data);
+                $size = count($data);
                 if ($size > 0) {
-                    $csvFileName = $exportDir . $table . ".csv";
+                    $csvFileName = $exportDir.$table.'.csv';
                     $csvFile = fopen($csvFileName, 'w');
-                    $headers = array_keys((array)$data[0]); // Get the column headers from the first row
+                    $headers = array_keys((array) $data[0]); // Get the column headers from the first row
                     fputcsv($csvFile, $headers);
 
                     foreach ($data as $row) {
-                        fputcsv($csvFile, (array)$row);
+                        fputcsv($csvFile, (array) $row);
                     }
                     fclose($csvFile);
                 }
             }
-//            Trial as key field is `id`
+            //            Trial as key field is `id`
             $table = 'trials';
             $data = DB::table($table)
                 ->where('id', $requestID)
                 ->get();
 
-            $size = sizeof($data);
+            $size = count($data);
             if ($size > 0) {
-                $csvFileName = $exportDir . $table . ".csv";
+                $csvFileName = $exportDir.$table.'.csv';
                 $csvFile = fopen($csvFileName, 'w');
-                $headers = array_keys((array)$data[0]); // Get the column headers from the first row
+                $headers = array_keys((array) $data[0]); // Get the column headers from the first row
                 fputcsv($csvFile, $headers);
 
                 foreach ($data as $row) {
-                    fputcsv($csvFile, (array)$row);
+                    fputcsv($csvFile, (array) $row);
                 }
                 fclose($csvFile);
             }
         }
-//        dd();
+        //        dd();
     }
 
     public function resetScoring(Request $request)
@@ -331,7 +346,8 @@ class AdminController extends Controller
         $affected = DB::table('scores')
             ->where('trial_id', $id)
             ->update(['score' => null, 'updated_at' => null]);
-        return redirect('/admin/trial/edit/' . $id);
+
+        return redirect('/admin/trial/edit/'.$id);
     }
 
     public function refund(Request $request)
@@ -353,11 +369,10 @@ JOIN tme_prices p ON e.`stripe_price_id` = p.`stripe_price_id`
 WHERE e.`trial_id` = $trialID AND e.status = 1 
 GROUP BY `stripe_payment_intent`, `email`");
 
-
                 foreach ($pis as $pi) {
-//                    Change entry status to 2 - now moved to StripeListener
-//                    $entries = DB::table('entries')
-//                        ->update(['status' => 2, 'updated_at' => date('Y-m-d H:i:s')]);
+                    //                    Change entry status to 2 - now moved to StripeListener
+                    //                    $entries = DB::table('entries')
+                    //                        ->update(['status' => 2, 'updated_at' => date('Y-m-d H:i:s')]);
 
                     $intent = $pi->pi;
                     $value = $pi->value - $adminFee;
@@ -365,7 +380,7 @@ GROUP BY `stripe_payment_intent`, `email`");
                     $names = $pi->names;
                     $email = $pi->email;
 
-//                    Request refund from Stripe
+                    //                    Request refund from Stripe
                     $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
                     try {
                         $result = $stripe->refunds->create([
@@ -380,9 +395,9 @@ GROUP BY `stripe_payment_intent`, `email`");
                                 'email' => $email,
                                 'admin_fee' => $adminFee,
                                 'trial_id' => $trialID,
-                            ]
+                            ],
                         ]);
-//                Catch error if, for example, refund has already been made
+                        //                Catch error if, for example, refund has already been made
                     } catch (InvalidRequestException $e) {
                         $message = $e->getMessage();
                         Info("Refund failed - $message, PI: $intent");
@@ -391,19 +406,18 @@ GROUP BY `stripe_payment_intent`, `email`");
                 break;
             case 'refundAll':
 
-
                 break;
             default:
                 break;
         }
-        return redirect('/admin/trial/edit/' . $trialID);
-    }
 
+        return redirect('/admin/trial/edit/'.$trialID);
+    }
 
     public function refund_(Request $request)
     {
         $trialID = $request->id;
-// Get product data for trial
+        // Get product data for trial
         $productArray = DB::table('products')
             ->where('trial_id', $trialID)
             ->where('product_category', 'entry fee')
@@ -413,7 +427,7 @@ GROUP BY `stripe_payment_intent`, `email`");
 
         $productIDs = array_column($productArray, 'stripe_product_id');
 
-//        Find intents for entries
+        //        Find intents for entries
         $intents = DB::table('purchases')
             ->whereIn('stripe_product_id', $productIDs)
             ->distinct()
@@ -426,12 +440,12 @@ GROUP BY `stripe_payment_intent`, `email`");
         info("$numRefunds refunds to process");
 
         foreach ($intentIDs as $intentID) {
-//            Reset for each intent
+            //            Reset for each intent
             $refundValue = 0;
-            $lineItems = "";
-            $entryIDarray = array();
+            $lineItems = '';
+            $entryIDarray = [];
 
-//            Get purchases for intent
+            //            Get purchases for intent
             $purchases = DB::table('purchases')
                 ->join('prices', 'purchases.stripe_product_id', '=', 'prices.stripe_product_id')
                 ->join('products', 'purchases.stripe_product_id', '=', 'products.stripe_product_id')
@@ -439,9 +453,9 @@ GROUP BY `stripe_payment_intent`, `email`");
                 ->select('quantity', 'purchases.entryIDs as entryIDs', 'purchases.stripe_product_id', 'prices.stripe_price', 'products.product_name')
                 ->get();
 
-//            Get details of each purchase and prepare for
-//              * Stripe transcation
-//              * Email notification
+            //            Get details of each purchase and prepare for
+            //              * Stripe transcation
+            //              * Email notification
             foreach ($purchases as $purchase) {
                 $quantity = $purchase->quantity;
                 $itemValue = $purchase->stripe_price * $quantity;
@@ -469,14 +483,15 @@ GROUP BY `stripe_payment_intent`, `email`");
                         'refunded_amount' => $refundValue,
                         'pi' => $intentID,
                         'entryIDs' => $entryIDs,
-                    ]
+                    ],
                 ]);
-//                Catch error if, for example, refund has already been made
+                //                Catch error if, for example, refund has already been made
             } catch (InvalidRequestException $e) {
                 $message = $e->getMessage();
                 Info("Refund failed - $message");
             }
         }
-        return redirect('/admin/trial/edit/' . $trialID);
+
+        return redirect('/admin/trial/edit/'.$trialID);
     }
 }

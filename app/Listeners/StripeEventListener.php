@@ -24,7 +24,6 @@ use Illuminate\Support\Facades\Mail;
 use Laravel\Cashier\Events\WebhookReceived;
 use Stripe\StripeClient;
 
-
 /* Paid status
     0 - New entry within limit, not paid
     1 - Confirmed entry
@@ -57,10 +56,10 @@ function onInvoiceSent($invoiceObject)
     $trial = DB::table('trials')->where('id', $entry->trial_id)->first();
 
     $date = date_create($trial->date);
-    $entryData = array();
+    $entryData = [];
     $entryData['trialName'] = $trial->name;
     $entryData['trialClub'] = $trial->club;
-    $entryData['date'] = date_format($date, "F jS, Y");
+    $entryData['date'] = date_format($date, 'F jS, Y');
     $entryData['rider'] = $entry->name;
     $entryData['class'] = $entry->class;
     $entryData['course'] = $entry->course;
@@ -74,9 +73,9 @@ function onInvoiceSent($invoiceObject)
 
 function onInvoiceOverdue($invoiceObject)
 {
-    $email = "monster@trialmonster.uk";
+    $email = 'monster@trialmonster.uk';
     Mail::to($email)
-        ->send(new InvoiceOverdue());
+        ->send(new InvoiceOverdue);
 
 }
 
@@ -96,12 +95,12 @@ function onInvoicePaid($invoiceObject)
         ->where('entries.id', $entryID)
         ->get(['entries.*', 'trials.name as trial', 'trials.date as date']);
 
-//  Send confirmation email with bcc: to admin
+    //  Send confirmation email with bcc: to admin
     $bcc = 'monster@trialmonster.uk';
     Mail::to($email)
         ->bcc($bcc)
         ->send(new PaymentReceived($entries));
-//    Mail::to($email, $name)->send(new EntryOffer($entryData));
+    //    Mail::to($email, $name)->send(new EntryOffer($entryData));
 
 }
 
@@ -126,7 +125,7 @@ function onPriceUpdated($priceObject)
 
     $price = DB::table('prices')->where('stripe_price_id', $stripe_price_id)
         ->update(['stripe_price' => $amount,
-            'updated_at' => now(),]);
+            'updated_at' => now(), ]);
 }
 
 function onProductCreated($productObject)
@@ -167,7 +166,6 @@ function onProductCreated($productObject)
         $trialid = $metadata['trialid'];
     }
 
-
     $product = Product::create([
         'stripe_product_id' => $stripe_product_id,
         'stripe_product_description' => $stripe_product_description,
@@ -183,7 +181,7 @@ function onProductCreated($productObject)
         'version' => 1,
     ]);
 
-    info("Product created :: " . $product->product_name);
+    info('Product created :: '.$product->product_name);
     $email = 'monster@trialmonster.uk';
     Mail::to($email)->send(new ProductCreated($product));
 }
@@ -238,14 +236,14 @@ function onProductUpdated($productObject)
         ->where('stripe_product_id', '=', $stripe_product_id)
         ->increment('version');
 
-    info("Product updated :: " . $product_name);
+    info('Product updated :: '.$product_name);
 }
 
 function onCheckoutSessionCompleted($sessionObject)
 {
-//    Get secret key
+    //    Get secret key
     $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
-// and data from session
+    // and data from session
     $metadata = $sessionObject['metadata'];
     $email = $sessionObject['customer_details']['email'];
     $stripe_payment_intent = $sessionObject['payment_intent'];
@@ -253,23 +251,22 @@ function onCheckoutSessionCompleted($sessionObject)
     $trialIDstring = $metadata['trialID'];
     $trialIDs = array_unique(explode(',', $trialIDstring));
 
-//    Create array of entryIDs
+    //    Create array of entryIDs
     $entryIDArray = explode(',', $entryIDs);
 
-
-//  Process purchased items
-//    Get all line items
+    //  Process purchased items
+    //    Get all line items
     $lineItems = $stripe->checkout->sessions->allLineItems(
         $sessionObject['id'],
         []
     );
 
-//  Record other items purchased
+    //  Record other items purchased
     $containsExtras = false;
-    $product_names = array();
-    $product_quantities = array();
-    $product_descriptions = array();
-    $purchaseData = array();
+    $product_names = [];
+    $product_quantities = [];
+    $product_descriptions = [];
+    $purchaseData = [];
 
     foreach ($lineItems as $lineItem) {
         $stripe_product_id = $lineItem['price']['product'];
@@ -285,7 +282,7 @@ function onCheckoutSessionCompleted($sessionObject)
             $qty = $quantity;
             $description = $description;
 
-            array_push($purchaseData, array("product" => $product_name, "quantity" => $qty, "description" => $description));
+            array_push($purchaseData, ['product' => $product_name, 'quantity' => $qty, 'description' => $description]);
         }
 
         $stripe_price_id = $lineItem['price']['id'];
@@ -309,13 +306,13 @@ function onCheckoutSessionCompleted($sessionObject)
             ->increment('purchases', $quantity);
     }
 
-    $msg = "";
+    $msg = '';
     if ($containsExtras) {
-        info("Contains Extras");
+        info('Contains Extras');
 
-        $msg = "<div>Your payment also included the following purchase(s):</div>";
-        $items = "";
-        for ($i = 0; $i < sizeof($purchaseData); $i++) {
+        $msg = '<div>Your payment also included the following purchase(s):</div>';
+        $items = '';
+        for ($i = 0; $i < count($purchaseData); $i++) {
             $item = $purchaseData[$i]['description'];
             $qty = $purchaseData[$i]['quantity'];
             $items .= "<div class='pl-4 font-semibold'>Item: $item Qty: $qty</div>";
@@ -327,42 +324,42 @@ function onCheckoutSessionCompleted($sessionObject)
         info("Doesn't contain Extras");
     }
 
-// Update entry status
+    // Update entry status
     $entries = DB::table('entries')
         ->whereIn('id', $entryIDArray)
         ->update(['status' => 1,
             'accept' => true,
             'email' => $email,
             'updated_at' => now(),
-            'stripe_payment_intent' => $stripe_payment_intent,]);
+            'stripe_payment_intent' => $stripe_payment_intent, ]);
 
-//  Get entries for confirmation email
+    //  Get entries for confirmation email
     $entries = DB::table('entries')
         ->join('trials', 'entries.trial_id', '=', 'trials.id')
         ->whereIn('entries.id', $entryIDArray)
         ->get(['entries.*', 'trials.name as trial', 'trials.date as date']);
 
-//  Send confirmation email with bcc: to admin
+    //  Send confirmation email with bcc: to admin
     $bcc = 'monster@trialmonster.uk';
-//    info($msg);
+    //    info($msg);
     Mail::to($email)
         ->bcc($bcc)
         ->send(new PaymentReceived($entries, $msg));
 
-//    Check for entry limit
+    //    Check for entry limit
     foreach ($trialIDs as $trialID) {
         $trial = Trial::findOrFail($trialID);
 
-//        Check whether trial has entry limit
+        //        Check whether trial has entry limit
         if ($trial->hasEntryLimit) {
             // info("Trial has entryLimit");
-//        Check for full entry list
+            //        Check for full entry list
             $entryLimit = $trial->entryLimit;
             $numEntries = Entry::where('trial_id', $trialID)
                 ->whereIn('status', [1, 4, 7, 8, 9])
                 ->count();
             Info("NumEntries: $numEntries");
-//        Check for number of entries left
+            //        Check for number of entries left
             $spaces = $entryLimit - $numEntries;
             if ($spaces <= 0) {
                 TrialFull::dispatch($trialID, $entryLimit, $numEntries);
@@ -373,13 +370,12 @@ function onCheckoutSessionCompleted($sessionObject)
 
 function sendNotification($items, $entryIDs)
 {
-    $bcc = "monster@trialmonster.uk";
-    $email = "ammnewhouse@gmail.com";
-    $email = "alex@alexsykes.net";
+    $bcc = 'monster@trialmonster.uk';
+    $email = 'ammnewhouse@gmail.com';
+    $email = 'alex@alexsykes.net';
     $entryIDArray = explode(',', $entryIDs);
 
-
-//    $clubIDArray = explode(',', $items['clubIDs']);
+    //    $clubIDArray = explode(',', $items['clubIDs']);
 
     $riderNames = DB::table('entries')
         ->whereIn('id', $entryIDArray)
@@ -402,17 +398,17 @@ function sendNotification($items, $entryIDs)
         ->bcc($bcc)
         ->send(new SecretaryNotificationPaymentReceived($riders, $items));
 
-    info("SecretaryNotificationPaymentReceived sent");
+    info('SecretaryNotificationPaymentReceived sent');
 }
 
 function onRefundCreated(mixed $object)
 {
 
-    $bcc = "monster@trialmonster.uk";
-    $bcc = "alexs130151@gmail.com";
+    $bcc = 'monster@trialmonster.uk';
+    $bcc = 'alexs130151@gmail.com';
     $reason = $object['metadata']['reason'];
 
-//    Get the entryID from the metadata
+    //    Get the entryID from the metadata
     if ($reason == 'user_request') {
         $entryID = $object['metadata']['entry_id'];
         $reason = $object['metadata']['reason'];
@@ -420,7 +416,7 @@ function onRefundCreated(mixed $object)
 
         $entryIDs = explode(',', $entryID);
 
-//        Update status -> 2 (waiting for refund)
+        //        Update status -> 2 (waiting for refund)
         $entries = DB::table('entries')
             ->whereIn('id', $entryIDs)
             ->update(['status' => 2, 'updated_at' => now()]);
@@ -430,7 +426,7 @@ function onRefundCreated(mixed $object)
         foreach ($entryIDs as $entryID) {
             $entry = DB::table('entries')->find($entryID);
             $email = $entry->email;
-            echo $email . PHP_EOL;
+            echo $email.PHP_EOL;
             Mail::to($email)
                 ->bcc($bcc)
                 ->queue(new RefundRequested($entry, $reason));
@@ -439,32 +435,32 @@ function onRefundCreated(mixed $object)
         $trial = Trial::findOrFail($object['metadata']['trial_id']);
         $trialName = $trial->name;
         $trialClub = $trial->club;
-//           get all metadata
+        //           get all metadata
         $entryIDs = $object['metadata']['entryIDs'];
         $names = $object['metadata']['names'];
         $email = $object['metadata']['email'];
         $refunded_amount = $object['metadata']['refunded_amount'] / 100;
         $adminFee = $object['metadata']['admin_fee'];
 
-        $refundText = " A full refund has been requested and you should receive a credit of £";
+        $refundText = ' A full refund has been requested and you should receive a credit of £';
         if ($adminFee > 0) {
-            $refundText = " As stated in our Terms and Conditions an Admin fee of £" . $adminFee / 100 . " will be retained. You should receive a credit of £";
+            $refundText = ' As stated in our Terms and Conditions an Admin fee of £'.$adminFee / 100 .' will be retained. You should receive a credit of £';
         }
 
         $nameArray = explode(',', $names);
         $idArray = explode(',', $entryIDs);
 
-        $entryData = "";
+        $entryData = '';
         for ($i = 0; $i < count($idArray); $i++) {
-            $entryData .= "Ref: " . $idArray[$i] . " - " . $nameArray[$i] . "\n";
+            $entryData .= 'Ref: '.$idArray[$i].' - '.$nameArray[$i]."\n";
         }
 
         $entryIDs = explode(',', $entryIDs);
         $entries = DB::table('entries')->whereIn('id', $entryIDs)
             ->update(['status' => 2, 'updated_at' => now()]);
 
-        $html = "<div>Dear $email,</div><div>As you may know, " . $trialClub . "'s " . $trialName . " has unfortunately been cancelled." . $refundText . $refunded_amount . " to your account.</div><div>This refund is for the following entries: $entryData</div><div>You will be sent a further confirmation email when the refund is completed. If you have any queries, please reply to this email.</div><div>Thank you for entering with TrialMonster.</div>";
-//        echo $html;
+        $html = "<div>Dear $email,</div><div>As you may know, ".$trialClub."'s ".$trialName.' has unfortunately been cancelled.'.$refundText.$refunded_amount." to your account.</div><div>This refund is for the following entries: $entryData</div><div>You will be sent a further confirmation email when the refund is completed. If you have any queries, please reply to this email.</div><div>Thank you for entering with TrialMonster.</div>";
+        //        echo $html;
         Mail::to($email)
             ->bcc($bcc)
             ->send(mailable: new CancellationRefundRequested($email, $trialName, $trialClub, $refundText, $refunded_amount, $entryData));
@@ -473,10 +469,10 @@ function onRefundCreated(mixed $object)
 
 function onRefundUpdated(mixed $object)
 {
-    $bcc = "monster@trialmonster.uk";
+    $bcc = 'monster@trialmonster.uk';
     $reason = $object['metadata']['reason'];
 
-//    Get the entryID from the metadata
+    //    Get the entryID from the metadata
     if ($reason == 'user_request') {
         $entryID = $object['metadata']['entry_id'];
         $reason = $object['metadata']['reason'];
@@ -484,7 +480,7 @@ function onRefundUpdated(mixed $object)
 
         $entryIDs = explode(',', $entryID);
 
-//        Update status -> 2 (waiting for refund)
+        //        Update status -> 2 (waiting for refund)
         $entries = DB::table('entries')
             ->whereIn('id', $entryIDs)
             ->update(['status' => 3, 'updated_at' => now()]);
@@ -520,9 +516,9 @@ function onRefundUpdated(mixed $object)
         $nameArray = explode(',', $names);
         $idArray = explode(',', $entryIDs);
 
-        $entryData = "";
+        $entryData = '';
         for ($i = 0; $i < count($idArray); $i++) {
-            $entryData .= "Ref: " . $idArray[$i] . " - " . $nameArray[$i] . "\n";
+            $entryData .= 'Ref: '.$idArray[$i].' - '.$nameArray[$i]."\n";
         }
 
         $entryIDs = explode(',', $entryIDs);
@@ -538,7 +534,7 @@ function onRefundUpdated(mixed $object)
 
 function onRefundFailed(mixed $object)
 {
-    info("RefundFailed");
+    info('RefundFailed');
 }
 
 function onPaymentIntentSucceeded()
@@ -556,10 +552,7 @@ class StripeEventListener
     /**
      * Create the event listener.
      */
-    public function __construct()
-    {
-    }
-
+    public function __construct() {}
 
     /**
      * Handle the event.
@@ -567,7 +560,7 @@ class StripeEventListener
     public function handle(WebhookReceived $event): void
     {
         $eventType = $event->payload['type'];
-//        // info("event type: $eventType");
+        //        // info("event type: $eventType");
         switch ($eventType) {
             case 'refund.created':
                 $object = $event->payload['data']['object'];
@@ -633,7 +626,7 @@ class StripeEventListener
                 onInvoiceCreated($event);
                 break;
             case 'payment_intent.succeeded':
-//                onInvoiceCreated($event);
+                //                onInvoiceCreated($event);
                 onPaymentIntentSucceeded();
                 break;
             case 'payment_intent.created':
@@ -641,7 +634,7 @@ class StripeEventListener
                 onPaymentIntentCreated($object);
                 break;
             default:
-//                // info('Received unknown event type ' . $eventType);
+                //                // info('Received unknown event type ' . $eventType);
         }
     }
 }

@@ -18,7 +18,7 @@ class TrialBackupCompleted
     public function __construct(public int $id)
     {
         //
-        info("Trial Backup Completed");
+        info('Trial Backup Completed');
     }
 
     /**

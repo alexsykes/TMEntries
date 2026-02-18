@@ -16,10 +16,7 @@ class CancellationRefundRequested extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public $email, public  $trialName, public $trialClub, public $refundText,  public $refunded_amount, public $entryData )
-    {
-
-    }
+    public function __construct(public $email, public $trialName, public $trialClub, public $refundText, public $refunded_amount, public $entryData) {}
 
     /**
      * Get the message envelope.

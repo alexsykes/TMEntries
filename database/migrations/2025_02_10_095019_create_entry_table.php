@@ -29,7 +29,6 @@ return new class extends Migration
             $table->string('size')->nullable();
             $table->string('type');
 
-
             $table->date('dob')->nullable();
             $table->boolean('isYouth')->default(false);
             $table->boolean('accept')->default(false);

@@ -19,18 +19,18 @@ return new class extends Migration
             $table->unsignedSmallInteger('ridingNumber')->nullable();
 
             $table->unsignedSmallInteger('cleans')->default(0);
-            $table->unsignedSmallInteger('ones')->default(0)   ;
-            $table->unsignedSmallInteger('twos')->default(0)   ;
-            $table->unsignedSmallInteger('threes')->default(0)   ;
-            $table->unsignedSmallInteger('fives')->default(0)   ;
-            $table->unsignedSmallInteger('missed')->default(0)   ;
+            $table->unsignedSmallInteger('ones')->default(0);
+            $table->unsignedSmallInteger('twos')->default(0);
+            $table->unsignedSmallInteger('threes')->default(0);
+            $table->unsignedSmallInteger('fives')->default(0);
+            $table->unsignedSmallInteger('missed')->default(0);
 
-            $table->unsignedSmallInteger('total')->default(0)   ;
-            $table->unsignedSmallInteger('position')->default(0)   ;
+            $table->unsignedSmallInteger('total')->default(0);
+            $table->unsignedSmallInteger('position')->default(0);
 
-            $table->unsignedSmallInteger('timePenalties')->default(0)   ;
+            $table->unsignedSmallInteger('timePenalties')->default(0);
 
-            $table->tinyInteger('status')->default(0)   ;
+            $table->tinyInteger('status')->default(0);
 
             $table->string('sectionScores')->nullable();
             $table->string('sequentialScores')->nullable();

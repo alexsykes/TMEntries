@@ -45,25 +45,25 @@ class CheckForReserves extends Command
      */
     public function handle()
     {
-        info("Check for reserves");
-//        Get currently active trial IDs
+        info('Check for reserves');
+        //        Get currently active trial IDs
         $currentTrialIDs = Trial::whereTodayOrAfter('date')
             ->where('isEntryLocked', false)
             ->pluck('id');
 
-//        For each one…
+        //        For each one…
         foreach ($currentTrialIDs as $trialID) {
             $trial = Trial::findOrFail($trialID);
             $entryLimit = $trial->entryLimit;
 
-//            Check for reserve riders
+            //            Check for reserve riders
             $reserves = DB::table('entries')
                 ->where('trial_id', $trialID)
                 ->where('status', 5)
                 ->get();
             $numReserves = count($reserves);
 
-//            If there are reserve riders, check for spaces available
+            //            If there are reserve riders, check for spaces available
             if ($numReserves > 0) {
                 $entries = DB::table('entries')
                     ->where('trial_id', $trialID)
@@ -74,7 +74,7 @@ class CheckForReserves extends Command
 
                 $numSpaces = $entryLimit - $numEntries;
                 if ($numSpaces > 0 && $numReserves > 0) {
-//                    info("Get $numSpaces reserve(s) for trial $trialID");
+                    //                    info("Get $numSpaces reserve(s) for trial $trialID");
                     $entriesForOffer = DB::table('entries')
                         ->where('trial_id', $trialID)
                         ->where('status', 5)
@@ -82,14 +82,14 @@ class CheckForReserves extends Command
                         ->limit(1)
                         ->get();
 
-//                    Offer entry to each reserve
+                    //                    Offer entry to each reserve
                     foreach ($entriesForOffer as $entry) {
                         $entryID = $entry->id;
 
-//                        $entry = DB::table('entries')->where('id', $entryID)->first();
+                        //                        $entry = DB::table('entries')->where('id', $entryID)->first();
                         $entry = Entry::where('id', $entryID)->first();
                         $entrant = DB::table('users')->where('id', $entry->created_by)->first();
-//                        $trial = DB::table('trials')->where('id', $entry->trial_id)->first();
+                        //                        $trial = DB::table('trials')->where('id', $entry->trial_id)->first();
                         $email = $entrant->email;
                         $entrantName = $entrant->name;
                         $entry->status = 4;
@@ -99,7 +99,7 @@ class CheckForReserves extends Command
                         $this->invoice($entry, $email, $entrantName);
                     }
                 } else {
-//                    info("\nTrialID: $trialID \nlimit: $entryLimit\nNumber of entries: $numEntries \nNumber of reserves: $numReserves\nNumSpaces: $numSpaces\n");
+                    //                    info("\nTrialID: $trialID \nlimit: $entryLimit\nNumber of entries: $numEntries \nNumber of reserves: $numReserves\nNumSpaces: $numSpaces\n");
                 }
             }
         }
@@ -125,21 +125,21 @@ class CheckForReserves extends Command
         // Create an Invoice
         $invoice = $another->invoices->create([
             'customer' => $customerId,
-            'description' => $trialClub . ' - ' . $trialName,
+            'description' => $trialClub.' - '.$trialName,
             'collection_method' => 'send_invoice',
             'days_until_due' => 2,
             'metadata' => [
                 'entryID' => $entryID,
-            ]
+            ],
         ]);
 
-//   Add line items
+        //   Add line items
         $invoiceItem = $another->invoiceItems->create([
             'customer' => $customerId,
             'pricing' => [
                 'price' => $entry->stripe_price_id,
             ],
-            'description' => ' Ref: ' . $entryID,
+            'description' => ' Ref: '.$entryID,
             'invoice' => $invoice->id,
         ]);
 

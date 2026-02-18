@@ -14,7 +14,7 @@ class EmailDispatch extends Notification implements ShouldQueue
 
     protected $content;
 
-    public function __construct($content    )
+    public function __construct($content)
     {
         $this->content = $content;
     }
@@ -35,8 +35,9 @@ class EmailDispatch extends Notification implements ShouldQueue
             ->line('Thank you for using our application!');
     }
 
-    public function middleware(): array {
-        return [new EmailRateLimit()];
+    public function middleware(): array
+    {
+        return [new EmailRateLimit];
     }
 
     /**

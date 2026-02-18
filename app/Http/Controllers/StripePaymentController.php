@@ -9,19 +9,19 @@ use Stripe\StripeClient;
 
 class StripePaymentController extends Controller
 {
-
     public function stripe()
     {
         $product = Config::get('stripe.product');
+
         return view('stripe', compact('product'));
     }
 
     public function stripeCheckout(Request $request)
     {
         $entryIDs = explode(',', $request->entryIDs);
-        $numEntries = sizeof($entryIDs);
+        $numEntries = count($entryIDs);
 
-//        Get price and qty data
+        //        Get price and qty data
         $priceData = DB::table('entries')
             ->whereIn('id', $entryIDs)
             ->select(DB::raw('stripe_price_id, count(*) as qty'))
@@ -29,7 +29,7 @@ class StripePaymentController extends Controller
             ->get()
             ->toArray();
 
-//        Get price and qty data
+        //        Get price and qty data
         $extraData = DB::table('entries')
             ->whereNotNull('extras')
             ->whereIn('id', $entryIDs)
@@ -43,26 +43,26 @@ class StripePaymentController extends Controller
             ->select('trial_id')
             ->get();
 
-        $trialIDArray = array();
+        $trialIDArray = [];
         foreach ($trialIDs as $trialID) {
             array_push($trialIDArray, $trialID->trial_id);
         }
 
-        $trialIDString = implode(",", array_unique($trialIDArray));
+        $trialIDString = implode(',', array_unique($trialIDArray));
 
-//        $extras = DB::table('trials')
-//            ->select(DB::raw('GROUP_CONCAT(extras) AS extras'))
-//            ->whereIn('id', $trialIDArray)
-//            ->whereNot('extras', '')
-//            ->first();
+        //        $extras = DB::table('trials')
+        //            ->select(DB::raw('GROUP_CONCAT(extras) AS extras'))
+        //            ->whereIn('id', $trialIDArray)
+        //            ->whereNot('extras', '')
+        //            ->first();
 
         $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
-        $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
-        $cancelUrl = config('app.url') . "/user/entries";
+        $redirectUrl = route('checkout-success').'?session_id={CHECKOUT_SESSION_ID}';
+        $cancelUrl = config('app.url').'/user/entries';
 
-        $lineItems = array();
-        $optionalItems = array();
+        $lineItems = [];
+        $optionalItems = [];
 
         foreach ($priceData as $entry) {
             $line = [
@@ -81,77 +81,74 @@ class StripePaymentController extends Controller
             array_push($lineItems, $line);
         }
 
-//        dd($lineItems, $optionalItems);
-//        if ($extras) {
-//        $extraProductIDs = array_unique(explode(",", $extras->extras));
+        //        dd($lineItems, $optionalItems);
+        //        if ($extras) {
+        //        $extraProductIDs = array_unique(explode(",", $extras->extras));
 
+        //        if (sizeof($extraProductIDs) > 0) {
+        //            foreach ($extraProductIDs as $extra) {
+        //                $optionalItem =
+        //                    ['price' => $extra,
+        //                        'quantity' => $numEntries,
+        //                        'adjustable_quantity' => [
+        //                            'enabled' => true,
+        //                            'minimum' => 0,
+        //                            'maximum' => $numEntries,
+        //                        ],
+        //                    ];
+        //                array_push($optionalItems, $optionalItem);
+        //            }
+        //        }
+        //        }
 
-//        if (sizeof($extraProductIDs) > 0) {
-//            foreach ($extraProductIDs as $extra) {
-//                $optionalItem =
-//                    ['price' => $extra,
-//                        'quantity' => $numEntries,
-//                        'adjustable_quantity' => [
-//                            'enabled' => true,
-//                            'minimum' => 0,
-//                            'maximum' => $numEntries,
-//                        ],
-//                    ];
-//                array_push($optionalItems, $optionalItem);
-//            }
-//        }
-//        }
+        //        if (!is_null($optionalItems)) {
+        //            $requestArray = [
+        //                'success_url' => $redirectUrl,
+        //                'cancel_url' => $cancelUrl,
+        //
+        //                'consent_collection' => ['terms_of_service' => 'required'],
+        //                'custom_text' => ['terms_of_service_acceptance' =>
+        //                    ['message' => 'I agree to the Terms and Conditions as displayed on the TrialMonster website',],
+        //                ],
+        //                'line_items' => [
+        //                    $lineItems
+        //                ],
+        //                'optional_items' => [
+        //                    $optionalItems
+        //                ],
+        //                'phone_number_collection' => ['enabled' => true],
+        //                'mode' => 'payment',
+        //                'allow_promotion_codes' => false,
+        //                'metadata' => [
+        //                    'entryIDs' => $request->entryIDs,
+        //                    'trialID' => $trialIDString,
+        //                ]
+        //            ];
+        //        } else {
+        $requestArray = [
+            'success_url' => $redirectUrl,
+            'cancel_url' => $cancelUrl,
 
-//        if (!is_null($optionalItems)) {
-//            $requestArray = [
-//                'success_url' => $redirectUrl,
-//                'cancel_url' => $cancelUrl,
-//
-//                'consent_collection' => ['terms_of_service' => 'required'],
-//                'custom_text' => ['terms_of_service_acceptance' =>
-//                    ['message' => 'I agree to the Terms and Conditions as displayed on the TrialMonster website',],
-//                ],
-//                'line_items' => [
-//                    $lineItems
-//                ],
-//                'optional_items' => [
-//                    $optionalItems
-//                ],
-//                'phone_number_collection' => ['enabled' => true],
-//                'mode' => 'payment',
-//                'allow_promotion_codes' => false,
-//                'metadata' => [
-//                    'entryIDs' => $request->entryIDs,
-//                    'trialID' => $trialIDString,
-//                ]
-//            ];
-//        } else {
-            $requestArray = [
-                'success_url' => $redirectUrl,
-                'cancel_url' => $cancelUrl,
-
-                'consent_collection' => ['terms_of_service' => 'required'],
-                'custom_text' => ['terms_of_service_acceptance' =>
-                    ['message' => 'I agree to the Terms and Conditions as displayed on the TrialMonster website',],
-                ],
-                'line_items' => [
-                    $lineItems
-                ],
-                'phone_number_collection' => ['enabled' => true],
-                'mode' => 'payment',
-                'allow_promotion_codes' => false,
-                'metadata' => [
-                    'entryIDs' => $request->entryIDs,
-                    'trialID' => $trialIDString,
-                ]
-            ];
-//        }
+            'consent_collection' => ['terms_of_service' => 'required'],
+            'custom_text' => ['terms_of_service_acceptance' => ['message' => 'I agree to the Terms and Conditions as displayed on the TrialMonster website'],
+            ],
+            'line_items' => [
+                $lineItems,
+            ],
+            'phone_number_collection' => ['enabled' => true],
+            'mode' => 'payment',
+            'allow_promotion_codes' => false,
+            'metadata' => [
+                'entryIDs' => $request->entryIDs,
+                'trialID' => $trialIDString,
+            ],
+        ];
+        //        }
 
         $response = $stripe->checkout->sessions->create($requestArray);
 
         return redirect($response['url']);
     }
-
 
     public function stripeUserCheckout(Request $request)
     {
@@ -170,11 +167,11 @@ class StripePaymentController extends Controller
 
     public function checkoutSuccess(Request $request)
     {
-//        dd($request->all());
+        //        dd($request->all());
         $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $session = $stripe->checkout->sessions->retrieve($request->session_id);
-        $successMessage = "Your payment has been successfully processed! You should shortly receive an email notification.";
+        $successMessage = 'Your payment has been successfully processed! You should shortly receive an email notification.';
 
         return view('success', compact('successMessage'));
     }

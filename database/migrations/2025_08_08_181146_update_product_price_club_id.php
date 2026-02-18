@@ -18,9 +18,8 @@ return new class extends Migration
         Schema::table('prices', function (Blueprint $table) {
             $table->unsignedBigInteger('club_id')->nullable();
         });
-        
-    }
 
+    }
 
     /**
      * Reverse the migrations.

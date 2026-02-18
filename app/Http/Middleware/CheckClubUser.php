@@ -12,7 +12,7 @@ class CheckClubUser
     /**
      * Handle an incoming request.
      *
-     * @param Closure(Request): (Response) $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -20,12 +20,14 @@ class CheckClubUser
             $user = Auth::user();
             $isClubUser = $user->isClubUser;
             if ($isClubUser) {
-                info("Club User requested");
+                info('Club User requested');
+
                 return $next($request);
             } else {
                 return redirect('/');
             }
         }
+
         return redirect('/');
     }
 }

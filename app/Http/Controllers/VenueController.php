@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Venue;
+use DB;
 
 class VenueController extends Controller
 {
@@ -10,7 +11,8 @@ class VenueController extends Controller
     public function list()
     {
         $venues = Venue::all()->sortBy('name');
-//        dd($venues);
+
+        //        dd($venues);
         return view('venues.list', ['venues' => $venues]);
     }
 
@@ -18,19 +20,21 @@ class VenueController extends Controller
     {
         $venueID = request()->id;
 
-        $venue = \DB::table('venues')->where('id', $venueID)->first();
+        $venue = DB::table('venues')->where('id', $venueID)->first();
+
         return view('venues.edit', ['venue' => $venue]);
     }
 
     public function add()
     {
         $venues = Venue::all()->sortBy('name');
+
         return view('venues.add', ['venues' => $venues]);
     }
 
     public function save()
     {
-//        dd(request()->all());
+        //        dd(request()->all());
         $id = request()->id;
         $attrs = request()->validate([
             'name' => 'required',
@@ -48,9 +52,9 @@ class VenueController extends Controller
         $attrs['club'] = request('club', '');
         $attrs['postcode'] = request('postcode', '');
 
-
         $venue = Venue::findorfail($id);
         $venue->update($attrs);
+
         return redirect()->route('venues');
     }
 
@@ -73,7 +77,8 @@ class VenueController extends Controller
         $attrs['postcode'] = request('postcode', '');
 
         $venue = Venue::create($attrs);
-//        dd($venue);
+
+        //        dd($venue);
         return redirect()->route('venues');
     }
 }
