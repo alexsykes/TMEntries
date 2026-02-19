@@ -50,11 +50,6 @@ class StripePaymentController extends Controller
 
         $trialIDString = implode(',', array_unique($trialIDArray));
 
-        //        $extras = DB::table('trials')
-        //            ->select(DB::raw('GROUP_CONCAT(extras) AS extras'))
-        //            ->whereIn('id', $trialIDArray)
-        //            ->whereNot('extras', '')
-        //            ->first();
 
         $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
@@ -64,6 +59,7 @@ class StripePaymentController extends Controller
         $lineItems = [];
         $optionalItems = [];
 
+        dd($priceData);
         foreach ($priceData as $entry) {
             $line = [
                 'price' => $entry->stripe_price_id,
@@ -152,17 +148,55 @@ class StripePaymentController extends Controller
 
     public function stripeUserCheckout(Request $request)
     {
+
+        $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
+
+        $redirectUrl = route('checkout-success').'?session_id={CHECKOUT_SESSION_ID}';
+        $cancelUrl = config('app.url').'/user/entries';
+
+
         $userID = auth()->user()->id;
 
         $toPayEntries = DB::table('entries')
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
-            ->select('entries.id', 'entries.trial_id', 'entries.stripe_price_id', 'trials.name as trial')
+            ->select('entries.name', 'entries.id', 'entries.trial_id','entries.extras', 'entries.stripe_price_id', 'trials.name as trial')
             ->where('entries.created_by', $userID)
             ->where('entries.status', '=', 0)
             ->whereFuture('trials.date')
             ->get();
 
-        dd($toPayEntries);
+        $lineItems = array();
+        foreach ($toPayEntries as $entry) {
+            $line = [
+                'price' => $entry->stripe_price_id,
+                'quantity' => 1,
+            ];
+            array_push($lineItems, $line);
+        }
+
+        $requestArray = [
+            'success_url' => $redirectUrl,
+            'cancel_url' => $cancelUrl,
+
+            'consent_collection' => ['terms_of_service' => 'required'],
+            'custom_text' => ['terms_of_service_acceptance' => ['message' => 'I agree to the Terms and Conditions as displayed on the TrialMonster website'],
+            ],
+            'line_items' => [
+                $lineItems,
+            ],
+            'phone_number_collection' => ['enabled' => true],
+            'mode' => 'payment',
+            'allow_promotion_codes' => false,
+            'metadata' => [
+                'entryIDs' => $request->entryIDs,
+                'trialID' => "trialiDS",
+            ],
+        ];
+        //        }
+
+        $response = $stripe->checkout->sessions->create($requestArray);
+
+        return redirect($response['url']);
     }
 
     public function checkoutSuccess(Request $request)

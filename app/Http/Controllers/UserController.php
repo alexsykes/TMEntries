@@ -6,6 +6,7 @@ use App\Events\EntryWithdrawn;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Trial;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Stripe\StripeClient;
@@ -79,6 +80,8 @@ class UserController extends Controller
 
         $trial = Trial::findorfail($entry->trial_id);
         $club_id = $trial->club_id;
+
+        $options = $this->getOptions($club_id, $entry->trial_id);
         //
 
         $membership = DB::table('products')
@@ -93,7 +96,7 @@ class UserController extends Controller
             abort(404);
         }
 
-        return view('user.edit_entry', ['entry' => $entry, 'membership' => $membership]);
+        return view('user.edit_entry', ['options' => $options, 'entry' => $entry, 'membership' => $membership]);
     }
 
     //    Update entry from My Entries page
@@ -164,6 +167,31 @@ class UserController extends Controller
                 } else {
                     $entry->extras = null;
                 }
+
+                $extraArray = [];
+                if (! is_null($request->checkbox)) {
+                    foreach ($request->checkbox as $extra) {
+                        $extraCode = $extra;
+                        $checkbox = ['priceID' => $extraCode, 'qty' => 1];
+                        array_push($extraArray, $checkbox);
+                    }
+                }
+
+                if (! is_null($request->priceID)) {
+                    $priceIDs = $request->priceID;
+                    $qtys = $request->quantity;
+
+                    for ($i = 0; $i < count($priceIDs); $i++) {
+                        $priceID = $priceIDs[$i];
+                        $qty = $qtys[$i];
+                        if (! is_null($qty)) {
+                            $extras = ['priceID' => $priceID, 'qty' => $qty];
+                            array_push($extraArray, $extras);
+                        }
+                    }
+                }
+
+                $entry->extras = json_encode($extraArray);
 
                 $entry->save();
 
@@ -251,5 +279,26 @@ class UserController extends Controller
     {
 
         return redirect('stripe/usercheckout');
+    }
+
+    private function getOptions($club_id, $trial_id)
+    {
+        $allOptions = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.trial_id', 0)
+            ->where('products.product_category', 'merchandise')
+            ->orWhere(function (QueryBuilder $query) use ($trial_id, $club_id) {
+                $query->where('products.club_id', $club_id)
+                    ->where('products.trial_id', $trial_id)
+                    ->where('products.product_category', 'merchandise');
+            }
+            )
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('products.product_category')
+            ->orderBy('products.hasQuantity')
+            ->orderBy('products.product_name')
+            ->get(['products.product_name AS name', 'products.hasQuantity', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
+
+        return $allOptions;
     }
 }

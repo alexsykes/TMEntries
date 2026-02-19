@@ -286,6 +286,7 @@
                 <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
                     @php
                         $membershipFee = $membership->price / 100;
+                        $priceID = $membership->stripe_price_id;
                     @endphp
                     <x-form-field>
                         <div class="flex col-span-3 justify-normal">
@@ -294,10 +295,8 @@
                             </div>
 
                             <div class="pl-2">
-                                <input name="extras[]" class="p-2" type="checkbox"
-                                       value="{{$membership->stripe_price_id}}"
-                                       id="extras"
-                                        {{old('extras') != null ? 'checked' :''}}
+                                <input name="checkbox[]" class="p-2" type="checkbox"
+                                       value="{{$priceID}}"
                                 />
                             </div>
                         </div>
@@ -330,8 +329,7 @@
                                     </div>
 
                                     <div class="pl-2">
-                                        <input name="extras[]" type="checkbox" value="{{$option->stripe_price_id}}"
-                                               id="extras"
+                                        <input name="checkbox[]" type="checkbox" value="{{$option->stripe_price_id}}"
                                         />
                                     </div>
                                 </div>
@@ -345,7 +343,8 @@
                                     </div>
                                     <div class="">
                                         <input type="hidden" value="{{$option->stripe_price_id}}" name="priceID[]">
-                                        <input type="number" id="quantity" name="quantity[]" class="w-24 sm:w-full"
+                                        <input type="number" min="0" id="quantity" name="quantity[]"
+                                               class="w-24 sm:w-full"
                                                placeholder="Quantity">
                                     </div>
                                 </div>

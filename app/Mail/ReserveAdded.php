@@ -28,7 +28,7 @@ class ReserveAdded extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reserve Entry - ' . $this->trial->name,
+            subject: 'Reserve Entry - '.$this->trial->name,
         );
     }
 

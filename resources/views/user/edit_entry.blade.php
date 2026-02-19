@@ -6,7 +6,6 @@
         $courses = $entry->courselist;
     $customCourses = $entry->customCourses;
 
-//    dump($entry);
         $trial_date = date_create($entry->trialdate);
         $offset = DateInterval::createFromDateString('4 years');
         $maxDob = $trial_date->sub($offset)->format("Y-m-d");
@@ -39,9 +38,22 @@ if($customClasses != "") {
 
         //    Check for extras
         $hasExtras = is_null($membership) ? false : true;
+                        $numOptions = sizeof($options);
+                        $hasOptions = false;
+                        if($numOptions > 0) {
+                            $hasOptions = true;
+                        }
 
-//        dd($membership);
-//    dump($entry);
+// New stuff
+     $hasMembership = is_null($membership) ? false : true;
+
+     $extraArray  = json_decode($entry->extras);
+     $priceArray = array();
+     $qtyArray = array();
+     if(!is_null($extraArray)) {
+         $priceArray = array_column($extraArray, 'priceID');
+         $qtyArray = array_column($extraArray, 'qty');
+     }
     @endphp
     <x-slot:heading>{{$entry->club}} {{$entry->trial_name}}</x-slot:heading>
 
@@ -64,22 +76,6 @@ if($customClasses != "") {
                     <div class="text-blue-800 mb-2 font-semibold">Entry status: {{$statusOptions[$entry->status]}}</div>
 
                     @if($entry->status == 0)
-                        @if($hasExtras)
-                            <x-form-field>
-                                <div class="mt-4 font-semibold  text-blue-800">2026 YCMCC membership
-                                </div>
-                                <div class="flex mb-4 col-span-3 justify-normal space-x-4 align-middle">
-                                    <div class="font-normal  text-black" for="extras">Tick this box to include payment
-                                        (£10) with this entry
-                                    </div>
-                                    <input name="extras" type="checkbox" value="{{$membership->stripe_price_id}}"
-                                           id="extras"
-                                            {{$entry->extras == $membership->stripe_price_id ? 'checked' :''}}
-                                    />
-                                </div>
-                            </x-form-field>
-
-                        @endif
 
                         <x-form-field>
                             <x-form-label for="isYouth">Date of Birth</x-form-label>
@@ -168,6 +164,114 @@ if($customClasses != "") {
                         </div>
                     </x-form-field>
                 </div>
+            </div>
+
+                @if($hasMembership)
+                    <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                        <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add
+                            Membership
+                        </div>
+                        <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                            @php
+
+                                $membershipFee = $membership->price / 100;
+
+                                $priceID = $membership->stripe_price_id;
+                                if(in_array($priceID, $priceArray)) {
+                                    $checked = " checked ";
+                                } else {
+                                    $checked = "";
+                                }
+
+                            @endphp
+                            <x-form-field>
+                                <div class="flex col-span-3 justify-normal">
+                                    <div class="font-semibold text-blue-700">{{$membership->name}}
+                                        (£{{ $membershipFee  }})
+                                    </div>
+
+                                    <div class="pl-2">
+                                        <input name="checkbox[]" class="p-2" type="checkbox"
+                                               {{$checked}}
+                                               value="{{$priceID}}"
+                                        />
+                                    </div>
+                                </div>
+                            </x-form-field>
+                        </div>
+                    </div>
+                @endif
+
+
+            @if($hasOptions)
+                <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                    <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add
+                        Merchandise
+                    </div>
+                    <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                        @foreach($options as $option)
+                            @php
+                                $price = $option->price / 100;
+                                if($option->hasQuantity == 1) {
+                                    $type = "number";
+                                } else {
+                                    $type = "checkbox";
+                                }
+                            @endphp
+                            @if($type=="checkbox")
+                                <x-form-field>
+                                    @php
+                                        $priceID = $option->stripe_price_id;
+                                        if(in_array($priceID, $priceArray)) {
+                                            $checked = " checked ";
+                                        } else {
+                                            $checked = "";
+                                        }
+                                    @endphp
+
+                                    <div class="flex justify-normal col-span-3">
+                                        <div class="font-semibold text text-blue-700">{{$option->name}}
+                                            (£{{ $price  }})
+                                        </div>
+
+                                        <div class="pl-2">
+                                            <input name="checkbox[]" type="checkbox"
+                                                   value="{{$option->stripe_price_id}}"
+                                                    {{ $checked }}
+                                            />
+                                        </div>
+                                    </div>
+                                </x-form-field>
+
+                            @elseif($type="number")
+                                <x-form-field>                                    @php
+                                        $priceID = $option->stripe_price_id;
+                                        if(in_array($priceID, $priceArray)) {
+                                            $index = array_search($priceID, $priceArray);
+                                            $quantity = $qtyArray[$index];
+                                        } else {
+                                            $quantity = 0;
+                                        }
+                                    @endphp
+                                    <div class="flex col-span-3 justify-normal space-x-4">
+                                        <div class="pt-2 font-semibold text text-blue-700">{{$option->name}}
+                                            (£{{ $price  }})
+                                        </div>
+                                        <div class="">
+                                            <input type="hidden" value="{{$option->stripe_price_id}}" name="priceID[]">
+                                            <input type="number" min="0" id="quantity" name="quantity[]"
+                                                   class="w-24 sm:w-full"
+                                                   value="{{$quantity}}"
+                                                   placeholder="Quantity">
+                                        </div>
+                                    </div>
+                                </x-form-field>
+
+                            @endif
+                        @endforeach()
+                    </div>
+                </div>
+            @endif
 
                 @if($status == 1)
                     <div class="ml-4 mb-4">
@@ -175,7 +279,6 @@ if($customClasses != "") {
                         will be applied to any refunds.
                     </div>
                 @endif
-            </div>
 
             <div class="mt-4" id="buttons">
                 <a href="/user/entries"
@@ -195,12 +298,7 @@ if($customClasses != "") {
                         class="rounded-md ml-2 bg-red-600 px-3 py-1 text-sm border border-red-800 text-white drop-shadow-lg hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
                     Withdraw
                 </button>
-
-                {{--                <a href="/user/removeEntry/{{$entry->id}}"--}}
-                {{--                   class="rounded-md bg-red-600 ml-2 px-3 py-2  text-sm  text-white shadow-sm hover:bg-red-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900">Withdraw--}}
-                {{--                    entry</a>--}}
             </div>
-
         </form>
     @endif
 </x-main>

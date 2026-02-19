@@ -468,6 +468,7 @@ class EntryController extends Controller
 
     public function store(Request $request)
     {
+        //        dd($request->all());
         $trial_id = $request->trial_id;
         $trial = Trial::findOrFail($trial_id);
 
@@ -477,7 +478,7 @@ class EntryController extends Controller
 
         //        Get product and price data
         //        Get product/price IDs
-        $prices = $this->getPrices($trial_id);
+        $prices = $this->getEntryPrices($trial_id);
 
         //        Check for entry limit
         $hasEntryLimit = $trial->hasEntryLimit;
@@ -502,29 +503,6 @@ class EntryController extends Controller
             }
         }
 
-        $extrasArray = [];
-        if (! is_null($request->extras)) {
-            $extras = $request->extras;
-
-            foreach ($extras as $extra) {
-                array_push($extrasArray, [$extra => 1]);
-            }
-        }
-
-        $numExtras = count($request->priceID);
-
-        for ($i = 0; $i < $numExtras; $i++) {
-            $priceID = $request->priceID[$i];
-            $quantity = intval($request->quantity[$i]);
-            if ($quantity > 0) {
-                array_push($extrasArray, [$priceID => $quantity]);
-            }
-        }
-
-        $extraJSON = json_encode($extrasArray);
-        //        dump($request->all());
-        //        dd($extraJSON);
-
         $IPaddress = $request->ip();
         $request->session()->put('trial_id', $request->trial_id);
 
@@ -541,7 +519,7 @@ class EntryController extends Controller
             'dob' => 'required',
         ]);
 
-        $attributes['extras'] = $extraJSON;
+        //        $attributes['extras'] = $extraJSON;
         $utilityController = new UtilityController;
         $attributes['name'] = $utilityController->nameize($request->name);
         $attributes['IPaddress'] = $IPaddress;
@@ -569,6 +547,33 @@ class EntryController extends Controller
         }
 
         $attributes['dob'] = $request->dob;
+
+        //      Process additional items
+        $extraArray = [];
+        if (! is_null($request->checkbox)) {
+            foreach ($request->checkbox as $extra) {
+                $extraCode = $extra;
+                $checkbox = ['priceID' => $extraCode, 'qty' => 1];
+                array_push($extraArray, $checkbox);
+            }
+        }
+
+        if (! is_null($request->priceID)) {
+            $priceIDs = $request->priceID;
+            $qtys = $request->quantity;
+
+            for ($i = 0; $i < count($priceIDs); $i++) {
+                $priceID = $priceIDs[$i];
+                $qty = $qtys[$i];
+                if (! is_null($qty)) {
+                    $extras = ['priceID' => $priceID, 'qty' => $qty];
+                    array_push($extraArray, $extras);
+                }
+            }
+        }
+
+        $attributes['extras'] = json_encode($extraArray);
+
         $entry = Entry::create($attributes);
 
         //        Entry has Stripe product and price codes entered at time of entry

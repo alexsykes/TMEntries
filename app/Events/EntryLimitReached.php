@@ -15,9 +15,7 @@ class EntryLimitReached
     /**
      * Create a new event instance.
      */
-    public function __construct(public int $trial_id, public int $entry_limit, public int $numEntries)
-    {
-    }
+    public function __construct(public int $trial_id, public int $entry_limit, public int $numEntries) {}
 
     /**
      * Get the channels the event should broadcast on.

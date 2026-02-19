@@ -4,68 +4,73 @@
     </x-slot:heading>
 
     @php
-        $allCourses = array();
-$courses = $trial->courselist;
-$customCourses = $trial->customCourses;
 
-$allClasses = array();
-$classes = $trial->classlist;
-$customClasses = $trial->customClasses;
+        //        dd($entry);
+                        $allCourses = array();
+                $courses = $trial->courselist;
+                $customCourses = $trial->customCourses;
 
-if($courses !='') {
-array_push($allCourses, $courses);
-}
+                $allClasses = array();
+                $classes = $trial->classlist;
+                $customClasses = $trial->customClasses;
 
-if($customCourses !='') {
-array_push($allCourses, $customCourses);
-}
+                if($courses !='') {
+                array_push($allCourses, $courses);
+                }
 
-if($classes !='') {
-array_push($allClasses, $classes);
-}
+                if($customCourses !='') {
+                array_push($allCourses, $customCourses);
+                }
 
-if($customClasses !='') {
-array_push($allClasses, $customClasses);
-}
-//    Check for extras
-        $hasMembership = is_null($membership) ? false : true;
+                if($classes !='') {
+                array_push($allClasses, $classes);
+                }
 
-        $numOptions = sizeof($options);
-        $hasOptions = false;
-        if($numOptions > 0) {
-            $hasOptions = true;
-        }
+                if($customClasses !='') {
+                array_push($allClasses, $customClasses);
+                }
+                //    Check for extras
+                        $hasMembership = is_null($membership) ? false : true;
 
-$extraArray  = json_decode($entry->extras);
-$priceArray = array_column($extraArray, 'priceID');
-$qtyArray = array_column($extraArray, 'qty');
+                        $numOptions = sizeof($options);
+                        $hasOptions = false;
+                        if($numOptions > 0) {
+                            $hasOptions = true;
+                        }
 
-$classlist = str_replace(',',',',implode(',', $allClasses));
-$courselist   = str_replace(',',',',implode(',', $allCourses));
-$courseOptions = explode(',', $courselist);
-$classOptions = explode(',', $classlist);
+                $extraArray  = json_decode($entry->extras);
+                        $priceArray = array();
+                        $qtyArray = array();
+                        if(!is_null($extraArray)) {
+                            $priceArray = array_column($extraArray, 'priceID');
+                            $qtyArray = array_column($extraArray, 'qty');
+                        }
 
-        $id = $entry->id;
-        $selected_licence = $entry->licence;
-        $selected_isYouth = $entry->isYouth;
-        if($selected_isYouth == '1') { $isYouthCB = "checked"; } else { $isYouthCB = ""; }
-        $selected_name = $entry->name;
-        $selected_make = $entry->make;
-        $selected_type = $entry->type;
-        $selected_size = $entry->size;
-        $selected_dob = $entry->dob;
-        $selected_class = $entry->class;
-        $selected_course = $entry->course;
-        $authority = $trial->authority;
+                $classlist = str_replace(',',',',implode(',', $allClasses));
+                $courselist   = str_replace(',',',',implode(',', $allCourses));
+                $courseOptions = explode(',', $courselist);
+                $classOptions = explode(',', $classlist);
+                        $id = $entry->id;
+                        $selected_licence = $entry->licence;
+                        $selected_isYouth = $entry->isYouth;
+                        if($selected_isYouth == '1') { $isYouthCB = " checked "; } else { $isYouthCB = ""; }
+                        $selected_name = $entry->name;
+                        $selected_make = $entry->make;
+                        $selected_type = $entry->type;
+                        $selected_size = $entry->size;
+                        $selected_dob = $entry->dob;
+                        $selected_class = $entry->class;
+                        $selected_course = $entry->course;
+                        $authority = $trial->authority;
 
-        $types = array("2 stroke", "4 stroke", "e-bike");
+                        $types = array("2 stroke", "4 stroke", "e-bike");
 
-        $trial_date = date_create($trial->date);
-        $offset = DateInterval::createFromDateString('4 years');
-        $maxDob = $trial_date->sub($offset)->format("Y-m-d");
+                        $trial_date = date_create($trial->date);
+                        $offset = DateInterval::createFromDateString('4 years');
+                        $maxDob = $trial_date->sub($offset)->format("Y-m-d");
 
-        //    Check for extras
-        $hasExtras = is_null($membership) ? false : true;
+                        //    Check for extras
+                        $hasExtras = is_null($membership) ? false : true;
 
     @endphp
 
@@ -215,6 +220,7 @@ $classOptions = explode(',', $classlist);
                     </div>
                 </x-form-field>
             </div>
+
             @if($hasMembership)
                 <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                     <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add
