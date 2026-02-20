@@ -367,6 +367,7 @@ class EntryController extends Controller
                 'metadata' => ['id' => $id],
                 'payment_intent' => $pi,
                 'amount' => $cost - 300,
+                'reason' => 'requested_by_customer',
                 //            'amount' => 1,
             ]);
             //    Mark as refund requested

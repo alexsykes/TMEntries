@@ -53,8 +53,8 @@ class StripePaymentController extends Controller
 
         $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
-        $redirectUrl = route('checkout-success').'?session_id={CHECKOUT_SESSION_ID}';
-        $cancelUrl = config('app.url').'/user/entries';
+        $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
+        $cancelUrl = config('app.url') . '/user/entries';
 
         $lineItems = [];
         $optionalItems = [];
@@ -148,32 +148,58 @@ class StripePaymentController extends Controller
 
     public function stripeUserCheckout(Request $request)
     {
-
+        info("StripePaymentController:StripeUserCheckout");
         $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
-        $redirectUrl = route('checkout-success').'?session_id={CHECKOUT_SESSION_ID}';
-        $cancelUrl = config('app.url').'/user/entries';
-
+        $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
+        $cancelUrl = config('app.url') . '/user/entries';
 
         $userID = auth()->user()->id;
 
         $toPayEntries = DB::table('entries')
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
-            ->select('entries.name', 'entries.id', 'entries.trial_id','entries.extras', 'entries.stripe_price_id', 'trials.name as trial')
+            ->select('entries.name', 'entries.id', 'entries.trial_id', 'entries.extras', 'entries.stripe_price_id', 'trials.name as trial')
             ->where('entries.created_by', $userID)
             ->where('entries.status', '=', 0)
             ->whereFuture('trials.date')
             ->get();
 
-        $lineItems = array();
+        $priceIDs = array();
+        $entryIDs = array();
+        $trialIDs = array();
         foreach ($toPayEntries as $entry) {
+            array_push($priceIDs, $entry->stripe_price_id);
+            array_push($entryIDs, $entry->id);
+            array_push($trialIDs, $entry->trial_id);
+
+            $extras = json_decode($entry->extras);
+            if (!is_null($extras)) {
+                foreach ($extras as $extra) {
+                    for ($i = 0; $i < $extra->qty; $i++) {
+                        array_push($priceIDs, $extra->priceID);
+                    }
+                }
+            }
+        }
+
+        $entryIDstring = implode(',', array_unique($entryIDs));
+        $trialIDstring = implode(',', array_unique($trialIDs));
+
+//        dd($entryIDstring, $priceIDs, $trialIDstring);
+        $count_values = array_count_values($priceIDs);
+
+        $priceIDs = array_keys($count_values);
+        $quantities = array_values($count_values);
+
+
+        $lineItems = array();
+        for ($i = 0; $i < count($priceIDs); $i++) {
             $line = [
-                'price' => $entry->stripe_price_id,
-                'quantity' => 1,
+                'price' => $priceIDs[$i],
+                'quantity' => $quantities[$i],
             ];
             array_push($lineItems, $line);
         }
-
         $requestArray = [
             'success_url' => $redirectUrl,
             'cancel_url' => $cancelUrl,
@@ -188,8 +214,8 @@ class StripePaymentController extends Controller
             'mode' => 'payment',
             'allow_promotion_codes' => false,
             'metadata' => [
-                'entryIDs' => $request->entryIDs,
-                'trialID' => "trialiDS",
+                'entryIDs' => $entryIDstring,
+                'trialID' => $trialIDstring,
             ],
         ];
         //        }

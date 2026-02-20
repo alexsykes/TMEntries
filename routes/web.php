@@ -124,7 +124,8 @@ Route::post('/venues/add', [VenueController::class, 'store']);
 Route::patch('/venues/save', [VenueController::class, 'save'])->middleware('auth', 'verified')->name('venues.save');
 
 // Stripe Routes
-Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeCheckout']);
+//Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeCheckout']);
+Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeUserCheckout']);
 Route::get('/checkout/success', [StripePaymentController::class, 'checkoutSuccess'])->name('checkout-success');
 Route::view('/checkout/cancel', [UserController::class, 'entryList'])->name('checkout-cancel');
 Route::post('/entries/checkout', [EntryController::class, 'checkout']);
