@@ -45,6 +45,8 @@ if($customClasses != "") {
                         }
 
 // New stuff
+    $status = $entry->status;
+
      $hasMembership = is_null($membership) ? false : true;
 
      $extraArray  = json_decode($entry->extras);
@@ -166,7 +168,7 @@ if($customClasses != "") {
                 </div>
             </div>
 
-                @if($hasMembership)
+                @if($hasMembership && $status == 0 )
                     <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                         <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add
                             Membership
@@ -203,7 +205,7 @@ if($customClasses != "") {
                 @endif
 
 
-            @if($hasOptions)
+            @if($hasOptions && $status == 0)
                 <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                     <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add
                         Merchandise

@@ -1,5 +1,13 @@
 <x-club>
     <script type="text/javascript">
+        function nowLaterCheck() {
+            selected = event.currentTarget.value;
+            console.log(selected);
+            if (selected == "Schedule") {
+                document.getElementById('sendAtDiv').style.display = 'block';
+            } else document.getElementById('sendAtDiv').style.display = 'none';
+        }
+
         function yesNoCheck() {
             // var test = this.valueOf();
             selected = event.currentTarget.value;
@@ -17,11 +25,15 @@
         }
     </script>
     @php
+        $sendWhenArray = array("Now", "Schedule");
         $distributionArray = array("Test", "Trial Entrants", "Past Entrants", "Distribution List");
         $attachmentRealNames = $mail->originalName;
         $attachmentFileNames = $mail->fileName;
 
         $realNames = explode('|', $attachmentRealNames);
+
+        $currentDateTime = date("YYYY-MM-DDTHH:mm");
+
 //        $filenames = explode('|', $attachmentFileNames);
 
     @endphp
@@ -57,6 +69,41 @@
                 Mailshot
             </div>
             <div id="mailshot" class="text-sm m-4">
+
+                <div id="mailSendDiv" class=" col-span-3 mt-2">
+                    <x-form-field>
+                        <x-form-label for="sendWhen">Distribution</x-form-label>
+                        <div class="mt-2 col-span-2">
+                            @foreach($sendWhenArray as $option)
+                                <input name="sendWhen" type="radio" id="sendWhen"
+                                       @if ($option =="Now") {
+                                       {{"checked"}}
+                                       }
+                                       @endif
+                                       onclick="nowLaterCheck()"
+                                       value="{{$option}}">
+                                <label class="pl-1 pr-4" for="sendWhen">{{$option}}</label>
+                            @endforeach
+                        </div>
+                        @error('sendWhen')
+                        <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                        @enderror
+                    </x-form-field>
+                </div>
+
+
+                <div id="sendAtDiv" class="hidden col-span-3 mt-2">
+                    <x-form-field>
+                        <x-form-label for="sendAt">Send at</x-form-label>
+                        <div class="mt-2 col-span-2">
+                            <input type="datetime-local" name="send_at" min="{{$currentDateTime}}">
+                        </div>
+                        @error('sendAt')
+                        <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                        @enderror
+                    </x-form-field>
+                </div>
+
                 <div id="distributionDiv" class=" col-span-3 mt-2">
                     <x-form-field>
                         <x-form-label for="distribution">Distribution</x-form-label>

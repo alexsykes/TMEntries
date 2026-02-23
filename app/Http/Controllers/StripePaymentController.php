@@ -50,11 +50,10 @@ class StripePaymentController extends Controller
 
         $trialIDString = implode(',', array_unique($trialIDArray));
 
-
         $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
-        $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
-        $cancelUrl = config('app.url') . '/user/entries';
+        $redirectUrl = route('checkout-success').'?session_id={CHECKOUT_SESSION_ID}';
+        $cancelUrl = config('app.url').'/user/entries';
 
         $lineItems = [];
         $optionalItems = [];
@@ -148,11 +147,11 @@ class StripePaymentController extends Controller
 
     public function stripeUserCheckout(Request $request)
     {
-        info("StripePaymentController:StripeUserCheckout");
+        info('StripePaymentController:StripeUserCheckout');
         $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
-        $redirectUrl = route('checkout-success') . '?session_id={CHECKOUT_SESSION_ID}';
-        $cancelUrl = config('app.url') . '/user/entries';
+        $redirectUrl = route('checkout-success').'?session_id={CHECKOUT_SESSION_ID}';
+        $cancelUrl = config('app.url').'/user/entries';
 
         $userID = auth()->user()->id;
 
@@ -164,16 +163,16 @@ class StripePaymentController extends Controller
             ->whereFuture('trials.date')
             ->get();
 
-        $priceIDs = array();
-        $entryIDs = array();
-        $trialIDs = array();
+        $priceIDs = [];
+        $entryIDs = [];
+        $trialIDs = [];
         foreach ($toPayEntries as $entry) {
             array_push($priceIDs, $entry->stripe_price_id);
             array_push($entryIDs, $entry->id);
             array_push($trialIDs, $entry->trial_id);
 
             $extras = json_decode($entry->extras);
-            if (!is_null($extras)) {
+            if (! is_null($extras)) {
                 foreach ($extras as $extra) {
                     for ($i = 0; $i < $extra->qty; $i++) {
                         array_push($priceIDs, $extra->priceID);
@@ -185,14 +184,13 @@ class StripePaymentController extends Controller
         $entryIDstring = implode(',', array_unique($entryIDs));
         $trialIDstring = implode(',', array_unique($trialIDs));
 
-//        dd($entryIDstring, $priceIDs, $trialIDstring);
+        //        dd($entryIDstring, $priceIDs, $trialIDstring);
         $count_values = array_count_values($priceIDs);
 
         $priceIDs = array_keys($count_values);
         $quantities = array_values($count_values);
 
-
-        $lineItems = array();
+        $lineItems = [];
         for ($i = 0; $i < count($priceIDs); $i++) {
             $line = [
                 'price' => $priceIDs[$i],

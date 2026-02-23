@@ -268,6 +268,7 @@ function onCheckoutSessionCompleted($sessionObject)
     $product_descriptions = [];
     $purchaseData = [];
 
+    //  Get line items from session and update purchase, [rice and product tables
     foreach ($lineItems as $lineItem) {
         $stripe_product_id = $lineItem['price']['product'];
         $quantity = $lineItem['quantity'];

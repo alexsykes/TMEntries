@@ -29,7 +29,7 @@ class ClubController extends Controller
     public function profile(Request $request)
     {
         $user = Auth::user();
-        if (! $user->isClubUser) {
+        if (!$user->isClubUser) {
             abort(code: 404);
         }
         $clubID = $user->club_id;
@@ -172,7 +172,19 @@ class ClubController extends Controller
             }
         }
 
-        return view('clubs.maillist', ['mails' => $mails, 'categoryArray' => $categoryArray, 'mailData' => $mailData]);
+        $mailshotData = DB::table('mailshots')
+            ->where('club_id', $clubID)
+            ->whereFuture('send_at')
+            ->orderBy('send_at')
+            ->get(['id', 'updated_at', 'subject', 'send_at', 'distribution']);
+
+        $sent = DB::table('mailshots')
+            ->where('club_id', $clubID)
+            ->where('sent', true)
+            ->orderBy('send_at', 'desc')
+            ->get(['id', 'updated_at', 'subject', 'sent_at', 'distribution']);
+
+        return view('clubs.maillist', ['mails' => $mails, 'categoryArray' => $categoryArray, 'mailData' => $mailData, 'mailshotData' => $mailshotData, 'sent' => $sent]);
     }
 
     public function mailList_()
@@ -272,7 +284,7 @@ class ClubController extends Controller
                 $a_split = explode($temp, $string);
                 foreach ($a_split as $temp2) {
                     // capitalize each portion of the string which was separated at a special character
-                    $mend .= ucfirst($temp2).$temp;
+                    $mend .= ucfirst($temp2) . $temp;
                 }
                 $string = substr($mend, 0, -1);
             }
@@ -569,7 +581,7 @@ class ClubController extends Controller
             $attributes['confirmed'] = false;
         }
 
-        if (! is_null($request->confirmed)) {
+        if (!is_null($request->confirmed)) {
             $attributes['confirmed'] = true;
 
         }

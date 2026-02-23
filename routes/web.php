@@ -124,7 +124,7 @@ Route::post('/venues/add', [VenueController::class, 'store']);
 Route::patch('/venues/save', [VenueController::class, 'save'])->middleware('auth', 'verified')->name('venues.save');
 
 // Stripe Routes
-//Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeCheckout']);
+// Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeCheckout']);
 Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeUserCheckout']);
 Route::get('/checkout/success', [StripePaymentController::class, 'checkoutSuccess'])->name('checkout-success');
 Route::view('/checkout/cancel', [UserController::class, 'entryList'])->name('checkout-cancel');
@@ -191,6 +191,8 @@ Route::get('/mail/edit/{id}', [ClubmailController::class, 'edit'])->middleware([
 Route::patch('/mail/update', [ClubmailController::class, 'update'])->middleware(['auth', 'verified'])->name('mail.update');
 Route::post('/mail/store', [ClubmailController::class, 'store'])->middleware(['auth', 'verified'])->name('mail.store');
 Route::get('/mail/sendTestmail', [ClubmailController::class, 'sendTestMail']);
+Route::get('/mailshot/cancel/{id}', [ClubmailController::class, 'cancelMailshot'])->middleware(['auth', 'verified'])->name('mailshot.cancel');
+
 
 Route::post('/usermail/store', [ClubmailController::class, 'storeUsermail'])->middleware(['auth', 'verified'])->name('usermail.store');
 Route::get('/usermail/address_mail/{id}', [ClubmailController::class, 'addressUsermail'])->middleware(['auth', 'verified']);
