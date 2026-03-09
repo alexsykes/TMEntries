@@ -40,8 +40,8 @@ class ClubMail extends Mailable
     {
         return new Content(
             html: 'mails.clubmail', with: [
-                'content' => $this->mailshot->bodyText,
-            ]
+            'content' => $this->mailshot->bodyText,
+        ]
         );
     }
 

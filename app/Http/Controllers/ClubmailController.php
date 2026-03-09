@@ -302,7 +302,6 @@ class ClubmailController extends Controller
         foreach ($addresses as $address) {
             $mail = Mail::to($address)->later($sendAt, new TestMail($mailshot));
             array_push($mailIDs, $mail);
-            info("Email sent to {$address}");
         }
         $mail_ids = implode(',', $mailIDs);
         $mailshot->job_ids = $mail_ids;

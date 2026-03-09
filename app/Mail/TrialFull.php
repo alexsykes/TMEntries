@@ -18,7 +18,9 @@ class TrialFull extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public Trial $trial) {}
+    public function __construct(public Trial $trial)
+    {
+    }
 
     /**
      * Get the message envelope.
@@ -26,7 +28,7 @@ class TrialFull extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Entries Full - '.$this->trial->name,
+            subject: 'Entries Full - ' . $this->trial->name,
         );
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AdminController;
@@ -271,3 +271,22 @@ Route::middleware('auth')->group(function () {
 // })->name('phpmyinfo');
 
 Route::post('/fetchScores', [ScoringController::class, 'fetchScores']);
+
+Route::get('getJob', function () {
+
+//    $job = DB::table('jobs')->first();
+//    $payload = $job->payload;
+//    $splod = explode(',', $payload);
+//    $command = $splod[10];
+//    dump($command);
+//    $unser = unserialize($command, ['allowed_classes' => true]);
+//    dd($unser);
+//    $command = $payload['command'];
+
+//    dd($unser);
+//    info("getJob");
+});
+
+Route::get('/phpmyinfo', function () {
+    phpinfo();
+});

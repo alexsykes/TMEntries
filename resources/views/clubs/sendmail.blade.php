@@ -128,7 +128,7 @@
                     <x-form-field>
                         <x-form-label for="testAddress">Test address</x-form-label>
                         <div class="mt-2 col-span-2">
-                            <x-form-input name="testAddress" type="email" id="testAddress" value=""
+                            <x-form-input name="testAddress" type="email" id="testAddress" value="alex@alexsykes.net"
                                           placeholder="test@example.com"/>
                             <x-form-error name="testAddress"/>
                         </div>

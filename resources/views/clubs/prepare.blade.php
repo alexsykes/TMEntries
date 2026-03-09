@@ -10,8 +10,10 @@
                     $time  = date_format($rawDate, "g:ia");
             $formattedDate = " on $date at $time";
             $when = $formattedDate;
+            $buttonLabel = "Schedule";
         } else {
             $when = " NOW";
+            $buttonLabel = "Send";
         }
     @endphp
     <x-slot:heading>Send mail</x-slot:heading>
@@ -39,7 +41,7 @@
                class=" rounded-md bg-white px-3 py-2 text-sm  drop-shadow-lg text-violet-900 shadow-sm hover:bg-violet-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-900">Cancel</a>
             <button type="submit"
                     class="rounded-md ml-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
-                Send
+                {{$buttonLabel}}
             </button>
         </div>
     </form>
