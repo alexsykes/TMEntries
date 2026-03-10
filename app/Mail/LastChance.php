@@ -17,7 +17,9 @@ class LastChance extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public Trial $trial) {}
+    public function __construct(public Trial $trial)
+    {
+    }
 
     /**
      * Get the message envelope.
@@ -25,7 +27,7 @@ class LastChance extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Uncomfirmed entry - '.$this->trial->name,
+            subject: 'Uncomfirmed entry - ' . $this->trial->name,
         );
     }
 
