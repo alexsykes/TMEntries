@@ -26,7 +26,6 @@ use Stripe\StripeClient;
 
 class EntryController extends Controller
 {
-    //
 
     //    Used at initial system entry to get user email/phone
     public function getUserDetails(Request $request)
@@ -72,6 +71,8 @@ class EntryController extends Controller
 
         $membership = $this->getMembership($club_id);
         $allOptions = $this->getOptions($club_id, $trial_id);
+        $optionalItems = $this->getOptionalItems($club_id, $trial_id);
+        $merchandise = $this->getMerchandise($club_id, $trial_id);
 
         $entries = Entry::all()
             ->where('created_by', $user_id)
@@ -83,9 +84,7 @@ class EntryController extends Controller
             ->where('trial_id', $trial_id)
             ->whereIn('status', [4, 5]);
 
-        //        dd('Options' . $allOptions);
-
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'options' => $allOptions, 'membership' => $membership]);
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'options' => $allOptions, 'membership' => $membership, 'merchandise' => $merchandise, 'optionalItems' => $optionalItems]);
     }
 
     public function getMembership($club_id)
@@ -121,6 +120,41 @@ class EntryController extends Controller
             ->get(['products.product_name AS name', 'products.hasQuantity', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
 
         return $allOptions;
+    }
+
+    private function getOptionalItems($club_id, $trial_id)
+    {
+        $optionalItems = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.trial_id', 0)
+            ->where('products.product_category', 'options')
+            ->orWhere(function (QueryBuilder $query) use ($trial_id, $club_id) {
+                $query->where('products.club_id', $club_id)
+                    ->where('products.trial_id', $trial_id)
+                    ->where('products.product_category', 'options');
+            }
+            )
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('products.product_category')
+            ->orderBy('products.hasQuantity')
+            ->orderBy('products.product_name')
+            ->get(['products.id AS id', 'products.product_name AS name', 'products.hasQuantity', 'products.stripe_product_id', 'prices.stripe_price_id', 'prices.stripe_price AS price', 'products.options']);
+        return $optionalItems;
+    }
+
+    private function getMerchandise($club_id, $trial_id)
+    {
+        $merchandise = DB::table('products')
+            ->selectRaw('product_name,hasQuantity, COUNT(product_name) as numOptions, GROUP_CONCAT(options) options, GROUP_CONCAT(tme_products.stripe_product_id)  productIDs, GROUP_CONCAT(tme_prices.stripe_price) as price')
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->where('products.club_id', $club_id)
+            ->where('products.trial_id', $trial_id)
+            ->where('products.product_category', 'merchandise')
+            ->groupBy('products.product_name', 'products.hasQuantity')
+            ->orderBy('products.product_name')
+            ->get();
+
+        return $merchandise;
     }
 
     public function updateEntry(Request $request)
@@ -174,7 +208,7 @@ class EntryController extends Controller
         }
 
         $extraArray = [];
-        if (! is_null($request->checkbox)) {
+        if (!is_null($request->checkbox)) {
             foreach ($request->checkbox as $extra) {
                 $extraCode = $extra;
                 $checkbox = ['priceID' => $extraCode, 'qty' => 1];
@@ -182,14 +216,14 @@ class EntryController extends Controller
             }
         }
 
-        if (! is_null($request->priceID)) {
+        if (!is_null($request->priceID)) {
             $priceIDs = $request->priceID;
             $qtys = $request->quantity;
 
             for ($i = 0; $i < count($priceIDs); $i++) {
                 $priceID = $priceIDs[$i];
                 $qty = $qtys[$i];
-                if (! is_null($qty)) {
+                if (!is_null($qty)) {
                     $extras = ['priceID' => $priceID, 'qty' => $qty];
                     array_push($extraArray, $extras);
                 }
@@ -228,6 +262,10 @@ class EntryController extends Controller
 
         return compact('youthProductID', 'adultProductID', 'youthPriceID', 'adultPriceID');
     }
+
+    /*
+     * Entry is loaded based on entry ID and token emailed in link on entry confirmation
+     */
 
     public function adminEntryUpdate(Request $request)
     {
@@ -285,6 +323,8 @@ class EntryController extends Controller
         return redirect("/trials/adminEntryList/$trialID");
     }
 
+    //  Not sure if currently used
+
     public function adminEntryStore(Request $request)
     {
         $token = bin2hex(random_bytes(16));
@@ -317,10 +357,6 @@ class EntryController extends Controller
         return redirect("/trials/adminEntryList/$trialID");
     }
 
-    /*
-     * Entry is loaded based on entry ID and token emailed in link on entry confirmation
-     */
-
     public function create($id)
     {
         session(['trial_id' => $id]);
@@ -329,7 +365,8 @@ class EntryController extends Controller
         return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry]);
     }
 
-    //  Not sure if currently used
+    //  Store from Register page
+    //    Store first record then pass email and trial_id to create_another view
 
     public function withdrawConfirm(Request $request)
     {
@@ -356,7 +393,7 @@ class EntryController extends Controller
 
             //            $entry->status = 2; // Mark as withdrawn, having paid, waiting for refund
             //            $entry->token = $token = bin2hex(random_bytes(16));
-            $entry->save();
+//            $entry->save();
 
             //        Request request
             //            require('../vendor/autoload.php');
@@ -370,15 +407,14 @@ class EntryController extends Controller
                 'reason' => 'requested_by_customer',
                 //            'amount' => 1,
             ]);
+
+            info("Stripe refund requested by customer: $entry->id");
             //    Mark as refund requested
             //    Email user
         }
 
         return redirect('/');
     }
-
-    //  Store from Register page
-    //    Store first record then pass email and trial_id to create_another view
 
     public function userupdate(Request $request)
     {
@@ -469,7 +505,7 @@ class EntryController extends Controller
 
     public function store(Request $request)
     {
-        //        dd($request->all());
+//                dd($request->all());
         $trial_id = $request->trial_id;
         $trial = Trial::findOrFail($trial_id);
 
@@ -551,7 +587,7 @@ class EntryController extends Controller
 
         //      Process additional items
         $extraArray = [];
-        if (! is_null($request->checkbox)) {
+        if (!is_null($request->checkbox)) {
             foreach ($request->checkbox as $extra) {
                 $extraCode = $extra;
                 $checkbox = ['priceID' => $extraCode, 'qty' => 1];
@@ -559,14 +595,14 @@ class EntryController extends Controller
             }
         }
 
-        if (! is_null($request->priceID)) {
+        if (!is_null($request->priceID)) {
             $priceIDs = $request->priceID;
             $qtys = $request->quantity;
 
             for ($i = 0; $i < count($priceIDs); $i++) {
                 $priceID = $priceIDs[$i];
                 $qty = $qtys[$i];
-                if (! is_null($qty)) {
+                if (!is_null($qty)) {
                     $extras = ['priceID' => $priceID, 'qty' => $qty];
                     array_push($extraArray, $extras);
                 }
@@ -620,7 +656,7 @@ class EntryController extends Controller
         $entry->ridingNumber = 0;
         $entry->save();
 
-        return redirect('entries/register/'.session('trial_id'));
+        return redirect('entries/register/' . session('trial_id'));
     }
 
     public function adminEntries(Request $request)
@@ -776,9 +812,9 @@ class EntryController extends Controller
                 $linesPerPage = 22;
                 MYPDF::setLeftMargin(26);
                 MYPDF::setY(75);
-                MYPDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C'.'M');
-                MYPDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C'.'M');
-                MYPDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C'.'M');
+                MYPDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                MYPDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                MYPDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                 break;
             case 'ACU' :
                 $img_file = storage_path('app/public/images/ACU_2025.png');
@@ -797,16 +833,16 @@ class EntryController extends Controller
                 $linesPerPage = 19;
                 MYPDF::setLeftMargin(21);
                 MYPDF::setY(38);
-                MYPDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C'.'M');
+                MYPDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
                 MYPDF::setY(46);
-                MYPDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C'.'M');
+                MYPDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
                 MYPDF::setY(54);
                 MYPDF::setLeftMargin(29);
-                MYPDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C'.'M');
-                MYPDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C'.'M');
+                MYPDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                MYPDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                 MYPDF::setY(62);
                 MYPDF::setLeftMargin(29);
-                MYPDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C'.'M');
+                MYPDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                 break;
 
             default:
@@ -844,14 +880,14 @@ class EntryController extends Controller
                 $number = $entry->ridingNumber;
                 //            }
                 if ($entry->isYouth == 1) {
-                    $name = $entry->name.'*';
+                    $name = $entry->name . '*';
                 } else {
                     $name = $entry->name;
                 }
                 $name = ucwords(strtolower($name), " \t\r\n\f\v'");
                 $status = $entry->status;
                 if ($status == 0 or $status == 4 or $status == 5 or $status == 7 or $status == 10) {
-                    $name = 'To pay - '.$name;
+                    $name = 'To pay - ' . $name;
                 }
                 $id = $entry->licence;
                 $class = $entry->class;
@@ -863,37 +899,37 @@ class EntryController extends Controller
                 // Number cell
                 if ($number != 0) {
                     MYPDF::setX($numberIndent);
-                    MYPDF::Cell($numberWidth, $rowHeight, $number, 0, 0, 'R', false, null, 0, false, 'C'.'M');
+                    MYPDF::Cell($numberWidth, $rowHeight, $number, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                 }
                 // AMCA
                 if ($authority == 'AMCA') {
                     // Name cell
                     MYPDF::setX($nameIndent);
-                    MYPDF::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C'.'M');
+                    MYPDF::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
 
                     // ID cell
                     if ($entry->isYouth != 0) {
                         MYPDF::setX($parentIndent);
-                        MYPDF::Cell($idWidth, $rowHeight, '*', 0, 0, 'R', false, null, 0, false, 'C'.'M');
+                        MYPDF::Cell($idWidth, $rowHeight, '*', 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                     }
                     // ID cell
                     if ($id != 0) {
                         MYPDF::setX($idIndent);
-                        MYPDF::Cell($idWidth, $rowHeight, $id, 0, 0, 'R', false, null, 0, false, 'C'.'M');
+                        MYPDF::Cell($idWidth, $rowHeight, $id, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                     }
                     // Class cell
                     MYPDF::setX($classIndent);
-                    MYPDF::Cell(17, $rowHeight, $class, 0, 1, 'L', false, null, 1, 0, 'C'.'M');
+                    MYPDF::Cell(17, $rowHeight, $class, 0, 1, 'L', false, null, 1, 0, 'C' . 'M');
                 } // ACU
                 elseif ($authority == 'ACU') {
                     // Name cell
                     MYPDF::setX($nameIndent);
-                    MYPDF::Cell($nameWidth, $rowHeight, $name, 0, 1, 'L', false, null, 1, false, 'C'.'M');
+                    MYPDF::Cell($nameWidth, $rowHeight, $name, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
                     if ($entry->isYouth != 0) {
                         MYPDF::setX($parentIndent);
-                        MYPDF::Cell($idWidth, $rowHeight, '*', 0, 0, 'R', false, null, 0, false, 'C'.'M');
+                        MYPDF::Cell($idWidth, $rowHeight, '*', 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                         MYPDF::setX($parentSignIndent);
-                        MYPDF::Cell($idWidth, $rowHeight, '*', 0, 0, 'R', false, null, 0, false, 'C'.'M');
+                        MYPDF::Cell($idWidth, $rowHeight, '*', 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                     }
                 }
 
@@ -906,24 +942,24 @@ class EntryController extends Controller
                         case 'ACU':
                             MYPDF::setLeftMargin(21);
                             MYPDF::setY(38);
-                            MYPDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C'.'M');
+                            MYPDF::Cell(0, 0, $trialDetails->name, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
                             MYPDF::setY(46);
-                            MYPDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C'.'M');
+                            MYPDF::Cell(0, 0, $venueName, 0, 1, 'L', false, null, 0, false, 'C' . 'M');
                             MYPDF::setY(54);
                             MYPDF::setLeftMargin(29);
-                            MYPDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C'.'M');
-                            MYPDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C'.'M');
+                            MYPDF::Cell(100, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                            MYPDF::Cell(0, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                             MYPDF::setY(62);
                             MYPDF::setLeftMargin(29);
-                            MYPDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C'.'M');
+                            MYPDF::Cell(0, 0, $trialDetails->permit, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                             break;
 
                         case 'AMCA':
                             MYPDF::setLeftMargin(26);
                             MYPDF::setY(75);
-                            MYPDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C'.'M');
-                            MYPDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C'.'M');
-                            MYPDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C'.'M');
+                            MYPDF::Cell(61, 0, $club, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                            MYPDF::Cell(53, 0, $date, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
+                            MYPDF::Cell(0, 0, $venueName, 0, 0, 'L', false, null, 0, false, 'C' . 'M');
                             break;
                     }
 
@@ -1009,10 +1045,10 @@ class EntryController extends Controller
         //        dd(public_path($filename));
         $filename = $this->filter_filename($filename);
         MYPDF::Close();
-        MYPDF::Output(public_path('pdf/signon/'.$filename), 'F');
+        MYPDF::Output(public_path('pdf/signon/' . $filename), 'F');
         MYPDF::reset();
 
-        return response()->download('pdf/signon/'.$filename);
+        return response()->download('pdf/signon/' . $filename);
     }
 
     public function generate($id)
@@ -1050,7 +1086,7 @@ class EntryController extends Controller
 
         $result = $builder->build();
         $filename = "data_$id.png";
-        $dir = 'images/qr/'.$filename;
+        $dir = 'images/qr/' . $filename;
         $result->saveToFile($dir);
 
         $name = $trial->name;
@@ -1073,7 +1109,7 @@ class EntryController extends Controller
         );
         $result = $builder->build();
         $filename = "programme_$id.png";
-        $dir = 'images/qr/'.$filename;
+        $dir = 'images/qr/' . $filename;
         $result->saveToFile($dir);
 
         //        return redirect("/trials/adminEntryList/$id");
@@ -1088,7 +1124,7 @@ class EntryController extends Controller
         ), '', $name);
         // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
         $ext = pathinfo($name, PATHINFO_EXTENSION);
-        $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)).($ext ? '.'.$ext : '');
+        $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
 
         return $name;
     }
@@ -1338,7 +1374,28 @@ class EntryController extends Controller
         $entry->updated_at = now();
         $entry->save();
 
-        return redirect('/results/display/'.$trialid);
+        return redirect('/results/display/' . $trialid);
+    }
+
+    private function getFreebies(mixed $club_id, mixed $trial_id)
+    {
+        $freebies = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.trial_id', 0)
+            ->where('products.product_category', 'freebie')
+            ->orWhere(function (QueryBuilder $query) use ($trial_id, $club_id) {
+                $query->where('products.club_id', $club_id)
+                    ->where('products.trial_id', $trial_id)
+                    ->where('products.product_category', 'freebie');
+            }
+            )
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('products.product_category')
+            ->orderBy('products.hasQuantity')
+            ->orderBy('products.product_name')
+            ->get(['products.id AS id', 'products.product_name AS name', 'products.hasQuantity', 'prices.stripe_price_id', 'prices.stripe_price AS price', 'products.options']);
+
+        return $freebies;
     }
 }
 

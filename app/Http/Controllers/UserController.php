@@ -263,6 +263,7 @@ class UserController extends Controller
                     'entry_id' => $entry->id,
                     'reason' => 'user_request',
                 ],
+                'reason' => 'requested_by_customer'
             ]);
         } elseif ($entry->status == 0) {
             $entry->updated_at = now();

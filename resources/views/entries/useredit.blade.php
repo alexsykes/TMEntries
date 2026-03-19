@@ -36,7 +36,7 @@
     $classOptions = explode(',', $classlist);
 
     $types = array("2 stroke", "4 stroke", "e-bike");
-    $status = $suer->$status;
+//    $status = $entry->status;
     ?>
     <x-slot:heading>
         {{--        Entry for {{$entry->name}} at {{$entry->trial->name}}--}}
@@ -146,5 +146,4 @@
             </div>
         </div>
     </form>
-
 </x-main>

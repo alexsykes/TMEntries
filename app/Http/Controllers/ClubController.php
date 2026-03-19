@@ -371,6 +371,11 @@ class ClubController extends Controller
         ]);
         $item = MailDistribution::find(request('itemID'));
 
+        $toArray= array_unique(explode(',', $attributes['to']));
+        sort($toArray, SORT_REGULAR);
+
+        $attributes['to'] = implode(',', $toArray);
+
         $item->update($attributes);
         $item->save();
 

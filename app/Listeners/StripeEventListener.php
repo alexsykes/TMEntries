@@ -156,6 +156,12 @@ function onProductCreated($productObject)
         $hasQuantity = $metadata['has_quantity'];
     }
 
+    if (isset($metadata['options'])) {
+        $options = $metadata['options'];
+    } else {
+        $options = '';
+    }
+
     $club_id = 0;
     if (isset($metadata['club_id'])) {
         $club_id = $metadata['club_id'];
@@ -171,12 +177,13 @@ function onProductCreated($productObject)
         'stripe_product_description' => $stripe_product_description,
         'isLive' => $isLive,
         'isEntryFee' => $isEntryFee,
-        'hasQuantity' => 1,
+        'hasQuantity' => $hasQuantity,
         'product_name' => $product_name,
         'product_category' => $product_category,
         'trial_id' => $trialid,
         'isYouth' => $youth,
         'club_id' => $club_id,
+        'options' => $options,
         'purchases' => 0,
         'version' => 1,
     ]);
@@ -412,7 +419,7 @@ function onRefundCreated(mixed $object)
     //    Get the entryID from the metadata
     if ($reason == 'user_request') {
         $entryID = $object['metadata']['entry_id'];
-        $reason = $object['metadata']['reason'];
+        $reason = $object['reason'];
         $status = $object['status'];
 
         $entryIDs = explode(',', $entryID);
@@ -425,9 +432,11 @@ function onRefundCreated(mixed $object)
         $bcc = 'monster@trialmonster.uk';
 
         foreach ($entryIDs as $entryID) {
+
+            info("RefundCreated: $entryID");
             $entry = DB::table('entries')->find($entryID);
             $email = $entry->email;
-            echo $email.PHP_EOL;
+//            echo $email.PHP_EOL;
             Mail::to($email)
                 ->bcc($bcc)
                 ->queue(new RefundRequested($entry, $reason));
@@ -476,7 +485,7 @@ function onRefundUpdated(mixed $object)
     //    Get the entryID from the metadata
     if ($reason == 'user_request') {
         $entryID = $object['metadata']['entry_id'];
-        $reason = $object['metadata']['reason'];
+//        $reason = $object['reason'];
         $status = $object['status'];
 
         $entryIDs = explode(',', $entryID);

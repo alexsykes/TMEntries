@@ -8,6 +8,7 @@ use App\Http\Controllers\ClubController;
 use App\Http\Controllers\ClubmailController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ScoringController;
@@ -250,6 +251,12 @@ Route::patch('/series/update', [SeriesController::class, 'update'])->middleware(
 // ABOUT Routes
 Route::get('/about', [AboutController::class, 'about']);
 
+
+// PRODUCT Routes
+Route::get('/admin/products', [ProductController::class, 'products'])->middleware(IsAdminUser::class);
+Route::get('/admin/product/add', [ProductController::class, 'add'])->middleware(IsAdminUser::class);
+Route::post('/admin/product/store', [ProductController::class, 'store'])->middleware(IsAdminUser::class);
+
 // Import routes
 Route::get('/import', [ImportController::class, 'showImportForm'])->middleware(CheckClubUser::class)->name('import.form');
 Route::post('/import', [ImportController::class, 'importEntries'])->middleware(CheckClubUser::class)->name('import.process');
@@ -287,6 +294,6 @@ Route::get('getJob', function () {
 //    info("getJob");
 });
 
-Route::get('/phpmyinfo', function () {
-    phpinfo();
-});
+//Route::get('/phpmyinfo', function () {
+//    phpinfo();
+//});
