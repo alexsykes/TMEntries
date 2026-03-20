@@ -31,8 +31,6 @@
 
     @php
         $trial_id = $trial->id;
-
-
         $trial_date = date_create($trial->date);
         $offset = DateInterval::createFromDateString('4 years');
         $maxDob = $trial_date->sub($offset)->format("Y-m-d");
@@ -284,17 +282,13 @@
                 </div>
             </div>
         </div>
-{{-- Check for merchandise--}}
+        {{-- Check for merchandise--}}
         @if(sizeof($merchandise) > 0)
             <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add Extras
                 </div>
                 <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
                     @foreach($merchandise as $item)
-                        @php
-                        dump($item);
-                        @endphp
-
                         <x-form-field>
                             @php
                                 $priceArray = explode(',', $item->price);
@@ -308,20 +302,30 @@
 
                             @if($item->numOptions == 1)
 
-                                <x-form-label for="extras[]">{{$item->product_name}} - {{$price}}</x-form-label>
-                                <input name="extras[]" type="checkbox" value="{{$item->productIDs}}" id="extra1"
+                                <x-form-label for="checkbox[]">{{$item->product_name}} - {{$price}}</x-form-label>
+                                <input name="checkbox[]" type="checkbox" value="{{$item->priceIDs}}" id="extra1"
                                         {{old('extra1') != null ? 'checked' :''}}
-                                        />
-                                <x-form-error name="extras[]"/>
-
+                                />
+                                <x-form-error name="checkbox[]"/>
 
                             @else
-                                <x-form-label for="make">{{$item->product_name}} - {{$price}}</x-form-label>
+                                <x-form-label for="extra">{{$item->product_name}} - {{$price}}</x-form-label>
+                                <div>Please select <span class="font-semibold">one</span></div>
                                 @php
                                     $options = explode(',',$item->options);
+                                    $productIDs = explode(',', $item->productIDs);
+                                    $priceIDs = explode(',', $item->priceIDs);
                                 @endphp
                                 @foreach($options as $option)
-                                    {{$option}}
+                                    @php
+                                        $index = $loop->index;
+                                    @endphp
+                                    <input name="checkbox[]" type="radio" id="extra{{$index}}" required
+                                           value="{{$priceIDs[$index]}}"
+                                            {{ (old('extra') == $option) ? ' checked' : '' }}
+                                    >
+                                    <label class="pl-1 pr-4" for="extra">{{$option}}</label>
+
                                 @endforeach
                             @endif
                         </x-form-field>
@@ -330,113 +334,113 @@
             </div>
         @endif
 
-        @if($hasOptions)
-            <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add Clothing
-                </div>
-                <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-                    @foreach($optionalItems as $item)
-                        @php
-                            if($item->options !="") {
-                            $itemOptions = explode(',',$item->options);
-                            }
-                                $price = $item->price / 100;
+        {{--        @if($hasOptions)--}}
+        {{--            <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">--}}
+        {{--                <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add Clothing--}}
+        {{--                </div>--}}
+        {{--                <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">--}}
+        {{--                    @foreach($optionalItems as $item)--}}
+        {{--                        @php--}}
+        {{--                            if($item->options !="") {--}}
+        {{--                            $itemOptions = explode(',',$item->options);--}}
+        {{--                            }--}}
+        {{--                                $price = $item->price / 100;--}}
 
-                                if($item->hasQuantity == 1) {
-                                    $type = "number";
-                                } else {
-                                    $type = "checkbox";
-                                }
-                        @endphp
-                        @if($type=="checkbox")
-                            <input type="hidden" name="itemID[]" value="{{$item->stripe_product_id}}">
-                            <x-form-field>
-                                <div class="font-semibold text text-blue-700">{{$item->name}} -
-                                    (£{{ $price  }})
-                                </div>
+        {{--                                if($item->hasQuantity == 1) {--}}
+        {{--                                    $type = "number";--}}
+        {{--                                } else {--}}
+        {{--                                    $type = "checkbox";--}}
+        {{--                                }--}}
+        {{--                        @endphp--}}
+        {{--                        @if($type=="checkbox")--}}
+        {{--                            <input type="hidden" name="itemID[]" value="{{$item->stripe_product_id}}">--}}
+        {{--                            <x-form-field>--}}
+        {{--                                <div class="font-semibold text text-blue-700">{{$item->name}} ---}}
+        {{--                                    (£{{ $price  }})--}}
+        {{--                                </div>--}}
 
 
-                                <div class="flex justify-normal">
-                                    @foreach($itemOptions as $itemOption)
-                                        <div class="pl-2">
-                                            <input name="itemOption[]" type="radio" value="{{$itemOption}}" required
-                                            />
-                                            <label>{{$itemOption}}</label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </x-form-field>
+        {{--                                <div class="flex justify-normal">--}}
+        {{--                                    @foreach($itemOptions as $itemOption)--}}
+        {{--                                        <div class="pl-2">--}}
+        {{--                                            <input name="itemOption[]" type="radio" value="{{$itemOption}}" required--}}
+        {{--                                            />--}}
+        {{--                                            <label>{{$itemOption}}</label>--}}
+        {{--                                        </div>--}}
+        {{--                                    @endforeach--}}
+        {{--                                </div>--}}
+        {{--                            </x-form-field>--}}
 
-                        @elseif($type="number")
-                            <x-form-field>
-                                <div class="flex col-span-3 justify-normal space-x-4">
-                                    <div class="pt-2 font-semibold text text-blue-700">{{$option->name}}
-                                        (£{{ $price  }})
-                                    </div>
-                                    <div class="">
-                                        <input type="hidden" value="{{$option->stripe_price_id}}" name="priceID[]">
-                                        <input type="number" min="0" id="quantity" name="quantity[]"
-                                               class="w-24 sm:w-full"
-                                               placeholder="Quantity">
-                                    </div>
-                                </div>
-                            </x-form-field>
+        {{--                        @elseif($type="number")--}}
+        {{--                            <x-form-field>--}}
+        {{--                                <div class="flex col-span-3 justify-normal space-x-4">--}}
+        {{--                                    <div class="pt-2 font-semibold text text-blue-700">{{$option->name}}--}}
+        {{--                                        (£{{ $price  }})--}}
+        {{--                                    </div>--}}
+        {{--                                    <div class="">--}}
+        {{--                                        <input type="hidden" value="{{$option->stripe_price_id}}" name="priceID[]">--}}
+        {{--                                        <input type="number" min="0" id="quantity" name="quantity[]"--}}
+        {{--                                               class="w-24 sm:w-full"--}}
+        {{--                                               placeholder="Quantity">--}}
+        {{--                                    </div>--}}
+        {{--                                </div>--}}
+        {{--                            </x-form-field>--}}
 
-                        @endif
-                    @endforeach()
-                </div>
-            </div>
-        @endif
+        {{--                        @endif--}}
+        {{--                    @endforeach()--}}
+        {{--                </div>--}}
+        {{--            </div>--}}
+        {{--        @endif--}}
 
-        @if($hasOptions)
-            <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add Merchandise
-                </div>
-                <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-                    @foreach($options as $option)
-                        @php
-                            $price = $option->price / 100;
-                            if($option->hasQuantity == 1) {
-                                $type = "number";
-                            } else {
-                                $type = "checkbox";
-                            }
-                        @endphp
-                        @if($type=="checkbox")
-                            <x-form-field>
+        {{--        @if($hasOptions)--}}
+        {{--            <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">--}}
+        {{--                <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add Merchandise--}}
+        {{--                </div>--}}
+        {{--                <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">--}}
+        {{--                    @foreach($options as $option)--}}
+        {{--                        @php--}}
+        {{--                            $price = $option->price / 100;--}}
+        {{--                            if($option->hasQuantity == 1) {--}}
+        {{--                                $type = "number";--}}
+        {{--                            } else {--}}
+        {{--                                $type = "checkbox";--}}
+        {{--                            }--}}
+        {{--                        @endphp--}}
+        {{--                        @if($type=="checkbox")--}}
+        {{--                            <x-form-field>--}}
 
-                                <div class="flex justify-normal col-span-3">
-                                    <div class="font-semibold text text-blue-700">{{$option->name}}
-                                        (£{{ $price  }})
-                                    </div>
+        {{--                                <div class="flex justify-normal col-span-3">--}}
+        {{--                                    <div class="font-semibold text text-blue-700">{{$option->name}}--}}
+        {{--                                        (£{{ $price  }})--}}
+        {{--                                    </div>--}}
 
-                                    <div class="pl-2">
-                                        <input name="checkbox[]" type="checkbox" value="{{$option->stripe_price_id}}"
-                                        />
-                                    </div>
-                                </div>
-                            </x-form-field>
+        {{--                                    <div class="pl-2">--}}
+        {{--                                        <input name="checkbox[]" type="checkbox" value="{{$option->stripe_price_id}}"--}}
+        {{--                                        />--}}
+        {{--                                    </div>--}}
+        {{--                                </div>--}}
+        {{--                            </x-form-field>--}}
 
-                        @elseif($type="number")
-                            <x-form-field>
-                                <div class="flex col-span-3 justify-normal space-x-4">
-                                    <div class="pt-2 font-semibold text text-blue-700">{{$option->name}}
-                                        (£{{ $price  }})
-                                    </div>
-                                    <div class="">
-                                        <input type="hidden" value="{{$option->stripe_price_id}}" name="priceID[]">
-                                        <input type="number" min="0" id="quantity" name="quantity[]"
-                                               class="w-24 sm:w-full"
-                                               placeholder="Quantity">
-                                    </div>
-                                </div>
-                            </x-form-field>
+        {{--                        @elseif($type="number")--}}
+        {{--                            <x-form-field>--}}
+        {{--                                <div class="flex col-span-3 justify-normal space-x-4">--}}
+        {{--                                    <div class="pt-2 font-semibold text text-blue-700">{{$option->name}}--}}
+        {{--                                        (£{{ $price  }})--}}
+        {{--                                    </div>--}}
+        {{--                                    <div class="">--}}
+        {{--                                        <input type="hidden" value="{{$option->stripe_price_id}}" name="priceID[]">--}}
+        {{--                                        <input type="number" min="0" id="quantity" name="quantity[]"--}}
+        {{--                                               class="w-24 sm:w-full"--}}
+        {{--                                               placeholder="Quantity">--}}
+        {{--                                    </div>--}}
+        {{--                                </div>--}}
+        {{--                            </x-form-field>--}}
 
-                        @endif
-                    @endforeach()
-                </div>
-            </div>
-        @endif
+        {{--                        @endif--}}
+        {{--                    @endforeach()--}}
+        {{--                </div>--}}
+        {{--            </div>--}}
+        {{--        @endif--}}
 
         @if($hasMembership)
             <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
@@ -445,6 +449,7 @@
                 <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
                     @php
                         $membershipFee = $membership->price / 100;
+                        $productID = $membership->stripe_product_id;
                         $priceID = $membership->stripe_price_id;
                     @endphp
                     <x-form-field>

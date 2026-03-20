@@ -94,7 +94,7 @@ class EntryController extends Controller
             ->where('products.product_category', 'membership')
             ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
             ->orderBy('prices.updated_at', 'desc')
-            ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
+            ->first(['products.product_name AS name', 'prices.stripe_product_id', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
 
         return $membership;
     }
@@ -145,7 +145,7 @@ class EntryController extends Controller
     private function getMerchandise($club_id, $trial_id)
     {
         $merchandise = DB::table('products')
-            ->selectRaw('product_name,hasQuantity, COUNT(product_name) as numOptions, GROUP_CONCAT(options) options, GROUP_CONCAT(tme_products.stripe_product_id)  productIDs, GROUP_CONCAT(tme_prices.stripe_price) as price')
+            ->selectRaw('product_name,hasQuantity, COUNT(product_name) as numOptions, GROUP_CONCAT(options) options, GROUP_CONCAT(tme_products.stripe_product_id)  productIDs,GROUP_CONCAT(tme_prices.stripe_price_id)  priceIDs, GROUP_CONCAT(tme_prices.stripe_price) as price')
             ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
             ->where('products.club_id', $club_id)
             ->where('products.trial_id', $trial_id)
@@ -505,7 +505,7 @@ class EntryController extends Controller
 
     public function store(Request $request)
     {
-//                dd($request->all());
+//        dump($request->all());
         $trial_id = $request->trial_id;
         $trial = Trial::findOrFail($trial_id);
 
@@ -612,6 +612,7 @@ class EntryController extends Controller
         $attributes['extras'] = json_encode($extraArray);
 
         $entry = Entry::create($attributes);
+//        dd($entry);
 
         //        Entry has Stripe product and price codes entered at time of entry
         $allOptions = $this->getOptions($club_id, $trial_id);
