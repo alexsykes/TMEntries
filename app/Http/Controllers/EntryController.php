@@ -506,12 +506,17 @@ class EntryController extends Controller
     public function store(Request $request)
     {
 //        dump($request->all());
+
         $trial_id = $request->trial_id;
         $trial = Trial::findOrFail($trial_id);
 
         $club_id = $trial->club_id;
+//      Get extra input field names
+        $prodIDs = $request->prodIDs;
 
+//        dd($prodIDs);
         $membership = $this->getMembership($club_id);
+        $merchandise = $this->getMerchandise($club_id, $trial_id);
 
         //        Get product and price data
         //        Get product/price IDs
@@ -587,32 +592,21 @@ class EntryController extends Controller
 
         //      Process additional items
         $extraArray = [];
-        if (!is_null($request->checkbox)) {
-            foreach ($request->checkbox as $extra) {
-                $extraCode = $extra;
-                $checkbox = ['priceID' => $extraCode, 'qty' => 1];
+
+        if (!is_null($request->membership)) {
+            $checkbox = ['priceID' => $request->membership, 'qty' => 1];
+            array_push($extraArray, $checkbox);
+
+        }
+        foreach ($prodIDs as $prodID) {
+            if (!is_null($request->$prodID)) {
+                $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
                 array_push($extraArray, $checkbox);
             }
         }
-
-        if (!is_null($request->priceID)) {
-            $priceIDs = $request->priceID;
-            $qtys = $request->quantity;
-
-            for ($i = 0; $i < count($priceIDs); $i++) {
-                $priceID = $priceIDs[$i];
-                $qty = $qtys[$i];
-                if (!is_null($qty)) {
-                    $extras = ['priceID' => $priceID, 'qty' => $qty];
-                    array_push($extraArray, $extras);
-                }
-            }
-        }
-
         $attributes['extras'] = json_encode($extraArray);
 
         $entry = Entry::create($attributes);
-//        dd($entry);
 
         //        Entry has Stripe product and price codes entered at time of entry
         $allOptions = $this->getOptions($club_id, $trial_id);
@@ -632,8 +626,8 @@ class EntryController extends Controller
             ->where('trial_id', $trial_id)
             ->whereIn('status', [4, 5])
             ->where('created_by', $attributes['created_by']);
-
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'options' => $allOptions, 'membership' => $membership]);
+//dd($reserves, $entries, $trial, $membership, $merchandise, $trial_id);
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership, 'merchandise' => $merchandise,'trial_id' => $trial_id]);
     }
 
     public function sendReserveEmail(Entry $entry, Trial $trial)

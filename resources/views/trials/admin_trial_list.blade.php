@@ -36,6 +36,7 @@
 
                 @endphp
                 <tr class="flex-auto odd:bg-white even:bg-gray-50  border-b ">
+                    <td class="pl-4  pt-1  pb-1   md:table-cell">{{$trial->id}}</td>
                     <td class="pl-4  pt-1  pb-1   hidden  md:table-cell">{{$trial->date}}</td>
                     <td class="pl-2 table-cell">{{$trial->name}}</td>
                     <td class="hidden md:table-cell">{{$trial->venueName}}</td>
