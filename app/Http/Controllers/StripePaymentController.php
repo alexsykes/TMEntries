@@ -183,6 +183,7 @@ class StripePaymentController extends Controller
 
         $entryIDstring = implode(',', array_unique($entryIDs));
         $trialIDstring = implode(',', array_unique($trialIDs));
+//        dd($priceIDs);
 
         //        dd($entryIDstring, $priceIDs, $trialIDstring);
         $count_values = array_count_values($priceIDs);

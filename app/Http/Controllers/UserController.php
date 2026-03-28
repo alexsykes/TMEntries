@@ -66,9 +66,10 @@ class UserController extends Controller
         return view('user.entry_list', compact('entries', 'toPays', 'todaysEntries'));
     }
 
+//    From My Entries page
     public function editEntry($id)
     {
-        info("EntryID: $id");
+        info("UserController/editEntry EntryID: $id");
         $userID = auth()->user()->id;
         $entry = DB::table('entries')
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
@@ -80,7 +81,6 @@ class UserController extends Controller
 
         $trial = Trial::findorfail($entry->trial_id);
         $club_id = $trial->club_id;
-
         $options = $this->getOptions($club_id, $entry->trial_id);
         //
 
@@ -90,23 +90,64 @@ class UserController extends Controller
             ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
             ->orderBy('prices.updated_at', 'desc')
             ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
+
+        $merchandise = $this->getMerchandise($club_id, $trial->id);
         //        dd($membership);
 
         if ($entry == null) {
             abort(404);
         }
 
-        return view('user.edit_entry', ['options' => $options, 'entry' => $entry, 'membership' => $membership]);
+        return view('user.edit_entry', ['options' => $options, 'entry' => $entry, 'membership' => $membership, 'merchandise' => $merchandise]);
     }
 
     //    Update entry from My Entries page
+
+    private function getOptions($club_id, $trial_id)
+    {
+        $allOptions = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.trial_id', 0)
+            ->where('products.product_category', 'merchandise')
+            ->orWhere(function (QueryBuilder $query) use ($trial_id, $club_id) {
+                $query->where('products.club_id', $club_id)
+                    ->where('products.trial_id', $trial_id)
+                    ->where('products.product_category', 'merchandise');
+            }
+            )
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('products.product_category')
+            ->orderBy('products.hasQuantity')
+            ->orderBy('products.product_name')
+            ->get(['products.product_name AS name', 'products.hasQuantity', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
+
+        return $allOptions;
+    }
+
+    private function getMerchandise($club_id, $trial_id)
+    {
+        $merchandise = DB::table('products')
+            ->selectRaw('product_name,hasQuantity, COUNT(product_name) as numOptions, GROUP_CONCAT(options) options, GROUP_CONCAT(tme_products.stripe_product_id)  productIDs,GROUP_CONCAT(tme_prices.stripe_price_id)  priceIDs, GROUP_CONCAT(tme_prices.stripe_price) as price')
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->where('products.club_id', $club_id)
+            ->where('products.trial_id', $trial_id)
+            ->where('products.product_category', 'merchandise')
+            ->groupBy('products.product_name', 'products.hasQuantity')
+            ->orderBy('products.product_name')
+            ->get();
+
+        return $merchandise;
+    }
+
     public function updateEntry(Request $request)
     {
         $id = $request->entryID;
         $action = $request->action;
 
+//        dump($request->all());
         switch ($action) {
             case 'save':
+//                Gettrial and entry data
                 $entry = Entry::findorfail($id);
                 $trial_id = $entry->trial_id;
                 $trial = Trial::findOrFail($trial_id);
@@ -162,14 +203,17 @@ class UserController extends Controller
                     $entry->stripe_product_id = $adultProductID;
                 }
 
-                if (! is_null($request->extras)) {
-                    $entry->extras = $request->extras;
-                } else {
-                    $entry->extras = null;
-                }
+//                if (!is_null($request->extras)) {
+//                    $entry->extras = $request->extras;
+//                } else {
+//                    $entry->extras = null;
+//                }
 
+//                Initialise empty array
+//            Check for membership box checked
+//            If checked add membership to extras
                 $extraArray = [];
-                if (! is_null($request->checkbox)) {
+                if (!is_null($request->checkbox)) {
                     foreach ($request->checkbox as $extra) {
                         $extraCode = $extra;
                         $checkbox = ['priceID' => $extraCode, 'qty' => 1];
@@ -177,19 +221,31 @@ class UserController extends Controller
                     }
                 }
 
-                if (! is_null($request->priceID)) {
-                    $priceIDs = $request->priceID;
-                    $qtys = $request->quantity;
+                //      Get extra input field names
+                $prodIDs = $request->prodIDs;
 
-                    for ($i = 0; $i < count($priceIDs); $i++) {
-                        $priceID = $priceIDs[$i];
-                        $qty = $qtys[$i];
-                        if (! is_null($qty)) {
-                            $extras = ['priceID' => $priceID, 'qty' => $qty];
-                            array_push($extraArray, $extras);
-                        }
+                foreach ($prodIDs as $prodID) {
+                    if (!is_null($request->$prodID)) {
+                        $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
+                        array_push($extraArray, $checkbox);
                     }
                 }
+//
+//                dump($extraArray);
+//
+//                if (!is_null($request->priceID)) {
+//                    $priceIDs = $request->priceID;
+//                    $qtys = $request->quantity;
+//
+//                    for ($i = 0; $i < count($priceIDs); $i++) {
+//                        $priceID = $priceIDs[$i];
+//                        $qty = $qtys[$i];
+//                        if (!is_null($qty)) {
+//                            $extras = ['priceID' => $priceID, 'qty' => $qty];
+//                            array_push($extraArray, $extras);
+//                        }
+//                    }
+//                }
 
                 $entry->extras = json_encode($extraArray);
 
@@ -282,24 +338,4 @@ class UserController extends Controller
         return redirect('stripe/usercheckout');
     }
 
-    private function getOptions($club_id, $trial_id)
-    {
-        $allOptions = DB::table('products')
-            ->where('products.club_id', $club_id)
-            ->where('products.trial_id', 0)
-            ->where('products.product_category', 'merchandise')
-            ->orWhere(function (QueryBuilder $query) use ($trial_id, $club_id) {
-                $query->where('products.club_id', $club_id)
-                    ->where('products.trial_id', $trial_id)
-                    ->where('products.product_category', 'merchandise');
-            }
-            )
-            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
-            ->orderBy('products.product_category')
-            ->orderBy('products.hasQuantity')
-            ->orderBy('products.product_name')
-            ->get(['products.product_name AS name', 'products.hasQuantity', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
-
-        return $allOptions;
-    }
 }

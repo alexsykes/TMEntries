@@ -176,6 +176,7 @@ class EntryController extends Controller
         //        Get product/price IDs
         //        getPrices
 
+        $prodIDs = $request->prodIDs;
         $entryFees = $this->getEntryPrices($trial_id);
 
         $utilityController = new UtilityController;
@@ -206,15 +207,21 @@ class EntryController extends Controller
             $entry->stripe_price_id = $entryFees['adultPriceID'];
             $entry->stripe_product_id = $entryFees['adultProductID'];
         }
-
+//dd($request->all());
         $extraArray = [];
-        if (!is_null($request->checkbox)) {
-            foreach ($request->checkbox as $extra) {
-                $extraCode = $extra;
-                $checkbox = ['priceID' => $extraCode, 'qty' => 1];
+
+        if (!is_null($request->membership)) {
+            $membership = ['priceID' => $request->membership, 'qty' => 1];
+            array_push($extraArray, $membership);
+
+        }
+        foreach ($prodIDs as $prodID) {
+            if (!is_null($request->$prodID)) {
+                $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
                 array_push($extraArray, $checkbox);
             }
         }
+        $attributes['extras'] = json_encode($extraArray);
 
         if (!is_null($request->priceID)) {
             $priceIDs = $request->priceID;
@@ -627,7 +634,7 @@ class EntryController extends Controller
             ->whereIn('status', [4, 5])
             ->where('created_by', $attributes['created_by']);
 //dd($reserves, $entries, $trial, $membership, $merchandise, $trial_id);
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership, 'merchandise' => $merchandise,'trial_id' => $trial_id]);
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership, 'merchandise' => $merchandise, 'trial_id' => $trial_id]);
     }
 
     public function sendReserveEmail(Entry $entry, Trial $trial)
@@ -685,6 +692,7 @@ class EntryController extends Controller
         return redirect("/trials/adminEntryList/{$trial_id}");
     }
 
+//    From Registration page
     public function edit(Request $request)
     {
         $entry = Entry::findorfail($request->entry);
@@ -694,8 +702,8 @@ class EntryController extends Controller
 
         $membership = $this->getMembership($club_id);
         $options = $this->getOptions($club_id, $trialid);
-
-        return view('entries.edit', ['entry' => $entry, 'trial' => $trial, 'membership' => $membership, 'options' => $options]);
+        $merchandise = $this->getMerchandise($club_id, $trialid);
+        return view('entries.edit', ['entry' => $entry, 'trial' => $trial, 'membership' => $membership, 'options' => $options, 'merchandise' => $merchandise]);
     }
 
     public function editRidingNumbers(Request $request)

@@ -125,7 +125,7 @@ function onPriceUpdated($priceObject)
 
     $price = DB::table('prices')->where('stripe_price_id', $stripe_price_id)
         ->update(['stripe_price' => $amount,
-            'updated_at' => now(), ]);
+            'updated_at' => now(),]);
 }
 
 function onProductCreated($productObject)
@@ -188,7 +188,7 @@ function onProductCreated($productObject)
         'version' => 1,
     ]);
 
-    info('Product created :: '.$product->product_name);
+    info('Product created :: ' . $product->product_name);
     $email = 'monster@trialmonster.uk';
     Mail::to($email)->send(new ProductCreated($product));
 }
@@ -243,7 +243,7 @@ function onProductUpdated($productObject)
         ->where('stripe_product_id', '=', $stripe_product_id)
         ->increment('version');
 
-    info('Product updated :: '.$product_name);
+    info('Product updated :: ' . $product_name);
 }
 
 function onCheckoutSessionCompleted($sessionObject)
@@ -339,7 +339,7 @@ function onCheckoutSessionCompleted($sessionObject)
             'accept' => true,
             'email' => $email,
             'updated_at' => now(),
-            'stripe_payment_intent' => $stripe_payment_intent, ]);
+            'stripe_payment_intent' => $stripe_payment_intent,]);
 
     //  Get entries for confirmation email
     $entries = DB::table('entries')
@@ -415,7 +415,7 @@ function onRefundCreated(mixed $object)
     $bcc = 'monster@trialmonster.uk';
     $bcc = 'alexs130151@gmail.com';
     $reason = $object['metadata']['reason'];
-
+//    echo $reason;
     //    Get the entryID from the metadata
     if ($reason == 'user_request') {
         $entryID = $object['metadata']['entry_id'];
@@ -439,7 +439,7 @@ function onRefundCreated(mixed $object)
 //            echo $email.PHP_EOL;
             Mail::to($email)
                 ->bcc($bcc)
-                ->queue(new RefundRequested($entry, $reason));
+                ->queue(new RefundRequested($entry));
         }
     } elseif ($reason == 'cancellation') {
         $trial = Trial::findOrFail($object['metadata']['trial_id']);
@@ -454,7 +454,7 @@ function onRefundCreated(mixed $object)
 
         $refundText = ' A full refund has been requested and you should receive a credit of £';
         if ($adminFee > 0) {
-            $refundText = ' As stated in our Terms and Conditions an Admin fee of £'.$adminFee / 100 .' will be retained. You should receive a credit of £';
+            $refundText = ' As stated in our Terms and Conditions an Admin fee of £' . $adminFee / 100 . ' will be retained. You should receive a credit of £';
         }
 
         $nameArray = explode(',', $names);
@@ -462,14 +462,14 @@ function onRefundCreated(mixed $object)
 
         $entryData = '';
         for ($i = 0; $i < count($idArray); $i++) {
-            $entryData .= 'Ref: '.$idArray[$i].' - '.$nameArray[$i]."\n";
+            $entryData .= 'Ref: ' . $idArray[$i] . ' - ' . $nameArray[$i] . "\n";
         }
 
         $entryIDs = explode(',', $entryIDs);
         $entries = DB::table('entries')->whereIn('id', $entryIDs)
             ->update(['status' => 2, 'updated_at' => now()]);
 
-        $html = "<div>Dear $email,</div><div>As you may know, ".$trialClub."'s ".$trialName.' has unfortunately been cancelled.'.$refundText.$refunded_amount." to your account.</div><div>This refund is for the following entries: $entryData</div><div>You will be sent a further confirmation email when the refund is completed. If you have any queries, please reply to this email.</div><div>Thank you for entering with TrialMonster.</div>";
+        $html = "<div>Dear $email,</div><div>As you may know, " . $trialClub . "'s " . $trialName . ' has unfortunately been cancelled.' . $refundText . $refunded_amount . " to your account.</div><div>This refund is for the following entries: $entryData</div><div>You will be sent a further confirmation email when the refund is completed. If you have any queries, please reply to this email.</div><div>Thank you for entering with TrialMonster.</div>";
         //        echo $html;
         Mail::to($email)
             ->bcc($bcc)
@@ -513,7 +513,7 @@ function onRefundUpdated(mixed $object)
             // info("$email");
             Mail::to($email)
                 ->bcc($bcc)
-                ->queue(new RefundConfirmed($entry, $reason));
+                ->queue(new RefundConfirmed($entry));
         }
     } elseif ($reason == 'cancellation') {
         //           get all metadata
@@ -528,7 +528,7 @@ function onRefundUpdated(mixed $object)
 
         $entryData = '';
         for ($i = 0; $i < count($idArray); $i++) {
-            $entryData .= 'Ref: '.$idArray[$i].' - '.$nameArray[$i]."\n";
+            $entryData .= 'Ref: ' . $idArray[$i] . ' - ' . $nameArray[$i] . "\n";
         }
 
         $entryIDs = explode(',', $entryIDs);
@@ -562,7 +562,9 @@ class StripeEventListener
     /**
      * Create the event listener.
      */
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     /**
      * Handle the event.

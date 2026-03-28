@@ -92,13 +92,10 @@ Route::get('/entries/delete/{id}', [EntryController::class, 'delete'])->middlewa
 Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails']);
 
 Route::get('/entry/useredit', [EntryController::class, 'useredit']);
-// Route::post('entries/userdata', [EntryController::class, 'showUserData']);
 
-Route::patch('/entries/update/{id}', [EntryController::class, 'updateEntry']);
-// Route::get('entries/saveddata', [EntryController::class, 'showSavedData']);
-// Route::get('/entries/entrylist', [EntryController::class, 'list']);
+Route::patch('/entries/update', [EntryController::class, 'updateEntry']);
+
 Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->name('entries.create');
-// Route::get('/entries/create_another', [EntryController::class, 'create_another'])->name('entries.create_another');
 Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
 Route::post('/entries/saveRidingNumbers', [EntryController::class, 'saveRidingNumbers']);
@@ -110,8 +107,6 @@ Route::post('/otdCreate', [EntryController::class, 'otdCreate']);
 Route::post('/otd/saveNumbers', [EntryController::class, 'otdSaveNumbers']);
 Route::get('generate/{trialid}', [EntryController::class, 'generate'])->middleware(['auth', 'verified']);
 
-// Check for usage
-// Route::post('/entries/createSession', [EntryController::class, 'createStripeSession']);
 
 /*
  * VENUE Routes
@@ -124,8 +119,6 @@ Route::post('/venues/add', [VenueController::class, 'store']);
 // Route::post('/venues/update', [VenueController::class, 'update']);
 Route::patch('/venues/save', [VenueController::class, 'save'])->middleware('auth', 'verified')->name('venues.save');
 
-// Stripe Routes
-// Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeCheckout']);
 Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeUserCheckout']);
 Route::get('/checkout/success', [StripePaymentController::class, 'checkoutSuccess'])->name('checkout-success');
 Route::view('/checkout/cancel', [UserController::class, 'entryList'])->name('checkout-cancel');
@@ -135,7 +128,7 @@ Route::post('/entries/checkout', [EntryController::class, 'checkout']);
 Route::get('/scores/setup/{id}', [ScoringController::class, 'setup'])->middleware(CheckClubUser::class)->name('scores.setup');
 Route::post('/scores/setup', [ScoringController::class, 'setupscoregrid'])->middleware(CheckClubUser::class)->name('scores.setupgrid');
 Route::get('/scores/grid/{id}', [ScoringController::class, 'grid'])->middleware(CheckClubUser::class)->name('scores.grid');
-// Route::get('/scores/section/{id}', [ScoringController::class, 'section'])->name('scores.section');
+
 Route::get('/scores/sectionScoresForRider/{trialid}/{rider}/{section}', [ScoringController::class, 'sectionScoresForRider'])->middleware(CheckClubUser::class)->name('scores.sectionScoreForRider');
 Route::get('/scores/sectionScores/{id}/{section}', [ScoringController::class, 'sectionScores'])->middleware(CheckClubUser::class)->name('scores.sectionScores');
 
@@ -153,7 +146,7 @@ Route::patch('/user/entry/update', [UserController::class, 'updateEntry'])->midd
 Route::get('/stripe/usercheckout', [StripePaymentController::class, 'stripeUserCheckout']);
 
 Route::get('/user/removeEntry/{id}', [UserController::class, 'removeEntry'])->middleware(['auth', 'verified']); // First stage in rentry withdrawal
-// Route::get('/user/confirmRemoveEntry', [UserController::class, 'confirmRemoveEntry'])->middleware(['auth', 'verified']); // Second stage
+
 Route::get('/user/withdraw/{id}', [UserController::class, 'userWithdraw'])->middleware(['auth', 'verified']); // Final stage
 Route::get('/unsubscribe', [UnsubscribeRequestController::class, 'store'])->name('user.unsubscribe');
 
@@ -180,6 +173,7 @@ Route::get('/admin/trial/toggleScoring/{id}', [AdminController::class, 'toggleSc
 Route::get('/admin/trial/toggleResultPublished/{id}', [AdminController::class, 'toggleResultPublished'])->middleware(IsAdminUser::class);
 
 Route::get('/admin/trial/refund/{id}', [AdminController::class, 'refundTrial'])->middleware(IsAdminUser::class);
+Route::get('/admin/trial/purchases/{id}', [AdminController::class, 'showPurchases'])->middleware(IsAdminUser::class);
 
 // MAIL Routes
 Route::get('/admin/mails', [AdminController::class, 'mailList'])->middleware(['auth', 'verified'])->name('admin.mails');

@@ -16,7 +16,7 @@ class RefundRequested extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public object $entry, public $reason)
+    public function __construct(public object $entry)
     {
         //
     }
@@ -40,7 +40,6 @@ class RefundRequested extends Mailable
             html: 'mails.refund_requested',
             with: [
                 'entry' => $this->entry,
-                'reason' => $this->reason,
             ],
         );
     }

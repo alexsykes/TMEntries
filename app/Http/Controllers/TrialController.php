@@ -54,6 +54,14 @@ class TrialController extends Controller
             ->orderBy('name')
             ->get();
 
+        $entryCounts = DB::table('entries')
+            ->select(DB::raw('course, count(*) as count'))
+            ->where('trial_id', $id)
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
+            ->groupBy('course')
+            ->orderBy('course')
+            ->get();
+
         $entryfees = DB::table('products')
             ->leftJoin('prices', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
             ->where('trial_id', $id)
@@ -69,9 +77,10 @@ class TrialController extends Controller
         $productSales = DB::table('products')
             ->leftJoin('prices', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
             ->where('trial_id', $id)
-            ->select('products.product_category', 'products.product_name', 'prices.purchases', 'prices.refunds', 'prices.stripe_price')
+            ->select('products.product_category', 'products.product_name','products.stripe_product_description' , 'prices.purchases', 'prices.refunds', 'prices.stripe_price')
             ->orderBy('products.product_category')
             ->orderBy('products.product_name')
+            ->orderBy('products.id')
             ->get();
 
         $trial = DB::table('trials')
@@ -82,7 +91,7 @@ class TrialController extends Controller
             ->where('id', $trial->venueID)
             ->first();
 
-        return view('trials.info', ['entries' => $entries, 'trial' => $trial, 'venue' => $venue, 'sales' => $productSales, 'numRiders' => $numRiders]);
+        return view('trials.info', ['entries' => $entries, 'trial' => $trial, 'venue' => $venue, 'sales' => $productSales, 'numRiders' => $numRiders, 'entryCounts' => $entryCounts]);
     }
 
     public function showTrialList()
@@ -126,7 +135,7 @@ class TrialController extends Controller
         $user = Auth::user();
 
         $isClubAdmin = $user->isClubUser;
-        if (! $isClubAdmin) {
+        if (!$isClubAdmin) {
             return redirect('home');
         }
 
@@ -138,7 +147,7 @@ class TrialController extends Controller
             ->get();
 
         $prefix = config('database.connections.mysql.prefix');
-        $venues = DB::select('select id, name from '.$prefix.'venues order by name');
+        $venues = DB::select('select id, name from ' . $prefix . 'venues order by name');
         $authorities = ['ACU', 'AMCA', 'Other'];
         $selection = ['Order of Payment', 'Ballot', 'Selection', 'Other'];
         $scoring = ['Observer', 'App', 'Sequential', 'Punch cards', 'Other'];
@@ -160,7 +169,7 @@ class TrialController extends Controller
     public function edit($id)
     {
         $prefix = config('database.connections.mysql.prefix');
-        $venues = DB::select('select id, name from '.$prefix.'venues order by name');
+        $venues = DB::select('select id, name from ' . $prefix . 'venues order by name');
         $authorities = ['ACU', 'AMCA', 'Other'];
         $selection = ['Order of Payment', 'Ballot', 'Selection', 'Other'];
         $scoring = ['Observer', 'App', 'Sequential', 'Punch cards', 'Other'];
@@ -185,7 +194,7 @@ class TrialController extends Controller
         //        dd($id);
         $trial = Trial::findorfail($id);
         $published = $trial->published;
-        $trial->published = ! $published;
+        $trial->published = !$published;
         $trial->save();
 
         return redirect('/clubaccess');
@@ -216,7 +225,7 @@ class TrialController extends Controller
         $user = Auth::user();
 
         $isClubAdmin = $user->isClubUser;
-        if (! $isClubAdmin) {
+        if (!$isClubAdmin) {
             return redirect('home');
         }
 
@@ -845,7 +854,8 @@ class TrialController extends Controller
         MYPDFP::SetPrintHeader(true);
         MYPDFP::AddPage();
 
-        MYPDFP::setFooterCallback(function () {});
+        MYPDFP::setFooterCallback(function () {
+        });
 
         // set some text to print
         $txt = <<<EOD
@@ -883,24 +893,24 @@ EOD;
                 $make = trim($rider->make);
                 $size = trim($rider->size);
 
-                $bike = $make.' '.$size;
+                $bike = $make . ' ' . $size;
 
                 MYPDFP::setX($indent);
-                MYPDFP::Cell(10, $rowHeight, $ridingNumber, 0, 0, 'R', false, null, 1, false, 'C'.'M');
-                MYPDFP::Cell(10, $rowHeight, $startsAt, 0, 0, 'R', false, null, 1, false, 'C'.'M');
-                MYPDFP::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C'.'M');
-                MYPDFP::Cell($nameWidth, $rowHeight, $course, 0, 0, 'L', false, null, 1, false, 'C'.'M');
-                MYPDFP::Cell($nameWidth, $rowHeight, $class, 0, 0, 'L', false, null, 1, false, 'C'.'M');
-                MYPDFP::Cell(0, $rowHeight, $bike, 0, 1, 'L', false, null, 1, false, 'C'.'M');
+                MYPDFP::Cell(10, $rowHeight, $ridingNumber, 0, 0, 'R', false, null, 1, false, 'C' . 'M');
+                MYPDFP::Cell(10, $rowHeight, $startsAt, 0, 0, 'R', false, null, 1, false, 'C' . 'M');
+                MYPDFP::Cell($nameWidth, $rowHeight, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+                MYPDFP::Cell($nameWidth, $rowHeight, $course, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+                MYPDFP::Cell($nameWidth, $rowHeight, $class, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+                MYPDFP::Cell(0, $rowHeight, $bike, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
 
             }
         }
 
         MYPDFP::Close();
-        MYPDFP::Output(public_path('pdf/'.$filename), 'F');
+        MYPDFP::Output(public_path('pdf/' . $filename), 'F');
         MYPDFP::reset();
 
-        return response()->download('pdf/'.$filename);
+        return response()->download('pdf/' . $filename);
 
         //        return view('trials.programme', ['trial' => $trial]);
     }
@@ -914,7 +924,7 @@ EOD;
         ), '', $name);
         // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
         $ext = pathinfo($name, PATHINFO_EXTENSION);
-        $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)).($ext ? '.'.$ext : '');
+        $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
 
         return $name;
     }

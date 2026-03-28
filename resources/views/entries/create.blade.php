@@ -14,11 +14,11 @@
 
             <div class=" pl-4 border grid gap-4 grid-cols-1 sm:grid-cols-2 p-4">
                 <div class="col-span-1"><label for="firstname">First name</label>
-                    <x-form-input type="firstname" name="firstname" label="First name"/>
+                    <x-form-input type="text" name="firstname" label="First name"/>
                 </div>
 
                 <div class="col-span-1"><label for="lastname">Last name</label>
-                    <x-form-input type="lastname" name="lastname" label="Last name"/>
+                    <x-form-input type="text" name="lastname" label="Last name"/>
                 </div>
 
                 <div class="col-span-1"><label for="email">Email</label>
@@ -26,11 +26,11 @@
                 </div>
 
                 <div class="col-span-1"><label for="phone">Phone</label>
-                    <x-form-input type="phone" name="phone" label="Phone"/>
+                    <x-form-input type="text" name="phone" label="Phone"/>
                 </div>
 
                 <div class="col-span-1"><label for="address">Address</label>
-                    <x-form-input type="address" name="address" label="Address"/>
+                    <x-form-input type="text" name="address" label="Address"/>
                 </div>
 
                 <div class="col-span-1"><label for="postcode">Postcode</label>

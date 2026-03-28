@@ -148,7 +148,7 @@ class AdminController extends Controller
     public function toggleResultPublished()
     {
         $trial = Trial::find(request('id'));
-        $trial->isResultPublished = ! $trial->isResultPublished;
+        $trial->isResultPublished = !$trial->isResultPublished;
         $trial->save();
 
         return redirect('/admin/trials');
@@ -157,7 +157,7 @@ class AdminController extends Controller
     public function toggleEntry()
     {
         $trial = Trial::find(request('id'));
-        $trial->isEntryLocked = ! $trial->isEntryLocked;
+        $trial->isEntryLocked = !$trial->isEntryLocked;
         $trial->save();
 
         return redirect('/admin/trials');
@@ -166,7 +166,7 @@ class AdminController extends Controller
     public function toggleScoring()
     {
         $trial = Trial::find(request('id'));
-        $trial->isScoringLocked = ! $trial->isScoringLocked;
+        $trial->isScoringLocked = !$trial->isScoringLocked;
         $trial->save();
 
         return redirect('/admin/trials');
@@ -175,7 +175,7 @@ class AdminController extends Controller
     public function toggleLock()
     {
         $trial = Trial::find(request('id'));
-        $trial->isLocked = ! $trial->isLocked;
+        $trial->isLocked = !$trial->isLocked;
         $trial->save();
 
         return redirect('/admin/trials');
@@ -194,17 +194,17 @@ class AdminController extends Controller
     public function storeAppUser(Request $request)
     {
         $request->validate([
-            'username' => ['required', 'string', 'max:255'],
-            //                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . AppUser::class],
-            'password' => ['required', 'string', 'min:8'],
-        ]
+                'username' => ['required', 'string', 'max:255'],
+                //                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . AppUser::class],
+                'password' => ['required', 'string', 'min:8'],
+            ]
         );
 
         $salt = substr('0faPWOZpvQCuEWcAj0qm1.1', 7, 22);
         $salt = '0faPWOZpvQCuEWcAj0qm1.';
 
         $rawPassword = $request->password;
-        $crypted = crypt($rawPassword, '$2y$10$'.$salt);
+        $crypted = crypt($rawPassword, '$2y$10$' . $salt);
         $user = AppUser::create([
             'username' => $request->username,
             'email' => $request->email,
@@ -250,12 +250,12 @@ class AdminController extends Controller
     public function archive(Request $request)
     {
         $prefix = config('database.connections.mysql.prefix');
-        $rawQuery = 'INSERT INTO '.$prefix.'score_backup SELECT * FROM '.$prefix."scores WHERE `trial_id` = '".$request->id."'";
+        $rawQuery = 'INSERT INTO ' . $prefix . 'score_backup SELECT * FROM ' . $prefix . "scores WHERE `trial_id` = '" . $request->id . "'";
         $result = DB::select($rawQuery);
 
         $deleted = DB::table('scores')->where('trial_id', $request->id)->delete();
 
-        return redirect('/admin/trial/edit/'.$request->id);
+        return redirect('/admin/trial/edit/' . $request->id);
     }
 
     public function backupTrial(Request $request)
@@ -263,7 +263,7 @@ class AdminController extends Controller
         $id = $request->id;
         $exportDir = "backups/$id/";
 
-        if (! file_exists($exportDir)) {
+        if (!file_exists($exportDir)) {
             mkdir($exportDir, 0777, true);
         }
 
@@ -281,11 +281,11 @@ class AdminController extends Controller
             ->toJson();
 
         $filename = 'Scores.json';
-        file_put_contents($exportDir.$filename, $scores);
+        file_put_contents($exportDir . $filename, $scores);
         $filename = 'Trial.json';
-        file_put_contents($exportDir.$filename, $trial);
+        file_put_contents($exportDir . $filename, $trial);
         $filename = 'Entries.json';
-        file_put_contents($exportDir.$filename, $entries);
+        file_put_contents($exportDir . $filename, $entries);
 
         $tables = ['entries', 'scores'];
 
@@ -293,7 +293,7 @@ class AdminController extends Controller
 
         TrialBackupCompleted::dispatch($id);
 
-        return redirect('/admin/trial/edit/'.$id);
+        return redirect('/admin/trial/edit/' . $id);
     }
 
     private function exportToCsv($requestID, mixed $tables, string $exportDir)
@@ -306,13 +306,13 @@ class AdminController extends Controller
 
                 $size = count($data);
                 if ($size > 0) {
-                    $csvFileName = $exportDir.$table.'.csv';
+                    $csvFileName = $exportDir . $table . '.csv';
                     $csvFile = fopen($csvFileName, 'w');
-                    $headers = array_keys((array) $data[0]); // Get the column headers from the first row
+                    $headers = array_keys((array)$data[0]); // Get the column headers from the first row
                     fputcsv($csvFile, $headers);
 
                     foreach ($data as $row) {
-                        fputcsv($csvFile, (array) $row);
+                        fputcsv($csvFile, (array)$row);
                     }
                     fclose($csvFile);
                 }
@@ -325,13 +325,13 @@ class AdminController extends Controller
 
             $size = count($data);
             if ($size > 0) {
-                $csvFileName = $exportDir.$table.'.csv';
+                $csvFileName = $exportDir . $table . '.csv';
                 $csvFile = fopen($csvFileName, 'w');
-                $headers = array_keys((array) $data[0]); // Get the column headers from the first row
+                $headers = array_keys((array)$data[0]); // Get the column headers from the first row
                 fputcsv($csvFile, $headers);
 
                 foreach ($data as $row) {
-                    fputcsv($csvFile, (array) $row);
+                    fputcsv($csvFile, (array)$row);
                 }
                 fclose($csvFile);
             }
@@ -347,7 +347,7 @@ class AdminController extends Controller
             ->where('trial_id', $id)
             ->update(['score' => null, 'updated_at' => null]);
 
-        return redirect('/admin/trial/edit/'.$id);
+        return redirect('/admin/trial/edit/' . $id);
     }
 
     public function refund(Request $request)
@@ -411,7 +411,7 @@ GROUP BY `stripe_payment_intent`, `email`");
                 break;
         }
 
-        return redirect('/admin/trial/edit/'.$trialID);
+        return redirect('/admin/trial/edit/' . $trialID);
     }
 
     public function refund_(Request $request)
@@ -492,6 +492,47 @@ GROUP BY `stripe_payment_intent`, `email`");
             }
         }
 
-        return redirect('/admin/trial/edit/'.$trialID);
+        return redirect('/admin/trial/edit/' . $trialID);
+    }
+
+    public function showPurchases(string $id)
+    {
+//        $productArray = DB::table('products')
+//            ->leftJoin('prices', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
+//            ->where('trial_id', $id)
+//            ->whereNot('product_category', 'entry fee')
+//            ->orderBy('product_name', 'asc')
+//            ->orderBy('stripe_product_description', 'asc')
+//            ->get(['products.product_name', 'products.stripe_product_description', 'products.stripe_product_id', 'prices.stripe_price_id'])
+//            ->toArray();
+//
+//        $priceIDs = array_column($productArray, 'stripe_price_id');
+//        $productIDs = array_column($productArray, 'stripe_product_id');
+//        dump($priceIDs, $productIDs);
+//
+//        $purchases = DB::table('purchases')
+//            ->whereIn('stripe_product_id', $productIDs)
+//            ->get();
+//
+//        dd($purchases);
+
+        $entryData = DB::table('entries')
+            ->where('trial_id', $id)
+            ->select('name','entries.extras')
+            ->get()
+            ->toArray();
+//        dump($entryData);
+
+        $data = array();
+
+        foreach ($entryData as $entry) {
+            $name = $entry->name;
+            $priceIDs = json_decode($entry->extras);
+            $dataa = array($name, $priceIDs);
+            array_push($data, $dataa);
+        }
+
+        dd($data);
+        return view('admin/purchases', compact('productArray', 'purchases'));
     }
 }

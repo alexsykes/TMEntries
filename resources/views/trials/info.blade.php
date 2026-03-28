@@ -6,6 +6,7 @@
     @php
         $statusArray = array('Awaiting payment', 'Confirmed Entry','Awaiting Refund', 'Refunded', 'Reserve - awaiting payment', 'Reserve', 'Removed by admin', 'Manual Entry - to pay', 'Manual Entry - paid', 'Manual Entry - FoC' );
 $numSalesItems = sizeof($sales);
+//dd($sales);
     @endphp
 
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
@@ -29,40 +30,6 @@ $numSalesItems = sizeof($sales);
         </div>
     </div>
 
-
-
-{{--    <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">--}}
-{{--        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Online payments</div>--}}
-
-{{--        <table class="table-fixed text-sm w-full">--}}
-{{--            <tr>--}}
-{{--                <th>Item</th>--}}
-{{--                <th>Price</th>--}}
-{{--                <th class="text-end">Sales</th>--}}
-{{--                <th class="text-end">Refunds</th>--}}
-{{--                <th class="text-end">Total</th>--}}
-{{--            </tr>--}}
-{{--            @foreach($sales as $sale)--}}
-{{--                @php--}}
-{{--                    $price = $sale->stripe_price / 100;--}}
-{{--                    $name = $sale->product_name;--}}
-{{--                    $quantity = $sale->purchases;--}}
-{{--                    $refunds = $sale->refunds;--}}
-{{--                    $total = $price * ($quantity - $refunds) + ($refunds * 3);--}}
-
-{{--                @endphp--}}
-{{--                <tr>--}}
-{{--                    <td class="text-start">{{$name}}</td>--}}
-{{--                    <td>£{{$price}}</td>--}}
-{{--                    <td class="text-center">{{$quantity}}</td>--}}
-{{--                    <td class="text-end">{{$refunds}}</td>--}}
-{{--                    <td class="text-end">£{{$total}}</td>--}}
-{{--                </tr>--}}
-{{--                --}}{{--            <div>£{{$sale->purchases * $purchase->purchases}}</div>--}}
-{{--            @endforeach--}}
-{{--        </table>--}}
-{{--    </div>--}}
-
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Online payments</div>
 
@@ -77,7 +44,7 @@ $numSalesItems = sizeof($sales);
             @foreach($sales as $sale)
                 @php
                     $price = $sale->stripe_price / 100;
-                    $name = $sale->product_name;
+                    $name = $sale->stripe_product_description;
                     $quantity = $sale->purchases;
                     $refunds = $sale->refunds;
                     $total = $price * ($quantity - $refunds) + ($refunds * 3);
@@ -93,6 +60,15 @@ $numSalesItems = sizeof($sales);
                 {{--            <div>£{{$sale->purchases * $purchase->purchases}}</div>--}}
             @endforeach
 
+    </div>
+    <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Course counts</div>
+        @foreach($entryCounts as $count)
+
+            <div class="flex justify-between text-sm w-full pl-4 pr-4">
+                <div class="table-cell">{{$count->course}} - {{$count->count}}</div>
+            </div>
+        @endforeach
     </div>
 
 
