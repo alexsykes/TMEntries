@@ -77,7 +77,7 @@ class TrialController extends Controller
         $productSales = DB::table('products')
             ->leftJoin('prices', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
             ->where('trial_id', $id)
-            ->select('products.product_category', 'products.product_name','products.stripe_product_description' , 'prices.purchases', 'prices.refunds', 'prices.stripe_price')
+            ->select('products.product_category', 'products.product_name', 'products.stripe_product_description', 'prices.purchases', 'prices.refunds', 'prices.stripe_price')
             ->orderBy('products.product_category')
             ->orderBy('products.product_name')
             ->orderBy('products.id')
@@ -91,7 +91,34 @@ class TrialController extends Controller
             ->where('id', $trial->venueID)
             ->first();
 
-        return view('trials.info', ['entries' => $entries, 'trial' => $trial, 'venue' => $venue, 'sales' => $productSales, 'numRiders' => $numRiders, 'entryCounts' => $entryCounts]);
+
+        // Start of new
+
+
+        $entryData = DB::table('entries')
+            ->where('trial_id', $id)
+            ->where('status', 1)
+            ->select('id', 'name')
+            ->orderBy('name', 'ASC')
+            ->get()
+            ->toArray();
+
+        $entryIDs = array_column($entryData, 'id');
+
+        $entryPurchases = DB::table('entry_purchases')
+            ->leftJoin('prices', 'entry_purchases.stripe_price_id', '=', 'prices.stripe_price_id')
+            ->leftJoin('products', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
+            ->leftJoin('entries', 'entry_purchases.entry_id', '=', 'entries.id')
+            ->whereIn('entry_id', $entryIDs)
+            ->select('entries.name',
+                DB::raw('GROUP_CONCAT(CONCAT(tme_products.stripe_product_description," - ", tme_entry_purchases.quantity)) as entry_purchases'),)
+            ->groupBy('entry_purchases.entry_id', 'entries.name')
+            ->orderBy('entries.name', 'ASC')
+            ->get();
+
+//        End of new
+
+        return view('trials.info', ['entries' => $entries, 'trial' => $trial, 'venue' => $venue, 'sales' => $productSales, 'numRiders' => $numRiders, 'entryCounts' => $entryCounts, 'entryPurchases' => $entryPurchases]);
     }
 
     public function showTrialList()

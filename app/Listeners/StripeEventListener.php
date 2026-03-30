@@ -14,6 +14,7 @@ use App\Mail\RefundRequested;
 use App\Mail\SecretaryNotificationPaymentReceived;
 use App\Models\Club;
 use App\Models\Entry;
+use App\Models\EntryPurchase;
 use App\Models\Price;
 use App\Models\Product;
 use App\Models\Purchase;
@@ -270,9 +271,6 @@ function onCheckoutSessionCompleted($sessionObject)
 
     //  Record other items purchased
     $containsExtras = false;
-    $product_names = [];
-    $product_quantities = [];
-    $product_descriptions = [];
     $purchaseData = [];
 
     //  Get line items from session and update purchase, [rice and product tables
@@ -288,7 +286,6 @@ function onCheckoutSessionCompleted($sessionObject)
             $containsExtras = true;
             $product_name = $product->product_name;
             $qty = $quantity;
-            $description = $description;
 
             array_push($purchaseData, ['product' => $product_name, 'quantity' => $qty, 'description' => $description]);
         }
@@ -330,6 +327,33 @@ function onCheckoutSessionCompleted($sessionObject)
         sendNotification($items, $entryIDs);
     } else {
         info("Doesn't contain Extras");
+    }
+
+//    Add purchases to purchase table
+    $entryData = DB::table('entries')
+        ->whereIn('id', $entryIDArray)
+        ->select('id', 'entries.extras')
+        ->get();
+
+
+    foreach ($entryData as $entry) {
+        $id = $entry->id;
+        $items = json_decode($entry->extras);
+
+//        echo($id);
+        foreach ($items as $item) {
+            $quantity = $item->qty;
+            $stripe_price_id = $item->priceID;
+
+
+            $attrs = [
+                'stripe_price_id' => $stripe_price_id,
+                'quantity' => $quantity,
+                'entry_id' => $id,
+            ];
+
+            $purchase = EntryPurchase::create($attrs);
+        }
     }
 
     // Update entry status

@@ -173,7 +173,7 @@ Route::get('/admin/trial/toggleScoring/{id}', [AdminController::class, 'toggleSc
 Route::get('/admin/trial/toggleResultPublished/{id}', [AdminController::class, 'toggleResultPublished'])->middleware(IsAdminUser::class);
 
 Route::get('/admin/trial/refund/{id}', [AdminController::class, 'refundTrial'])->middleware(IsAdminUser::class);
-Route::get('/admin/trial/purchases/{id}', [AdminController::class, 'showPurchases'])->middleware(IsAdminUser::class);
+Route::get('/admin/trial/purchases/{id}', [AdminController::class, 'showPurchases'])->middleware(CheckClubUser::class);
 
 // MAIL Routes
 Route::get('/admin/mails', [AdminController::class, 'mailList'])->middleware(['auth', 'verified'])->name('admin.mails');

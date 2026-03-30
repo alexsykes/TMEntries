@@ -497,42 +497,27 @@ GROUP BY `stripe_payment_intent`, `email`");
 
     public function showPurchases(string $id)
     {
-//        $productArray = DB::table('products')
-//            ->leftJoin('prices', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
-//            ->where('trial_id', $id)
-//            ->whereNot('product_category', 'entry fee')
-//            ->orderBy('product_name', 'asc')
-//            ->orderBy('stripe_product_description', 'asc')
-//            ->get(['products.product_name', 'products.stripe_product_description', 'products.stripe_product_id', 'prices.stripe_price_id'])
-//            ->toArray();
-//
-//        $priceIDs = array_column($productArray, 'stripe_price_id');
-//        $productIDs = array_column($productArray, 'stripe_product_id');
-//        dump($priceIDs, $productIDs);
-//
-//        $purchases = DB::table('purchases')
-//            ->whereIn('stripe_product_id', $productIDs)
-//            ->get();
-//
-//        dd($purchases);
-
         $entryData = DB::table('entries')
             ->where('trial_id', $id)
-            ->select('name','entries.extras')
+            ->where('status', 1)
+            ->select('id', 'name')
+            ->orderBy('name', 'ASC')
             ->get()
             ->toArray();
-//        dump($entryData);
 
-        $data = array();
+        $entryIDs = array_column($entryData, 'id');
 
-        foreach ($entryData as $entry) {
-            $name = $entry->name;
-            $priceIDs = json_decode($entry->extras);
-            $dataa = array($name, $priceIDs);
-            array_push($data, $dataa);
-        }
+        $entryPurchases = DB::table('entry_purchases')
+            ->leftJoin('prices', 'entry_purchases.stripe_price_id', '=', 'prices.stripe_price_id')
+            ->leftJoin('products', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
+            ->leftJoin('entries', 'entry_purchases.entry_id', '=', 'entries.id')
+            ->whereIn('entry_id', $entryIDs)
+            ->select('entries.name',
+                DB::raw('GROUP_CONCAT(CONCAT(tme_products.stripe_product_description," - ", tme_entry_purchases.quantity)) as entry_purchases'),)
+            ->groupBy('entry_purchases.entry_id', 'entries.name')
+            ->orderBy('entries.name', 'ASC')
+            ->get();
 
-        dd($data);
-        return view('admin/purchases', compact('productArray', 'purchases'));
+        return view('admin/purchases', compact('entryPurchases'));
     }
 }
