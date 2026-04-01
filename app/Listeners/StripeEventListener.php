@@ -7,6 +7,8 @@ use App\Mail\CancellationRefundConfirmed;
 use App\Mail\CancellationRefundRequested;
 use App\Mail\EntryOffer;
 use App\Mail\InvoiceOverdue;
+use App\Mail\MembershipReceived;
+use App\Mail\NewSecretaryNotificationPaymentReceived;
 use App\Mail\PaymentReceived;
 use App\Mail\ProductCreated;
 use App\Mail\RefundConfirmed;
@@ -273,15 +275,17 @@ function onCheckoutSessionCompleted($sessionObject)
     $containsExtras = false;
     $purchaseData = [];
 
-    //  Get line items from session and update purchase, [rice and product tables
+    //  Get line items from session and update purchase, price and product tables
     foreach ($lineItems as $lineItem) {
         $stripe_product_id = $lineItem['price']['product'];
         $quantity = $lineItem['quantity'];
         $description = $lineItem['description'];
+
         $product = DB::table('products')
             ->where('stripe_product_id', '=', $stripe_product_id)
             ->first();
 
+//      Check for items other than entry fees, then add to $purchaseData array
         if ($product->product_category != 'entry fee') {
             $containsExtras = true;
             $product_name = $product->product_name;
@@ -300,8 +304,10 @@ function onCheckoutSessionCompleted($sessionObject)
             'pi' => $stripe_payment_intent,
         ];
 
+//        Record in purchase table
         $purchase = Purchase::create($attrs);
 
+//         And increment Products/Prices tables
         DB::table('products')
             ->where('stripe_product_id', '=', $stripe_product_id)
             ->increment('purchases', $quantity);
@@ -311,6 +317,7 @@ function onCheckoutSessionCompleted($sessionObject)
             ->increment('purchases', $quantity);
     }
 
+//    Compose additional message if additional items purchsed
     $msg = '';
     if ($containsExtras) {
         info('Contains Extras');
@@ -324,12 +331,14 @@ function onCheckoutSessionCompleted($sessionObject)
         }
 
         $msg .= $items;
-        sendNotification($items, $entryIDs);
+//        sendNotification($items, $entryIDs);
+
     } else {
         info("Doesn't contain Extras");
     }
 
 //    Add purchases to purchase table
+//    Get extras from Entry table
     $entryData = DB::table('entries')
         ->whereIn('id', $entryIDArray)
         ->select('id', 'entries.extras')
@@ -340,18 +349,16 @@ function onCheckoutSessionCompleted($sessionObject)
         $id = $entry->id;
         $items = json_decode($entry->extras);
 
-//        echo($id);
         foreach ($items as $item) {
             $quantity = $item->qty;
             $stripe_price_id = $item->priceID;
-
 
             $attrs = [
                 'stripe_price_id' => $stripe_price_id,
                 'quantity' => $quantity,
                 'entry_id' => $id,
             ];
-
+// IMPORTANT - uncomment this line
             $purchase = EntryPurchase::create($attrs);
         }
     }
@@ -374,9 +381,14 @@ function onCheckoutSessionCompleted($sessionObject)
     //  Send confirmation email with bcc: to admin
     $bcc = 'monster@trialmonster.uk';
     //    info($msg);
+
+//    IMPORTANT - uncomment these lines
     Mail::to($email)
         ->bcc($bcc)
         ->send(new PaymentReceived($entries, $msg));
+
+
+    sendNewNotifications($entryIDs);
 
     //    Check for entry limit
     foreach ($trialIDs as $trialID) {
@@ -407,8 +419,6 @@ function sendNotification($items, $entryIDs)
     $email = 'alex@alexsykes.net';
     $entryIDArray = explode(',', $entryIDs);
 
-    //    $clubIDArray = explode(',', $items['clubIDs']);
-
     $riderNames = DB::table('entries')
         ->whereIn('id', $entryIDArray)
         ->orderBy('name')
@@ -425,12 +435,69 @@ function sendNotification($items, $entryIDs)
 
     $club->confirmed_list = $sortedS;
     $club->save();
-
     Mail::to($email)
         ->bcc($bcc)
         ->send(new SecretaryNotificationPaymentReceived($riders, $items));
 
     info('SecretaryNotificationPaymentReceived sent');
+
+}
+
+function sendNewNotifications($entryIDs)
+{
+    $ids = explode(',', $entryIDs);
+    $purchasesForMail = array(); // data to be sent to Mailer
+    $membershipNames = array();
+
+//    Get purchases for each entry
+    $index = 0;
+    foreach ($ids as $entryID) {
+//        Get the name
+        $entryDetail = DB::table('entries')
+            ->where('id', $entryID)
+            ->select('name', 'extras')
+            ->orderBy('name')
+            ->first();
+
+//      Get the purchase data
+        $purchases = DB::table('entry_purchases')
+            ->leftJoin('prices', 'prices.stripe_price_id', '=', 'entry_purchases.stripe_price_id')
+            ->leftJoin('products', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
+            ->where('entry_id', $entryID)
+            ->select('entry_purchases.quantity', 'products.stripe_product_description as product_description', 'products.product_category as category')
+            ->get();
+
+        $numPurchases = sizeof($purchases);
+        if ($numPurchases > 0) {
+            $entryArray = array();
+            $purchaseIItems = array();
+            $entryArray['name'] = $entryDetail->name;
+            foreach ($purchases as $purchase) {
+                $item = "$purchase->product_description ($purchase->quantity)";
+                array_push($purchaseIItems, $item);
+                if ($purchase->category == 'membership') {
+                    array_push($membershipNames, $entryDetail->name);
+                }
+            }
+            $entryArray['items'] = implode(", ", $purchaseIItems);
+
+            $line = "<b>" . $entryArray['name'] . "</b> - " . $entryArray['items'];
+        }
+        array_push($purchasesForMail, $line);
+    }
+
+    $email = "monster@trialmonster.uk";
+    Mail::to($email)
+        ->send(mailable: new NewSecretaryNotificationPaymentReceived($purchasesForMail));
+
+
+    $membershipEmail = 'ammnewhouse@gmail.com';
+    $bcc = 'monster@trialmonster.uk';
+    if (sizeof($membershipNames) > 0) {
+        Mail::to($membershipEmail)
+            ->bcc($bcc)
+            ->send(new MembershipReceived($membershipNames));
+    }
 }
 
 function onRefundCreated(mixed $object)
