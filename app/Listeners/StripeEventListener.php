@@ -7,13 +7,13 @@ use App\Mail\CancellationRefundConfirmed;
 use App\Mail\CancellationRefundRequested;
 use App\Mail\EntryOffer;
 use App\Mail\InvoiceOverdue;
+use App\Mail\MembershipPaid;
 use App\Mail\MembershipReceived;
 use App\Mail\NewSecretaryNotificationPaymentReceived;
 use App\Mail\PaymentReceived;
 use App\Mail\ProductCreated;
 use App\Mail\RefundConfirmed;
 use App\Mail\RefundRequested;
-use App\Mail\SecretaryNotificationPaymentReceived;
 use App\Models\Club;
 use App\Models\Entry;
 use App\Models\EntryPurchase;
@@ -264,6 +264,7 @@ function onCheckoutSessionCompleted($sessionObject)
     //    Create array of entryIDs
     $entryIDArray = explode(',', $entryIDs);
 
+    info('Stripe payment intent :: ' . $stripe_payment_intent);
     //  Process purchased items
     //    Get all line items
     $lineItems = $stripe->checkout->sessions->allLineItems(
@@ -412,42 +413,44 @@ function onCheckoutSessionCompleted($sessionObject)
     }
 }
 
-function sendNotification($items, $entryIDs)
-{
-    $bcc = 'monster@trialmonster.uk';
-    $email = 'ammnewhouse@gmail.com';
-    $email = 'alex@alexsykes.net';
-    $entryIDArray = explode(',', $entryIDs);
-
-    $riderNames = DB::table('entries')
-        ->whereIn('id', $entryIDArray)
-        ->orderBy('name')
-        ->pluck('name')->toArray();
-
-    $riders = implode(', ', $riderNames);
-
-    $club = Club::findOrFail(5);
-    $confirmed = explode(',', $club->confirmed_list);
-    $merged = array_unique(array_merge($riderNames, $confirmed));
-
-    asort($merged);
-    $sortedS = implode(',', $merged);
-
-    $club->confirmed_list = $sortedS;
-    $club->save();
-    Mail::to($email)
-        ->bcc($bcc)
-        ->send(new SecretaryNotificationPaymentReceived($riders, $items));
-
-    info('SecretaryNotificationPaymentReceived sent');
-
-}
+//function sendNotification($items, $entryIDs)
+//{
+//    $bcc = 'monster@trialmonster.uk';
+//    $email = 'ammnewhouse@gmail.com';
+//    $email = 'alex@alexsykes.net';
+//    $entryIDArray = explode(',', $entryIDs);
+//
+//    $riderNames = DB::table('entries')
+//        ->whereIn('id', $entryIDArray)
+//        ->orderBy('name')
+//        ->pluck('name')->toArray();
+//
+//    $riders = implode(', ', $riderNames);
+//
+//    $club = Club::findOrFail(5);
+//    $confirmed = explode(',', $club->confirmed_list);
+//    $merged = array_unique(array_merge($riderNames, $confirmed));
+//
+//    asort($merged);
+//    $sortedS = implode(',', $merged);
+//
+//    $club->confirmed_list = $sortedS;
+//    $club->save();
+//    Mail::to($email)
+//        ->bcc($bcc)
+//        ->send(new SecretaryNotificationPaymentReceived($riders, $items));
+//
+//    info('SecretaryNotificationPaymentReceived sent');
+//
+//}
 
 function sendNewNotifications($entryIDs)
 {
     $ids = explode(',', $entryIDs);
     $purchasesForMail = array(); // data to be sent to Mailer
     $membershipNames = array();
+    $membershipData = array();
+    $clubIDs = array();
 
 //    Get purchases for each entry
     $index = 0;
@@ -455,7 +458,7 @@ function sendNewNotifications($entryIDs)
 //        Get the name
         $entryDetail = DB::table('entries')
             ->where('id', $entryID)
-            ->select('name', 'extras')
+            ->select('name', 'extras', 'email', 'trial_id')
             ->orderBy('name')
             ->first();
 
@@ -464,10 +467,13 @@ function sendNewNotifications($entryIDs)
             ->leftJoin('prices', 'prices.stripe_price_id', '=', 'entry_purchases.stripe_price_id')
             ->leftJoin('products', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
             ->where('entry_id', $entryID)
-            ->select('entry_purchases.quantity', 'products.stripe_product_description as product_description', 'products.product_category as category')
+            ->select('entry_purchases.quantity', 'products.stripe_product_description as product_description', 'products.product_category as category', 'products.club_id as club_id')
             ->get();
 
+
         $numPurchases = sizeof($purchases);
+//        echo $numPurchases;
+        $line = "";
         if ($numPurchases > 0) {
             $entryArray = array();
             $purchaseIItems = array();
@@ -477,27 +483,63 @@ function sendNewNotifications($entryIDs)
                 array_push($purchaseIItems, $item);
                 if ($purchase->category == 'membership') {
                     array_push($membershipNames, $entryDetail->name);
+                    array_push($clubIDs, $purchase->club_id);
+                    array_push($membershipData, array('name' => $entryDetail->name, 'email' => $entryDetail->email, 'trial_id' => $entryDetail->trial_id));
                 }
             }
             $entryArray['items'] = implode(", ", $purchaseIItems);
 
-            $line = "<b>" . $entryArray['name'] . "</b> - " . $entryArray['items'];
+//            echo json_encode($membershipData);
+            $line .= "<b>" . $entryArray['name'] . "</b> - " . $entryArray['items'];
         }
         array_push($purchasesForMail, $line);
     }
+
 
     $email = "monster@trialmonster.uk";
     Mail::to($email)
         ->send(mailable: new NewSecretaryNotificationPaymentReceived($purchasesForMail));
 
+    foreach ($membershipData as $membership) {
+        $trialID =  $membership['trial_id'];
+        $trial = DB::table('trials')
+            ->where('id', $trialID)
+            ->select('club_id')
+            ->first();
 
+        $clubID = $trial->club_id;
+        $club = DB::table('clubs')->where('id', $clubID)->first();
+        $clubName = $club->name;
+
+        $bcc = 'monster@trialmonster.uk';
+
+//      Send reminder to complete club registration
+        Mail::to($membership['email'])
+            ->bcc($bcc)
+            ->send(new MembershipPaid($membership['name'], $clubID, $clubName));
+    }
+
+//    echo json_encode($clubIDs);
     $membershipEmail = 'ammnewhouse@gmail.com';
-    $bcc = 'monster@trialmonster.uk';
+//    $membershipEmail = 'alex@alexsykes.net';
     if (sizeof($membershipNames) > 0) {
+        info("membershipEmail: " . implode(', ', $membershipNames));
         Mail::to($membershipEmail)
             ->bcc($bcc)
             ->send(new MembershipReceived($membershipNames));
     }
+
+    $club = Club::findOrFail(5);
+    $confirmed = explode(',', $club->confirmed_list);
+    $merged = array_unique(array_merge($membershipNames, $confirmed));
+
+    asort($merged);
+    $sortedS = implode(',', $merged);
+
+    $club->confirmed_list = $sortedS;
+    $club->save();
+
+
 }
 
 function onRefundCreated(mixed $object)

@@ -55,6 +55,7 @@
                 <table class="w-full">
                     <tbody>
                     <tr class="font-bold text-violet-700">
+                        <th></th>
                         <th>Name</th>
                         <th class="max-sm:hidden">Email</th>
                         <th class="max-sm:hidden">Phone</th>
@@ -64,7 +65,8 @@
                     </tr>
                     @foreach($riders as $rider)
                         <tr @if($rider->confirmed) class="text-slate-800 " @else  class="text-red-500 " @endif>
-                            <td class="pl-2"><a href="/club/member/detail/{{$rider->id}}">
+                            <td class="pl-2">{{$rider->heritage_number}}</td>
+                            <td><a href="/club/member/detail/{{$rider->id}}">
                                     @if($rider->membership_type == 'new')
                                         *
                                     @endif
@@ -96,6 +98,7 @@
                 <table class="w-full">
                     <tbody>
                     <tr class="font-bold text-violet-700">
+                        <th></th>
                         <th>Name</th>
                         <th class="max-sm:hidden">Email</th>
                         <th class="max-sm:hidden">Phone</th>
@@ -104,7 +107,8 @@
                     </tr>
                     @foreach($observers as $rider)
                         <tr @if($rider->confirmed) class="text-slate-800 " @else  class="text-red-500 " @endif>
-                            <td class="pl-2"><a href="/club/member/detail/{{$rider->id}}">
+                            <td class="pl-2">{{$rider->heritage_number}}</td>
+                            <td><a href="/club/member/detail/{{$rider->id}}">
                                     @if($rider->membership_type == 'new')
                                         *
                                     @endif
@@ -134,6 +138,7 @@
                 <table class="w-full">
                     <tbody>
                     <tr class="font-bold text-violet-700">
+                        <th></th>
                         <th>Name</th>
                         <th class="max-sm:hidden">Email</th>
                         <th class="max-sm:hidden">Phone</th>
@@ -142,7 +147,8 @@
                     </tr>
                     @foreach($lifers as $rider)
                         <tr @if($rider->confirmed) class="text-slate-800 " @else  class="text-red-500 " @endif>
-                            <td class="pl-2"><a href="/club/member/detail/{{$rider->id}}">
+                            <td class="pl-2">{{$rider->heritage_number}}</td>
+                            <td><a href="/club/member/detail/{{$rider->id}}">
                                     @if($rider->membership_type == 'new')
                                         *
                                     @endif
@@ -172,6 +178,7 @@
                 <table class="w-full">
                     <tbody>
                     <tr class="font-bold text-violet-700">
+                        <th></th>
                         <th>Name</th>
                         <th class="max-sm:hidden">Email</th>
                         <th class="max-sm:hidden">Phone</th>
@@ -180,7 +187,8 @@
                     </tr>
                     @foreach($allmembers as $rider)
                         <tr @if($rider->confirmed) class="text-slate-800 " @else  class="text-red-500 " @endif>
-                            <td class="pl-2"><a href="/club/member/detail/{{$rider->id}}">
+                            <td class="pl-2">{{$rider->heritage_number}}</td>
+                            <td><a href="/club/member/detail/{{$rider->id}}">
                                     @if($rider->membership_type == 'new')
                                         *
                                     @endif

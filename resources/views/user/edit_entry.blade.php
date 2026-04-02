@@ -193,166 +193,101 @@ if($customClasses != "") {
                                     <input name="checkbox[]" class="p-2" type="checkbox"
 
                                            value="{{$priceID}}"
-                                    @php
-                                        if(in_array($priceID, $priceIDArray)){
-                                        echo " checked ";
-                                        }
-                                        @endphp
-                            />
-                        </div>
-                    </div>
-                </x-form-field>
-            </div>
-        </div>
-    @endif
-    @if($hasMerchandise && $status == 0 )
-        {{--                @dump($priceArray)--}}
-        <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add Extras
-            </div>
-            <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-                @foreach($merchandise as $item)
-                    {{--                            @dump($item)--}}
-                    @php
-                        $productIndex = $loop->index;
-                            @endphp
-                            <x-form-field>
-                                @php
-                                    $priceArray = explode(',', $item->price);
-//                                    Get price - assumes all item prices identical
-                                    $price = $priceArray[0]/100;
-                                    if($price == 0) {
-                                        $price = "Free of Charge";
-                                    } else {
-                                        $price = "£".$price;
-                                    }
-                                @endphp
-
-                                @if($item->numOptions == 1)
-                                    {{--                                    @dump($item->priceIDs)--}}
-                                    {{--                                    @dump($priceIDArray)--}}
-
-                                    <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
-                                        - {{$price}}</x-form-label>
-                                    <input name="prodIDs[]" type="hidden" value="product{{$productIndex}}">
-                                    <input name="product{{$productIndex}}" type="checkbox" value="{{$item->priceIDs}}"
-                                           id="extra1"
                                             @php
-                                                if(in_array($item->priceIDs, $priceIDArray)){
+                                                if(in_array($priceID, $priceIDArray)){
                                                 echo " checked ";
-                                            }
-
-
+                                                }
                                             @endphp
                                     />
-                                    <x-form-error name="product{{$productIndex}}"/>
-
-                                @else
-                                    <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
-                                        - {{$price}}</x-form-label>
-                                    <div>Please select <span class="font-semibold">one</span></div>
-                                    @php
-                                        $options = explode(',',$item->options);
-                                        $productIDs = explode(',', $item->productIDs);
-                                        $priceIDs = explode(',', $item->priceIDs);
-                                    @endphp
-                                    <input name="prodIDs[]" type="hidden" value="product{{$productIndex}}">
-                                    @foreach($options as $option)
-                                        @php
-                                            $index = $loop->index;
-                                            $priceIDitem = $priceIDs[$index];
-//                                            dump($priceIDitem);
-                                        @endphp
-                                        <input name="product{{$productIndex}}" type="radio" id="extra{{$index}}"
-                                               required
-                                               value="{{$priceIDitem}}"
-                                                @php
-                                                    if(in_array($priceIDitem, $priceIDArray)){
-                                                         echo " checked ";
-                                                     }
-                                                @endphp
-                                        >
-                                        <label class="pl-1 pr-4" for="extra">{{$option}}</label>
-
-                                    @endforeach
-                                @endif
-                            </x-form-field>
-                        @endforeach()
+                                </div>
+                            </div>
+                        </x-form-field>
                     </div>
                 </div>
-
             @endif
 
+            @if($hasMerchandise  && $status == 0 )
 
-            {{--            @if($hasOptions && $status == 0)--}}
-            {{--                <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">--}}
-            {{--                    <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add--}}
-            {{--                        Merchandise--}}
-            {{--                    </div>--}}
-            {{--                    <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">--}}
-            {{--                        @foreach($options as $option)--}}
-            {{--                            @php--}}
-            {{--                                $price = $option->price / 100;--}}
-            {{--                                if($option->hasQuantity == 1) {--}}
-            {{--                                    $type = "number";--}}
-            {{--                                } else {--}}
-            {{--                                    $type = "checkbox";--}}
-            {{--                                }--}}
-            {{--                            @endphp--}}
-            {{--                            @if($type=="checkbox")--}}
-            {{--                                <x-form-field>--}}
-            {{--                                    @php--}}
-            {{--                                        $priceID = $option->stripe_price_id;--}}
-            {{--                                        if(in_array($priceID, $priceArray)) {--}}
-            {{--                                            $checked = " checked ";--}}
-            {{--                                        } else {--}}
-            {{--                                            $checked = "";--}}
-            {{--                                        }--}}
-            {{--                                    @endphp--}}
+                @if(sizeof($merchandise) > 0 )
+                    {{--                @dump($priceArray)--}}
+                    <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                        <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add
+                            Extras
+                        </div>
+                        <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                            @foreach($merchandise as $item)
+                                {{--                            @dump($item)--}}
+                                @php
+                                    $productIndex = $loop->index;
+                                @endphp
+                                <x-form-field>
+                                    @php
+                                        $priceArray = explode(',', $item->price);
+    //                                    Get price - assumes all item prices identical
+                                        $price = $priceArray[0]/100;
+                                        if($price == 0) {
+                                            $price = "Free of Charge";
+                                        } else {
+                                            $price = "£".$price;
+                                        }
+                                    @endphp
 
-            {{--                                    <div class="flex justify-normal col-span-3">--}}
-            {{--                                        <div class="font-semibold text text-blue-700">{{$option->name}}--}}
-            {{--                                            (£{{ $price  }})--}}
-            {{--                                        </div>--}}
+                                    @if($item->numOptions == 1)
+                                        {{--                                    @dump($item->priceIDs)--}}
+                                        {{--                                    @dump($priceIDArray)--}}
 
-            {{--                                        <div class="pl-2">--}}
-            {{--                                            <input name="checkbox[]" type="checkbox"--}}
-            {{--                                                   value="{{$option->stripe_price_id}}"--}}
-            {{--                                                    {{ $checked }}--}}
-            {{--                                            />--}}
-            {{--                                        </div>--}}
-            {{--                                    </div>--}}
-            {{--                                </x-form-field>--}}
+                                        <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
+                                            - {{$price}}</x-form-label>
+                                        <input name="prodIDs[]" type="hidden" value="product{{$productIndex}}">
+                                        <input name="product{{$productIndex}}" type="checkbox"
+                                               value="{{$item->priceIDs}}"
+                                               id="extra1"
+                                                @php
+                                                    if(in_array($item->priceIDs, $priceIDArray)){
+                                                    echo " checked ";
+                                                }
 
-            {{--                            @elseif($type="number")--}}
-            {{--                                <x-form-field>                                    @php--}}
-            {{--                                        $priceID = $option->stripe_price_id;--}}
-            {{--                                        if(in_array($priceID, $priceArray)) {--}}
-            {{--                                            $index = array_search($priceID, $priceArray);--}}
-            {{--                                            $quantity = $qtyArray[$index];--}}
-            {{--                                        } else {--}}
-            {{--                                            $quantity = 0;--}}
-            {{--                                        }--}}
-            {{--                                    @endphp--}}
-            {{--                                    <div class="flex col-span-3 justify-normal space-x-4">--}}
-            {{--                                        <div class="pt-2 font-semibold text text-blue-700">{{$option->name}}--}}
-            {{--                                            (£{{ $price  }})--}}
-            {{--                                        </div>--}}
-            {{--                                        <div class="">--}}
-            {{--                                            <input type="hidden" value="{{$option->stripe_price_id}}" name="priceID[]">--}}
-            {{--                                            <input type="number" min="0" id="quantity" name="quantity[]"--}}
-            {{--                                                   class="w-24 sm:w-full"--}}
-            {{--                                                   value="{{$quantity}}"--}}
-            {{--                                                   placeholder="Quantity">--}}
-            {{--                                        </div>--}}
-            {{--                                    </div>--}}
-            {{--                                </x-form-field>--}}
 
-            {{--                            @endif--}}
-            {{--                        @endforeach()--}}
-            {{--                    </div>--}}
-            {{--                </div>--}}
-            {{--            @endif--}}
+                                                @endphp
+                                        />
+                                        <x-form-error name="product{{$productIndex}}"/>
+
+                                    @else
+                                        <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
+                                            - {{$price}}</x-form-label>
+                                        <div>Please select <span class="font-semibold">one</span></div>
+                                        @php
+                                            $options = explode(',',$item->options);
+                                            $productIDs = explode(',', $item->productIDs);
+                                            $priceIDs = explode(',', $item->priceIDs);
+                                        @endphp
+                                        <input name="prodIDs[]" type="hidden" value="product{{$productIndex}}">
+                                        @foreach($options as $option)
+                                            @php
+                                                $index = $loop->index;
+                                                $priceIDitem = $priceIDs[$index];
+    //                                            dump($priceIDitem);
+                                            @endphp
+                                            <input name="product{{$productIndex}}" type="radio" id="extra{{$index}}"
+                                                   required
+                                                   value="{{$priceIDitem}}"
+                                                    @php
+                                                        if(in_array($priceIDitem, $priceIDArray)){
+                                                             echo " checked ";
+                                                         }
+                                                    @endphp
+                                            >
+                                            <label class="pl-1 pr-4" for="extra">{{$option}}</label>
+
+                                        @endforeach
+                                    @endif
+                                </x-form-field>
+                            @endforeach()
+                        </div>
+                    </div>
+                @endif
+            @endif
+
 
             @if($status == 1)
                 <div class="ml-4 mb-4">

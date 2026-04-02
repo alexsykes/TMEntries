@@ -222,30 +222,16 @@ class UserController extends Controller
                 }
 
                 //      Get extra input field names
-                $prodIDs = $request->prodIDs;
+//                $prodIDs = $request->prodIDs;
 
-                foreach ($prodIDs as $prodID) {
-                    if (!is_null($request->$prodID)) {
-                        $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
-                        array_push($extraArray, $checkbox);
+                if(!is_null($request->prodIDs)) {
+                    foreach ($request->prodIDs as $prodID) {
+                        if (!is_null($request->$prodID)) {
+                            $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
+                            array_push($extraArray, $checkbox);
+                        }
                     }
                 }
-//
-//                dump($extraArray);
-//
-//                if (!is_null($request->priceID)) {
-//                    $priceIDs = $request->priceID;
-//                    $qtys = $request->quantity;
-//
-//                    for ($i = 0; $i < count($priceIDs); $i++) {
-//                        $priceID = $priceIDs[$i];
-//                        $qty = $qtys[$i];
-//                        if (!is_null($qty)) {
-//                            $extras = ['priceID' => $priceID, 'qty' => $qty];
-//                            array_push($extraArray, $extras);
-//                        }
-//                    }
-//                }
 
                 $entry->extras = json_encode($extraArray);
 

@@ -215,12 +215,16 @@ class EntryController extends Controller
             array_push($extraArray, $membership);
 
         }
-        foreach ($prodIDs as $prodID) {
-            if (!is_null($request->$prodID)) {
-                $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
-                array_push($extraArray, $checkbox);
+
+        if (!is_null($request->prodIDs)) {
+            foreach ($request->prodIDs as $prodID) {
+                if (!is_null($request->$prodID)) {
+                    $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
+                    array_push($extraArray, $checkbox);
+                }
             }
         }
+
         $attributes['extras'] = json_encode($extraArray);
 
         if (!is_null($request->priceID)) {
@@ -512,14 +516,17 @@ class EntryController extends Controller
 
     public function store(Request $request)
     {
-//        dump($request->all());
+
+//        prodIDs -> array of stripe_price_id of items on offer
+//        product{n} stripe_price_id selected
+//        membership -> stripe_price_id if membership option selected
 
         $trial_id = $request->trial_id;
         $trial = Trial::findOrFail($trial_id);
 
         $club_id = $trial->club_id;
 //      Get extra input field names
-        $prodIDs = $request->prodIDs;
+//        $prodIDs = $request->prodIDs;
 
 //        dd($prodIDs);
         $membership = $this->getMembership($club_id);
@@ -600,21 +607,37 @@ class EntryController extends Controller
         //      Process additional items
         $extraArray = [];
 
+
+//        prodIDs -> array of stripe_price_id of items on offer
+//        product{n} stripe_price_id selected
+//        membership -> stripe_price_id if membership option selected
+
         if (!is_null($request->membership)) {
             $checkbox = ['priceID' => $request->membership, 'qty' => 1];
             array_push($extraArray, $checkbox);
-
         }
-        foreach ($prodIDs as $prodID) {
-            if (!is_null($request->$prodID)) {
-                $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
-                array_push($extraArray, $checkbox);
+        /*      loop through array of productIDs
+                these are from hidden inputs and correspond to extra options
+                which users select
+
+        */
+
+        if (!is_null($request->prodIDs)) {
+            foreach ($request->prodIDs as $prodID) {
+//            if the request contains a stripe code, add it to the extraArray
+                if (!is_null($request->$prodID)) {
+                    $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
+                    array_push($extraArray, $checkbox);
+                }
             }
         }
+
         $attributes['extras'] = json_encode($extraArray);
 
         $entry = Entry::create($attributes);
 
+        info("EntryController: entry created: $entry->id");
+//        dd($entry);
         //        Entry has Stripe product and price codes entered at time of entry
         $allOptions = $this->getOptions($club_id, $trial_id);
 
@@ -696,6 +719,7 @@ class EntryController extends Controller
     public function edit(Request $request)
     {
         $entry = Entry::findorfail($request->entry);
+        info("EntryController: entry edited: $entry->id");
         $trialid = session('trial_id');
         $trial = Trial::findorfail($trialid);
         $club_id = $trial->club_id;

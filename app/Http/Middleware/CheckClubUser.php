@@ -20,14 +20,15 @@ class CheckClubUser
             $user = Auth::user();
             $isClubUser = $user->isClubUser;
             if ($isClubUser) {
-                info('Club User requested');
+//                info('Club User requested');
 
                 return $next($request);
             } else {
+                info('CheckClubUser - Illegal request');
                 return redirect('/');
             }
         }
-
+        info('CheckClubUser - Illegal request');
         return redirect('/');
     }
 }

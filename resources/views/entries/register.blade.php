@@ -277,7 +277,7 @@
                 </div>
                 <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
                     @foreach($merchandise as $item)
-
+{{--@dump($merchandise)--}}
                         @php
                             $productIndex = $loop->index;
                         @endphp
