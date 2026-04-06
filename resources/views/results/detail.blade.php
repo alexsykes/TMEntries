@@ -2,33 +2,33 @@
 
     <x-slot:heading>{{$trial->name}}</x-slot:heading>
     @php
-        $download_link = asset('pdf/results/'.$filename);
-                $owner = (Auth::id());
-                    $canEdit = false;
-                if(($owner == $trial->created_by)  && ($trial->isResultPublished)) {
-                    $canEdit = true;
-                }
-
-                    $fifty_fifty = $trial->fifty_fifty;
-                $hasFifty = false;
-                $fiftyArray = array();
-                    If($fifty_fifty != "") {
-                        $hasFifty = true;
-                        $fiftyArray = explode(",", $fifty_fifty);
+            $download_link = asset('pdf/results/'.$trial->id);
+                    $owner = (Auth::id());
+                        $canEdit = false;
+                    if(($owner == $trial->created_by)  && ($trial->isResultPublished)) {
+                        $canEdit = true;
                     }
-                    $courselist = $trial->courselist;
-                    $classlist = $trial->classlist;
-                    $numsections = $trial->numSections;
-                    $numlaps = $trial->numLaps;
-                                $rawDate = new DateTime($trial->date);
-                                $date  = date_format($rawDate, "jS F, Y");
-                                $rawDate = new DateTime($trial->updated_at);
-                                $updated  = date_format($rawDate, "H:ia jS F, Y");
-                    $nonStarterArray = array();
-                foreach($nonStarters as $notStarter) {
-                    array_push($nonStarterArray, $notStarter->name);
-                }
-                    $nonStarterList = implode(', ', $nonStarterArray);
+
+                        $fifty_fifty = $trial->fifty_fifty;
+                    $hasFifty = false;
+                    $fiftyArray = array();
+                        If($fifty_fifty != "") {
+                            $hasFifty = true;
+                            $fiftyArray = explode(",", $fifty_fifty);
+                        }
+                        $courselist = $trial->courselist;
+                        $classlist = $trial->classlist;
+                        $numsections = $trial->numSections;
+                        $numlaps = $trial->numLaps;
+                                    $rawDate = new DateTime($trial->date);
+                                    $date  = date_format($rawDate, "jS F, Y");
+                                    $rawDate = new DateTime($trial->updated_at);
+                                    $updated  = date_format($rawDate, "H:ia jS F, Y");
+                        $nonStarterArray = array();
+                    foreach($nonStarters as $notStarter) {
+                        array_push($nonStarterArray, $notStarter->name);
+                    }
+                        $nonStarterList = implode(', ', $nonStarterArray);
     @endphp
 
     <div class="text-black mb-2 sm:hidden">Scores display will be improved by turning your phone on its side.</div>

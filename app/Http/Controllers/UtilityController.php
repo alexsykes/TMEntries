@@ -65,9 +65,8 @@ class UtilityController extends Controller
         $classes = explode(',', $classlist);
 
         $trialName = trim($trial->name);
-        $trialName = trim($trial->name);
-        $filename = "$trial->id $trialName.pdf";
-        //        $filename = str_replace(' ', '_', $filename);
+        $trialID = $trial->id;
+        $filename = "$trialID.pdf";
         $filename = $this->filter_filename($filename);
 
         //        PDF setup
@@ -104,8 +103,8 @@ EOD;
 
         MYPDFG::setFooterCallback(function () {
             MYPDFG::Cell(0, 0, 'x indicates a missed section', 0, true, 'C');
-            MYPDFG::Cell(0, 0, 'Provisional Results updated '.now(), 0, false, 'L', 0, '', 0, false, 'T', 'M');
-            MYPDFG::Cell(0, 0, 'Page '.MYPDFG::getAliasNumPage().' of '.MYPDFG::getAliasNbPages(), 0, true, 'R', 0, '', 0, false, 'T', 'M');
+            MYPDFG::Cell(0, 0, 'Provisional Results updated ' . now(), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            MYPDFG::Cell(0, 0, 'Page ' . MYPDFG::getAliasNumPage() . ' of ' . MYPDFG::getAliasNbPages(), 0, true, 'R', 0, '', 0, false, 'T', 'M');
         });
 
         $rowHeight = 9;
@@ -133,7 +132,7 @@ EOD;
         }
 
         MYPDFG::Close();
-        MYPDFG::Output(public_path('pdf/results/'.$filename), 'F');
+        MYPDFG::Output(public_path('pdf/results/' . $filename), 'F');
         MYPDFG::reset();
         //        return response()->download('pdf/results/' . $filename);
 
@@ -147,7 +146,7 @@ EOD;
         ), '', $name);
         // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
         $ext = pathinfo($name, PATHINFO_EXTENSION);
-        $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)).($ext ? '.'.$ext : '');
+        $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
 
         return $name;
     }
@@ -159,13 +158,13 @@ EOD;
         //                    Output class header
         MYPDFG::SetFont('', 'B', 9, '', true);
         MYPDFG::setX(10);
-        MYPDFG::Cell(0, 0, "$course - $class", 0, 0, 'L', false, null, 0, false, 'C'.'M');
+        MYPDFG::Cell(0, 0, "$course - $class", 0, 0, 'L', false, null, 0, false, 'C' . 'M');
         MYPDFG::setX(100);
-        MYPDFG::Cell(10, 0, 'Total', 0, 0, 'C', false, null, 0, false, 'C'.'M');
+        MYPDFG::Cell(10, 0, 'Total', 0, 0, 'C', false, null, 0, false, 'C' . 'M');
 
         $sectionWidth = 177 / $numSections;
         for ($index = 1; $index <= $numSections; $index++) {
-            MYPDFG::Cell($sectionWidth, 0, $index, 0, 0, 'C', false, null, 0, false, 'C'.'M');
+            MYPDFG::Cell($sectionWidth, 0, $index, 0, 0, 'C', false, null, 0, false, 'C' . 'M');
         }
         MYPDFG::Cell('', '', '', '', 1);
     }
@@ -188,14 +187,14 @@ EOD;
 
         PDF::setX(10);
         PDF::SetFont('', 'B', 9, '', true);
-        PDF::Cell(9, 0, $pos, 0, 0, 'R', false, null, 0, false, 'C'.'M');
+        PDF::Cell(9, 0, $pos, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
         PDF::SetFont('', '', 9, '', true);
         PDF::setX(19);
-        PDF::Cell(9, 0, $number, 0, 0, 'R', false, null, 0, false, 'C'.'M');
+        PDF::Cell(9, 0, $number, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
         PDF::setX(28);
-        PDF::Cell(40, 0, $name, 0, 0, 'L', false, null, 1, false, 'C'.'M');
+        PDF::Cell(40, 0, $name, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
         PDF::setX(68);
-        PDF::Cell(32, 0, $machine, 0, 0, 'L', false, null, 1, false, 'C'.'M');
+        PDF::Cell(32, 0, $machine, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
 
         $startScores = 100;
         //          Only print total for finishers
@@ -205,14 +204,14 @@ EOD;
             $total = '';
         }
         PDF::SetFont('', 'B', 9, '', true);
-        PDF::Cell(10, 0, $total, 0, 0, 'R', false, null, 0, false, 'C'.'M');
+        PDF::Cell(10, 0, $total, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
         PDF::SetFont('', '', 9, '', true);
 
         $sectionWidth = 177 / $numSections;
         for ($index = 1; $index <= $numSections; $index++) {
 
             //            PDF::setX($startScores + 10 * $index);
-            PDF::Cell($sectionWidth, 0, str_replace('o', '', $sectionScores[$index - 1]), 0, 0, 'C', false, null, 0, false, 'C'.'M');
+            PDF::Cell($sectionWidth, 0, str_replace('o', '', $sectionScores[$index - 1]), 0, 0, 'C', false, null, 0, false, 'C' . 'M');
             //            PDF::Cell($sectionWidth, 0, $sectionScores[$index - 1], 0, 0, 'C', false, null, 0, false, 'C' . 'M');
         }
         //      Add line break
@@ -235,13 +234,28 @@ EOD;
                 $a_split = explode($temp, $string);
                 foreach ($a_split as $temp2) {
                     // capitalize each portion of the string which was separated at a special character
-                    $mend .= ucfirst($temp2).$temp;
+                    $mend .= ucfirst($temp2) . $temp;
                 }
                 $string = substr($mend, 0, -1);
             }
         }
 
         return ucfirst($string);
+    }
+
+    public function getResultsPDF($id)
+    {
+        $trial = DB::table('trials')->where('id', $id)->first();
+        $trialName = $trial->name;
+        $filename = "pdf/results/$id.pdf";
+        info("PDF download: ".$filename);
+        if (file_exists($filename)) {
+            $newFilename = "$trialName.pdf";
+            $newFilename = $this->filter_filename($newFilename);
+            return response()->download($filename, $newFilename);
+        } else {
+            return redirect()->back();
+        }
     }
 }
 

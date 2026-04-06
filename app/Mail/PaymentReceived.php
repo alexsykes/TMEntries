@@ -17,7 +17,8 @@ class PaymentReceived extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public Collection $entryData, public string $msg) {}
+    public function __construct(public Collection $entryData, public string $msg, public array $clubIDs )  {
+    }
 
     /**
      * Get the message envelope.
@@ -31,6 +32,8 @@ class PaymentReceived extends Mailable
 
     /**
      * Get the message content definition.
+     * @param $clubIDs
+     * @return Content
      */
     public function content(): Content
     {
@@ -39,6 +42,7 @@ class PaymentReceived extends Mailable
             with: [
                 'entryData' => $this->entryData,
                 'msg' => $this->msg,
+                'clubIDs' => $this->clubIDs,
             ],
         );
     }

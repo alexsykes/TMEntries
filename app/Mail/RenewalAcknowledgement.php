@@ -17,9 +17,8 @@ class RenewalAcknowledgement extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public object $club_member)
+    public function __construct(public object $club_member, public object $club)
     {
-        //
     }
 
     /**
@@ -29,7 +28,8 @@ class RenewalAcknowledgement extends Mailable
     {
         return new Envelope(
             replyTo: [
-                new Address('ammnewhouse@gmail.com', 'Amanda Newhouse'),
+                new Address($this->club->memSecEmail,
+                    $this->club->membershipSecretary, ),
             ],
             subject: 'Renewal Acknowledgement',
         );
@@ -42,7 +42,7 @@ class RenewalAcknowledgement extends Mailable
     {
         return new Content(
             view: 'mails.renewal_acknowledgement',
-            with: ['member' => $this->club_member],
+            with: ['member' => $this->club_member, 'club' => $this->club],
         );
     }
 

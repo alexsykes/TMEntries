@@ -207,8 +207,9 @@ class ClubController extends Controller
     public function membershipForm(Request $request, $id)
     {
         $oldValues = $request->old();
+        $club = Club::find($id);
 
-        return view('clubs.membership', ['club_id' => $id, 'oldValues' => $oldValues]);
+        return view('clubs.membership', ['club_id' => $id, 'oldValues' => $oldValues, 'club' => $club]);
     }
 
     public function addMember(Request $request)
@@ -371,7 +372,7 @@ class ClubController extends Controller
         ]);
         $item = MailDistribution::find(request('itemID'));
 
-        $toArray= array_unique(explode(',', $attributes['to']));
+        $toArray = array_unique(explode(',', $attributes['to']));
         sort($toArray, SORT_REGULAR);
 
         $attributes['to'] = implode(',', $toArray);
@@ -390,6 +391,7 @@ class ClubController extends Controller
     public function memberList()
     {
         $clubID = Auth::user()->club_id;
+//        dd($clubID);
         $clubName = DB::table('clubs')
             ->where('id', $clubID)
             ->select('name')
@@ -444,21 +446,18 @@ class ClubController extends Controller
         $club_member->save();
 
         $bcc = 'monster@trialmonster.uk';
-        $amanda = 'ammnewhouse@gmail.com';
 
         if ($club_member->membership_type == 'new') {
             info("Send welcome email to $club_member->email");
 
             Mail::to($club_member->email)
                 ->bcc($bcc)
-//                ->bcc($amanda)
                 ->send(new WelcomeNewMember($club_member));
 
         } else {
             info("Send acknowledgement email to $club_member->email");
             Mail::to($club_member->email)
                 ->bcc($bcc)
-//                ->bcc($amanda)
                 ->send(new RenewalAcknowledgement($club_member));
         }
 
@@ -496,6 +495,7 @@ class ClubController extends Controller
     {
         if (Auth::user()->isClubUser) {
             $clubID = Auth::user()->club_id;
+            $club = DB::table('clubs')->where('id', $clubID)->first();
 
             $memberIDs = request('approved');
             if ($memberIDs != null) {
@@ -505,24 +505,22 @@ class ClubController extends Controller
                     $club_member->save();
 
                     $bcc = 'monster@trialmonster.uk';
-                    $amanda = 'ammnewhouse@gmail.com';
 
                     if ($club_member->membership_type == 'new') {
                         info("Send welcome email to $club_member->email");
 
                         Mail::to($club_member->email)
                             ->bcc($bcc)
-                            ->send(new WelcomeNewMember($club_member));
+                            ->send(new WelcomeNewMember($club_member, $club));
 
                     } else {
                         info("Send acknowledgement email to $club_member->email");
                         Mail::to($club_member->email)
                             ->bcc($bcc)
-                            ->send(new RenewalAcknowledgement($club_member));
+                            ->send(new RenewalAcknowledgement($club_member, $club));
                     }
                 }
             }
-
             return redirect('/club/member/approve');
         }
     }

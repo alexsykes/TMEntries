@@ -17,7 +17,7 @@ class WelcomeNewMember extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public object $club_member)
+    public function __construct(public object $club_member, public object $club)
     {
         //
     }
@@ -29,7 +29,8 @@ class WelcomeNewMember extends Mailable
     {
         return new Envelope(
             replyTo: [
-                new Address('ammnewhouse@gmail.com', 'Amanda Newhouse'),
+                new Address($this->club->memSecEmail,
+                    $this->club->membershipSecretary, ),
             ],
             subject: 'Welcome New Member',
         );
@@ -42,7 +43,7 @@ class WelcomeNewMember extends Mailable
     {
         return new Content(
             view: 'mails.new_member_welcome',
-            with: ['member' => $this->club_member],
+            with: ['member' => $this->club_member, 'club' => $this->club],
         );
     }
 

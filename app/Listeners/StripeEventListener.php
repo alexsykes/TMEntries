@@ -2,7 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Events\TrialFull;
 use App\Mail\CancellationRefundConfirmed;
 use App\Mail\CancellationRefundRequested;
 use App\Mail\EntryOffer;
@@ -21,6 +20,7 @@ use App\Models\Price;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Trial;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -319,11 +319,11 @@ function onCheckoutSessionCompleted($sessionObject)
     }
 
 //    Compose additional message if additional items purchsed
-    $msg = '';
+    $itemList = '';
     if ($containsExtras) {
         info('Contains Extras');
 
-        $msg = '<div>Your payment also included the following purchase(s):</div>';
+        $itemList = '<div>Your payment also included the following purchase(s):</div>';
         $items = '';
         for ($i = 0; $i < count($purchaseData); $i++) {
             $item = $purchaseData[$i]['description'];
@@ -331,7 +331,7 @@ function onCheckoutSessionCompleted($sessionObject)
             $items .= "<div class='pl-4 font-semibold'>Item: $item Qty: $qty</div>";
         }
 
-        $msg .= $items;
+        $itemList .= $items;
 //        sendNotification($items, $entryIDs);
 
     } else {
@@ -377,16 +377,22 @@ function onCheckoutSessionCompleted($sessionObject)
     $entries = DB::table('entries')
         ->join('trials', 'entries.trial_id', '=', 'trials.id')
         ->whereIn('entries.id', $entryIDArray)
-        ->get(['entries.*', 'trials.name as trial', 'trials.date as date']);
+        ->get(['entries.*', 'trials.name as trial', 'trials.date as date', 'trials.club_id as club_id']);
 
     //  Send confirmation email with bcc: to admin
     $bcc = 'monster@trialmonster.uk';
-    //    info($msg);
+    //    info($itemList);
+
+    $clubIDs = array();
+    foreach ($entries as $entry) {
+        $clubID = $entry->club_id;
+        array_push($clubIDs, $clubID);
+    }
 
 //    IMPORTANT - uncomment these lines
     Mail::to($email)
         ->bcc($bcc)
-        ->send(new PaymentReceived($entries, $msg));
+        ->send(new PaymentReceived($entries, $itemList, $clubIDs));
 
 
     sendNewNotifications($entryIDs);
@@ -411,12 +417,12 @@ function onCheckoutSessionCompleted($sessionObject)
             }
         }
     }
+
 }
 
 //function sendNotification($items, $entryIDs)
 //{
 //    $bcc = 'monster@trialmonster.uk';
-//    $email = 'ammnewhouse@gmail.com';
 //    $email = 'alex@alexsykes.net';
 //    $entryIDArray = explode(',', $entryIDs);
 //
@@ -501,7 +507,7 @@ function sendNewNotifications($entryIDs)
         ->send(mailable: new NewSecretaryNotificationPaymentReceived($purchasesForMail));
 
     foreach ($membershipData as $membership) {
-        $trialID =  $membership['trial_id'];
+        $trialID = $membership['trial_id'];
         $trial = DB::table('trials')
             ->where('id', $trialID)
             ->select('club_id')
@@ -520,11 +526,14 @@ function sendNewNotifications($entryIDs)
     }
 
 //    echo json_encode($clubIDs);
-    $membershipEmail = 'ammnewhouse@gmail.com';
-//    $membershipEmail = 'alex@alexsykes.net';
+    $membershipEmail = $club->memSecEmail;
+    $memSecName = $club->membershipSecretary;
+
+    $sendTo = new Address($membershipEmail, $memSecName);
     if (sizeof($membershipNames) > 0) {
         info("membershipEmail: " . implode(', ', $membershipNames));
-        Mail::to($membershipEmail)
+        info("Sent to: " . $membershipEmail);
+        Mail::to($sendTo)
             ->bcc($bcc)
             ->send(new MembershipReceived($membershipNames));
     }

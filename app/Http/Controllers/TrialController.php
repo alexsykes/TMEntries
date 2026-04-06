@@ -720,6 +720,7 @@ class TrialController extends Controller
             ->get();
 
         $trial = Trial::where('id', $id)->first();
+//        dd($trial);
 
         return view('trials.admin_entry_list', ['entries' => $entries, 'trial' => $trial, 'duplicates' => $duplicates, 'eod' => $eod, 'cancelled' => $cancelled]);
     }

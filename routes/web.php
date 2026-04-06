@@ -76,7 +76,7 @@ Route::post('/trials/store', [TrialController::class, 'store'])->middleware(Chec
 Route::get('/trials/toggleVisibility/{id}', [TrialController::class, 'toggleVisibility'])->middleware(CheckClubUser::class)->name('toggleVisibility');
 
 /*
-ENTRY Routes
+//ENTRY Routes
 */ // Entry gateway for users
 Route::get('/userEntryList', [EntryController::class, 'userEntryList'])->middleware(['auth', 'verified'])->name('userEntryList');
 Route::get('/entries/register/{trialid}', [EntryController::class, 'register'])->middleware(['auth', 'verified']);
@@ -258,6 +258,8 @@ Route::post('/import', [ImportController::class, 'importEntries'])->middleware(C
 // Utility routes
 Route::get('/createResultPDF/{id}', [UtilityController::class, 'createResultPDF'])->middleware(['auth', 'verified']);
 Route::patch('/riderNumber/update', [EntryController::class, 'updateRiderNumber'])->middleware(CheckClubUser::class);
+Route::get('/pdf/results/{id}', [UtilityController::class, 'getResultsPDF']);
+
 
 // MIDDLEWARE
 Route::middleware('auth')->group(function () {

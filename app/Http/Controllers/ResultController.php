@@ -59,12 +59,11 @@ class ResultController extends Controller
         $customClasses = $trial->customClasses;
 
         $utilityController = new UtilityController;
-        $trialName = trim($trial->name);
-        $filename = "$trial->id $trialName.pdf";
-        //        $filename = str_replace(' ', '_', $filename);
+
+        $trialID = $trial->id;
+        $filename = "$trialID.pdf";
         $filename = $utilityController->filter_filename($filename);
 
-        //    dump($courses, $customCourses, $classes, $customCourses);
         if ($courses != '') {
             array_push($allCourses, $courses);
         }
@@ -83,9 +82,6 @@ class ResultController extends Controller
 
         $classlist = str_replace(',', ',', implode(',', $allClasses));
         $courselist = str_replace(',', ',', implode(',', $allCourses));
-
-        $numsections = $trial->numSections;
-        $numlaps = $trial->numLaps;
 
         $courses = explode(',', $courselist);
 
@@ -115,6 +111,7 @@ class ResultController extends Controller
             ->orderBy('name')
             ->get('name');
 
+
         return view('results.detail', ['trial' => $trial, 'courseResults' => $courseResults, 'courses' => $courses, 'nonStarters' => $nonStarters, 'resultsByClass' => $resultsByClass, 'filename' => $filename]);
     }
 
@@ -131,7 +128,7 @@ class ResultController extends Controller
                 $resultArray = [];
                 array_push($resultArray, $course);
                 array_push($resultArray, $class);
-                $sql = "SELECT id AS entryID, RANK() OVER ( ORDER BY resultStatus ASC, total, dob ASC) AS pos, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, sectionScores  , resultStatus FROM ".$db_prefix."entries WHERE trial_id = $id AND course = '$course' AND class = '$class' AND resultStatus < 2 AND ridingNumber > 0 ORDER BY resultStatus ASC, total, dob ASC";
+                $sql = "SELECT id AS entryID, RANK() OVER ( ORDER BY resultStatus ASC, total, dob ASC) AS pos, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, sectionScores  , resultStatus FROM " . $db_prefix . "entries WHERE trial_id = $id AND course = '$course' AND class = '$class' AND resultStatus < 2 AND ridingNumber > 0 ORDER BY resultStatus ASC, total, dob ASC";
                 $results = DB::select($sql);
                 array_push($resultArray, $results);
                 array_push($resultsArray, $resultArray);
@@ -145,7 +142,7 @@ class ResultController extends Controller
     {
         $db_prefix = Config::get('database.connections.mysql.prefix');
         $query = "SELECT id AS entryID, DATE_FORMAT(created_at, '%d/%m/%Y %h:%i%p') AS created_at, RANK() OVER ( ORDER BY resultStatus ASC, total, dob) AS pos,
-id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id FROM ".$db_prefix."entries WHERE trial_id = $id AND ridingNumber > 0 AND resultStatus < 3 AND course = '".$course."'";
+id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id FROM " . $db_prefix . "entries WHERE trial_id = $id AND ridingNumber > 0 AND resultStatus < 3 AND course = '" . $course . "'";
         $courseResult = DB::select($query);
 
         return $courseResult;
@@ -163,7 +160,7 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
                 $resultArray = [];
                 array_push($resultArray, $course);
                 array_push($resultArray, $class);
-                $sql = "SELECT id AS entryID, RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, sectionScores, resultStatus FROM ".$db_prefix."entries WHERE trial_id = $id AND course = '$course' AND class = '$class' AND resultStatus < 2 AND ridingNumber > 0 ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores";
+                $sql = "SELECT id AS entryID, RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, sectionScores, resultStatus FROM " . $db_prefix . "entries WHERE trial_id = $id AND course = '$course' AND class = '$class' AND resultStatus < 2 AND ridingNumber > 0 ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores";
                 $results = DB::select($sql);
                 array_push($resultArray, $results);
                 array_push($resultsArray, $resultArray);
@@ -177,7 +174,7 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
     {
         $db_prefix = Config::get('database.connections.mysql.prefix');
         $query = "SELECT id AS entryID, DATE_FORMAT(created_at, '%d/%m/%Y %h:%i%p') AS created_at, RANK() OVER ( ORDER BY resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores) AS pos,
-id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id FROM ".$db_prefix."entries WHERE trial_id = $id AND ridingNumber > 0 AND resultStatus < 3 AND course = '".$course."'";
+id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(make,' ',size) AS machine, total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id FROM " . $db_prefix . "entries WHERE trial_id = $id AND ridingNumber > 0 AND resultStatus < 3 AND course = '" . $course . "'";
         $courseResult = DB::select($query);
 
         return $courseResult;
@@ -256,15 +253,13 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
         $trial->save();
 
         $this->getResultsPDF($trialID);
-
         return redirect("/results/display/$trialID");
     }
 
     public function getResultsPDF($id)
     {
         $utilityController = new UtilityController;
-        $result = $utilityController->saveResultsPDF($id);
-        echo $result;
+        $utilityController->saveResultsPDF($id);
     }
 
     public function getResultList($id)
@@ -349,7 +344,7 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
 	name, 
 	class AS class, CONCAT(make,' ',size) AS machine, 
 	total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id 
-	FROM ".$db_prefix."entries 
+	FROM " . $db_prefix . "entries 
 	WHERE trial_id = $id AND resultStatus < 2";
 
         $results = DB::select($query);
