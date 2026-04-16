@@ -475,7 +475,7 @@ class ClubController extends Controller
                 ->first();
 
             $paidNames = DB::table('clubs')
-                ->where('id', 5)
+                ->where('id', $clubID)
                 ->select('confirmed_list')
                 ->first();
 
@@ -529,6 +529,7 @@ class ClubController extends Controller
     {
         $user = Auth::user();
         $clubID = Auth::user()->club_id;
+        $club = DB::table('clubs')->where('id', $clubID)->first();
 
         $attributes = $request->validate([
             'firstname' => ['required', 'min:2', 'max:255'],
@@ -596,12 +597,12 @@ class ClubController extends Controller
                 info("Send welcome email to $member->email");
 
                 Mail::to($member->email)
-                    ->send(new WelcomeNewMember($member));
+                    ->send(new WelcomeNewMember($member, $club));
 
             } else {
                 info("Send acknowledgement email to $member->email");
                 Mail::to($member->email)
-                    ->send(new RenewalAcknowledgement($member));
+                    ->send(new RenewalAcknowledgement($member, $club));
             }
         }
 

@@ -190,7 +190,7 @@
         case "Centre":
             $rest = "a Centre restricted ";
             break;
-        case "Club":
+        case "Closed to Club":
             $rest = "a Closed to Club ";
         case "Other Restriction":
             $rest = "a Restricted";

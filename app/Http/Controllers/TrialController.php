@@ -435,7 +435,7 @@ class TrialController extends Controller
                 break;
         }
 
-        return redirect('/adminTrials');
+        return redirect('/clubaccess');
     }
 
     public function update()
@@ -545,7 +545,7 @@ class TrialController extends Controller
             $trial->update($attrs);
         }
 
-        return redirect('/adminTrials');
+        return redirect('/clubaccess');
     }
 
     public function saveasnew($attrs)
@@ -813,7 +813,7 @@ class TrialController extends Controller
 
         info("new trial created by $userid");
 
-        return redirect('/adminTrials');
+        return redirect('/clubaccess');
     }
 
     public function remove($id)

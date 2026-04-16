@@ -412,11 +412,12 @@ class EntryController extends Controller
             $stripe = new StripeClient(config('stripe.stripe_secret_key'));
 
             $stripe->refunds->create([
-                'metadata' => ['id' => $id],
+                'metadata' => ['entry_id' => $id,
+                    'reason' => 'user_request'],
                 'payment_intent' => $pi,
                 'amount' => $cost - 300,
                 'reason' => 'requested_by_customer',
-                //            'amount' => 1,
+//                            'amount' => 1,
             ]);
 
             info("Stripe refund requested by customer: $entry->id");

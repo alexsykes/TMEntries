@@ -16,7 +16,7 @@ class MembershipReceived extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public array $data)
+    public function __construct(public $data)
     {
         //
     }
@@ -27,7 +27,7 @@ class MembershipReceived extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Membership Received',
+            subject: 'Membership Received - ' . $this->data,
         );
     }
 

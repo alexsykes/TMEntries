@@ -366,7 +366,7 @@ class ClubmailController extends Controller
 
                 //              Add email addresses to distribution list
                 foreach ($pastEntrants as $pastEntrant) {
-                    array_push($distributionList, $pastEntrant->email);
+                    array_push($distributionList, strtolower($pastEntrant->email));
                 }
 
                 //              Also get entrant (logged-in user) email address
@@ -379,9 +379,10 @@ class ClubmailController extends Controller
                     ->get();
 
                 foreach ($pastUsers as $pastUser) {
-                    array_push($distributionList, $pastUser->email);
+                    array_push($distributionList, strtolower($pastUser->email));
                 }
 
+                $distributionList = array_unique($distributionList);
                 break;
 
             case 'Past Entrants':
@@ -389,10 +390,12 @@ class ClubmailController extends Controller
                 $club = Club::findOrFail($clubID);
                 $clubName = $club->name;
                 $clubTrials = DB::table('trials')->where('club', $clubName)
+                    ->where('id', '>', 50)
                     ->select('id')
                     ->get();
 
                 $clubTrialIDs = [];
+
                 foreach ($clubTrials as $clubTrial) {
                     array_push($clubTrialIDs, $clubTrial->id);
                 }
@@ -406,7 +409,7 @@ class ClubmailController extends Controller
 
                 //              Get email addresses from user table
                 foreach ($pastEntrants as $pastEntrant) {
-                    array_push($distributionList, $pastEntrant->email);
+                    array_push($distributionList, strtolower($pastEntrant->email));
                 }
 
                 $pastUsers = DB::table('entries')
@@ -418,8 +421,10 @@ class ClubmailController extends Controller
                     ->get();
 
                 foreach ($pastUsers as $pastUser) {
-                    array_push($distributionList, $pastUser->email);
+                    array_push($distributionList, strtolower($pastUser->email));
                 }
+
+                $distributionList = array_unique($distributionList);
                 break;
             case 'All Users':
                 $allUsers = DB::table('users')
@@ -428,7 +433,7 @@ class ClubmailController extends Controller
                     ->where('users.receive_emails', true)
                     ->get();
                 foreach ($allUsers as $user) {
-                    array_push($distributionList, $user->email);
+                    array_push($distributionList, strtolower($user->email));
                 }
                 break;
             default:

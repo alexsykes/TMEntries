@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Events\TrialFull;
 use App\Mail\CancellationRefundConfirmed;
 use App\Mail\CancellationRefundRequested;
 use App\Mail\EntryOffer;
@@ -506,6 +507,7 @@ function sendNewNotifications($entryIDs)
     Mail::to($email)
         ->send(mailable: new NewSecretaryNotificationPaymentReceived($purchasesForMail));
 
+//    echo json_encode($membershipData);
     foreach ($membershipData as $membership) {
         $trialID = $membership['trial_id'];
         $trial = DB::table('trials')
@@ -523,20 +525,29 @@ function sendNewNotifications($entryIDs)
         Mail::to($membership['email'])
             ->bcc($bcc)
             ->send(new MembershipPaid($membership['name'], $clubID, $clubName));
+
+//        Send notification to club secretary
+        $membershipEmail = $club->memSecEmail;
+        $memSecName = $club->membershipSecretary;
+        $sendTo = new Address($membershipEmail, $memSecName);
+
+        Mail::to($sendTo)
+            ->bcc($bcc)
+            ->send(new MembershipReceived($membership['name']));
     }
 
 //    echo json_encode($clubIDs);
-    $membershipEmail = $club->memSecEmail;
-    $memSecName = $club->membershipSecretary;
-
-    $sendTo = new Address($membershipEmail, $memSecName);
-    if (sizeof($membershipNames) > 0) {
-        info("membershipEmail: " . implode(', ', $membershipNames));
-        info("Sent to: " . $membershipEmail);
-        Mail::to($sendTo)
-            ->bcc($bcc)
-            ->send(new MembershipReceived($membershipNames));
-    }
+//    $membershipEmail = $club->memSecEmail;
+//    $memSecName = $club->membershipSecretary;
+//
+//    $sendTo = new Address($membershipEmail, $memSecName);
+//    if (sizeof($membershipNames) > 0) {
+//        info("membershipEmail: " . implode(', ', $membershipNames));
+//        info("Sent to: " . $membershipEmail);
+//        Mail::to($sendTo)
+//            ->bcc($bcc)
+//            ->send(new MembershipReceived($membershipNames));
+//    }
 
     $club = Club::findOrFail(5);
     $confirmed = explode(',', $club->confirmed_list);
@@ -557,6 +568,7 @@ function onRefundCreated(mixed $object)
     $bcc = 'monster@trialmonster.uk';
     $bcc = 'alexs130151@gmail.com';
     $reason = $object['metadata']['reason'];
+    $reason = 'user_request';
 //    echo $reason;
     //    Get the entryID from the metadata
     if ($reason == 'user_request') {
@@ -623,6 +635,7 @@ function onRefundUpdated(mixed $object)
 {
     $bcc = 'monster@trialmonster.uk';
     $reason = $object['metadata']['reason'];
+    $reason = 'user_request';
 
     //    Get the entryID from the metadata
     if ($reason == 'user_request') {
@@ -718,6 +731,12 @@ class StripeEventListener
         switch ($eventType) {
             case 'refund.created':
                 $object = $event->payload['data']['object'];
+
+                $entryID = $object['metadata']['id'];
+                if($entryID == 9349) {
+                    break;
+                }
+
                 onRefundCreated($object);
                 break;
 
