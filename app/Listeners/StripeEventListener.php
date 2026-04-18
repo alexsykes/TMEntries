@@ -9,7 +9,6 @@ use App\Mail\EntryOffer;
 use App\Mail\InvoiceOverdue;
 use App\Mail\MembershipPaid;
 use App\Mail\MembershipReceived;
-use App\Mail\NewSecretaryNotificationPaymentReceived;
 use App\Mail\PaymentReceived;
 use App\Mail\ProductCreated;
 use App\Mail\RefundConfirmed;
@@ -276,7 +275,11 @@ function onCheckoutSessionCompleted($sessionObject)
     //  Record other items purchased
     $containsExtras = false;
     $purchaseData = [];
+//
+//    echo json_encode($lineItems);
+//    exit;
 
+//    Line items -> all items on PI
     //  Get line items from session and update purchase, price and product tables
     foreach ($lineItems as $lineItem) {
         $stripe_product_id = $lineItem['price']['product'];
@@ -307,6 +310,7 @@ function onCheckoutSessionCompleted($sessionObject)
         ];
 
 //        Record in purchase table
+//        IMPORTANT - uncomment
         $purchase = Purchase::create($attrs);
 
 //         And increment Products/Prices tables
@@ -392,10 +396,12 @@ function onCheckoutSessionCompleted($sessionObject)
 
 //    IMPORTANT - uncomment these lines
     Mail::to($email)
-        ->bcc($bcc)
+//        ->bcc($bcc)
         ->send(new PaymentReceived($entries, $itemList, $clubIDs));
 
-
+// At this stage, PaymentReceived notification has been sent to entrant
+// Purchase has been added to table
+//    EntryPurchases have been added to table
     sendNewNotifications($entryIDs);
 
     //    Check for entry limit
@@ -459,6 +465,7 @@ function sendNewNotifications($entryIDs)
     $membershipData = array();
     $clubIDs = array();
 
+
 //    Get purchases for each entry
     $index = 0;
     foreach ($ids as $entryID) {
@@ -501,27 +508,32 @@ function sendNewNotifications($entryIDs)
         }
         array_push($purchasesForMail, $line);
     }
+//
+//    echo json_encode($purchasesForMail);
+//    echo json_encode($membershipData);
+//    echo json_encode($membershipNames);
 
-
-    $email = "monster@trialmonster.uk";
-    Mail::to($email)
-        ->send(mailable: new NewSecretaryNotificationPaymentReceived($purchasesForMail));
+//    $email = "monster@trialmonster.uk";
+//    Mail::to($email)
+//        ->send(mailable: new NewSecretaryNotificationPaymentReceived($purchasesForMail));
 
 //    echo json_encode($membershipData);
     foreach ($membershipData as $membership) {
+//        Get the club id from the entry
         $trialID = $membership['trial_id'];
         $trial = DB::table('trials')
             ->where('id', $trialID)
             ->select('club_id')
             ->first();
 
+//        Get the club
         $clubID = $trial->club_id;
         $club = DB::table('clubs')->where('id', $clubID)->first();
         $clubName = $club->name;
 
         $bcc = 'monster@trialmonster.uk';
 
-//      Send reminder to complete club registration
+//      Send notification of payment and reminder to complete club registration
         Mail::to($membership['email'])
             ->bcc($bcc)
             ->send(new MembershipPaid($membership['name'], $clubID, $clubName));
@@ -548,18 +560,16 @@ function sendNewNotifications($entryIDs)
 //            ->bcc($bcc)
 //            ->send(new MembershipReceived($membershipNames));
 //    }
-
-    $club = Club::findOrFail(5);
-    $confirmed = explode(',', $club->confirmed_list);
-    $merged = array_unique(array_merge($membershipNames, $confirmed));
-
-    asort($merged);
-    $sortedS = implode(',', $merged);
-
-    $club->confirmed_list = $sortedS;
-    $club->save();
-
-
+//
+//    $club = Club::findOrFail($clubID);
+//    $confirmed = explode(',', $club->confirmed_list);
+//    $merged = array_unique(array_merge($membershipNames, $confirmed));
+//
+//    asort($merged);
+//    $sortedS = implode(',', $merged);
+//
+//    $club->confirmed_list = $sortedS;
+//    $club->save();
 }
 
 function onRefundCreated(mixed $object)
@@ -732,17 +742,14 @@ class StripeEventListener
             case 'refund.created':
                 $object = $event->payload['data']['object'];
 
-                $entryID = $object['metadata']['id'];
-                if($entryID == 9349) {
-                    break;
-                }
-
                 onRefundCreated($object);
                 break;
 
             case 'refund.updated':
                 $object = $event->payload['data']['object'];
                 $status = $object['status'];
+
+
                 if ($status == 'succeeded') {
                     onRefundUpdated($object);
                 }

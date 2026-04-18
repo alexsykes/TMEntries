@@ -231,6 +231,7 @@ class ClubController extends Controller
             //            'g-recaptcha-response' => ['required', new ReCaptchaV3('register')],
         ]);
 
+        $attributes['dob'] = date_create($request->dob);
         $attributes['firstname'] = $this->nameize($attributes['firstname']);
         $attributes['lastname'] = $this->nameize($attributes['lastname']);
 
@@ -240,15 +241,15 @@ class ClubController extends Controller
 
         //        info($attributes['membership_category']);
 
-        if ($attributes['membership_category'] == 'life' || $attributes['membership_category'] == 'observer') {
-            $attributes['confirmed'] = true;
-        } elseif ($attributes['membership_category'] == 'associate') {
+        if ($attributes['membership_category'] == 'competition') {
             $attributes['confirmed'] = false;
-
         } else {
-            $attributes['membership_category'] = 'competition';
-            $attributes['confirmed'] = false;
+            $attributes['confirmed'] = true;
         }
+
+        $attributes['token'] = bin2hex(random_bytes(16));
+        $attributes['amca_reg'] = $request->input('amca_reg');
+        $attributes['acu_reg'] = $request->input('acu_reg');
 
         $member = ClubMember::create($attributes);
         //        Add to Observer mailing list

@@ -5,26 +5,29 @@
             Thank you for registering your membership
         </div>
         <div class="p-4 space-y-2 bg-slate-50">
+            <div class="font-semibold text-lg text-center">Do I need to pay?</div>
+            <div class="font-semibold text-center text-red-600">Only Competition Members need to pay for their membership. Observers, committee members and other categories will have their membership automatically approved.
+            </div>
             <div class="font-semibold text-lg text-center">What do I do next?</div>
             <div class="font-semibold text-center text-red-600">If you have already paid for your membership with a
                 trial entry fee, you do not need to do anything else.
             </div>
-            <div class="">If you are either an <span
-                        class="font-semibold">Observer or Life Member</span> - you do not need to do anything further,
-                as your membership is Free of Charge.
-            </div>
-            <div class="">If you have registered as an <span
-                        class="font-semibold">Associate Member</span> - you should receive an emailed invoice for your
-                membership fee.
-            </div>
-            <div class=" ">If you are a <span class="font-semibold">Newcomer</span> to the club, you are
-                invited to enjoy
-                your first ride without becoming a club member. A membership fee should be paid, along with your entry
-                fee, when paying for your second entry.
-            </div>
-            <div class=" "><span class="font-semibold">Renewals</span> - members who are renewing their
-                membership should pay their membership along with payment for their first trial of the year.
-            </div>
+{{--            <div class="">If you are either an <span--}}
+{{--                        class="font-semibold">Observer or Life Member</span> - you do not need to do anything further,--}}
+{{--                as your membership is Free of Charge.--}}
+{{--            </div>--}}
+{{--            <div class="">If you have registered as an <span--}}
+{{--                        class="font-semibold">Associate Member</span> - you should receive an emailed invoice for your--}}
+{{--                membership fee.--}}
+{{--            </div>--}}
+{{--            <div class=" ">If you are a <span class="font-semibold">Newcomer</span> to the club, you are--}}
+{{--                invited to enjoy--}}
+{{--                your first ride without becoming a club member. A membership fee should be paid, along with your entry--}}
+{{--                fee, when paying for your second entry.--}}
+{{--            </div>--}}
+{{--            <div class=" "><span class="font-semibold">Renewals</span> - members who are renewing their--}}
+{{--                membership should pay their membership along with payment for their first trial of the year.--}}
+{{--            </div>--}}
             <div class="font-semibold text-lg text-center">How to pay…</div>
             <div>When you enter your next trial on TrialMonster, you will see an additional item - <span
                         class="font-semibold">Add Membership</span> - on the registration page. Click on the checkbox and the Membership payment will appear at the Checkout.</div>

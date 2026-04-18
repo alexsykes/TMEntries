@@ -32,7 +32,7 @@
     @php
         $trial_id = $trial->id;
         $trial_date = date_create($trial->date);
-        $offset = DateInterval::createFromDateString('4 years');
+        $offset = DateInterval::createFromDateString('6 years');
         $maxDob = $trial_date->sub($offset)->format("Y-m-d");
 
     $allCourses = array();
@@ -277,7 +277,7 @@
                 </div>
                 <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
                     @foreach($merchandise as $item)
-{{--@dump($merchandise)--}}
+                        {{--@dump($merchandise)--}}
                         @php
                             $productIndex = $loop->index;
                         @endphp
