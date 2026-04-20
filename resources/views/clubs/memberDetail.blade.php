@@ -3,6 +3,9 @@
         $name = $member->firstname." ".$member->lastname;
         $address = $member->address;
         $postcode = $member->postcode;
+        $dob = $member->dob;
+        $acu_reg = $member->acu_reg;
+        $amca_reg = $member->amca_reg;
         $emergencyContact = "$member->emergency_contact ($member->emergency_number)";
 
     @endphp
@@ -15,9 +18,16 @@
             for {{$name}}
         </div>
         <div class="ml-4">
+            <div class="font-semibold mt-2">Date of Birth:</div>
+            <div>{{$dob}}</div>
+
             <div class="font-semibold mt-2">Address:</div>
             <div>{{$address}}</div>
             <div>{{$postcode}}</div>
+            <div class="font-semibold mt-2">Registrations:</div>
+            <div>ACU: {{$acu_reg}}</div>
+            <div>AMCA: {{$amca_reg}}</div>
+
             <div class="font-semibold mt-2">Contact:</div>
             <div>{{$member->email}}</div>
             <div>{{$member->phone}}</div>

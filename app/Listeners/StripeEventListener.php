@@ -548,28 +548,17 @@ function sendNewNotifications($entryIDs)
             ->send(new MembershipReceived($membership['name']));
     }
 
-//    echo json_encode($clubIDs);
-//    $membershipEmail = $club->memSecEmail;
-//    $memSecName = $club->membershipSecretary;
-//
-//    $sendTo = new Address($membershipEmail, $memSecName);
-//    if (sizeof($membershipNames) > 0) {
-//        info("membershipEmail: " . implode(', ', $membershipNames));
-//        info("Sent to: " . $membershipEmail);
-//        Mail::to($sendTo)
-//            ->bcc($bcc)
-//            ->send(new MembershipReceived($membershipNames));
-//    }
-//
-//    $club = Club::findOrFail($clubID);
-//    $confirmed = explode(',', $club->confirmed_list);
-//    $merged = array_unique(array_merge($membershipNames, $confirmed));
-//
-//    asort($merged);
-//    $sortedS = implode(',', $merged);
-//
-//    $club->confirmed_list = $sortedS;
-//    $club->save();
+//  Add names to paid member list
+    if(sizeof($membershipNames) > 0) {
+        $club = Club::findOrFail($clubID);
+        $confirmed = explode(',', $club->confirmed_list);
+        $merged = array_unique(array_merge($membershipNames, $confirmed));
+
+        asort($merged);
+        $sortedS = implode(',', $merged);
+        $club->confirmed_list = $sortedS;
+        $club->save();
+    }
 }
 
 function onRefundCreated(mixed $object)

@@ -2,9 +2,7 @@
     <x-slot:heading>Club membership</x-slot:heading>
     @php
         $offset = DateInterval::createFromDateString('6 years');
-
                 $now = date_create();
-
     $maxDob = $now->sub($offset)->format("Y-m-d");
     $membershipCategoryArray = explode(',', $club->membership_categories);
     $membershipTypeArray = array('Renewal', 'New');
@@ -130,12 +128,11 @@
                 </x-form-field>
 
 
-
                 <x-form-field>
                     <x-form-label for="acu_reg">ACU licence (optional)</x-form-label>
                     <div class="mt-2 col-span-2">
                         <x-form-input name="acu_reg" type="text" id="acu_reg" value="{{ old('acu_reg') }}"
-                                      placeholder="Optional" />
+                                      placeholder="Optional"/>
                         <x-form-error name="acu_reg"/>
                     </div>
                     @error('acu_reg')
@@ -146,7 +143,7 @@
                     <x-form-label for="amca_reg">AMCA licence (optional)</x-form-label>
                     <div class="mt-2 col-span-2">
                         <x-form-input name="amca_reg" type="text" id="amca_reg" value="{{ old('amca_reg') }}"
-                                      placeholder="Optional" />
+                                      placeholder="Optional"/>
                         <x-form-error name="amca_reg"/>
                     </div>
                     @error('amca_reg')

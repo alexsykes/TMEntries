@@ -212,8 +212,14 @@ Route::get('/clubs/membershipForm/{id}', [ClubController::class, 'membershipForm
 Route::post('/club/member/add', [ClubController::class, 'addMember']);
 Route::get('/club/member/approve', [ClubController::class, 'memberApprove'])->middleware(['auth', 'verified']);
 Route::post('/club/member/approve', [ClubController::class, 'memberApprovalUpdate'])->middleware(['auth', 'verified']);
+Route::patch('/club/member/update', [ClubController::class, 'memberUpdate'])->middleware(['auth', 'verified']);
+Route::patch('/club/user/update', [ClubController::class, 'userUpdate']);
 Route::get('/club/member/confirmRegistered', [ClubController::class, 'confirmRegistered']);
 Route::get('/club/membership/confirm/{id}', [ClubController::class, 'membershipConfirm']);
+Route::get('/club/membership/edit/{id}', [ClubController::class, 'membershipEdit']);
+
+Route::get('/club/member/useredit', [ClubController::class, 'userEdit']);
+
 Route::get('/club/mails', [ClubController::class, 'mailList'])->middleware('auth', 'verified'); // Lists mails
 Route::get('/clublist', [ClubController::class, 'clublist']);
 // Route::get('/club/detail/{id}', [ClubController::class, 'detail']);
