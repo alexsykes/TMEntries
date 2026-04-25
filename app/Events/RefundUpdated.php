@@ -17,8 +17,8 @@ class RefundUpdated
      */
     public function __construct($object, $metadata)
     {
-//        $this->object = $object;
-//        $this->metadata = $metadata;
+        $this->object = $object;
+        $this->metadata = $metadata;
     }
 
     /**
