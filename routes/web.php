@@ -121,7 +121,7 @@ Route::patch('/venues/save', [VenueController::class, 'save'])->middleware('auth
 
 Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeUserCheckout']);
 Route::get('/checkout/success', [StripePaymentController::class, 'checkoutSuccess'])->name('checkout-success');
-Route::view('/checkout/cancel', [UserController::class, 'entryList'])->name('checkout-cancel');
+Route::get('/checkout/cancel', [UserController::class, 'entryList'])->name('checkout-cancel');
 Route::post('/entries/checkout', [EntryController::class, 'checkout']);
 
 // SCORING routes
