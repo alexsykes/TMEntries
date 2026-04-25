@@ -198,9 +198,7 @@ EOD;
 
         $startScores = 100;
         //          Only print total for finishers
-        if ($resultStatus == 0) {
-            $total = $total;
-        } else {
+        if ($resultStatus != 0) {
             $total = '';
         }
         PDF::SetFont('', 'B', 9, '', true);
@@ -246,9 +244,14 @@ EOD;
     public function getResultsPDF($id)
     {
         $trial = DB::table('trials')->where('id', $id)->first();
+        if (is_null($trial)) {
+            info("PDF download request fail: Trial is null");
+            return redirect()->back();
+        }
+
         $trialName = $trial->name;
         $filename = "pdf/results/$id.pdf";
-        info("PDF download: ".$filename);
+        info("PDF download: " . $filename);
         if (file_exists($filename)) {
             $newFilename = "$trialName.pdf";
             $newFilename = $this->filter_filename($newFilename);
@@ -256,6 +259,11 @@ EOD;
         } else {
             return redirect()->back();
         }
+    }
+
+    public function contact()
+    {
+        return view('contact');
     }
 }
 

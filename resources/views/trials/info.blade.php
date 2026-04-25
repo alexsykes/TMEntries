@@ -3,7 +3,7 @@
         Information
     </x-slot:heading>
     @php
-        $statusArray = array('Awaiting payment', 'Confirmed Entry','Awaiting Refund', 'Refunded', 'Reserve - awaiting payment', 'Reserve', 'Removed by admin', 'Manual Entry - to pay', 'Manual Entry - paid', 'Manual Entry - FoC' );
+        $statusArray = array('Awaiting payment', 'Confirmed Entry','Awaiting Refund', 'Refunded', 'Reserve - awaiting payment', 'Reserve', 'Removed', 'Manual Entry - to pay', 'Manual Entry - paid', 'Manual Entry - FoC' );
 $numSalesItems = sizeof($sales);
 //dd($sales);
     @endphp
@@ -41,6 +41,7 @@ $numSalesItems = sizeof($sales);
             <div class="table-cell w-1/5 text-end">Total</div>
         </div>
         @foreach($sales as $sale)
+            @if($sale->purchases > 0)
             @php
                 $price = $sale->stripe_price / 100;
                 if($price == 0) {
@@ -62,6 +63,7 @@ $numSalesItems = sizeof($sales);
                 <div class="table-cell w-1/5 text-end">£{{$total}}</div>
             </div>
             {{--            <div>£{{$sale->purchases * $purchase->purchases}}</div>--}}
+            @endif
         @endforeach
 
     </div>

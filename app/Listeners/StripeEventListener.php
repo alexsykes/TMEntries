@@ -2,9 +2,10 @@
 
 namespace App\Listeners;
 
+use App\Events\RefundCreated;
+use App\Events\RefundUpdated;
 use App\Events\TrialFull;
 use App\Mail\CancellationRefundConfirmed;
-use App\Mail\CancellationRefundRequested;
 use App\Mail\EntryOffer;
 use App\Mail\InvoiceOverdue;
 use App\Mail\MembershipPaid;
@@ -12,7 +13,6 @@ use App\Mail\MembershipReceived;
 use App\Mail\PaymentReceived;
 use App\Mail\ProductCreated;
 use App\Mail\RefundConfirmed;
-use App\Mail\RefundRequested;
 use App\Models\Club;
 use App\Models\Entry;
 use App\Models\EntryPurchase;
@@ -549,7 +549,7 @@ function sendNewNotifications($entryIDs)
     }
 
 //  Add names to paid member list
-    if(sizeof($membershipNames) > 0) {
+    if (sizeof($membershipNames) > 0) {
         $club = Club::findOrFail($clubID);
         $confirmed = explode(',', $club->confirmed_list);
         $merged = array_unique(array_merge($membershipNames, $confirmed));
@@ -561,14 +561,23 @@ function sendNewNotifications($entryIDs)
     }
 }
 
+
+/* ['metadata']['reason']
+    user_request
+    cancellation
+
+*/
+
 function onRefundCreated(mixed $object)
 {
+//    info(json_encode($object));
+//    info("OnRefundCreated called");
+//    RefundCreated::dispatch($object, $object['metadata']);
 
+    /*
     $bcc = 'monster@trialmonster.uk';
-    $bcc = 'alexs130151@gmail.com';
     $reason = $object['metadata']['reason'];
-    $reason = 'user_request';
-//    echo $reason;
+
     //    Get the entryID from the metadata
     if ($reason == 'user_request') {
         $entryID = $object['metadata']['entry_id'];
@@ -628,6 +637,7 @@ function onRefundCreated(mixed $object)
             ->bcc($bcc)
             ->send(mailable: new CancellationRefundRequested($email, $trialName, $trialClub, $refundText, $refunded_amount, $entryData));
     }
+    */
 }
 
 function onRefundUpdated(mixed $object)
@@ -730,17 +740,16 @@ class StripeEventListener
         switch ($eventType) {
             case 'refund.created':
                 $object = $event->payload['data']['object'];
-
-                onRefundCreated($object);
+                RefundCreated::dispatch($object, $object['metadata']);
+//                onRefundCreated($object);
                 break;
 
             case 'refund.updated':
                 $object = $event->payload['data']['object'];
                 $status = $object['status'];
 
-
                 if ($status == 'succeeded') {
-                    onRefundUpdated($object);
+                    RefundUpdated::dispatch($object, $object['metadata']);
                 }
                 break;
 
@@ -752,10 +761,6 @@ class StripeEventListener
             case 'checkout.session.completed':
                 $object = $event->payload['data']['object'];
                 onCheckoutSessionCompleted($object);
-                break;
-
-            case 'invoice.created':
-
                 break;
 
             case 'invoice.sent':
@@ -792,7 +797,7 @@ class StripeEventListener
                 onPriceCreated($object);
                 break;
             case 'invoice.created':
-                onInvoiceCreated($event);
+//                onInvoiceCreated($event);
                 break;
             case 'payment_intent.succeeded':
                 //                onInvoiceCreated($event);

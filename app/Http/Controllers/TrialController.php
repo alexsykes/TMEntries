@@ -49,6 +49,56 @@ class TrialController extends Controller
 
     public function info($id)
     {
+
+//        20_04_26
+//        Get products for trial
+        $entryFeeData = array();
+        $entryFees = DB::table('products')
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->where('products.trial_id', $id)
+            ->where('products.product_category', 'entry fee')
+            ->select('products.stripe_product_id', 'product_name', 'prices.stripe_price')->orderBy('product_name')->get()
+            ->toArray();
+//        dump($entryFees);
+
+        foreach ($entryFees as $entryFee) {
+            $entryFeeItem = array();
+            $productID = $entryFee->stripe_product_id;
+//            dump($productID);
+            $productCount = DB::table('purchases')
+                ->select(DB::raw('sum(quantity) as count'))
+                ->where('stripe_product_id', $productID)
+                ->groupBy('stripe_product_id')
+                ->first();
+
+            if (!is_null($productCount)) {
+//                dump($productCount->count);
+                $entryFeeItem['product_name'] = $entryFee->product_name;
+                $entryFeeItem['stripe_price'] = $entryFee->stripe_price;
+                $entryFeeItem['count'] = $productCount->count;
+                $entryFeeItem['value'] = $productCount->count * $entryFee->stripe_price /100;
+                array_push($entryFeeData, $entryFeeItem);
+            }
+        }
+
+//        dump($entryFeeData);
+        $prodIDs = array_column($entryFees, 'stripe_product_id');
+//            dump($prodIDs);
+
+        $productsPurchased = DB::table('purchases')->whereIn('stripe_product_id', $prodIDs)
+            ->get();
+//        dump($productsPurchased);
+
+        $groupedPurchases = DB::table('purchases')->whereIn('purchases.stripe_product_id', $prodIDs)
+            ->groupBy('stripe_product_id')
+            ->selectRaw('stripe_product_id, sum(quantity) as sum')
+            ->get();
+
+//        dump($groupedPurchases);
+
+//        20_04_06
+
+
         $entries = DB::table('entries')
             ->where('trial_id', $id)
             ->orderBy('name')
@@ -147,6 +197,8 @@ class TrialController extends Controller
             ->orderBy('date', 'desc')
             ->select('trials.*', 'venues.name as venueName')
             ->get();
+
+//        dump($trials);
 
         return view('trials.admin_trial_list', ['trials' => $trials]);
     }

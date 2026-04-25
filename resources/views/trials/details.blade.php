@@ -161,9 +161,14 @@
     $courselist = str_replace(',', ',', implode(',', $allCourses));
     $courseOptions = explode(',', $courselist);
     $classOptions = explode(',', $classlist);
+
     switch ($trial->authority) {
         case "AMCA":
-            $entryConditions = "All riders must be members of an AMCA affiliated club. ";
+            if($trial->status == 'Closed to Club'){
+                $entryConditions = "All riders must be members of $trial->club. ";
+            } else {
+                $entryConditions = "All riders must be members of an AMCA affiliated club. ";
+            }
             $machines = "Please see club website for machine specification and restrictions";
 //            $methodOfMarking = "A machine will be deemed to be in the section when the front wheel has passed the Section Begins card and marks will be awarded until the back wheel has passed the Section Ends card. 0, 1, 2, 3, 5 system - Ties decided by most cleans, ones, twos, threes, furthest clean";
             break;
@@ -192,6 +197,7 @@
             break;
         case "Closed to Club":
             $rest = "a Closed to Club ";
+            break;
         case "Other Restriction":
             $rest = "a Restricted";
             $entryConditions .= $trial->otherRestriction;
@@ -199,6 +205,7 @@
         default:
             break;
     }
+
     ?>
     <div class="text-blue-800 font-semibold text-center">{{$entryStatus}}</div>
     <div class="mt-2 w-full">

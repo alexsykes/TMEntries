@@ -478,9 +478,9 @@ class ClubController extends Controller
             ->where('club_id', $clubID)
             ->first();
 
-       if(is_null($member)) {
-           return redirect('/club/member/list');
-       }
+        if (is_null($member)) {
+            return redirect('/club/member/list');
+        }
         return view('clubs.memberDetail', ['member' => $member]);
     }
 
@@ -551,7 +551,7 @@ class ClubController extends Controller
                     $club_member = ClubMember::findOrFail($memberID);
                     $memberClubID = $club_member->club_id;
 
-                    if($memberClubID == $clubID) {
+                    if ($memberClubID == $clubID) {
 
                         $club_member->confirmed = true;
                         $club_member->save();
@@ -579,6 +579,8 @@ class ClubController extends Controller
                 }
             }
             return redirect('/club/member/approve');
+        } else {
+            return redirect('/');
         }
     }
 
@@ -719,7 +721,9 @@ class ClubController extends Controller
         $attributes['lastname'] = $this->nameize($attributes['lastname']);
         $attributes['amca_reg'] = $request->input('amca_reg');
         $attributes['acu_reg'] = $request->input('acu_reg');
-        $attributes['dob'] = date_create($request->dob);
+        if (!is_null($member->dob)) {
+            $attributes['dob'] = date_create($request->dob);
+        }
 
         if (is_null($request->social)) {
             $attributes['social'] = 'TBA';

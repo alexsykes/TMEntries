@@ -5,6 +5,8 @@
                 $now = date_create();
                 $maxDob = $now->sub($offset)->format("Y-m-d");
                 $memberSocials = explode(',', $member->social);
+//                $dob = $member->dob;
+//                dump($dob);
 
                 $membershipCategoryArray = explode(',', $club->membership_categories);
                 $membershipTypeArray = array('Renewal', 'New');
@@ -57,7 +59,7 @@
                     <x-form-field>
                         <x-form-label for="dob">Date of Birth</x-form-label>
                         <div class="mt-2  max-w-40 col-span-full">
-                            <x-form-input type="date" max="{{$maxDob}}" required name="dob" id="dob"
+                            <x-form-input type="date" max="{{$maxDob}}" name="dob" id="dob"
                                           value="{{$member->dob}}"/>
                         </div>
                         @error('dob')
@@ -251,12 +253,11 @@
                         <div class="flex ml-2 mt-2 col-span-full">
                             <x-form-label for="confirmed">Mark as Paid</x-form-label>
                             <input class="ml-2" type="checkbox" name="confirmed" id="confirmed" value="1"
-                                   @php
-                                       if($member->confirmed) {
-                                           echo " checked ";
-                                       }
-                                   @endphp
-                                   class="confirmed"/>
+                                    @php
+                                        if($member->confirmed) {
+                                            echo " checked ";
+                                        }
+                                    @endphp/>
                         </div>
                     </x-form-field>
                 </div>

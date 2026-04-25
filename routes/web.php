@@ -225,10 +225,10 @@ Route::get('/clublist', [ClubController::class, 'clublist']);
 // Route::get('/club/detail/{id}', [ClubController::class, 'detail']);
 Route::get('/club/profile', [ClubController::class, 'console'])->middleware(['auth', 'verified']);
 Route::get('/club/profile/edit', [ClubController::class, 'editProfile'])->middleware(['auth', 'verified']);
-Route::get('/clubs/add', [ClubController::class, 'add'])->middleware(['auth', 'verified']);
-Route::get('/club/edit/{id}', [ClubController::class, 'edit'])->middleware(['auth', 'verified']);
-Route::post('/club/store', [ClubController::class, 'store'])->middleware(['auth', 'verified'])->name('club.store');
-Route::patch('/club/update', [ClubController::class, 'update'])->middleware(['auth', 'verified']);
+//Route::get('/clubs/add', [ClubController::class, 'add'])->middleware(['auth', 'verified']);
+//Route::get('/club/edit/{id}', [ClubController::class, 'edit'])->middleware(['auth', 'verified']);
+//Route::post('/club/store', [ClubController::class, 'store'])->middleware(['auth', 'verified'])->name('club.store');
+//Route::patch('/club/update', [ClubController::class, 'update'])->middleware(['auth', 'verified']);
 Route::patch('/club/clubUpdate', [ClubController::class, 'clubUpdate'])->middleware(['auth', 'verified']);
 Route::get('/club/console', [ClubController::class, 'console'])->middleware(['auth', 'verified'])->name('club.console');
 Route::get('/club/console/{tab}', [ClubController::class, 'console'])->middleware(['auth', 'verified'])->name('club.console.tab');
@@ -265,6 +265,9 @@ Route::post('/import', [ImportController::class, 'importEntries'])->middleware(C
 Route::get('/createResultPDF/{id}', [UtilityController::class, 'createResultPDF'])->middleware(['auth', 'verified']);
 Route::patch('/riderNumber/update', [EntryController::class, 'updateRiderNumber'])->middleware(CheckClubUser::class);
 Route::get('/pdf/results/{id}', [UtilityController::class, 'getResultsPDF']);
+
+Route::get('/contact', [UtilityController::class, 'contact']);
+Route::post('/contact/submit', [UtilityController::class, 'contactMailSend'])->name('contact.submit');
 
 
 // MIDDLEWARE
