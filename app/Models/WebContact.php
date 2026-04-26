@@ -8,14 +8,15 @@ class WebContact extends Model
 {
     protected $fillable = [
         'category',
-        'from',
+        'name',
         'email',
-        'content',
+        'message',
         'response',
         'responded_at',
         'closed',
         'action',
         'action_by',
+        'ip_address',
     ];
 
     protected function casts(): array

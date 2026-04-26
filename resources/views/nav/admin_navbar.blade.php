@@ -18,8 +18,8 @@
                            class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Mails</a>
                         <a href="/admin/venues"
                            class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Venues</a>
-                        <a href="/admin/results"
-                           class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Results</a>
+                        <a href="/webcontacts"
+                           class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Contacts</a>
                         <a href="/admin/users"
                            class="text-white bg-red-600 border-white border  hover:bg-blue-300 hover:text-white px-3 py-1 rounded-md text-sm font-medium">Users</a>
                         <a href="/admin/products"
@@ -67,8 +67,8 @@
             <a href="/admin/trials"
                class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Trials</a>
 
-            <a href="/admin/results"
-               class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Results</a>
+            <a href="/webcontacts"
+               class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Contacts</a>
 
             <a href="/admin/users"
                class="text-white hover:bg-blue-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Users</a>

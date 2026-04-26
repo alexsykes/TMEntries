@@ -261,15 +261,7 @@ EOD;
         }
     }
 
-    public function contact()
-    {
-        return view('contact');
-    }
 
-    public function contactMailSend()
-    {
-
-    }
 }
 
 class MYPDFG extends PDF

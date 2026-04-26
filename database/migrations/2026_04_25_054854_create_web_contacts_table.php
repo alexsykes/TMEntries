@@ -9,15 +9,16 @@ return new class extends Migration {
     {
         Schema::create('web_contacts', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->default('');
+            $table->string('email')->default('');
+            $table->text('message')->default('');
             $table->string('category')->nullable();
-            $table->string('from');
-            $table->string('email');
-            $table->text('content');
+            $table->string('ip_address')->default('0.0.0.0');
             $table->longText('response')->nullable();
             $table->timestamp('responded_at')->nullable();
-            $table->boolean('closed');
+            $table->boolean('closed')->default(false);
             $table->string('action')->nullable();
-            $table->string('action_by');
+            $table->string('action_by')->nullable();
             $table->timestamps();
         });
     }

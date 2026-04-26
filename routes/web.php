@@ -19,6 +19,7 @@ use App\Http\Controllers\UnsubscribeRequestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\VenueController;
+use App\Http\Controllers\WebContactController;
 use App\Http\Middleware\CheckClubUser;
 use App\Http\Middleware\IsAdminUser;
 use Illuminate\Support\Facades\Route;
@@ -266,8 +267,11 @@ Route::get('/createResultPDF/{id}', [UtilityController::class, 'createResultPDF'
 Route::patch('/riderNumber/update', [EntryController::class, 'updateRiderNumber'])->middleware(CheckClubUser::class);
 Route::get('/pdf/results/{id}', [UtilityController::class, 'getResultsPDF']);
 
-Route::get('/contact', [UtilityController::class, 'contact']);
-Route::post('/contact/submit', [UtilityController::class, 'contactMailSend'])->name('contact.submit');
+Route::get('/contact', [WebContactController::class, 'contactForm']);
+Route::post('/contact/submit', [WebContactController::class, 'store']);
+Route::get('/webcontacts', [WebContactController::class, 'index']);
+Route::get('/webcontact/{id}', [WebContactController::class, 'show']);
+Route::patch('/webcontact/update', [WebContactController::class, 'update']);
 
 
 // MIDDLEWARE
@@ -277,10 +281,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::patch('/preferences.update', [ProfileController::class, 'updatePreferences'])->name('preferences.update');
 });
-
-// Route::get('phpmyinfo', function () {
-//    phpinfo();
-// })->name('phpmyinfo');
 
 Route::post('/fetchScores', [ScoringController::class, 'fetchScores']);
 
