@@ -11,7 +11,9 @@ class ReCaptchaV3 implements ValidationRule
 {
     public function __construct(
         private ?string $action = null,
-        private ?float $minScore = null) {}
+        private ?float  $minScore = null)
+    {
+    }
 
     /**
      * Run the validation rule.
@@ -30,8 +32,7 @@ class ReCaptchaV3 implements ValidationRule
         if ($siteVerify->failed()) {
             $fail('Google reCAPTCHA was not able to verify the form, please try again.');
 
-            Log::info('Form verify fail IP: '.request()->ip());
-
+            Log::info('Form verify fail IP: ' . request()->ip());
             return;
         }
 
@@ -54,7 +55,7 @@ class ReCaptchaV3 implements ValidationRule
 
             // When this fails it means the action didn't match the one set in the button's data-action.
             // Either a bot or a code mistake. Compare form data-action and value passed to $action (should be equal).
-            if (! is_null($this->action) && $this->action != $body['action']) {
+            if (!is_null($this->action) && $this->action != $body['action']) {
                 $fail('The action found in the form didn\'t match the Google reCAPTCHA action, please try again.');
 
                 Log::info('Recaptcha action fail');
@@ -64,7 +65,7 @@ class ReCaptchaV3 implements ValidationRule
 
             // If we set a minScore treshold, verify that the spam score didn't go below it
             // More info can be found at: https://developers.google.com/recaptcha/docs/v3#interpreting_the_score
-            if (! is_null($this->minScore) && $this->minScore > $body['score']) {
+            if (!is_null($this->minScore) && $this->minScore > $body['score']) {
                 $fail('The Google reCAPTCHA verification score was too low, please try again.');
 
                 Log::info('Low score fail');
