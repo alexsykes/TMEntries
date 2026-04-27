@@ -90,13 +90,81 @@
         {{--            </table>--}}
     </div>
 
-
     <div class="mt-4" id="buttons">
         <a href="/usermail/add"
            class="rounded-md  ml-4 pt-2 pb-2 bg-violet-600 px-3 py-1 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
             Add a new mail
         </a>
     </div>
+
+
+    @if(sizeof($mailshotData) > 0)
+        <div class="mt-4">
+            <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+                <div>
+                    <div class="flex justify-between font-bold w-full mt-0 pt-2 pb-2 pl-2 pr-4 rounded-t-xl  text-white bg-violet-600">
+                        Scheduled Mailshots
+                    </div>
+                    <table class="overflow-y-auto w-full text-sm">
+                        @foreach($mailshotData as $mail)
+                            @php
+                                $rawDate = new DateTime($mail->send_at);
+                                $date  = date_format($rawDate, "jS F, Y");
+                                $time  = date_format($rawDate, "g:ia");
+                                $formattedDate = "$date at $time";
+                            @endphp
+                            <tr class="flex-auto even:bg-white odd:bg-gray-50  border-b ">
+                                <td class="pl-2 table-cell">{{$formattedDate}}</td>
+                                <td class=" table-cell">
+                                    {{$mail->subject}}
+                                </td>
+                                <td class="table-cell">
+                                    {{$mail->distribution}}
+                                </td>
+
+                                <td class="table-cell">
+                                    <a href="/mailshot/cancel/{{$mail->id}}"><i
+                                                class="fa-solid fa-trash text-red-600"></i></a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
+            </div>
+        </div>
+    @endif
+
+
+
+    {{--    <div class="mt-4">--}}
+    {{--        <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">--}}
+    {{--            <div>--}}
+    {{--                <div class="flex justify-between font-bold w-full mt-0 pt-2 pb-2 pl-2 pr-4 rounded-t-xl  text-white bg-violet-600">--}}
+    {{--                    Sent Mailshots--}}
+    {{--                </div>--}}
+    {{--                <table class="overflow-y-auto w-full text-sm">--}}
+    {{--                    @foreach($sent as $mail)--}}
+    {{--                        @php--}}
+    {{--                            $rawDate = new DateTime($mail->sent_at);--}}
+    {{--                            $date  = date_format($rawDate, "jS F, Y");--}}
+    {{--                            $time  = date_format($rawDate, "g:ia");--}}
+    {{--                            $formattedDate = "$date at $time";--}}
+    {{--                        @endphp--}}
+    {{--                        <tr class="flex-auto even:bg-white odd:bg-gray-50  border-b ">--}}
+    {{--                            <td class="pl-2 table-cell">{{$formattedDate}}</td>--}}
+    {{--                            <td class=" table-cell">--}}
+    {{--                                {{$mail->subject}}--}}
+    {{--                            </td>--}}
+    {{--                            <td class="table-cell">--}}
+    {{--                                {{$mail->distribution}}--}}
+    {{--                            </td>--}}
+    {{--                        </tr>--}}
+    {{--                    @endforeach--}}
+    {{--                </table>--}}
+    {{--            </div>--}}
+    {{--        </div>--}}
+    {{--    </div>--}}
+
     <script>
         document.getElementById('{{$defaultOpen}}').click();
     </script>

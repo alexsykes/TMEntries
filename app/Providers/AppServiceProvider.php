@@ -13,9 +13,18 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
+    // In app/Providers/EventServiceProvider.php
+    protected $listen = [
+        'Illuminate\Queue\Events\JobProcessed' => [
+            'App\Listeners\LogSuccessfulJob',
+        ],
+        'Illuminate\Queue\Events\JobFailed' => [
+            'App\Listeners\OnFailedJob',
+        ],
+    ];
     public function register(): void
     {
-        //
+
     }
 
     /**

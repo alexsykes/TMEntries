@@ -3,28 +3,33 @@
         <div>Your Stripe payment has been processed and I am pleased to confirm that your entry or entries listed below
             are now confirmed.<br><b>Please remember to sign-in on arrival at the event.</b></div>
 
-        <div><b>If you have not aleady submitted your full contact details for 2026, you are requested to complete the online registration form - <a href="https://trialmonster.uk/clubs/membershipForm/5">click here</a></b></div>
-
+        @if(in_array(5, $clubIDs))
+            <div class="text-red-500"><b>Yorkshire Classic Trials ONLY - If you have paid your membership and have not
+                    aleady submitted your full contact details for 2026, you are requested to complete the online
+                    registration form - <a href="https://trialmonster.uk/clubs/membershipForm/5">click here</a></b>
+            </div>
+        @endif
         <div class="mt-4">@php echo $msg; @endphp</div>
 
         @foreach ($entryData as $entry)
             <div class="box-content box-border">
-            @php
-                $dateFormatted = date_format(date_create($entry->date), "M jS");
-            @endphp
-            <div>{{$dateFormatted}} - {{$entry->trial}}</div>
-            <div class="font-semibold">Entry Ref: {{$entry->id}} </div>
-            <div class="font-semibold">Name: {{$entry->name}}</div>
-            <div class="font-semibold">Class: {{$entry->class}}</div>
-            <div class="font-semibold">Course: {{$entry->course}}</div>
-            <div class="font-semibold">Machine: {{$entry->make}} &nbsp;{{$entry->size}}</div>
+                @php
+                    $dateFormatted = date_format(date_create($entry->date), "M jS");
+                @endphp
+                <div>{{$dateFormatted}} - {{$entry->trial}}</div>
+                <div class="font-semibold">Entry Ref: {{$entry->id}} </div>
+                <div class="font-semibold">Name: {{$entry->name}}</div>
+                <div class="font-semibold">Class: {{$entry->class}}</div>
+                <div class="font-semibold">Course: {{$entry->course}}</div>
+                <div class="font-semibold">Machine: {{$entry->make}} &nbsp;{{$entry->size}}</div>
 
-            <div><span class="text-blue-700 font-semibold underline underline-offset-4"><a
-                            href="{{config('app.url')}}/entry/useredit/?id={{$entry->id}}&token={{$entry->token}}">Click here to change the entry above</a></span>
-            </div>
+                <div><span class="text-blue-700 font-semibold underline underline-offset-4"><a
+                                href="{{config('app.url')}}/entry/useredit/?id={{$entry->id}}&token={{$entry->token}}">Click here to change the entry above</a></span>
+                </div>
             </div>
         @endforeach
-        <div class="font-semibold">If you need to make any changes or withdraw from the event, please click on the link shown following the
+        <div class="font-semibold">If you need to make any changes or withdraw from the event, please click on the link
+            shown following the
             entry.
         </div>
         <ul>

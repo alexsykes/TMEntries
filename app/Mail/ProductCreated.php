@@ -38,7 +38,7 @@ class ProductCreated extends Mailable
     {
         return new Content(
             view: 'mails.product_created',
-            with: ['product' => $this->product,],
+            with: ['product' => $this->product],
         );
     }
 

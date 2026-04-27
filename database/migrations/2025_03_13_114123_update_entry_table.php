@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-                Schema::table('entries', function (Blueprint $table) {
-                    $table->string('stripe_payment_intent')->nullable();
-                });
+        Schema::table('entries', function (Blueprint $table) {
+            $table->string('stripe_payment_intent')->nullable();
+        });
     }
 
     /**

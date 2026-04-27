@@ -3,8 +3,8 @@
 <head>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{--    <script src="https://cdn.tailwindcss.com"></script>--}}
-{{--    <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>--}}
-{{--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">--}}
+    {{--    <script src="https://kit.fontawesome.com/086d4db9c7.js" crossorigin="anonymous"></script>--}}
+    {{--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">--}}
     <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
     {{--    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">--}}
     <style>
@@ -140,8 +140,7 @@
                 <a href="/clublist" class="inline-block mt-1 mx-3 hover:underline">Club Profiles</a>
                 <a href="{{$tandc}}" class="inline-block mt-1 mx-3 hover:underline">Terms and Conditions</a>
                 <a href="{{$privacy}}" class="inline-block mt-1 mx-3 hover:underline">Data and Privacy Policy</a>
-                <a href="mailto:monster@trialmonster.uk?subject=Web&nbsp;Enquiry"
-                   class="inline-block mt-1 mx-3 hover:underline">Contact</a>
+                <a href="/contact">Contact</a>
             </div>
         </x-footer-link>
         <div class="text-sm text-center  bg-blue-800 text-white"><a href="https://oldgit.uk">©2018 - {{date("Y")}}

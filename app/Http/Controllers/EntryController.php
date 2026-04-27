@@ -7,9 +7,7 @@ use App\Mail\EntryChanged;
 use App\Mail\ReserveAdded;
 use App\Models\Entry;
 use App\Models\Price;
-use App\Models\Product;
 use App\Models\Trial;
-use App\Rules\NoDuplicates;
 use Auth;
 use DateTime;
 use Endroid\QrCode\Builder\Builder;
@@ -19,43 +17,23 @@ use Endroid\QrCode\Label\Font\OpenSans;
 use Endroid\QrCode\Label\LabelAlignment;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use PDF;
 use Stripe\StripeClient;
 
-
 class EntryController extends Controller
 {
-    //
 
-//    Used at initial system entry to get user email/phone
+    //    Used at initial system entry to get user email/phone
     public function getUserDetails(Request $request)
     {
         $trial_id = request('id');
         session(['trial_id' => $trial_id]);
+
         return view('entries.get_user_details');
-    }
-
-//  Used to display user's current entries
-    public function showUserData(Request $request)
-    {
-
-        $email = session('email');
-        $phone = session('phone');
-        $trial_id = session('trial_id');
-        $user_id = Auth::user()->id;
-        $entries = Entry::all()
-            ->where('created_by', $user_id)
-            ->where('trial_id', $trial_id)
-            ->where('status', 0);
-//        $entries = Entry::all();
-
-//        dump($entries);
-        $trial = Trial::findorfail($trial_id);
-
-        return view('entries.userdata', ['entries' => $entries, 'trial' => $trial]);
     }
 
     public function userEntryList(Request $request)
@@ -68,8 +46,8 @@ class EntryController extends Controller
             ->orderBy('status', 'asc')
             ->get('status');
 
-//        dd($usedStatus);
-        $entriesArray = array();
+        //        dd($usedStatus);
+        $entriesArray = [];
 
         foreach ($usedStatus as $status) {
             $entries = DB::table('entries')
@@ -79,6 +57,7 @@ class EntryController extends Controller
                 ->get();
             array_push($entriesArray, $entries);
         }
+
         return view('entries.user_entry_list', ['entriesArray' => $entriesArray, 'user' => $user]);
     }
 
@@ -89,38 +68,97 @@ class EntryController extends Controller
 
         $trial = Trial::findorfail($trial_id);
         $club_id = $trial->club_id;
-//dd($club_id);
 
-        $membership = DB::table('products')
-            ->where('products.club_id', $club_id)
-            ->where('products.product_category', 'membership')
-            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
-            ->orderBy('prices.updated_at', 'desc')
-            ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
+        $membership = $this->getMembership($club_id);
+        $allOptions = $this->getOptions($club_id, $trial_id);
+        $optionalItems = $this->getOptionalItems($club_id, $trial_id);
+        $merchandise = $this->getMerchandise($club_id, $trial_id);
 
         $entries = Entry::all()
             ->where('created_by', $user_id)
             ->where('trial_id', $trial_id)
             ->where('status', 0);
 
-//        dd($entries);
-
         $reserves = Entry::all()
             ->where('created_by', $user_id)
             ->where('trial_id', $trial_id)
             ->whereIn('status', [4, 5]);
 
-//        dd($membership);
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership]);
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'options' => $allOptions, 'membership' => $membership, 'merchandise' => $merchandise, 'optionalItems' => $optionalItems]);
+    }
 
+    public function getMembership($club_id)
+    {
+        $membership = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.product_category', 'membership')
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('prices.updated_at', 'desc')
+            ->first(['products.product_name AS name', 'prices.stripe_product_id', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
 
-//        return view('entries.create', ['trial' => $trial, 'entry' => new Entry()]);
+        return $membership;
+    }
+
+    //     From editing from list on registration page
+
+    private function getOptions($club_id, $trial_id)
+    {
+        $allOptions = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.trial_id', 0)
+            ->where('products.product_category', 'merchandise')
+            ->orWhere(function (QueryBuilder $query) use ($trial_id, $club_id) {
+                $query->where('products.club_id', $club_id)
+                    ->where('products.trial_id', $trial_id)
+                    ->where('products.product_category', 'merchandise');
+            }
+            )
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('products.product_category')
+            ->orderBy('products.hasQuantity')
+            ->orderBy('products.product_name')
+            ->get(['products.product_name AS name', 'products.hasQuantity', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
+
+        return $allOptions;
+    }
+
+    private function getOptionalItems($club_id, $trial_id)
+    {
+        $optionalItems = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.trial_id', 0)
+            ->where('products.product_category', 'options')
+            ->orWhere(function (QueryBuilder $query) use ($trial_id, $club_id) {
+                $query->where('products.club_id', $club_id)
+                    ->where('products.trial_id', $trial_id)
+                    ->where('products.product_category', 'options');
+            }
+            )
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('products.product_category')
+            ->orderBy('products.hasQuantity')
+            ->orderBy('products.product_name')
+            ->get(['products.id AS id', 'products.product_name AS name', 'products.hasQuantity', 'products.stripe_product_id', 'prices.stripe_price_id', 'prices.stripe_price AS price', 'products.options']);
+        return $optionalItems;
+    }
+
+    private function getMerchandise($club_id, $trial_id)
+    {
+        $merchandise = DB::table('products')
+            ->selectRaw('product_name,hasQuantity, COUNT(product_name) as numOptions, GROUP_CONCAT(options) options, GROUP_CONCAT(tme_products.stripe_product_id)  productIDs,GROUP_CONCAT(tme_prices.stripe_price_id)  priceIDs, GROUP_CONCAT(tme_prices.stripe_price) as price')
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->where('products.club_id', $club_id)
+            ->where('products.trial_id', $trial_id)
+            ->where('products.product_category', 'merchandise')
+            ->groupBy('products.product_name', 'products.hasQuantity')
+            ->orderBy('products.product_name')
+            ->get();
+
+        return $merchandise;
     }
 
     public function updateEntry(Request $request)
     {
-        //        Get product/price IDs
-
         $request->validate([
             'name' => ['required', 'min:5', 'max:255'],
             'class' => 'required',
@@ -130,37 +168,18 @@ class EntryController extends Controller
             'dob' => 'required',
         ]);
 
-
         $entry = Entry::find($request->id);
         $trial_id = $entry->trial_id;
         $trial = Trial::findOrFail($trial_id);
         $trial_date = date_create($trial->date);
 
-//        Get product/price IDs
-        $youthProductID = DB::table('products')
-            ->where('trial_id', $trial_id)
-            ->where('isYouth', true)
-            ->where('product_category', 'entry fee')
-            ->value('stripe_product_id');
+        //        Get product/price IDs
+        //        getPrices
 
+        $prodIDs = $request->prodIDs;
+        $entryFees = $this->getEntryPrices($trial_id);
 
-        $adultProductID = DB::table('products')
-            ->where('trial_id', $trial_id)
-            ->where('isYouth', false)
-            ->where('product_category', 'entry fee')
-            ->value('stripe_product_id');
-
-
-        $youthPriceID = DB::table('prices')
-            ->where('stripe_product_id', $youthProductID)
-            ->value('stripe_price_id');
-
-        $adultPriceID = DB::table('prices')
-            ->where('stripe_product_id', $adultProductID)
-            ->value('stripe_price_id');
-
-//        dd($trial_id, $adultProductID, $adultPriceID, $youthProductID, $youthPriceID);
-        $utilityController = new UtilityController();
+        $utilityController = new UtilityController;
 
         $entry->name = $utilityController->nameize($request->name);
         $entry->class = $request->class;
@@ -171,36 +190,93 @@ class EntryController extends Controller
         $entry->type = $request->type;
 
         $entry->size = $request->size;
-//        $entry->accept = $accept;
+        //        $entry->accept = $accept;
         $entry->dob = $request->dob;
 
         $birthDate = date_create($request->dob);
 
         $interval = $trial_date->diff($birthDate);
 
-//        Calculation for youth goes here
+        //        Calculation for youth goes here
         if ($interval->y < 18) {
             $entry->isYouth = 1;
-            $entry->stripe_price_id = $youthPriceID;
-            $entry->stripe_product_id = $youthProductID;
+            $entry->stripe_price_id = $entryFees['youthPriceID'];
+            $entry->stripe_product_id = $entryFees['youthProductID'];
         } else {
             $entry->isYouth = 0;
-            $entry->stripe_price_id = $adultPriceID;
-            $entry->stripe_product_id = $adultProductID;
+            $entry->stripe_price_id = $entryFees['adultPriceID'];
+            $entry->stripe_product_id = $entryFees['adultProductID'];
+        }
+//dd($request->all());
+        $extraArray = [];
+
+        if (!is_null($request->membership)) {
+            $membership = ['priceID' => $request->membership, 'qty' => 1];
+            array_push($extraArray, $membership);
+
         }
 
-        if (!is_null($request->extras)) {
-            $entry->extras = $request->extras;
-        } else {
-            $entry->extras = null;
+        if (!is_null($request->prodIDs)) {
+            foreach ($request->prodIDs as $prodID) {
+                if (!is_null($request->$prodID)) {
+                    $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
+                    array_push($extraArray, $checkbox);
+                }
+            }
         }
+
+        $attributes['extras'] = json_encode($extraArray);
+
+        if (!is_null($request->priceID)) {
+            $priceIDs = $request->priceID;
+            $qtys = $request->quantity;
+
+            for ($i = 0; $i < count($priceIDs); $i++) {
+                $priceID = $priceIDs[$i];
+                $qty = $qtys[$i];
+                if (!is_null($qty)) {
+                    $extras = ['priceID' => $priceID, 'qty' => $qty];
+                    array_push($extraArray, $extras);
+                }
+            }
+        }
+
+        $entry->extras = json_encode($extraArray);
 
         $entry->save();
-//        dd($entry);
-        return redirect("/entries/register/{$trial_id}");
+
+        //        dd($entry);
+        return redirect("/entries/register/$trial_id");
     }
 
-//     From editing from list on registration page
+    private function getEntryPrices($trial_id)
+    {
+        $youthProductID = DB::table('products')
+            ->where('trial_id', $trial_id)
+            ->where('isYouth', true)
+            ->where('product_category', 'entry fee')
+            ->value('stripe_product_id');
+
+        $adultProductID = DB::table('products')
+            ->where('trial_id', $trial_id)
+            ->where('isYouth', false)
+            ->where('product_category', 'entry fee')
+            ->value('stripe_product_id');
+
+        $youthPriceID = DB::table('prices')
+            ->where('stripe_product_id', $youthProductID)
+            ->value('stripe_price_id');
+
+        $adultPriceID = DB::table('prices')
+            ->where('stripe_product_id', $adultProductID)
+            ->value('stripe_price_id');
+
+        return compact('youthProductID', 'adultProductID', 'youthPriceID', 'adultPriceID');
+    }
+
+    /*
+     * Entry is loaded based on entry ID and token emailed in link on entry confirmation
+     */
 
     public function adminEntryUpdate(Request $request)
     {
@@ -217,7 +293,7 @@ class EntryController extends Controller
         ]);
 
         $entry = Entry::find($entryID);
-//        dd($entry);
+        //        dd($entry);
         $entry->name = $request->name;
 
         $entry->class = $request->class;
@@ -235,28 +311,30 @@ class EntryController extends Controller
         }
         $entry->save();
 
-//      Entry numbers check
+        //      Entry numbers check
 
         $trial = Trial::findOrFail($trialID);
 
-//        Check whether trial has entry limit
+        //        Check whether trial has entry limit
         if ($trial->hasEntryLimit) {
             // info("Trial has entryLimit");
-//        Check for full entry list
+            //        Check for full entry list
             $entryLimit = $trial->entryLimit;
             $numEntries = Entry::where('trial_id', $trialID)
                 ->whereIn('status', [1, 4, 7, 8, 9])
                 ->count();
             Info("NumEntries: $numEntries");
-//        Check for number of entries left
+            //        Check for number of entries left
             $spaces = $entryLimit - $numEntries;
             if ($spaces <= 0) {
                 TrialFull::dispatch($trialID, $entryLimit, $numEntries);
             }
         }
 
-        return redirect("/trials/adminEntryList/{$trialID}");
+        return redirect("/trials/adminEntryList/$trialID");
     }
+
+    //  Not sure if currently used
 
     public function adminEntryStore(Request $request)
     {
@@ -286,25 +364,20 @@ class EntryController extends Controller
         }
 
         $entry = Entry::create($attributes);
-        return redirect("/trials/adminEntryList/{$trialID}");
+
+        return redirect("/trials/adminEntryList/$trialID");
     }
 
     public function create($id)
     {
         session(['trial_id' => $id]);
         $trial = Trial::findOrFail($id);
-        return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry()]);
+
+        return view('entries.get_user_details', ['trial' => $trial, 'entry' => new Entry]);
     }
 
-    /*   User updates entry - from email
-        Show screen for entry with form for updated fields
-        Limited changes can be made
-    */
-
-
-    /*
-     * Email confirmation of entry changes
-     */
+    //  Store from Register page
+    //    Store first record then pass email and trial_id to create_another view
 
     public function withdrawConfirm(Request $request)
     {
@@ -329,31 +402,31 @@ class EntryController extends Controller
             $price = Price::where('stripe_price_id', $entry->stripe_price_id)->first();
             $cost = $price->stripe_price;
 
-//            $entry->status = 2; // Mark as withdrawn, having paid, waiting for refund
-//            $entry->token = $token = bin2hex(random_bytes(16));
-            $entry->save();
+            //            $entry->status = 2; // Mark as withdrawn, having paid, waiting for refund
+            //            $entry->token = $token = bin2hex(random_bytes(16));
+//            $entry->save();
 
-//        Request request
-//            require('../vendor/autoload.php');
-//            require('../vendor/stripe/stripe-php/lib/StripeClient.php');
+            //        Request request
+            //            require('../vendor/autoload.php');
+            //            require('../vendor/stripe/stripe-php/lib/StripeClient.php');
             $stripe = new StripeClient(config('stripe.stripe_secret_key'));
 
-            $stripe->refunds->create
-            ([
-                'metadata' => ['id' => $id],
+            $stripe->refunds->create([
+                'metadata' => ['entry_id' => $id,
+                    'reason' => 'user_request'],
                 'payment_intent' => $pi,
                 'amount' => $cost - 300,
-//            'amount' => 1,
+                'reason' => 'requested_by_customer',
+//                            'amount' => 1,
             ]);
-//    Mark as refund requested
-//    Email user
-        }
-        return redirect("/");
-    }
 
-    /*
-     * Entry is loaded based on entry ID and token emailed in link on entry confirmation
-     */
+            info("Stripe refund requested by customer: $entry->id");
+            //    Mark as refund requested
+            //    Email user
+        }
+
+        return redirect('/');
+    }
 
     public function userupdate(Request $request)
     {
@@ -376,10 +449,9 @@ class EntryController extends Controller
         $entry->save();
 
         $this->emailConfirmation($id, $newToken);
-        return redirect("/");
-    }
 
-//  Not sure if currently used
+        return redirect('/');
+    }
 
     public function emailConfirmation($id, $newToken)
     {
@@ -391,12 +463,13 @@ class EntryController extends Controller
             ->bcc($bcc)
             ->send(new EntryChanged($entry, $newToken));
         info("Entry changed: $entry->id");
-        return redirect("/");
+
+        return redirect('/');
     }
 
     public function useredit(Request $request)
     {
-//        dd($request->all());
+        //        dd($request->all());
         $token = $request->token;
         $id = $request->id;
 
@@ -404,7 +477,6 @@ class EntryController extends Controller
             ->where('id', $id)
             ->where('status', 1)
             ->where('token', $token)->first();
-
 
         if ($entry == null) {
             return view('entries.expiredLink');
@@ -417,18 +489,16 @@ class EntryController extends Controller
         $trial_date = date_create($trial[0]->date);
         $today = date_create(date('Y-m-d'));
 
-//      In time / Too late to edit entry
+        //      In time / Too late to edit entry
         if ($trial_date > $today) {
             $trial = Trial::findOrFail($entry->trial_id);
-//            dd($trial);
+
+            //            dd($trial);
             return view('entries.useredit', ['entry' => $entry]);
         } else {
             return view('entries.noChanges');
         }
     }
-
-//  Store from Register page
-//    Store first record then pass email and trial_id to create_another view
 
     public function checkout(Request $request)
     {
@@ -447,69 +517,53 @@ class EntryController extends Controller
 
     public function store(Request $request)
     {
+
+//        prodIDs -> array of stripe_price_id of items on offer
+//        product{n} stripe_price_id selected
+//        membership -> stripe_price_id if membership option selected
+
         $trial_id = $request->trial_id;
         $trial = Trial::findOrFail($trial_id);
 
         $club_id = $trial->club_id;
+//      Get extra input field names
+//        $prodIDs = $request->prodIDs;
 
-        $membership = Product::where('club_id', $club_id)
-            ->where('product_category', 'membership')
-            ->orderBy('updated_at', 'desc')
-            ->first();
+//        dd($prodIDs);
+        $membership = $this->getMembership($club_id);
+        $merchandise = $this->getMerchandise($club_id, $trial_id);
 
-//        Get product and price data
-//        Get product/price IDs
-        $youthProductID = DB::table('products')
-            ->where('trial_id', $request->trial_id)
-            ->where('isYouth', true)
-            ->where('product_category', 'entry fee')
-            ->value('stripe_product_id');
+        //        Get product and price data
+        //        Get product/price IDs
+        $prices = $this->getEntryPrices($trial_id);
 
-
-        $adultProductID = DB::table('products')
-            ->where('trial_id', $request->trial_id)
-            ->where('isYouth', false)
-            ->where('product_category', 'entry fee')
-            ->value('stripe_product_id');
-
-
-        $youthPriceID = DB::table('prices')
-            ->where('stripe_product_id', $youthProductID)
-            ->value('stripe_price_id');
-
-        $adultPriceID = DB::table('prices')
-            ->where('stripe_product_id', $adultProductID)
-            ->value('stripe_price_id');
-
-//        Check for entry limit
+        //        Check for entry limit
         $hasEntryLimit = $trial->hasEntryLimit;
 
         $status = 0;
 
         if ($hasEntryLimit) {
-//        Check for full entry list
+            //        Check for full entry list
             $entryLimit = $trial->entryLimit;
             $numEntries = Entry::where('trial_id', $trial_id)
                 ->whereIn('status', [1, 4, 7, 8, 9])
                 ->count();
             Info("EntryController: line 444: NumEntries: $numEntries");
-//        Check for number of entries left
-//        If 5, then email registered but not paid
+            //        Check for number of entries left
+            //        If 5, then email registered but not paid
             $spaces = $entryLimit - $numEntries;
 
-//        If no spaces, then change status 0 to status 5 - Reserve List
+            //        If no spaces, then change status 0 to status 5 - Reserve List
             if ($spaces <= 0) {
-//            TrialFull::dispatch($trial_id, $entryLimit, $numEntries);
+                //            TrialFull::dispatch($trial_id, $entryLimit, $numEntries);
                 $status = 5;
             }
         }
 
-        $trial_date = date_create($trial->date);
-
         $IPaddress = $request->ip();
         $request->session()->put('trial_id', $request->trial_id);
 
-//        Token added to emailed entry link
+        //        Token added to emailed entry link
         $token = bin2hex(random_bytes(16));
 
         $attributes = $request->validate([
@@ -522,39 +576,71 @@ class EntryController extends Controller
             'dob' => 'required',
         ]);
 
-        $attributes['extras'] = $request->extras;
-        $utilityController = new UtilityController();
+        //        $attributes['extras'] = $extraJSON;
+        $utilityController = new UtilityController;
         $attributes['name'] = $utilityController->nameize($request->name);
         $attributes['IPaddress'] = $IPaddress;
         $attributes['size'] = $request->size;
         $attributes['licence'] = $request->licence;
         $attributes['token'] = $token;
-//        $attributes['accept'] = $accept;
+        //        $attributes['accept'] = $accept;
         $attributes['status'] = $status;
         $attributes['created_by'] = Auth::user()->id;
 
+        //      Age calculation
         $birthDate = date_create($request->dob);
-
+        $trial_date = date_create($trial->date);
         $interval = $trial_date->diff($birthDate);
         $ageInYears = $interval->format('%y');
 
         if ($ageInYears < 18) {
             $attributes['isYouth'] = 1;
-            $attributes['stripe_price_id'] = $youthPriceID;
-            $attributes['stripe_product_id'] = $youthProductID;
+            $attributes['stripe_price_id'] = $prices['youthPriceID'];
+            $attributes['stripe_product_id'] = $prices['youthProductID'];
         } else {
             $attributes['isYouth'] = 0;
-            $attributes['stripe_price_id'] = $adultPriceID;
-            $attributes['stripe_product_id'] = $adultProductID;
+            $attributes['stripe_price_id'] = $prices['adultPriceID'];
+            $attributes['stripe_product_id'] = $prices['adultProductID'];
         }
 
-
         $attributes['dob'] = $request->dob;
+
+        //      Process additional items
+        $extraArray = [];
+
+
+//        prodIDs -> array of stripe_price_id of items on offer
+//        product{n} stripe_price_id selected
+//        membership -> stripe_price_id if membership option selected
+
+        if (!is_null($request->membership)) {
+            $checkbox = ['priceID' => $request->membership, 'qty' => 1];
+            array_push($extraArray, $checkbox);
+        }
+        /*      loop through array of productIDs
+                these are from hidden inputs and correspond to extra options
+                which users select
+
+        */
+
+        if (!is_null($request->prodIDs)) {
+            foreach ($request->prodIDs as $prodID) {
+//            if the request contains a stripe code, add it to the extraArray
+                if (!is_null($request->$prodID)) {
+                    $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
+                    array_push($extraArray, $checkbox);
+                }
+            }
+        }
+
+        $attributes['extras'] = json_encode($extraArray);
+
         $entry = Entry::create($attributes);
 
-//        Entry has Stripe product and price codes entered at time of entry
-
-//        $trial = Trial::findOrFail($attributes['trial_id']);
+        info("EntryController: entry created: $entry->id");
+//        dd($entry);
+        //        Entry has Stripe product and price codes entered at time of entry
+        $allOptions = $this->getOptions($club_id, $trial_id);
 
         if ($entry->status == 5) {
             $this->sendReserveEmail($entry, $trial);
@@ -567,24 +653,22 @@ class EntryController extends Controller
             ->where('status', 0)
             ->where('created_by', $attributes['created_by']);
 
-
         $reserves = Entry::all()
             ->where('trial_id', $trial_id)
             ->whereIn('status', [4, 5])
             ->where('created_by', $attributes['created_by']);
-//        dd($membership);
-
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership]);
+//dd($reserves, $entries, $trial, $membership, $merchandise, $trial_id);
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership, 'merchandise' => $merchandise, 'trial_id' => $trial_id]);
     }
 
-    function sendReserveEmail(Entry $entry, Trial $trial)
+    public function sendReserveEmail(Entry $entry, Trial $trial)
     {
         $userID = $entry->created_by;
         $user = DB::table('users')->where('id', $userID)->first();
         $username = $user->name;
         $email = $user->email;
 
-        $bcc = "monster@trialmonster.uk";
+        $bcc = 'monster@trialmonster.uk';
 
         Mail::to($email)
             ->bcc($bcc)
@@ -601,17 +685,6 @@ class EntryController extends Controller
         return redirect('entries/register/' . session('trial_id'));
     }
 
-    public function list(Request $request)
-    {
-        $email = session('email');
-        $trial_id = $request->input('trial_id');
-        $trial = Trial::findOrFail($trial_id);
-        $phone = session('phone');
-        $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('paid', 0);
-//        dd($entries);
-        return view('entries.userdata', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
-    }
-
     public function adminEntries(Request $request)
     {
         $email = session('email');
@@ -619,7 +692,8 @@ class EntryController extends Controller
         $trial = Trial::findOrFail($trial_id);
         $phone = session('phone');
         $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('paid', 0);
-//        dd($entries);
+
+        //        dd($entries);
         return view('entries.adminEntries', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
     }
 
@@ -627,6 +701,7 @@ class EntryController extends Controller
     {
         $entry = Entry::findOrFail($id);
         $trial = Trial::findOrFail($entry->trial_id);
+
         return view('entries.adminEdit', ['entry' => $entry, 'trial' => $trial]);
     }
 
@@ -637,24 +712,23 @@ class EntryController extends Controller
         $entry->status = 6;
         $entry->ridingNumber = 0;
         $entry->save();
+
         return redirect("/trials/adminEntryList/{$trial_id}");
     }
 
+//    From Registration page
     public function edit(Request $request)
     {
         $entry = Entry::findorfail($request->entry);
+        info("EntryController: entry edited: $entry->id");
         $trialid = session('trial_id');
         $trial = Trial::findorfail($trialid);
         $club_id = $trial->club_id;
 
-        $membership = DB::table('products')
-            ->where('products.club_id', $club_id)
-            ->where('products.product_category', 'membership')
-            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
-            ->orderBy('prices.updated_at', 'desc')
-            ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
-
-        return view('entries.edit', ['entry' => $entry, 'trial' => $trial, 'membership' => $membership]);
+        $membership = $this->getMembership($club_id);
+        $options = $this->getOptions($club_id, $trialid);
+        $merchandise = $this->getMerchandise($club_id, $trialid);
+        return view('entries.edit', ['entry' => $entry, 'trial' => $trial, 'membership' => $membership, 'options' => $options, 'merchandise' => $merchandise]);
     }
 
     public function editRidingNumbers(Request $request)
@@ -668,7 +742,6 @@ class EntryController extends Controller
             ->orderBy('ridingNumber')
             ->orderBy('id')
             ->get();
-
 
         $numSections = DB::table('trials')
             ->where('id', $trialid)
@@ -690,27 +763,27 @@ class EntryController extends Controller
             $number = $numbers[$i];
             $startsAt = $startsAts[$i];
 
-
             DB::table('entries')
                 ->where('id', $entryID)
                 ->update(['ridingNumber' => $number, 'startsAt' => $startsAt]);
         }
+
         return redirect("/trials/adminEntryList/{$trialID}");
     }
 
     public function printSignOnSheets($id)
     {
-//      Generate QR codes, save in images/qr
+        //      Generate QR codes, save in images/qr
         $this->generate($id);
 
-//      Get entry list
+        //      Get entry list
         $trialDetails = DB::table('trials')->where('id', $id)->first();
         $venueID = $trialDetails->venueID;
         $venue = DB::table('venues')->where('id', $venueID)->first();
         $venueName = $venue->name;
 
         $rawDate = new DateTime($trialDetails->date);
-        $date = date_format($rawDate, "jS M, Y");
+        $date = date_format($rawDate, 'jS M, Y');
         $club = $trialDetails->club;
 
         $startList = DB::table('entries')
@@ -718,8 +791,8 @@ class EntryController extends Controller
             ->whereIn('status', [0, 1, 4, 5, 7, 8, 9, 10])
             ->orderBy('name')
             ->get();
-        if (sizeof($startList) == 0) {
-            exit("No entries to print");
+        if (count($startList) == 0) {
+            exit('No entries to print');
         }
 
         $ridingGroups = DB::table('entries')
@@ -729,9 +802,7 @@ class EntryController extends Controller
             ->groupBy('startsAt')
             ->get();
 
-
         $filename = "Sign-on $trialDetails->name.pdf";
-
 
         MYPDF::SetCreator('TM UK');
 
@@ -740,19 +811,18 @@ class EntryController extends Controller
         MYPDF::SetImageScale(PDF_IMAGE_SCALE_RATIO);
         MYPDF::AddPage();
         $bMargin = MYPDF::GetBreakMargin();
-        MYPDF::SetHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        MYPDF::SetHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
         MYPDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
         MYPDF::SetHeaderMargin(0);
         MYPDF::SetFooterMargin(0);
         MYPDF::SetPrintFooter(false);
-        MYPDF::SetAutoPageBreak(TRUE, 0);
+        MYPDF::SetAutoPageBreak(true, 0);
 
         MYPDF::SetMargins(0, 0, 0);
 
-
         $authority = $trialDetails->authority;
 
-//        Add template imageand setup variables
+        //        Add template imageand setup variables
         switch ($authority) {
             case 'AMCA':
                 $img_file = storage_path('app/public/images/amca.jpg');
@@ -818,7 +888,7 @@ class EntryController extends Controller
                 $linesPerPage = 20;
                 break;
         }
-//        Add background image
+        //        Add background image
         MYPDF::Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
 
         MYPDF::SetPageMark();
@@ -826,32 +896,32 @@ class EntryController extends Controller
         MYPDF::SetTopMargin($topMargin);
         MYPDF::SetAutoPageBreak(false, $bottomMargin);
 
-//        MYPDF::Write(0, "What's next?");
+        //        MYPDF::Write(0, "What's next?");
         $index = 0;
 
         $lineNumber = 1;
-        if (sizeof($startList) > 0) {
+        if (count($startList) > 0) {
             foreach ($startList as $entry) {
-//            if($trialDetails-> == 5) {
-//                $number = $rrCodes[$entry[0]];
-//            } else {
+                //            if($trialDetails-> == 5) {
+                //                $number = $rrCodes[$entry[0]];
+                //            } else {
                 $number = $entry->ridingNumber;
-//            }
+                //            }
                 if ($entry->isYouth == 1) {
-                    $name = $entry->name . "*";
+                    $name = $entry->name . '*';
                 } else {
                     $name = $entry->name;
                 }
                 $name = ucwords(strtolower($name), " \t\r\n\f\v'");
                 $status = $entry->status;
                 if ($status == 0 or $status == 4 or $status == 5 or $status == 7 or $status == 10) {
-                    $name = "To pay - " . $name;
+                    $name = 'To pay - ' . $name;
                 }
                 $id = $entry->licence;
                 $class = $entry->class;
 
-                if ($class == "Adult") {
-                    $class = "";
+                if ($class == 'Adult') {
+                    $class = '';
                 }
 
                 // Number cell
@@ -868,7 +938,7 @@ class EntryController extends Controller
                     // ID cell
                     if ($entry->isYouth != 0) {
                         MYPDF::setX($parentIndent);
-                        MYPDF::Cell($idWidth, $rowHeight, "*", 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                        MYPDF::Cell($idWidth, $rowHeight, '*', 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                     }
                     // ID cell
                     if ($id != 0) {
@@ -879,20 +949,19 @@ class EntryController extends Controller
                     MYPDF::setX($classIndent);
                     MYPDF::Cell(17, $rowHeight, $class, 0, 1, 'L', false, null, 1, 0, 'C' . 'M');
                 } // ACU
-                else if ($authority == 'ACU') {
+                elseif ($authority == 'ACU') {
                     // Name cell
                     MYPDF::setX($nameIndent);
                     MYPDF::Cell($nameWidth, $rowHeight, $name, 0, 1, 'L', false, null, 1, false, 'C' . 'M');
                     if ($entry->isYouth != 0) {
                         MYPDF::setX($parentIndent);
-                        MYPDF::Cell($idWidth, $rowHeight, "*", 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                        MYPDF::Cell($idWidth, $rowHeight, '*', 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                         MYPDF::setX($parentSignIndent);
-                        MYPDF::Cell($idWidth, $rowHeight, "*", 0, 0, 'R', false, null, 0, false, 'C' . 'M');
+                        MYPDF::Cell($idWidth, $rowHeight, '*', 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                     }
                 }
 
                 // ID cell
-
 
                 if ($lineNumber % $linesPerPage == 0) {
                     MYPDF::addPage();
@@ -931,14 +1000,14 @@ class EntryController extends Controller
 
         MYPDF::addPage();
         MYPDF::SetFontSize(18);
-        MYPDF::Text(0, 10, "Riding groups", 0, false, true, 0, 1, 'C');
+        MYPDF::Text(0, 10, 'Riding groups', 0, false, true, 0, 1, 'C');
 
         MYPDF::SetFontSize(12);
 
         MYPDF::SetMargins(10, 0);
         $y = 3 + MYPDF::getY();
         MYPDF::setY($y);
-        MYPDF::Write(0, "Would riders kindly start at the following sections.", '', false, 'C', true);
+        MYPDF::Write(0, 'Would riders kindly start at the following sections.', '', false, 'C', true);
         for ($i = 0; $i < count($ridingGroups); $i++) {
             $y = 3 + MYPDF::getY();
             MYPDF::setY($y);
@@ -952,31 +1021,30 @@ class EntryController extends Controller
                 MYPDF::Write(0, $riders, '', false, '', true);
 
             } else {
-//                MYPDF::Write(0, "Unallocated", '', false, '', true);
-//                MYPDF::Write(0, $riders, '', false, '', true);
+                //                MYPDF::Write(0, "Unallocated", '', false, '', true);
+                //                MYPDF::Write(0, $riders, '', false, '', true);
             }
         }
         $y = 3 + MYPDF::getY();
         MYPDF::setY($y);
         MYPDF::SetFontSize(18);
-        MYPDF::Write(0, "Not listed?", '', false, 'C', true);
+        MYPDF::Write(0, 'Not listed?', '', false, 'C', true);
         MYPDF::SetFontSize(12);
         $y = 3 + MYPDF::getY();
         MYPDF::setY($y);
-        MYPDF::Write(0, "If you have entered and your name does not appear in the list above, you will be allocated a section at random to try and spread the entry around the course. ", '', false, '', true);
+        MYPDF::Write(0, 'If you have entered and your name does not appear in the list above, you will be allocated a section at random to try and spread the entry around the course. ', '', false, '', true);
         $y = 3 + MYPDF::getY();
         MYPDF::setY($y);
-        MYPDF::Write(0, "If you wish to be added to a particular group, please reply to this email NOT LESS THAN 24 HOURS BEFORE the trial.", '', false, '', true);
+        MYPDF::Write(0, 'If you wish to be added to a particular group, please reply to this email NOT LESS THAN 24 HOURS BEFORE the trial.', '', false, '', true);
 
         MYPDF::addPage();
         MYPDF::SetFontSize(18);
-        MYPDF::Text(0, 10, "Registration", 0, false, true, 0, 0, 'C');
-// References storage/app/public/images
+        MYPDF::Text(0, 10, 'Registration', 0, false, true, 0, 0, 'C');
+        // References storage/app/public/images
         $tid = $trialDetails->id;
 
         $qr1 = "images/qr/data_$tid.png";
         $qr2 = "images/qr/programme_$tid.png";
-
 
         $img_file = public_path($qr1);
         MYPDF::Image($img_file, 40, 20, 130, '', '', '', '', false, 300, '', false, false, 0);
@@ -987,10 +1055,9 @@ class EntryController extends Controller
         MYPDF::Text(30, 200, '4 - Complete Sign-on sheet');
         MYPDF::Text(30, 210, '5 - Enjoy your ride');
 
-
         MYPDF::addPage();
         MYPDF::SetFontSize(18);
-        MYPDF::Text(0, 10, "Entry List", 0, false, true, 0, 0, 'C');
+        MYPDF::Text(0, 10, 'Entry List', 0, false, true, 0, 0, 'C');
 
         $img_file = public_path($qr2);
         MYPDF::Image($img_file, 40, 20, 130, '', '', '', '', false, 300, '', false, false, 0);
@@ -1000,15 +1067,15 @@ class EntryController extends Controller
         MYPDF::SetLeftMargin(20);
         MYPDF::SetRightMargin(20);
 
-
         MYPDF::MultiCell(0, 0, 'Scan the QR code on your phone. Entries are correct at the time of compilation.', 0, 'L', false);
         MYPDF::SetY(190);
         MYPDF::MultiCell(0, 0, "Although every effort is made to provide accurate and up-to-date information, late changes may sometimes be unavoidable due to entrants' changes of course or class.", 0, 'L', false);
-//        dd(public_path($filename));
+        //        dd(public_path($filename));
         $filename = $this->filter_filename($filename);
         MYPDF::Close();
         MYPDF::Output(public_path('pdf/signon/' . $filename), 'F');
         MYPDF::reset();
+
         return response()->download('pdf/signon/' . $filename);
     }
 
@@ -1028,7 +1095,7 @@ class EntryController extends Controller
         $name = $trial->name;
 
         $builder = new Builder(
-            writer: new PngWriter(),
+            writer: new PngWriter,
             writerOptions: [],
             validateResult: false,
             data: $data,
@@ -1037,24 +1104,22 @@ class EntryController extends Controller
             size: 600,
             margin: 10,
             roundBlockSizeMode: RoundBlockSizeMode::Margin,
-//            logoPath: __DIR__.'/assets/bender.png',
-//            logoResizeToWidth: 50,
-//            logoPunchoutBackground: true,
+            //            logoPath: __DIR__.'/assets/bender.png',
+            //            logoResizeToWidth: 50,
+            //            logoPunchoutBackground: true,
             labelText: $name,
             labelFont: new OpenSans(24),
             labelAlignment: LabelAlignment::Center
         );
-
 
         $result = $builder->build();
         $filename = "data_$id.png";
         $dir = 'images/qr/' . $filename;
         $result->saveToFile($dir);
 
-
         $name = $trial->name;
         $builder = new Builder(
-            writer: new PngWriter(),
+            writer: new PngWriter,
             writerOptions: [],
             validateResult: false,
             data: $data2,
@@ -1063,9 +1128,9 @@ class EntryController extends Controller
             size: 600,
             margin: 10,
             roundBlockSizeMode: RoundBlockSizeMode::Margin,
-//            logoPath: __DIR__.'/assets/bender.png',
-//            logoResizeToWidth: 50,
-//            logoPunchoutBackground: true,
+            //            logoPath: __DIR__.'/assets/bender.png',
+            //            logoResizeToWidth: 50,
+            //            logoPunchoutBackground: true,
             labelText: $name,
             labelFont: new OpenSans(24),
             labelAlignment: LabelAlignment::Center
@@ -1075,26 +1140,26 @@ class EntryController extends Controller
         $dir = 'images/qr/' . $filename;
         $result->saveToFile($dir);
 
-
-//        return redirect("/trials/adminEntryList/$id");
+        //        return redirect("/trials/adminEntryList/$id");
     }
 
-    function filter_filename($name)
+    public function filter_filename($name)
     {
         // remove illegal file system characters https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
         $name = str_replace(array_merge(
             array_map('chr', range(0, 31)),
-            array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
+            ['<', '>', ':', '"', '/', '\\', '|', '?', '*']
         ), '', $name);
         // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
         $ext = pathinfo($name, PATHINFO_EXTENSION);
         $name = mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
+
         return $name;
     }
 
     public function storeMultiple(Request $request)
     {
-//        dd(request()->all());
+        //        dd(request()->all());
         $trial_id = $request->input('trialID');
         $trial = Trial::findOrFail($trial_id);
         $trial_date = date_create($trial->date);
@@ -1109,13 +1174,12 @@ class EntryController extends Controller
         $birthDates = $request->input('dob');
         $statuss = $request->input('status');
 
+        $utilityController = new UtilityController;
 
-        $utilityController = new UtilityController();
+        for ($i = 0; $i < count($names); $i++) {
+            if (isset($names[$i]) && $names[$i] != '') {
 
-        for ($i = 0; $i < sizeof($names); $i++) {
-            if (isset($names[$i]) && $names[$i] != "") {
-
-                if ($classs[$i] != "Youth") {
+                if ($classs[$i] != 'Youth') {
                     $isYouth = false;
                 } else {
                     $isYouth = true;
@@ -1135,11 +1199,12 @@ class EntryController extends Controller
                     'created_by' => Auth::user()->id,
                     'ipaddress' => $request->ip(),
                     'created_at' => date('Y-m-d H:i:s'),
-//                    'dob' => $birthDates[$i],
+                    //                    'dob' => $birthDates[$i],
                     'trial_id' => $trial_id,
                 ]);
             }
         }
+
         return redirect("/trials/adminEntryList/{$trial_id}");
     }
 
@@ -1150,14 +1215,14 @@ class EntryController extends Controller
         $trial_date = date_create($trial->date);
 
         $IPaddress = $request->ip();
-//        $request->session()->put('trial_id', $request->trial_id);
-//        $accept = session('accept');
+        //        $request->session()->put('trial_id', $request->trial_id);
+        //        $accept = session('accept');
 
-//        Get product/price IDs
-        $youthProductID = "OTD ";
-        $adultProductID = "OTD";
-        $youthPriceID = "OTD";
-        $adultPriceID = "OTD";
+        //        Get product/price IDs
+        $youthProductID = 'OTD ';
+        $adultProductID = 'OTD';
+        $youthPriceID = 'OTD';
+        $adultPriceID = 'OTD';
 
         $attributes = $request->validate([
             'name' => ['required', 'min:5', 'max:255'],
@@ -1169,14 +1234,14 @@ class EntryController extends Controller
             'dob' => 'required',
         ]);
 
-        $utilityController = new UtilityController();
+        $utilityController = new UtilityController;
 
         $attributes['name'] = $utilityController->nameize($request->name);
         $attributes['IPaddress'] = $IPaddress;
         $attributes['size'] = $request->size;
         $attributes['licence'] = $request->licence;
         $attributes['ridingNumber'] = $request->number;
-        $attributes['token'] = "OTD";
+        $attributes['token'] = 'OTD';
         $attributes['accept'] = false;
         $attributes['created_by'] = 0;
 
@@ -1184,15 +1249,15 @@ class EntryController extends Controller
 
         $interval = $trial_date->diff($birthDate);
 
-//        Calculation for yout goes here
+        //        Calculation for yout goes here
         if ($interval->y < 18) {
             $attributes['isYouth'] = 1;
-            $attributes['stripe_price_id'] = "Youth EoD";
-            $attributes['stripe_product_id'] = "Youth EoD";
+            $attributes['stripe_price_id'] = 'Youth EoD';
+            $attributes['stripe_product_id'] = 'Youth EoD';
         } else {
             $attributes['isYouth'] = 0;
-            $attributes['stripe_price_id'] = "Adult EoD";
-            $attributes['stripe_product_id'] = "Adult EoD";
+            $attributes['stripe_price_id'] = 'Adult EoD';
+            $attributes['stripe_product_id'] = 'Adult EoD';
         }
         $attributes['status'] = 7;
         $attributes['dob'] = $request->dob;
@@ -1212,15 +1277,16 @@ class EntryController extends Controller
         if ($trial == null) {
             abort(404);
         }
+
         return view('entries.otd_entry', ['trial' => $trial]);
     }
 
     public function otdSaveNumbers(Request $request)
     {
-//        dd($request->all());
+        //        dd($request->all());
         $trialid = $request->trialid;
 
-        $numEntries = sizeof($request->ridingNumber);
+        $numEntries = count($request->ridingNumber);
 
         for ($i = 0; $i < $numEntries; $i++) {
             $ridingNumber = $request->ridingNumber[$i];
@@ -1247,12 +1313,12 @@ class EntryController extends Controller
             ->where('isYouth', $isYouth)
             ->first();
 
-
         $code = $product_code->stripe_product_id;
         $price = DB::table('prices')->select('stripe_price')
             ->where('stripe_product_id', $code)
             ->first();
         $cost = $price->stripe_price / 100;
+
         return view('entries.otd_confirm', ['trialid' => $trialid, 'cost' => $cost]);
     }
 
@@ -1270,7 +1336,7 @@ class EntryController extends Controller
             ->groupBy('startsAt')
             ->get();
 
-//        dd($ridingGroups);
+        //        dd($ridingGroups);
         return view('entries.showRidingGroups', ['ridingGroups' => $ridingGroups, 'trial' => $trial]);
     }
 
@@ -1279,6 +1345,7 @@ class EntryController extends Controller
         $entry = DB::table('entries')->where('id', $id)->first();
         $trialid = $entry->trial_id;
         $trial = DB::table('trials')->where('id', $trialid)->first();
+
         return view('entries.changeNumber', ['entry' => $entry, 'trial' => $trial]);
     }
 
@@ -1337,11 +1404,32 @@ class EntryController extends Controller
 
         return redirect('/results/display/' . $trialid);
     }
+
+    private function getFreebies(mixed $club_id, mixed $trial_id)
+    {
+        $freebies = DB::table('products')
+            ->where('products.club_id', $club_id)
+            ->where('products.trial_id', 0)
+            ->where('products.product_category', 'freebie')
+            ->orWhere(function (QueryBuilder $query) use ($trial_id, $club_id) {
+                $query->where('products.club_id', $club_id)
+                    ->where('products.trial_id', $trial_id)
+                    ->where('products.product_category', 'freebie');
+            }
+            )
+            ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
+            ->orderBy('products.product_category')
+            ->orderBy('products.hasQuantity')
+            ->orderBy('products.product_name')
+            ->get(['products.id AS id', 'products.product_name AS name', 'products.hasQuantity', 'prices.stripe_price_id', 'prices.stripe_price AS price', 'products.options']);
+
+        return $freebies;
+    }
 }
 
 class MYPDF extends PDF
 {
-    //Page header
+    // Page header
     public function Header()
     {
         // get the current page break margin
@@ -1354,7 +1442,7 @@ class MYPDF extends PDF
         $this->SetAutoPageBreak(false, 0);
         // set bacground image
         $img_file = storage_path('app/public/images/acu.jpg');
-//        $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+        //        $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
         // restore auto-page-break status
         $this->SetAutoPageBreak($auto_page_break, $bMargin);
         // set the starting point for the page content

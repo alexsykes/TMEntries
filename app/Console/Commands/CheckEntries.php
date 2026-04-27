@@ -28,21 +28,20 @@ class CheckEntries extends Command
     public function handle()
     {
         //        Get currently active trial IDs
-        $tomorrow = date("Y-m-d", strtotime('tomorrow'));
-
+        $tomorrow = date('Y-m-d', strtotime('tomorrow'));
 
         $currentTrialIDs = Trial::whereTodayOrAfter('date')
             ->where('isEntryLocked', false)
             ->whereDate('closingDate', $tomorrow)
             ->pluck('id');
 
-        Info("Check Entries: " . count($currentTrialIDs)) . " trial(s).";
+        Info('Check Entries: '.count($currentTrialIDs)).' trial(s).';
         foreach ($currentTrialIDs as $trialID) {
             $trial = Trial::findOrFail($trialID);
-//          Entry limit defaults to 0
+            //          Entry limit defaults to 0
             $entryLimit = $trial->entryLimit;
 
-//            Check for entry limit
+            //            Check for entry limit
             if ($entryLimit > 0) {
                 $unconfirmed = Entry::where('trial_id', $trial->id)
                     ->leftJoin('users', 'users.id', '=', 'entries.created_by')
@@ -50,15 +49,15 @@ class CheckEntries extends Command
                     ->select('entries.*', 'users.email')
                     ->get();
 
-                Info('Trial ' . $trial->name . ' has ' . sizeof($unconfirmed) . ' unconfirmed entries');
+                Info('Trial '.$trial->name.' has '.count($unconfirmed).' unconfirmed entries');
 
-//                foreach ($unconfirmed as $entry) {
-//                    Mail::to($entry->email)->send(new LastChance($trial));
-//                    $entry->status = 10;
-//                    $entry->updated_at = date("Y-m-d H:i:s");
-//                    $entry->save();
-//                    Info('EntryID:' . $entry->id . ' Last Chance email sent to ' . $entry->email);
-//                }
+                //                foreach ($unconfirmed as $entry) {
+                //                    Mail::to($entry->email)->send(new LastChance($trial));
+                //                    $entry->status = 10;
+                //                    $entry->updated_at = date("Y-m-d H:i:s");
+                //                    $entry->save();
+                //                    Info('EntryID:' . $entry->id . ' Last Chance email sent to ' . $entry->email);
+                //                }
             }
         }
     }

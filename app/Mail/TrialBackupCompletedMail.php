@@ -49,7 +49,7 @@ class TrialBackupCompletedMail extends Mailable
     public function attachments(): array
     {
 
-        $attachments = array();
+        $attachments = [];
         $entryFilename = public_path("/backups/$this->trialID/Entries.json");
         $scoreFilename = public_path("/backups/$this->trialID/Scores.json");
         $trialFilename = public_path("/backups/$this->trialID/Trial.json");
@@ -80,6 +80,7 @@ class TrialBackupCompletedMail extends Mailable
         if (file_exists($trialCSVFilename)) {
             array_push($attachments, Attachment::fromPath($trialCSVFilename));
         }
+
         return $attachments;
     }
 }

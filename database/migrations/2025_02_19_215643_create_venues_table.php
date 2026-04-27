@@ -25,10 +25,10 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->string('w3w')->nullable();
 
-            $table->string('postcode')->nullable()  ;
+            $table->string('postcode')->nullable();
 
-            $table->decimal('latitude',10, 6)->nullable();
-            $table->decimal('longitude',10, 6)->nullable();
+            $table->decimal('latitude', 10, 6)->nullable();
+            $table->decimal('longitude', 10, 6)->nullable();
         });
     }
 

@@ -1,7 +1,7 @@
 <x-main>
     <script>
         function toggle(checked) {
-            var x = document.getElementById("dateInput");
+            let x = document.getElementById("dateInput");
             if (checked) {
                 x.style.display = "inline-block";
             } else {
@@ -22,13 +22,17 @@
                 event.target.setCustomValidity('');
             })
         });
-
     </script>
+    <style>
+        .number {
+            width: 6em;
+        }
+    </style>
+
     @php
         $trial_id = $trial->id;
-
         $trial_date = date_create($trial->date);
-        $offset = DateInterval::createFromDateString('4 years');
+        $offset = DateInterval::createFromDateString('6 years');
         $maxDob = $trial_date->sub($offset)->format("Y-m-d");
 
     $allCourses = array();
@@ -59,16 +63,14 @@
     $courselist   = str_replace(',',',',implode(',', $allCourses));
     $courseOptions = explode(',', $courselist);
     $classOptions = explode(',', $classlist);
-
-
-            $authority = $trial->authority;
-            $types = array("2 stroke", "4 stroke", "e-bike");
+    $authority = $trial->authority;
+    $types = array("2 stroke", "4 stroke", "e-bike");
     $entryIDs = array();
 
     $userID = Auth::user()->id;
 
 //    Check for extras
-        $hasExtras = is_null($membership) ? false : true;
+        $hasMembership = is_null($membership) ? false : true;
 
     @endphp
     <x-slot:heading>
@@ -116,13 +118,8 @@
             </button>
             <input type="hidden" id="entryIDs" name="entryIDs" value="{{implode(',',$entryIDs)}}">
         </form>
-        {{--        <form action="/entries/checkout" method="post">--}}
-
-        {{--        <div class="mt-4" id="buttons">--}}
-        {{--            <a href="/user/entries"--}}
-        {{--               class="mt-4 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Go to Checkout</a>--}}
-        {{--        </div>--}}
     @endif
+
     @if(sizeof($reserves) > 0)
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Reserves - you will
@@ -149,14 +146,6 @@
                 @endforeach
             </table>
         </div>
-
-
-        {{--        <form action="/entries/checkout" method="post">--}}
-
-        {{--        <div class="mt-4" id="buttons">--}}
-        {{--            <a href="/user/entries"--}}
-        {{--               class="mt-4 rounded-md  bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Go to Checkout</a>--}}
-        {{--        </div>--}}
     @endif
 
 
@@ -166,157 +155,216 @@
         <input type="hidden" id="trial_id" name="trial_id" value="{{$trial_id}}">
         <input type="hidden" id="created_by" name="created_by" value="{{$userID}}">
         <div class="space-y-12">
-            <div class="border-b border-gray-900/10 pb-12">
-                <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                    <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add an
-                        Entry
-                    </div>
-
-                    <div class="mt-2 px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-
-
-                        @if($hasExtras)
-                            <x-form-field>
-                                <div class="font-semibold text-lg text-red-500">Not paid your 2026 YCMCC membership
-                                    yet?
-                                </div>
-                                <div class="flex col-span-3 justify-normal space-x-4 align-middle">
-                                    <div class="font-normal  text-black" for="extras">Tick this box to include payment
-                                        (£10) with this entry
-                                    </div>
-                                    <input name="extras" type="checkbox" value="{{$membership->stripe_price_id}}"
-                                           id="extras"
-                                            {{old('extras') != null ? 'checked' :''}}
-                                    />
-                                </div>
-                            </x-form-field>
-
-                        @endif
-                        <x-form-field>
-                            <x-form-label for="name">Name</x-form-label>
-                            <div class="mt-2 ">
-                                <x-form-input class="" name="name" type="text" id="name" :value="old('name')"
-                                              pattern="^([a-zA-Z\-]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{1,}\s?([a-zA-Z]{1,})?)"
-                                              placeholder="Rider's name" required/>
-                                <x-form-error name="name"/>
-                            </div>
-                            @error('name')
-                            <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                            @enderror
-                        </x-form-field>
-
-                        <x-form-field>
-                            <x-form-label for="licence">{{$authority}} Licence</x-form-label>
-                            <div class="mt-2 col-span-2">
-                                <x-form-input name="licence" type="text" id="licence" :value="old('licence')"
-                                              placeholder="Licence number - leave blank if no licence"/>
-                                <x-form-error name="licence"/>
-                            </div>
-                        </x-form-field>
-
-                        {{--                        <x-form-field>--}}
-                        {{--                            <x-form-label for="isYouth">Under-18</x-form-label>--}}
-                        {{--                            <div class="ml-2 mt-2 col-span-full">--}}
-                        {{--                                <input type="checkbox" name="isYouth" id="isYouth" :value="1" class="isYouth"/>--}}
-                        {{--                                <x-form-error name="isYouth"/>--}}
-                        {{--                            </div>--}}
-                        {{--                        </x-form-field>--}}
-
-                        <div id="dateInput" class=" col-span-full">
-                            <x-form-field>
-                                <x-form-label for="dob">Date of Birth</x-form-label>
-                                <div class="mt-2  max-w-40 col-span-full">
-                                    <x-form-input type="date" max="{{$maxDob}}" required name="dob" id="dob"
-                                                  :value="old('dob')"/>
-                                </div>
-                                @error('dob')
-                                <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                                @enderror
-                            </x-form-field>
-                        </div>
-
-                        <x-form-field>
-                            <x-form-label for="make">Make</x-form-label>
-                            <div class="mt-2 col-span-2">
-                                <x-form-input name="make" type="text" id="make" :value="old('make')"
-                                              placeholder="Bike make/model" required/>
-                                <x-form-error name="make"/>
-                            </div>
-                            @error('make')
-                            <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
-                            @enderror
-                        </x-form-field>
-
-                        <x-form-field>
-                            <x-form-label for="size">Capacity</x-form-label>
-                            <div class="mt-2">
-                                <x-form-input name="size" type="text" id="size" :value="old('size')"
-                                              autocomplete="off"
-                                              placeholder="Bike engine size - leave empty for e-Bike"/>
-                                <x-form-error name="size"/>
-                            </div>
-                        </x-form-field>
-
-                        <x-form-field>
-                            <x-form-label class="pb-2" for="type">Type</x-form-label>
-
-                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
-                                <div class="pb-2 pt-2    sm:col-span-2">
-                                    <select class="ml-2 bg-white  space-x-4 border-none" name="type" id="type" required>
-                                        <option value="">Select your engine type</option>
-                                        @foreach($types as $type)
-                                            <option value="{{$type}}">{{$type}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </x-form-field>
-
-                        <x-form-field>
-
-                            <x-form-label class="pb-2" for="course">Course</x-form-label>
-                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
-                                <div class="pb-2 pt-2    sm:col-span-2">
-                                    <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course"
-                                            required>
-                                        <option value="">Select your course</option>
-                                        @foreach($courseOptions as $course)
-                                            <option value="{{trim($course)}}">{{trim($course)}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </x-form-field>
-
-                        <x-form-field>
-                            <x-form-label class="pb-2" for="class">Class</x-form-label>
-
-                            <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
-                                <div class="pb-2 pt-2 bg-white sm:col-span-2">
-                                    <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class"
-                                            required>
-                                        <option value="">Select your class</option>
-                                        @foreach($classOptions as $class)
-                                            <option value="{{$class}}">{{$class}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </x-form-field>
-
-
-                    </div>
+            <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add an
+                    Entry
                 </div>
 
-                <div class="mt-4" id="buttons">
-                    <a href="/"
-                       class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
-                    <button type="submit"
-                            class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
-                        Register
-                    </button>
+                <div class="mt-2 px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+
+                    <x-form-field>
+                        <x-form-label for="name">Name</x-form-label>
+                        <div class="mt-2 ">
+                            <x-form-input class="" name="name" type="text" id="name" :value="old('name')"
+                                          pattern="^([a-zA-Z\-]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{1,}\s?([a-zA-Z]{1,})?)"
+                                          placeholder="Rider's name" required/>
+                            <x-form-error name="name"/>
+                        </div>
+                        @error('name')
+                        <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                        @enderror
+                    </x-form-field>
+
+                    <x-form-field>
+                        <x-form-label for="licence">{{$authority}} Licence</x-form-label>
+                        <div class="mt-2 col-span-2">
+                            <x-form-input name="licence" type="text" id="licence" :value="old('licence')"
+                                          placeholder="Licence number - leave blank if no licence"/>
+                            <x-form-error name="licence"/>
+                        </div>
+                    </x-form-field>
+
+                    <div id="dateInput" class=" col-span-full">
+                        <x-form-field>
+                            <x-form-label for="dob">Date of Birth</x-form-label>
+                            <div class="mt-2  max-w-40 col-span-full">
+                                <x-form-input type="date" max="{{$maxDob}}" required name="dob" id="dob"
+                                              :value="old('dob')"/>
+                            </div>
+                            @error('dob')
+                            <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                            @enderror
+                        </x-form-field>
+                    </div>
+
+                    <x-form-field>
+                        <x-form-label for="make">Make</x-form-label>
+                        <div class="mt-2 col-span-2">
+                            <x-form-input name="make" type="text" id="make" :value="old('make')"
+                                          placeholder="Bike make/model" required/>
+                            <x-form-error name="make"/>
+                        </div>
+                        @error('make')
+                        <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                        @enderror
+                    </x-form-field>
+
+                    <x-form-field>
+                        <x-form-label for="size">Capacity</x-form-label>
+                        <div class="mt-2">
+                            <x-form-input name="size" type="text" id="size" :value="old('size')"
+                                          autocomplete="off"
+                                          placeholder="Bike engine size - leave empty for e-Bike"/>
+                            <x-form-error name="size"/>
+                        </div>
+                    </x-form-field>
+
+                    <x-form-field>
+                        <x-form-label class="pb-2" for="type">Type</x-form-label>
+
+                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
+                            <div class="pb-2 pt-2    sm:col-span-2">
+                                <select class="ml-2 bg-white  space-x-4 border-none" name="type" id="type" required>
+                                    <option value="">Select your engine type</option>
+                                    @foreach($types as $type)
+                                        <option value="{{$type}}">{{$type}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </x-form-field>
+
+                    <x-form-field>
+
+                        <x-form-label class="pb-2" for="course">Course</x-form-label>
+                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
+                            <div class="pb-2 pt-2    sm:col-span-2">
+                                <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course"
+                                        required>
+                                    <option value="">Select your course</option>
+                                    @foreach($courseOptions as $course)
+                                        <option value="{{trim($course)}}">{{trim($course)}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </x-form-field>
+
+                    <x-form-field>
+                        <x-form-label class="pb-2" for="class">Class</x-form-label>
+
+                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
+                            <div class="pb-2 pt-2 bg-white sm:col-span-2">
+                                <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class"
+                                        required>
+                                    <option value="">Select your class</option>
+                                    @foreach($classOptions as $class)
+                                        <option value="{{$class}}">{{$class}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </x-form-field>
+
+
                 </div>
             </div>
+        </div>
+        {{-- Check for merchandise--}}
+        @if(sizeof($merchandise) > 0)
+            <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add Extras
+                </div>
+                <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                    @foreach($merchandise as $item)
+                        {{--@dump($merchandise)--}}
+                        @php
+                            $productIndex = $loop->index;
+                        @endphp
+                        <x-form-field>
+                            @php
+                                $priceArray = explode(',', $item->price);
+                                $price = $priceArray[0]/100;
+                                if($price == 0) {
+                                    $price = "Free of Charge";
+                                } else {
+                                    $price = "£".$price;
+                                }
+                            @endphp
+
+                            @if($item->numOptions == 1)
+
+                                <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
+                                    - {{$price}}</x-form-label>
+                                <input name="prodIDs[]" type="hidden" value="product{{$productIndex}}">
+                                <input name="product{{$productIndex}}" type="checkbox" value="{{$item->priceIDs}}"
+                                       id="extra1"
+                                        {{old('extra1') != null ? 'checked' :''}}
+                                />
+                                <x-form-error name="product{{$productIndex}}"/>
+
+                            @else
+                                <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
+                                    - {{$price}}</x-form-label>
+                                <div>Please select <span class="font-semibold">one</span></div>
+                                @php
+                                    $options = explode(',',$item->options);
+                                    $productIDs = explode(',', $item->productIDs);
+                                    $priceIDs = explode(',', $item->priceIDs);
+                                @endphp
+                                <input name="prodIDs[]" type="hidden" value="product{{$productIndex}}">
+                                @foreach($options as $option)
+                                    @php
+                                        $index = $loop->index;
+                                    @endphp
+                                    <input name="product{{$productIndex}}" type="radio" id="extra{{$index}}" required
+                                           value="{{$priceIDs[$index]}}"
+                                            {{ (old('extra') == $option) ? ' checked' : '' }}
+                                    >
+                                    <label class="pl-1 pr-4" for="extra">{{$option}}</label>
+
+                                @endforeach
+                            @endif
+                        </x-form-field>
+                    @endforeach()
+                </div>
+            </div>
+        @endif
+
+        @if($hasMembership)
+            <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add Membership
+                </div>
+                <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                    @php
+                        $membershipFee = $membership->price / 100;
+                        $productID = $membership->stripe_product_id;
+                        $priceID = $membership->stripe_price_id;
+                    @endphp
+                    <x-form-field>
+                        <div class="flex col-span-3 justify-normal">
+                            <div class="font-semibold text-blue-700">{{$membership->name}}
+                                (£{{ $membershipFee  }})
+                            </div>
+
+                            <div class="pl-2">
+                                <input name="membership" class="p-2" type="checkbox"
+                                       value="{{$priceID}}"
+                                />
+                            </div>
+                        </div>
+                    </x-form-field>
+                </div>
+            </div>
+        @endif
+
+        <div class="mt-4" id="buttons">
+            <a href="/"
+               class="rounded-md bg-white px-3 py-2 text-sm  text-blue-600 shadow-sm hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
+            <button type="submit"
+                    class="rounded-md ml-2 bg-blue-600 px-3 py-1 text-sm font-light  border border-blue-800 text-white drop-shadow-lg hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                Register
+            </button>
         </div>
     </form>
 </x-main>

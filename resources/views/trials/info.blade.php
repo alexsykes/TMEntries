@@ -2,18 +2,18 @@
     <x-slot:heading>
         Information
     </x-slot:heading>
-
     @php
-        $statusArray = array('Awaiting payment', 'Confirmed Entry','Awaiting Refund', 'Refunded', 'Reserve - awaiting payment', 'Reserve', 'Removed by admin', 'Manual Entry - to pay', 'Manual Entry - paid', 'Manual Entry - FoC' );
+        $statusArray = array('Awaiting payment', 'Confirmed Entry','Awaiting Refund', 'Refunded', 'Reserve - awaiting payment', 'Reserve', 'Removed', 'Manual Entry - to pay', 'Manual Entry - paid', 'Manual Entry - FoC' );
 $numSalesItems = sizeof($sales);
+//dd($sales);
     @endphp
 
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
         <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">{{$venue->name}}</div>
-            <div class="sm: flex justify-between text-sm w-full pl-4 pr-4 pt-2">
-                <div class="sm: table-cell w-1/2"><b>Landowner:</b> {{$venue->landowner}}</div>
-                <div class="sm: table-cell text-right w-1/2"><b>Phone:</b> {{$venue->phone}}</div>
-            </div>
+        <div class="sm: flex justify-between text-sm w-full pl-4 pr-4 pt-2">
+            <div class="sm: table-cell w-1/2"><b>Landowner:</b> {{$venue->landowner}}</div>
+            <div class="sm: table-cell text-right w-1/2"><b>Phone:</b> {{$venue->phone}}</div>
+        </div>
 
         <div class="flex justify-between text-sm w-full pl-4 pr-4 pt-2">
             <div class="sm: table-cell w-1/2"><b>Address:</b> {{$venue->address}}</div>
@@ -29,75 +29,60 @@ $numSalesItems = sizeof($sales);
         </div>
     </div>
 
-
-
-{{--    <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">--}}
-{{--        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Online payments</div>--}}
-
-{{--        <table class="table-fixed text-sm w-full">--}}
-{{--            <tr>--}}
-{{--                <th>Item</th>--}}
-{{--                <th>Price</th>--}}
-{{--                <th class="text-end">Sales</th>--}}
-{{--                <th class="text-end">Refunds</th>--}}
-{{--                <th class="text-end">Total</th>--}}
-{{--            </tr>--}}
-{{--            @foreach($sales as $sale)--}}
-{{--                @php--}}
-{{--                    $price = $sale->stripe_price / 100;--}}
-{{--                    $name = $sale->product_name;--}}
-{{--                    $quantity = $sale->purchases;--}}
-{{--                    $refunds = $sale->refunds;--}}
-{{--                    $total = $price * ($quantity - $refunds) + ($refunds * 3);--}}
-
-{{--                @endphp--}}
-{{--                <tr>--}}
-{{--                    <td class="text-start">{{$name}}</td>--}}
-{{--                    <td>£{{$price}}</td>--}}
-{{--                    <td class="text-center">{{$quantity}}</td>--}}
-{{--                    <td class="text-end">{{$refunds}}</td>--}}
-{{--                    <td class="text-end">£{{$total}}</td>--}}
-{{--                </tr>--}}
-{{--                --}}{{--            <div>£{{$sale->purchases * $purchase->purchases}}</div>--}}
-{{--            @endforeach--}}
-{{--        </table>--}}
-{{--    </div>--}}
-
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Online payments</div>
+        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Online payments
+        </div>
 
+
+        <div class="flex justify-between text-sm w-full pl-4 pr-4">
+            <div class="table-cell w-1/5">Item</div>
+            <div class="table-cell w-1/5">Sales</div>
+            <div class="table-cell w-1/5">Refunds</div>
+            <div class="table-cell w-1/5 text-end">Total</div>
+        </div>
+        @foreach($sales as $sale)
+            @if($sale->purchases > 0)
+            @php
+                $price = $sale->stripe_price / 100;
+                if($price == 0) {
+                    $priceStr = "FoC";
+                } else {
+                    $priceStr = "£".$price;
+                }
+
+                $name = $sale->stripe_product_description;
+                $quantity = $sale->purchases;
+                $refunds = $sale->refunds;
+                $total = $price * ($quantity - $refunds) + ($refunds * 3);
+
+            @endphp
+            <div class="flex justify-between text-sm w-full pl-4 pr-4">
+                <div class="table-cell w-1/5">{{$name}} ({{$priceStr}})</div>
+                <div class="table-cell w-1/5">{{$quantity}}</div>
+                <div class="table-cell w-1/5">{{$refunds}}</div>
+                <div class="table-cell w-1/5 text-end">£{{$total}}</div>
+            </div>
+            {{--            <div>£{{$sale->purchases * $purchase->purchases}}</div>--}}
+            @endif
+        @endforeach
+
+    </div>
+    <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Course counts
+        </div>
+        @foreach($entryCounts as $count)
 
             <div class="flex justify-between text-sm w-full pl-4 pr-4">
-                <div class="table-cell w-1/5">Item</div>
-                <div class="table-cell w-1/5">Price</div>
-                <div class="table-cell w-1/5">Sales</div>
-                <div class="table-cell w-1/5">Refunds</div>
-                <div class="table-cell w-1/5 text-end">Total</div>
+                <div class="table-cell">{{$count->course}} - {{$count->count}}</div>
             </div>
-            @foreach($sales as $sale)
-                @php
-                    $price = $sale->stripe_price / 100;
-                    $name = $sale->product_name;
-                    $quantity = $sale->purchases;
-                    $refunds = $sale->refunds;
-                    $total = $price * ($quantity - $refunds) + ($refunds * 3);
-
-                @endphp
-                <div class="flex justify-between text-sm w-full pl-4 pr-4">
-                    <div class="table-cell w-1/5">{{$name}}</div>
-                    <div class="table-cell w-1/5">{{$price}}</div>
-                    <div class="table-cell w-1/5">{{$quantity}}</div>
-                    <div class="table-cell w-1/5">{{$refunds}}</div>
-                    <div class="table-cell w-1/5 text-end">£{{$total}}</div>
-                </div>
-                {{--            <div>£{{$sale->purchases * $purchase->purchases}}</div>--}}
-            @endforeach
-
+        @endforeach
     </div>
 
 
     <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Entry list ({{$numRiders}})</div>
+        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Entry list
+            ({{$numRiders}})
+        </div>
         @foreach($entries as $entry)
             @php
                 $entryStatus = $entry->status;
@@ -109,6 +94,22 @@ $numSalesItems = sizeof($sales);
                 <div class="table-cell w-1/4">{{$entry->course}}</div>
                 <div class="table-cell w-1/4">{{$entry->class}}</div>
                 <div class="table-cell w-1/4 text-end">{{$status}}</div>
+            </div>
+        @endforeach
+    </div>
+
+
+    <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+        <div class="  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  font-semibold text-white bg-violet-600">Extras
+        </div>
+        @foreach($entryPurchases as $entry)
+            @php
+                $purchases = str_replace(',','<br/>', $entry->entry_purchases);
+                    @endphp
+
+            <div class="flex justify-between text-sm w-full pl-4 pr-4">
+                <div class="table-cell w-1/4">{{$entry->name}}</div>
+                <div class="table-cell w-3/4">@php echo $purchases; @endphp</div>
             </div>
         @endforeach
     </div>

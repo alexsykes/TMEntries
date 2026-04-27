@@ -8,6 +8,7 @@ use App\Http\Controllers\ClubController;
 use App\Http\Controllers\ClubmailController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ScoringController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\UnsubscribeRequestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\VenueController;
+use App\Http\Controllers\WebContactController;
 use App\Http\Middleware\CheckClubUser;
 use App\Http\Middleware\IsAdminUser;
 use Illuminate\Support\Facades\Route;
@@ -34,11 +36,9 @@ Route::get('/results/display/{id}', [ResultController::class, 'display'])->name(
 
 Route::get('/trial/programme/{id}', [TrialController::class, 'programme']);
 
-
 // CLUB access
 Route::get('/clubaccess', [TrialController::class, 'adminTrials'])->middleware(CheckClubUser::class)->name('clubaccess');
 Route::get('/adminTrials', [TrialController::class, 'adminTrials'])->middleware(IsAdminUser::class)->name('adminTrials');
-
 
 // ADMIN access
 Route::get('/adminaccess', [AdminController::class, 'userList'])->middleware(IsAdminUser::class)->name('adminaccess');
@@ -60,10 +60,8 @@ Route::patch('/admin/trial/resetScoring', [AdminController::class, 'resetScoring
 Route::get('/trials/adminEntryList/{id}', [TrialController::class, 'adminEntryList'])->middleware(CheckClubUser::class);
 Route::get('/trials/edit/{id}', [TrialController::class, 'edit'])->middleware(CheckClubUser::class)->name('edit');
 
-
 // Usage - initial trial setup
 Route::post('/trials/save', [TrialController::class, 'save'])->middleware(CheckClubUser::class)->name('save');
-
 
 Route::get('/trials/add', [TrialController::class, 'add'])->middleware(CheckClubUser::class)->name('add');
 Route::get('/trials/addTrialDetail/{id}', [TrialController::class, 'addTrialTrial'])->middleware(CheckClubUser::class);
@@ -78,10 +76,9 @@ Route::patch('/trials/update', [TrialController::class, 'update'])->middleware(C
 Route::post('/trials/store', [TrialController::class, 'store'])->middleware(CheckClubUser::class)->name('store');
 Route::get('/trials/toggleVisibility/{id}', [TrialController::class, 'toggleVisibility'])->middleware(CheckClubUser::class)->name('toggleVisibility');
 
-
 /*
-ENTRY Routes
-*/// Entry gateway for users
+//ENTRY Routes
+*/ // Entry gateway for users
 Route::get('/userEntryList', [EntryController::class, 'userEntryList'])->middleware(['auth', 'verified'])->name('userEntryList');
 Route::get('/entries/register/{trialid}', [EntryController::class, 'register'])->middleware(['auth', 'verified']);
 Route::patch('/entries/userupdate', [EntryController::class, 'userupdate']);
@@ -90,21 +87,16 @@ Route::get('/entry/withdraw', [EntryController::class, 'withdraw']);
 Route::get('/entry/withdrawConfirm/{id}', [EntryController::class, 'withdrawConfirm']);
 Route::get('/entry/changeNumber/{id}', [EntryController::class, 'changeNumber'])->middleware(['auth', 'verified']);
 
-
 Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->middleware('auth', 'verified')->name('entries.edit');
 Route::get('/entries/delete/{id}', [EntryController::class, 'delete'])->middleware('auth', 'verified')->name('entries.delete');
 
 Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails']);
 
-
 Route::get('/entry/useredit', [EntryController::class, 'useredit']);
-Route::post('entries/userdata', [EntryController::class, 'showUserData']);
 
-Route::patch('/entries/update/{id}', [EntryController::class, 'updateEntry']);
-//Route::get('entries/saveddata', [EntryController::class, 'showSavedData']);
-Route::get('/entries/entrylist', [EntryController::class, 'list']);
+Route::patch('/entries/update', [EntryController::class, 'updateEntry']);
+
 Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->name('entries.create');
-//Route::get('/entries/create_another', [EntryController::class, 'create_another'])->name('entries.create_another');
 Route::post('/entries/store', [EntryController::class, 'store']);
 Route::post('/entry/store', [EntryController::class, 'store']);
 Route::post('/entries/saveRidingNumbers', [EntryController::class, 'saveRidingNumbers']);
@@ -116,31 +108,28 @@ Route::post('/otdCreate', [EntryController::class, 'otdCreate']);
 Route::post('/otd/saveNumbers', [EntryController::class, 'otdSaveNumbers']);
 Route::get('generate/{trialid}', [EntryController::class, 'generate'])->middleware(['auth', 'verified']);
 
-// Check for usage
-//Route::post('/entries/createSession', [EntryController::class, 'createStripeSession']);
 
 /*
  * VENUE Routes
  */
 Route::get('/admin/venues', [VenueController::class, 'list'])->name('venues');
 Route::get('/venues/add', [VenueController::class, 'add']);
-//Route::get('/venues/edit/{$venueID}', [VenueController::class, 'edit']);
+// Route::get('/venues/edit/{$venueID}', [VenueController::class, 'edit']);
 Route::get('/venues/edit/{id}', [VenueController::class, 'edit'])->middleware('auth', 'verified')->name('venues.edit');
 Route::post('/venues/add', [VenueController::class, 'store']);
-//Route::post('/venues/update', [VenueController::class, 'update']);
+// Route::post('/venues/update', [VenueController::class, 'update']);
 Route::patch('/venues/save', [VenueController::class, 'save'])->middleware('auth', 'verified')->name('venues.save');
 
-// Stripe Routes
-Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeCheckout']);
+Route::post('/stripe/checkout', [StripePaymentController::class, 'stripeUserCheckout']);
 Route::get('/checkout/success', [StripePaymentController::class, 'checkoutSuccess'])->name('checkout-success');
-Route::view('/checkout/cancel', [UserController::class, 'entryList'])->name('checkout-cancel');
+Route::get('/checkout/cancel', [UserController::class, 'entryList'])->name('checkout-cancel');
 Route::post('/entries/checkout', [EntryController::class, 'checkout']);
 
 // SCORING routes
 Route::get('/scores/setup/{id}', [ScoringController::class, 'setup'])->middleware(CheckClubUser::class)->name('scores.setup');
 Route::post('/scores/setup', [ScoringController::class, 'setupscoregrid'])->middleware(CheckClubUser::class)->name('scores.setupgrid');
 Route::get('/scores/grid/{id}', [ScoringController::class, 'grid'])->middleware(CheckClubUser::class)->name('scores.grid');
-//Route::get('/scores/section/{id}', [ScoringController::class, 'section'])->name('scores.section');
+
 Route::get('/scores/sectionScoresForRider/{trialid}/{rider}/{section}', [ScoringController::class, 'sectionScoresForRider'])->middleware(CheckClubUser::class)->name('scores.sectionScoreForRider');
 Route::get('/scores/sectionScores/{id}/{section}', [ScoringController::class, 'sectionScores'])->middleware(CheckClubUser::class)->name('scores.sectionScores');
 
@@ -158,7 +147,7 @@ Route::patch('/user/entry/update', [UserController::class, 'updateEntry'])->midd
 Route::get('/stripe/usercheckout', [StripePaymentController::class, 'stripeUserCheckout']);
 
 Route::get('/user/removeEntry/{id}', [UserController::class, 'removeEntry'])->middleware(['auth', 'verified']); // First stage in rentry withdrawal
-//Route::get('/user/confirmRemoveEntry', [UserController::class, 'confirmRemoveEntry'])->middleware(['auth', 'verified']); // Second stage
+
 Route::get('/user/withdraw/{id}', [UserController::class, 'userWithdraw'])->middleware(['auth', 'verified']); // Final stage
 Route::get('/unsubscribe', [UnsubscribeRequestController::class, 'store'])->name('user.unsubscribe');
 
@@ -167,17 +156,15 @@ Route::get('/admin/user/remove/{id}', [AdminController::class, 'adminRemove'])->
 Route::get('/admin/editUser/{id}', [AdminController::class, 'editUser'])->middleware(IsAdminUser::class)->name('admin.editUser');
 Route::patch('/admin/updateUser', [AdminController::class, 'updateUser'])->middleware(IsAdminUser::class)->name('admin.updateUser');
 
-
 Route::get('/admin/entry/edit/{id}', [EntryController::class, 'adminEdit'])->middleware(CheckClubUser::class);
-//Route::get('/admin/entry/edit/{id}', [EntryController::class, 'adminEdit'])->middleware(CheckClubUser::class);
+// Route::get('/admin/entry/edit/{id}', [EntryController::class, 'adminEdit'])->middleware(CheckClubUser::class);
 Route::get('/admin/entry/cancel/{id}', [EntryController::class, 'adminCancel'])->middleware(CheckClubUser::class);
 Route::get('/admin/entries/editRidingNumbers/{id}', [EntryController::class, 'editRidingNumbers'])->middleware(CheckClubUser::class);
 Route::patch('/admin/entries/update', [EntryController::class, 'adminEntryUpdate'])->middleware(CheckClubUser::class);
 Route::post('/admin/entries/store', [EntryController::class, 'adminEntryStore'])->middleware(CheckClubUser::class);
-//Route::get('/admin/entries/delete/{id}', [EntryController::class, 'adminEntryDelete'])->middleware(['auth', 'verified']);
+// Route::get('/admin/entries/delete/{id}', [EntryController::class, 'adminEntryDelete'])->middleware(['auth', 'verified']);
 Route::get('/admin/entries/printSignOnSheets/{id}', [EntryController::class, 'printSignOnSheets'])->middleware(CheckClubUser::class);
 Route::get('/admin/sendMail', [AdminController::class, 'sendMail'])->middleware(CheckClubUser::class);
-
 
 Route::get('/admin/trial/edit/{id}', [AdminController::class, 'trialEdit'])->middleware(IsAdminUser::class);
 Route::patch('/admin/trial/update', [AdminController::class, 'trialUpdate'])->middleware(IsAdminUser::class);
@@ -187,6 +174,7 @@ Route::get('/admin/trial/toggleScoring/{id}', [AdminController::class, 'toggleSc
 Route::get('/admin/trial/toggleResultPublished/{id}', [AdminController::class, 'toggleResultPublished'])->middleware(IsAdminUser::class);
 
 Route::get('/admin/trial/refund/{id}', [AdminController::class, 'refundTrial'])->middleware(IsAdminUser::class);
+Route::get('/admin/trial/purchases/{id}', [AdminController::class, 'showPurchases'])->middleware(CheckClubUser::class);
 
 // MAIL Routes
 Route::get('/admin/mails', [AdminController::class, 'mailList'])->middleware(['auth', 'verified'])->name('admin.mails');
@@ -199,6 +187,8 @@ Route::get('/mail/edit/{id}', [ClubmailController::class, 'edit'])->middleware([
 Route::patch('/mail/update', [ClubmailController::class, 'update'])->middleware(['auth', 'verified'])->name('mail.update');
 Route::post('/mail/store', [ClubmailController::class, 'store'])->middleware(['auth', 'verified'])->name('mail.store');
 Route::get('/mail/sendTestmail', [ClubmailController::class, 'sendTestMail']);
+Route::get('/mailshot/cancel/{id}', [ClubmailController::class, 'cancelMailshot'])->middleware(['auth', 'verified'])->name('mailshot.cancel');
+
 
 Route::post('/usermail/store', [ClubmailController::class, 'storeUsermail'])->middleware(['auth', 'verified'])->name('usermail.store');
 Route::get('/usermail/address_mail/{id}', [ClubmailController::class, 'addressUsermail'])->middleware(['auth', 'verified']);
@@ -207,7 +197,7 @@ Route::post('/usermail/update', [ClubmailController::class, 'updateUserEmail'])-
 Route::get('/usermail/edit/{id}', [ClubmailController::class, 'editUserEmail'])->middleware(['auth', 'verified']);
 Route::post('/usermail/storeAddressList', [ClubmailController::class, 'storeAddressList'])->middleware(['auth', 'verified']);
 Route::get('/usermail/preview/{id}', [ClubmailController::class, 'previewUsermail'])->middleware(['auth', 'verified'])->name('usermail.preview');
-Route::get('/usermail/sendMail/{id}', [ClubmailController::class, 'sendMail'])->middleware(['auth', 'verified'])->name('usermail.sendMail');// Start of send -> /usermail/prepare
+Route::get('/usermail/sendMail/{id}', [ClubmailController::class, 'sendMail'])->middleware(['auth', 'verified'])->name('usermail.sendMail'); // Start of send -> /usermail/prepare
 Route::post('/usermail/send', [ClubmailController::class, 'send'])->middleware(['auth', 'verified'])->name('usermail.send'); // Send
 Route::post('/usermail/prepare', [ClubmailController::class, 'prepare'])->middleware(['auth', 'verified'])->name('usermail.prepare');
 Route::get('/usermail/unpublish/{id}', [ClubmailController::class, 'unpublish'])->middleware(['auth', 'verified']);
@@ -223,17 +213,23 @@ Route::get('/clubs/membershipForm/{id}', [ClubController::class, 'membershipForm
 Route::post('/club/member/add', [ClubController::class, 'addMember']);
 Route::get('/club/member/approve', [ClubController::class, 'memberApprove'])->middleware(['auth', 'verified']);
 Route::post('/club/member/approve', [ClubController::class, 'memberApprovalUpdate'])->middleware(['auth', 'verified']);
+Route::patch('/club/member/update', [ClubController::class, 'memberUpdate'])->middleware(['auth', 'verified']);
+Route::patch('/club/user/update', [ClubController::class, 'userUpdate']);
 Route::get('/club/member/confirmRegistered', [ClubController::class, 'confirmRegistered']);
 Route::get('/club/membership/confirm/{id}', [ClubController::class, 'membershipConfirm']);
+Route::get('/club/membership/edit/{id}', [ClubController::class, 'membershipEdit']);
+
+Route::get('/club/member/useredit', [ClubController::class, 'userEdit']);
+
 Route::get('/club/mails', [ClubController::class, 'mailList'])->middleware('auth', 'verified'); // Lists mails
 Route::get('/clublist', [ClubController::class, 'clublist']);
-//Route::get('/club/detail/{id}', [ClubController::class, 'detail']);
+// Route::get('/club/detail/{id}', [ClubController::class, 'detail']);
 Route::get('/club/profile', [ClubController::class, 'console'])->middleware(['auth', 'verified']);
 Route::get('/club/profile/edit', [ClubController::class, 'editProfile'])->middleware(['auth', 'verified']);
-Route::get('/clubs/add', [ClubController::class, 'add'])->middleware(['auth', 'verified']);
-Route::get('/club/edit/{id}', [ClubController::class, 'edit'])->middleware(['auth', 'verified']);
-Route::post('/club/store', [ClubController::class, 'store'])->middleware(['auth', 'verified'])->name('club.store');
-Route::patch('/club/update', [ClubController::class, 'update'])->middleware(['auth', 'verified']);
+//Route::get('/clubs/add', [ClubController::class, 'add'])->middleware(['auth', 'verified']);
+//Route::get('/club/edit/{id}', [ClubController::class, 'edit'])->middleware(['auth', 'verified']);
+//Route::post('/club/store', [ClubController::class, 'store'])->middleware(['auth', 'verified'])->name('club.store');
+//Route::patch('/club/update', [ClubController::class, 'update'])->middleware(['auth', 'verified']);
 Route::patch('/club/clubUpdate', [ClubController::class, 'clubUpdate'])->middleware(['auth', 'verified']);
 Route::get('/club/console', [ClubController::class, 'console'])->middleware(['auth', 'verified'])->name('club.console');
 Route::get('/club/console/{tab}', [ClubController::class, 'console'])->middleware(['auth', 'verified'])->name('club.console.tab');
@@ -253,18 +249,29 @@ Route::get('/series/edit/{id}', [SeriesController::class, 'edit'])->middleware(C
 Route::post('/series/store', [SeriesController::class, 'store'])->middleware(CheckClubUser::class);
 Route::patch('/series/update', [SeriesController::class, 'update'])->middleware(CheckClubUser::class);
 
-
-//ABOUT Routes
+// ABOUT Routes
 Route::get('/about', [AboutController::class, 'about']);
 
 
-//Import routes
+// PRODUCT Routes
+Route::get('/admin/products', [ProductController::class, 'products'])->middleware(IsAdminUser::class);
+Route::get('/admin/product/add', [ProductController::class, 'add'])->middleware(IsAdminUser::class);
+Route::post('/admin/product/store', [ProductController::class, 'store'])->middleware(IsAdminUser::class);
+
+// Import routes
 Route::get('/import', [ImportController::class, 'showImportForm'])->middleware(CheckClubUser::class)->name('import.form');
 Route::post('/import', [ImportController::class, 'importEntries'])->middleware(CheckClubUser::class)->name('import.process');
 
 // Utility routes
 Route::get('/createResultPDF/{id}', [UtilityController::class, 'createResultPDF'])->middleware(['auth', 'verified']);
 Route::patch('/riderNumber/update', [EntryController::class, 'updateRiderNumber'])->middleware(CheckClubUser::class);
+Route::get('/pdf/results/{id}', [UtilityController::class, 'getResultsPDF']);
+
+Route::get('/contact', [WebContactController::class, 'contactForm']);
+Route::post('/contact/submit', [WebContactController::class, 'store']);
+Route::get('/webcontacts', [WebContactController::class, 'index']);
+Route::get('/webcontact/{id}', [WebContactController::class, 'show']);
+Route::patch('/webcontact/update', [WebContactController::class, 'update']);
 
 
 // MIDDLEWARE
@@ -275,9 +282,23 @@ Route::middleware('auth')->group(function () {
     Route::patch('/preferences.update', [ProfileController::class, 'updatePreferences'])->name('preferences.update');
 });
 
-
-//Route::get('phpmyinfo', function () {
-//    phpinfo();
-//})->name('phpmyinfo');
-
 Route::post('/fetchScores', [ScoringController::class, 'fetchScores']);
+
+Route::get('getJob', function () {
+
+//    $job = DB::table('jobs')->first();
+//    $payload = $job->payload;
+//    $splod = explode(',', $payload);
+//    $command = $splod[10];
+//    dump($command);
+//    $unser = unserialize($command, ['allowed_classes' => true]);
+//    dd($unser);
+//    $command = $payload['command'];
+
+//    dd($unser);
+//    info("getJob");
+});
+
+//Route::get('/phpmyinfo', function () {
+//    phpinfo();
+//});

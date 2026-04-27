@@ -19,7 +19,7 @@ class OnTrialFull
 
     public function handle(TrialFull $event): void
     {
-        Info("Handling TrialFull event");
+        Info('Handling TrialFull event');
         $numEntries = $event->numEntries;
         $entryLimit = $event->entry_limit;
         $trialID = $event->trial_id;
@@ -27,19 +27,19 @@ class OnTrialFull
         Info("Confirmed entries: $numEntries");
         Info("Entry limit: $entryLimit");
 
-        $unconfirmed = Entry::whereIn("status", [0, 10])
-            ->join("users", "users.id", "=", "entries.created_by")
+        $unconfirmed = Entry::whereIn('status', [0, 10])
+            ->join('users', 'users.id', '=', 'entries.created_by')
             ->select('entries.id', 'entries.name', 'users.email')
-            ->where("trial_id", $trialID)
+            ->where('trial_id', $trialID)
             ->get();
 
-        $ids = array();
+        $ids = [];
 
         $trial = Trial::findOrFail($trialID);
-        $bcc = "monster@trialmonster.uk";
+        $bcc = 'monster@trialmonster.uk';
         foreach ($unconfirmed as $entry) {
             array_push($ids, $entry->id);
-//                Send TrialFull email
+            //                Send TrialFull email
             Info("Send Trial Full mail to $entry->email");
             Mail::to($entry->email)
                 ->bcc($bcc)
@@ -47,7 +47,7 @@ class OnTrialFull
         }
         Entry::whereIn('entries.id', $ids)
             ->update(['entries.status' => 5,
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
     }
 }

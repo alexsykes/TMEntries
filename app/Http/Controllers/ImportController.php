@@ -15,16 +15,18 @@ class ImportController extends Controller
         return view('.imports.import');
     }
 
-    public function importEntries(Request $request) {
+    public function importEntries(Request $request)
+    {
         $request->validate([
-            'file' => 'required|mimes:xls,xlsx,xls,csv|max:2048'
+            'file' => 'required|mimes:xls,xlsx,xls,csv|max:2048',
         ]);
 
         try {
             Excel::import(new EntriesImport, $request->file('file'));
+
             return back()->with('success', 'File imported successfully.');
         } catch (Exception $e) {
-            back()->with('error', 'Error importing file',$e->getMessage());
+            back()->with('error', 'Error importing file', $e->getMessage());
         }
     }
 }

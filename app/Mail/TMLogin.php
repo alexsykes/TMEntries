@@ -39,8 +39,8 @@ class TMLogin extends Mailable
     {
         return new Content(
             html: 'mails.new_site', with: [
-            'user' => $this->user,
-        ]
+                'user' => $this->user,
+            ]
         );
     }
 

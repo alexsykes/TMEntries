@@ -33,7 +33,6 @@ return new class extends Migration
             $table->string('entryMethod');
             $table->string('onlineEntryLink')->nullable();
 
-
             $table->boolean('hasEodSurcharge')->default(false);
             $table->boolean('hasEntryLimit')->default(false);
             $table->boolean('hasClosingDate')->default(false);

@@ -22,24 +22,24 @@ class ClubController extends Controller
     {
         $clubs = Club::all()
             ->sortBy('name');
+
         return view('clubs.list', compact('clubs'));
     }
 
-    public function profile(Request $request)
-    {
-        $user = Auth::user();
-        if (!$user->isClubUser) {
-            abort(code: 404);
-        }
-        $clubID = $user->club_id;
-
-        $club = Club::findOrfail($clubID);
-        $series = Series::where('clubID', $clubID)
-            ->get();
-//        dd($series);
-
-        return view('clubs.profile', ['club' => $club, 'series' => $series]);
-    }
+//    public function profile(Request $request)
+//    {
+//        $user = Auth::user();
+//        if (!$user->isClubUser) {
+//            abort(code: 404);
+//        }
+//        $clubID = $user->club_id;
+//
+//        $club = Club::findOrfail($clubID);
+//        $series = Series::where('clubID', $clubID)
+//            ->get();
+//
+//        return view('clubs.profile', ['club' => $club, 'series' => $series]);
+//    }
 
     public function clublist()
     {
@@ -55,42 +55,53 @@ class ClubController extends Controller
         return view('clubs.clublist', ['clubs' => $clubs]);
     }
 
-//    public function detail(Request $request) {
+    //    public function detail(Request $request) {
+    //        $club = Club::find(request('id'));
+    // //        dd($club);
+    //        return view('clubs.detail', ['club' => $club]);
+    //    }
+//    public function edit(Request $request)
+//    {
 //        $club = Club::find(request('id'));
-////        dd($club);
-//        return view('clubs.detail', ['club' => $club]);
+//        return view('clubs.edit', ['club' => $club]);
 //    }
-    public function edit(Request $request)
-    {
-        $club = Club::find(request('id'));
-        return view('clubs.edit', ['club' => $club]);
-    }
-
-    public function add()
-    {
-        return view('clubs.new');
-    }
-
-    public function store(Request $request)
-    {
-        $attributes = $request->validate([
-            'name' => ['required', 'min:5', 'max:255'],
-            'email' => 'required',
-            'phone' => 'required',
-            'area' => 'required',
-        ]);
-
-        $attributes['website'] = request('website', '');
-        $attributes['facebook'] = request('facebook', '');
-        $attributes['description'] = request('description', '');
-        $attributes['section_markers'] = request('section_markers', '');
-
-        $club = Club::create($attributes);
-        return redirect('/club/profile?tab=profile');
-    }
+//
+//    public function add()
+//    {
+//        return view('clubs.new');
+//    }
+//
+//    public function store(Request $request)
+//    {
+//        $attributes = $request->validate([
+//            'name' => ['required', 'min:5', 'max:255'],
+//            'email' => 'required',
+//            'phone' => 'required',
+//            'area' => 'required',
+//        ]);
+//
+//        $attributes['website'] = request('website', '');
+//        $attributes['facebook'] = request('facebook', '');
+//        $attributes['description'] = request('description', '');
+//        $attributes['section_markers'] = request('section_markers', '');
+//
+//        $club = Club::create($attributes);
+//
+//        return redirect('/club/profile?tab=profile');
+//    }
 
     public function clubUpdate(Request $request)
     {
+        $user = Auth::user();
+        $isPermitted = $user->club_id == request('id') ? true : false;
+
+        $ip = $request->ip();
+        if (!$isPermitted) {
+            info("Club member $user->id illegal access attempt - IP: $ip");
+            abort('403');
+        } else {
+            info("$user->name clubUpdate - IP: $ip");
+        }
         $attributes = $request->validate([
             'email' => ['required', 'email:rfc,dns'],
             'memSecEmail' => 'email:rfc,dns',
@@ -106,7 +117,7 @@ class ClubController extends Controller
         $attributes['membershipSecretary'] = request('membershipSecretary', '');
         $attributes['memSecPhone'] = request('memSecPhone', '');
 
-//        dd($attributes);
+        //        dd($attributes);
         $club = Club::find(request('id'));
 
         $club->update($attributes);
@@ -115,35 +126,36 @@ class ClubController extends Controller
         return redirect('/club/profile?tab=profile');
     }
 
-    public function update(Request $request)
-    {
-        $attributes = $request->validate([
-            'name' => ['required', 'min:5', 'max:255'],
-            'email' => ['required', 'email:rfc,dns'],
-            'memSecEmail' => 'email:rfc,dns',
-            'phone' => 'required',
-            'area' => 'required',
-        ]);
-
-        $attributes['website'] = request('website', '');
-        $attributes['facebook'] = request('facebook', '');
-        $attributes['description'] = request('description', '');
-        $attributes['section_markers'] = request('section_markers', '');
-        $attributes['membershipSecretary'] = request('membershipSecretary', '');
-        $attributes['memSecPhone'] = request('memSecPhone', '');
-        $club = Club::find(request('id'));
-
-        $club->update($attributes);
-        $club->save();
-
-        return redirect('/clubs/list');
-    }
+//    public function update(Request $request)
+//    {
+//        $attributes = $request->validate([
+//            'name' => ['required', 'min:5', 'max:255'],
+//            'email' => ['required', 'email:rfc,dns'],
+//            'memSecEmail' => 'email:rfc,dns',
+//            'phone' => 'required',
+//            'area' => 'required',
+//        ]);
+//
+//        $attributes['website'] = request('website', '');
+//        $attributes['facebook'] = request('facebook', '');
+//        $attributes['description'] = request('description', '');
+//        $attributes['section_markers'] = request('section_markers', '');
+//        $attributes['membershipSecretary'] = request('membershipSecretary', '');
+//        $attributes['memSecPhone'] = request('memSecPhone', '');
+//        $club = Club::find(request('id'));
+//
+//        $club->update($attributes);
+//        $club->save();
+//
+//        return redirect('/clubs/list');
+//    }
 
     public function editProfile()
     {
         $user = Auth::user();
         $clubID = $user->club_id;
         $club = Club::find($clubID);
+
         return view('clubs.editprofile', ['club' => $club]);
     }
 
@@ -152,9 +164,9 @@ class ClubController extends Controller
         $user = Auth::user();
         $clubID = $user->club_id;
 
-        $categoryArray = array('AGM', 'Committee Meetings', 'Trials', 'Social Events ', 'Other');
+        $categoryArray = ['AGM', 'Committee Meetings', 'Trials', 'Social Events ', 'Other'];
 
-        $mailData = array();
+        $mailData = [];
         foreach ($categoryArray as $category) {
             $mails = DB::table('clubmails')
                 ->where('club_id', $clubID)
@@ -167,31 +179,45 @@ class ClubController extends Controller
                 $mailData[$category] = $mails;
             }
         }
-        return view('clubs.maillist', ['mails' => $mails, 'categoryArray' => $categoryArray, 'mailData' => $mailData]);
-    }
 
-    public function mailList_()
-    {
-        $user = Auth::user();
-        $clubID = $user->club_id;
-
-        $mails = DB::table('clubmails')
+        $mailshotData = DB::table('mailshots')
             ->where('club_id', $clubID)
-            ->where('published', true)
-            ->orWhere('isLibrary', true)
-            ->orderBy('isLibrary', 'desc')
-            ->orderBy('category')
-            ->orderBy('subject')
-            ->get();
+            ->whereFuture('send_at')
+            ->orderBy('send_at')
+            ->get(['id', 'updated_at', 'subject', 'send_at', 'distribution']);
 
-        return view('clubs.maillist', ['mails' => $mails]);
+        $sent = DB::table('mailshots')
+            ->where('club_id', $clubID)
+            ->where('sent', true)
+            ->orderBy('send_at', 'desc')
+            ->get(['id', 'updated_at', 'subject', 'sent_at', 'distribution']);
+
+        return view('clubs.maillist', ['mails' => $mails, 'categoryArray' => $categoryArray, 'mailData' => $mailData, 'mailshotData' => $mailshotData, 'sent' => $sent]);
     }
 
+//    public function mailList_()
+//    {
+//        $user = Auth::user();
+//        $clubID = $user->club_id;
+//
+//        $mails = DB::table('clubmails')
+//            ->where('club_id', $clubID)
+//            ->where('published', true)
+//            ->orWhere('isLibrary', true)
+//            ->orderBy('isLibrary', 'desc')
+//            ->orderBy('category')
+//            ->orderBy('subject')
+//            ->get();
+//
+//        return view('clubs.maillist', ['mails' => $mails]);
+//    }
 
     public function membershipForm(Request $request, $id)
     {
         $oldValues = $request->old();
-        return view('clubs.membership', ['club_id' => $id, 'oldValues' => $oldValues]);
+        $club = Club::find($id);
+
+        return view('clubs.membership', ['club_id' => $id, 'oldValues' => $oldValues, 'club' => $club]);
     }
 
     public function addMember(Request $request)
@@ -210,9 +236,10 @@ class ClubController extends Controller
             'membership_type' => 'required',
             'membership_category' => 'required',
             'accept' => 'required',
-//            'g-recaptcha-response' => ['required', new ReCaptchaV3('register')],
+            //            'g-recaptcha-response' => ['required', new ReCaptchaV3('register')],
         ]);
 
+        $attributes['dob'] = date_create($request->dob);
         $attributes['firstname'] = $this->nameize($attributes['firstname']);
         $attributes['lastname'] = $this->nameize($attributes['lastname']);
 
@@ -220,22 +247,20 @@ class ClubController extends Controller
 
         $attributes['social'] = implode(',', request('social'));
 
+        //        info($attributes['membership_category']);
 
-//        info($attributes['membership_category']);
-
-        if ($attributes['membership_category'] == 'life' || $attributes['membership_category'] == 'observer') {
-            $attributes['confirmed'] = true;
-        } elseif ($attributes['membership_category'] == 'associate') {
+        if ($attributes['membership_category'] == 'competition') {
             $attributes['confirmed'] = false;
-
         } else {
-            $attributes['membership_category'] = 'competition';
-            $attributes['confirmed'] = false;
+            $attributes['confirmed'] = true;
         }
 
+        $attributes['token'] = bin2hex(random_bytes(16));
+        $attributes['amca_reg'] = $request->input('amca_reg');
+        $attributes['acu_reg'] = $request->input('acu_reg');
 
         $member = ClubMember::create($attributes);
-//        Add to Observer mailing list
+        //        Add to Observer mailing list
         if ($attributes['membership_category'] == 'observer') {
             $email = trim($attributes['email']);
 
@@ -256,41 +281,42 @@ class ClubController extends Controller
         return view('/clubs/confirmRegistered', ['member' => $member]);
     }
 
-    public function nameize($str, $a_char = array("'", "-", " "))
+    public function nameize($str, $a_char = ["'", '-', ' '])
     {
-        //$str contains the complete raw name string
-        //$a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
+        // $str contains the complete raw name string
+        // $a_char is an array containing the characters we use as separators for capitalization. If you don't pass anything, there are three in there as default.
         $string = strtolower($str);
         foreach ($a_char as $temp) {
             $pos = strpos($string, $temp);
             if ($pos) {
-                //we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
+                // we are in the loop because we found one of the special characters in the array, so lets split it up into chunks and capitalize each one.
                 $mend = '';
                 $a_split = explode($temp, $string);
                 foreach ($a_split as $temp2) {
-                    //capitalize each portion of the string which was separated at a special character
+                    // capitalize each portion of the string which was separated at a special character
                     $mend .= ucfirst($temp2) . $temp;
                 }
                 $string = substr($mend, 0, -1);
             }
         }
+
         return ucfirst($string);
     }
 
     public function console(Request $request)
     {
-        $selectedTab = "Profile";
+        $selectedTab = 'Profile';
         if (isset($request->tab)) {
             $selectedTab = $request->tab;
         }
         $user = Auth::user();
         $id = $user->club_id;
+        $userID = $user->id;
+
         $club = DB::table('clubs')
             ->where('id', $id)
             ->first();
 
-        $user = Auth::user();
-        $userID = $user->id;
         $trials = Trial::all()
             ->where('created_by', $userID)
             ->sortByDesc('date');
@@ -300,10 +326,10 @@ class ClubController extends Controller
             ->orderBy('name')
             ->get();
 
-        $countItemsArray = array();
+        $countItemsArray = [];
         foreach ($distributionLists as $distributionList) {
-            $to = explode(",", $distributionList->to);
-            array_push($countItemsArray, sizeof($to));
+            $to = explode(',', $distributionList->to);
+            array_push($countItemsArray, count($to));
         }
 
         $trials = DB::table('trials')
@@ -341,6 +367,7 @@ class ClubController extends Controller
         $attributes['club_id'] = $club_id;
         $attributes['created_by'] = $created_by;
         MailDistribution::create($attributes);
+
         return redirect('/club/profile?tab=mailinglist');
     }
 
@@ -353,8 +380,14 @@ class ClubController extends Controller
         ]);
         $item = MailDistribution::find(request('itemID'));
 
+        $toArray = array_unique(explode(',', $attributes['to']));
+        sort($toArray, SORT_REGULAR);
+
+        $attributes['to'] = implode(',', $toArray);
+
         $item->update($attributes);
         $item->save();
+
         return redirect('/club/profile?tab=mailinglist');
     }
 
@@ -366,10 +399,26 @@ class ClubController extends Controller
     public function memberList()
     {
         $clubID = Auth::user()->club_id;
-        $clubName = DB::table('clubs')
+
+        $club = DB::table('clubs')
             ->where('id', $clubID)
-            ->select('name')
+            ->select('name', 'membership_categories', 'id')
             ->first();
+
+        $categories = explode(',', $club->membership_categories);
+
+        $membershipData = array();
+
+        foreach ($categories as $category) {
+            $riders = DB::table('club_members')
+                ->where('club_id', $clubID)
+                ->where('membership_category', $category)
+                ->orderBy('firstname', 'asc')
+                ->orderBy('lastname', 'asc')
+                ->get();
+
+            $membershipData[$category] = $riders;
+        }
 
         $allMembers = DB::table('club_members')
             ->where('club_id', $clubID)
@@ -377,29 +426,47 @@ class ClubController extends Controller
             ->orderBy('lastname', 'asc')
             ->get();
 
-        $riders = DB::table('club_members')
-            ->where('club_id', $clubID)
-            ->where('membership_category', 'competition')
-            ->orderBy('firstname', 'asc')
-            ->orderBy('lastname', 'asc')
-            ->get();
-
-        $observers = DB::table('club_members')
-            ->where('club_id', $clubID)
-            ->where('membership_category', 'observer')
-            ->orderBy('firstname', 'asc')
-            ->orderBy('lastname', 'asc')
-            ->get();
-
-        $lifers = DB::table('club_members')
-            ->where('club_id', $clubID)
-            ->where('membership_category', 'life')
-            ->orderBy('firstname', 'asc')
-            ->orderBy('lastname', 'asc')
-            ->get();
-
-        return view('clubs.memberList', ['allmembers' => $allMembers, 'riders' => $riders, 'observers' => $observers, 'clubName' => $clubName, 'lifers' => $lifers]);
+        return view('clubs.members', ['allmembers' => $allMembers, 'membershipData' => $membershipData, 'club' => $club]);
     }
+
+//    public function memberListOld()
+//    {
+//        $clubID = Auth::user()->club_id;
+//
+//        $club = DB::table('clubs')
+//            ->where('id', $clubID)
+//            ->select('name', 'membership_categories')
+//            ->first();
+//
+//        $allMembers = DB::table('club_members')
+//            ->where('club_id', $clubID)
+//            ->orderBy('firstname', 'asc')
+//            ->orderBy('lastname', 'asc')
+//            ->get();
+//
+//        $riders = DB::table('club_members')
+//            ->where('club_id', $clubID)
+//            ->where('membership_category', 'competition')
+//            ->orderBy('firstname', 'asc')
+//            ->orderBy('lastname', 'asc')
+//            ->get();
+//
+//        $observers = DB::table('club_members')
+//            ->where('club_id', $clubID)
+//            ->where('membership_category', 'observer')
+//            ->orderBy('firstname', 'asc')
+//            ->orderBy('lastname', 'asc')
+//            ->get();
+//
+//        $lifers = DB::table('club_members')
+//            ->where('club_id', $clubID)
+//            ->where('membership_category', 'life')
+//            ->orderBy('firstname', 'asc')
+//            ->orderBy('lastname', 'asc')
+//            ->get();
+//
+//        return view('clubs.members', ['allmembers' => $allMembers, 'riders' => $riders, 'observers' => $observers, 'lifers' => $lifers, 'club' => $club]);
+//    }
 
     public function memberDetail()
     {
@@ -408,8 +475,12 @@ class ClubController extends Controller
 
         $member = DB::table('club_members')
             ->where('id', $memberID)
+            ->where('club_id', $clubID)
             ->first();
 
+        if (is_null($member)) {
+            return redirect('/club/member/list');
+        }
         return view('clubs.memberDetail', ['member' => $member]);
     }
 
@@ -419,25 +490,25 @@ class ClubController extends Controller
         $club_member->confirmed = 1;
         $club_member->save();
 
+        $clubID = $club_member->club_id;
+        $club = DB::table('clubs')->where('id', $clubID)->first();
+
         $bcc = 'monster@trialmonster.uk';
-        $amanda = 'ammnewhouse@gmail.com';
 
         if ($club_member->membership_type == 'new') {
-            info("Send welcome email to $club_member->email");
+            info("Send New member email to $club_member->email");
 
             Mail::to($club_member->email)
                 ->bcc($bcc)
-//                ->bcc($amanda)
-                ->send(new WelcomeNewMember($club_member));
-
+                ->send(new WelcomeNewMember($club_member, $club));
 
         } else {
-            info("Send acknowledgement email to $club_member->email");
+            info("Send Renewal email to $club_member->email");
             Mail::to($club_member->email)
                 ->bcc($bcc)
-//                ->bcc($amanda)
-                ->send(new RenewalAcknowledgement($club_member));
+                ->send(new RenewalAcknowledgement($club_member, $club));
         }
+
         return redirect('/club/member/list');
     }
 
@@ -452,7 +523,7 @@ class ClubController extends Controller
                 ->first();
 
             $paidNames = DB::table('clubs')
-                ->where('id', 5)
+                ->where('id', $clubID)
                 ->select('confirmed_list')
                 ->first();
 
@@ -472,34 +543,44 @@ class ClubController extends Controller
     {
         if (Auth::user()->isClubUser) {
             $clubID = Auth::user()->club_id;
+            $club = DB::table('clubs')->where('id', $clubID)->first();
 
             $memberIDs = request('approved');
             if ($memberIDs != null) {
                 foreach ($memberIDs as $memberID) {
                     $club_member = ClubMember::findOrFail($memberID);
-                    $club_member->confirmed = true;
-                    $club_member->save();
+                    $memberClubID = $club_member->club_id;
 
-                    $bcc = 'monster@trialmonster.uk';
-                    $amanda = 'ammnewhouse@gmail.com';
+                    if ($memberClubID == $clubID) {
 
-                    if ($club_member->membership_type == 'new') {
-                        info("Send welcome email to $club_member->email");
+                        $club_member->confirmed = true;
+                        $club_member->save();
 
-                        Mail::to($club_member->email)
-                            ->bcc($bcc)
-                            ->send(new WelcomeNewMember($club_member));
+                        $bcc = 'monster@trialmonster.uk';
 
+                        if ($club_member->membership_type == 'new') {
+                            info("Send welcome email to $club_member->email");
 
+                            Mail::to($club_member->email)
+                                ->bcc($bcc)
+                                ->send(new WelcomeNewMember($club_member, $club));
+
+                        } else {
+                            info("Send acknowledgement email to $club_member->email");
+                            Mail::to($club_member->email)
+                                ->bcc($bcc)
+                                ->send(new RenewalAcknowledgement($club_member, $club));
+                        }
+
+                        info("Approved: $club_member->id");
                     } else {
-                        info("Send acknowledgement email to $club_member->email");
-                        Mail::to($club_member->email)
-                            ->bcc($bcc)
-                            ->send(new RenewalAcknowledgement($club_member));
+                        info("Not approved: $club_member->id");
                     }
                 }
             }
             return redirect('/club/member/approve');
+        } else {
+            return redirect('/');
         }
     }
 
@@ -507,6 +588,7 @@ class ClubController extends Controller
     {
         $user = Auth::user();
         $clubID = Auth::user()->club_id;
+        $club = DB::table('clubs')->where('id', $clubID)->first();
 
         $attributes = $request->validate([
             'firstname' => ['required', 'min:2', 'max:255'],
@@ -520,34 +602,38 @@ class ClubController extends Controller
 
         $attributes['firstname'] = $this->nameize($attributes['firstname']);
         $attributes['lastname'] = $this->nameize($attributes['lastname']);
+        $attributes['amca_reg'] = $request->input('amca_reg');
+        $attributes['acu_reg'] = $request->input('acu_reg');
+        $attributes['dob'] = date_create($request->dob);
+        $attributes['token'] = bin2hex(random_bytes(16));
 
         $attributes['accept'] = true;
 
         if (is_null($request->social)) {
-            $attributes['social'] = "TBA";
+            $attributes['social'] = 'TBA';
         } else {
             $attributes['social'] = implode(',', request('social'));
         }
 
         if (is_null($request->address)) {
-            $attributes['address'] = "TBA";
+            $attributes['address'] = 'TBA';
         } else {
             $attributes['address'] = request('address');
         }
 
         if (is_null($request->postcode)) {
-            $attributes['postcode'] = "TBA";
+            $attributes['postcode'] = 'TBA';
         } else {
             $attributes['postcode'] = request('postcode');
         }
         if (is_null($request->emergency_contact)) {
-            $attributes['emergency_contact'] = "TBA";
+            $attributes['emergency_contact'] = 'TBA';
         } else {
             $attributes['emergency_contact'] = request('emergency_contact');
         }
 
         if (is_null($request->emergency_number)) {
-            $attributes['emergency_number'] = "TBA";
+            $attributes['emergency_number'] = 'TBA';
         } else {
             $attributes['emergency_number'] = request('emergency_number');
         }
@@ -562,12 +648,10 @@ class ClubController extends Controller
             $attributes['confirmed'] = false;
         }
 
-
         if (!is_null($request->confirmed)) {
             $attributes['confirmed'] = true;
 
         }
-
 
         $member = ClubMember::create($attributes);
 
@@ -576,18 +660,16 @@ class ClubController extends Controller
                 info("Send welcome email to $member->email");
 
                 Mail::to($member->email)
-                    ->send(new WelcomeNewMember($member));
-
+                    ->send(new WelcomeNewMember($member, $club));
 
             } else {
                 info("Send acknowledgement email to $member->email");
                 Mail::to($member->email)
-                    ->send(new RenewalAcknowledgement($member));
+                    ->send(new RenewalAcknowledgement($member, $club));
             }
         }
 
-
-//        Add to Observer mailing list
+        //        Add to Observer mailing list
         if ($attributes['membership_category'] == 'observer') {
             $email = trim($attributes['email']);
 
@@ -604,7 +686,172 @@ class ClubController extends Controller
             $observerList->to = $addressList;
             $observerList->update();
         }
+
         return redirect('/club/member/list');
 
+    }
+
+    public function membershipEdit(string $id)
+    {
+        $member = ClubMember::find($id);
+        $club = Club::find($member->club_id);
+
+        return view('clubs.membership.edit', ['member' => $member, 'club' => $club]);
+    }
+
+    public function memberUpdate(Request $request)
+    {
+        $id = request('id');
+        info("Updating memberID: $id");
+        $member = ClubMember::find($id);
+        $user = Auth::user();
+        $clubID = Auth::user()->club_id;
+        $club = DB::table('clubs')->where('id', $clubID)->first();
+
+        $attributes = $request->validate([
+            'firstname' => ['required', 'min:2', 'max:255'],
+            'lastname' => ['required', 'min:2', 'max:255'],
+            'email' => ['required', 'email'],
+            'phone' => 'required',
+            'membership_type' => 'required',
+            'membership_category' => 'required',
+        ]);
+
+        $attributes['firstname'] = $this->nameize($attributes['firstname']);
+        $attributes['lastname'] = $this->nameize($attributes['lastname']);
+        $attributes['amca_reg'] = $request->input('amca_reg');
+        $attributes['acu_reg'] = $request->input('acu_reg');
+        if (!is_null($member->dob)) {
+            $attributes['dob'] = date_create($request->dob);
+        }
+
+        if (is_null($request->social)) {
+            $attributes['social'] = 'TBA';
+        } else {
+            $attributes['social'] = implode(',', request('social'));
+        }
+
+        if (is_null($request->address)) {
+            $attributes['address'] = 'TBA';
+        } else {
+            $attributes['address'] = request('address');
+        }
+
+        if (is_null($request->postcode)) {
+            $attributes['postcode'] = 'TBA';
+        } else {
+            $attributes['postcode'] = request('postcode');
+        }
+        if (is_null($request->emergency_contact)) {
+            $attributes['emergency_contact'] = 'TBA';
+        } else {
+            $attributes['emergency_contact'] = request('emergency_contact');
+        }
+
+        if (is_null($request->emergency_number)) {
+            $attributes['emergency_number'] = 'TBA';
+        } else {
+            $attributes['emergency_number'] = request('emergency_number');
+        }
+
+//        if ($attributes['membership_category'] == 'life' || $attributes['membership_category'] == 'observer') {
+//            $attributes['confirmed'] = true;
+//        } elseif ($attributes['membership_category'] == 'associate') {
+//            $attributes['confirmed'] = false;
+//
+//        } else {
+//            $attributes['membership_category'] = 'competition';
+//            $attributes['confirmed'] = false;
+//        }
+//
+        if (!is_null($request->confirmed)) {
+            $attributes['confirmed'] = true;
+        } else {
+            $attributes['confirmed'] = false;
+        }
+
+
+        $member->updated_at = now();
+        $member->update($attributes);
+        return redirect('/club/member/list');
+    }
+
+    public function userEdit(Request $request)
+    {
+        $token = $request->token;
+        $id = $request->id;
+
+        $member = ClubMember::where('token', $token)
+            ->where('id', $id)
+            ->first();
+
+        if (is_null($member)) {
+            $ip = $request->ip();
+            info("Club member $id not found - IP: $ip");
+            abort(403);
+        }
+
+        $club = Club::find($member->club_id);
+
+        return view('clubs.user.edit', ['token' => $token, 'id' => $id, 'club' => $club, 'member' => $member]);
+    }
+
+    public function userUpdate(Request $request)
+    {
+        $id = request('id');
+        $member = ClubMember::find($id);
+        $user = Auth::user();
+        $clubID = Auth::user()->club_id;
+        $club = DB::table('clubs')->where('id', $clubID)->first();
+
+        $attributes = $request->validate([
+            'firstname' => ['required', 'min:2', 'max:255'],
+            'lastname' => ['required', 'min:2', 'max:255'],
+            'email' => ['required', 'email'],
+            'phone' => 'required',
+            'membership_type' => 'required',
+            'membership_category' => 'required',
+        ]);
+
+        $attributes['firstname'] = $this->nameize($attributes['firstname']);
+        $attributes['lastname'] = $this->nameize($attributes['lastname']);
+        $attributes['amca_reg'] = $request->input('amca_reg');
+        $attributes['acu_reg'] = $request->input('acu_reg');
+        $attributes['dob'] = date_create($request->dob);
+
+        if (is_null($request->social)) {
+            $attributes['social'] = 'TBA';
+        } else {
+            $attributes['social'] = implode(',', request('social'));
+        }
+
+        if (is_null($request->address)) {
+            $attributes['address'] = 'TBA';
+        } else {
+            $attributes['address'] = request('address');
+        }
+
+        if (is_null($request->postcode)) {
+            $attributes['postcode'] = 'TBA';
+        } else {
+            $attributes['postcode'] = request('postcode');
+        }
+        if (is_null($request->emergency_contact)) {
+            $attributes['emergency_contact'] = 'TBA';
+        } else {
+            $attributes['emergency_contact'] = request('emergency_contact');
+        }
+
+        if (is_null($request->emergency_number)) {
+            $attributes['emergency_number'] = 'TBA';
+        } else {
+            $attributes['emergency_number'] = request('emergency_number');
+        }
+
+        $member->updated_at = now();
+        $member->update($attributes);
+
+        info("Updating memberID: $id");
+        return redirect('/');
     }
 }

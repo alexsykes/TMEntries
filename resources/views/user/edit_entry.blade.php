@@ -6,7 +6,6 @@
         $courses = $entry->courselist;
     $customCourses = $entry->customCourses;
 
-//    dump($entry);
         $trial_date = date_create($entry->trialdate);
         $offset = DateInterval::createFromDateString('4 years');
         $maxDob = $trial_date->sub($offset)->format("Y-m-d");
@@ -14,7 +13,7 @@
     $allClasses = array();
     $classes = $entry->classlist;
     $status = $entry->status;
-//    dd($classes);
+
     $customClasses = $entry->customClasses;
 if($courses != "") {
     array_push($allCourses, $courses);
@@ -37,13 +36,24 @@ if($customClasses != "") {
 
     $types = array("2 stroke", "4 stroke", "e-bike");
 
-        //    Check for extras
-        $hasExtras = is_null($membership) ? false : true;
+// New stuff
+    $status = $entry->status;
 
-//        dd($membership);
-//    dump($entry);
+    //    Check for extras
+     $hasExtras = is_null($membership) ? false : true;
+     $hasMembership = is_null($membership) ? false : true;
+     $hasMerchandise = is_null($merchandise) ? false : true;
+
+     $extraArray  = json_decode($entry->extras);
+     $priceArray = array();
+     $qtyArray = array();
+     if(!is_null($extraArray)) {
+         $priceIDArray = array_column($extraArray, 'priceID');
+         $qtyArray = array_column($extraArray, 'qty');
+     }
+
     @endphp
-    <x-slot:heading>{{$entry->club}} {{$entry->trial_name}}</x-slot:heading>
+    <x-slot:heading>{{$entry->club}} - {{$entry->trial_name}}</x-slot:heading>
 
     @if($entry->isEntryLocked)
         <div class=" mt-0 mb-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
@@ -62,24 +72,8 @@ if($customClasses != "") {
 
                 <div class="mt-2   mb-2 ml-4 ">
                     <div class="text-blue-800 mb-2 font-semibold">Entry status: {{$statusOptions[$entry->status]}}</div>
-
+                    {{-- Unconfirmed Entry --}}
                     @if($entry->status == 0)
-                        @if($hasExtras)
-                            <x-form-field>
-                                <div class="mt-4 font-semibold  text-blue-800">2026 YCMCC membership
-                                </div>
-                                <div class="flex mb-4 col-span-3 justify-normal space-x-4 align-middle">
-                                    <div class="font-normal  text-black" for="extras">Tick this box to include payment
-                                        (£10) with this entry
-                                    </div>
-                                    <input name="extras" type="checkbox" value="{{$membership->stripe_price_id}}"
-                                           id="extras"
-                                            {{$entry->extras == $membership->stripe_price_id ? 'checked' :''}}
-                                    />
-                                </div>
-                            </x-form-field>
-
-                        @endif
 
                         <x-form-field>
                             <x-form-label for="isYouth">Date of Birth</x-form-label>
@@ -92,6 +86,7 @@ if($customClasses != "") {
 
                     @endif
 
+                    {{--                    Confirmed Entry--}}
                     <x-form-field>
                         <x-form-label for="make">Make</x-form-label>
                         <div class="mt-2">
@@ -168,14 +163,138 @@ if($customClasses != "") {
                         </div>
                     </x-form-field>
                 </div>
+            </div>
 
-                @if($status == 1)
-                    <div class="ml-4 mb-4">
-                        This entry can be withdrawn and a refund issued. Please note that an administration charge of £3
-                        will be applied to any refunds.
+            @if($hasMembership && $status == 0 )
+                <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                    <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add
+                        Membership
+                    </div>
+                    <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                        @php
+
+                            $membershipFee = $membership->price / 100;
+
+                            $priceID = $membership->stripe_price_id;
+                            if(in_array($priceID, $priceArray)) {
+                                $checked = " checked ";
+                            } else {
+                                $checked = "";
+                            }
+
+                        @endphp
+                        <x-form-field>
+                            <div class="flex col-span-3 justify-normal">
+                                <div class="font-semibold text-blue-700">{{$membership->name}}
+                                    (£{{ $membershipFee  }})
+                                </div>
+
+                                <div class="pl-2">
+                                    <input name="checkbox[]" class="p-2" type="checkbox"
+
+                                           value="{{$priceID}}"
+                                            @php
+                                                if(in_array($priceID, $priceIDArray)){
+                                                echo " checked ";
+                                                }
+                                            @endphp
+                                    />
+                                </div>
+                            </div>
+                        </x-form-field>
+                    </div>
+                </div>
+            @endif
+
+            @if($hasMerchandise  && $status == 0 )
+
+                @if(sizeof($merchandise) > 0 )
+                    {{--                @dump($priceArray)--}}
+                    <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                        <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add
+                            Extras
+                        </div>
+                        <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+                            @foreach($merchandise as $item)
+                                {{--                            @dump($item)--}}
+                                @php
+                                    $productIndex = $loop->index;
+                                @endphp
+                                <x-form-field>
+                                    @php
+                                        $priceArray = explode(',', $item->price);
+    //                                    Get price - assumes all item prices identical
+                                        $price = $priceArray[0]/100;
+                                        if($price == 0) {
+                                            $price = "Free of Charge";
+                                        } else {
+                                            $price = "£".$price;
+                                        }
+                                    @endphp
+
+                                    @if($item->numOptions == 1)
+                                        {{--                                    @dump($item->priceIDs)--}}
+                                        {{--                                    @dump($priceIDArray)--}}
+
+                                        <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
+                                            - {{$price}}</x-form-label>
+                                        <input name="prodIDs[]" type="hidden" value="product{{$productIndex}}">
+                                        <input name="product{{$productIndex}}" type="checkbox"
+                                               value="{{$item->priceIDs}}"
+                                               id="extra1"
+                                                @php
+                                                    if(in_array($item->priceIDs, $priceIDArray)){
+                                                    echo " checked ";
+                                                }
+
+
+                                                @endphp
+                                        />
+                                        <x-form-error name="product{{$productIndex}}"/>
+
+                                    @else
+                                        <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
+                                            - {{$price}}</x-form-label>
+                                        <div>Please select <span class="font-semibold">one</span></div>
+                                        @php
+                                            $options = explode(',',$item->options);
+                                            $productIDs = explode(',', $item->productIDs);
+                                            $priceIDs = explode(',', $item->priceIDs);
+                                        @endphp
+                                        <input name="prodIDs[]" type="hidden" value="product{{$productIndex}}">
+                                        @foreach($options as $option)
+                                            @php
+                                                $index = $loop->index;
+                                                $priceIDitem = $priceIDs[$index];
+    //                                            dump($priceIDitem);
+                                            @endphp
+                                            <input name="product{{$productIndex}}" type="radio" id="extra{{$index}}"
+                                                   required
+                                                   value="{{$priceIDitem}}"
+                                                    @php
+                                                        if(in_array($priceIDitem, $priceIDArray)){
+                                                             echo " checked ";
+                                                         }
+                                                    @endphp
+                                            >
+                                            <label class="pl-1 pr-4" for="extra">{{$option}}</label>
+
+                                        @endforeach
+                                    @endif
+                                </x-form-field>
+                            @endforeach()
+                        </div>
                     </div>
                 @endif
-            </div>
+            @endif
+
+
+            @if($status == 1)
+                <div class="ml-4 mb-4">
+                    This entry can be withdrawn and a refund issued. Please note that an administration charge of £3
+                    will be applied to any refunds.
+                </div>
+            @endif
 
             <div class="mt-4" id="buttons">
                 <a href="/user/entries"
@@ -195,12 +314,7 @@ if($customClasses != "") {
                         class="rounded-md ml-2 bg-red-600 px-3 py-1 text-sm border border-red-800 text-white drop-shadow-lg hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
                     Withdraw
                 </button>
-
-                {{--                <a href="/user/removeEntry/{{$entry->id}}"--}}
-                {{--                   class="rounded-md bg-red-600 ml-2 px-3 py-2  text-sm  text-white shadow-sm hover:bg-red-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900">Withdraw--}}
-                {{--                    entry</a>--}}
             </div>
-
         </form>
     @endif
 </x-main>

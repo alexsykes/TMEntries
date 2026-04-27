@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Attachment;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
@@ -18,9 +17,8 @@ class RenewalAcknowledgement extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public object $club_member)
+    public function __construct(public object $club_member, public object $club)
     {
-        //
     }
 
     /**
@@ -30,7 +28,8 @@ class RenewalAcknowledgement extends Mailable
     {
         return new Envelope(
             replyTo: [
-                new Address('ammnewhouse@gmail.com', 'Amanda Newhouse'),
+                new Address($this->club->memSecEmail,
+                    $this->club->membershipSecretary, ),
             ],
             subject: 'Renewal Acknowledgement',
         );
@@ -43,7 +42,7 @@ class RenewalAcknowledgement extends Mailable
     {
         return new Content(
             view: 'mails.renewal_acknowledgement',
-            with: ['member' => $this->club_member],
+            with: ['member' => $this->club_member, 'club' => $this->club],
         );
     }
 
@@ -55,14 +54,15 @@ class RenewalAcknowledgement extends Mailable
     public function attachments(): array
     {
         $link1 = public_path('pdf/Trials_Rule_Book_2025.pdf');
-//        $link2 = public_path('pdf/YCMCC_dummy_rules.pdf');
+
+        //        $link2 = public_path('pdf/YCMCC_dummy_rules.pdf');
         return [
             Attachment::fromPath($link1)
                 ->as('AMCA Trials Rule Book.pdf')
                 ->withMime('application/pdf'),
-//            Attachment::fromPath($link2)
-//                ->as('Placeholder Rules.pdf')
-//                ->withMime('application/pdf'),
+            //            Attachment::fromPath($link2)
+            //                ->as('Placeholder Rules.pdf')
+            //                ->withMime('application/pdf'),
         ];
     }
 }

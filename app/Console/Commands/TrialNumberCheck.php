@@ -38,10 +38,10 @@ class TrialNumberCheck extends Command
 
         foreach ($currentTrialIDs as $trialID) {
             $trial = Trial::findOrFail($trialID);
-//          Entry limit defaults to 0
+            //          Entry limit defaults to 0
             $entryLimit = $trial->entryLimit;
 
-//            Check for entry limit
+            //            Check for entry limit
             if ($entryLimit > 0) {
                 $numEntries = Entry::where('trial_id', $trial->id)
                     ->whereIn('status', [1, 4, 7, 8, 9])
@@ -57,7 +57,7 @@ class TrialNumberCheck extends Command
 
                 $numSpares = $entryLimit - $numEntries;
 
-//                TODO - check for ?5 entries left
+                //                TODO - check for ?5 entries left
                 if ($numSpares > 0 && $reserves > 0) {
                     $this->handleReserves($trial, $numSpares);
                 }
@@ -76,7 +76,7 @@ class TrialNumberCheck extends Command
             ->get();
 
         foreach ($reserves as $entry) {
-            echo date("h:i") . " Entry ID: $entry->id status changed to 4\n";
+            echo date('h:i')." Entry ID: $entry->id status changed to 4\n";
 
             $entryID = $entry->id;
             $entry = Entry::where('id', $entryID)->first();
@@ -111,21 +111,21 @@ class TrialNumberCheck extends Command
         // Create an Invoice
         $invoice = $another->invoices->create([
             'customer' => $customerId,
-            'description' => $trialClub . ' - ' . $trialName,
+            'description' => $trialClub.' - '.$trialName,
             'collection_method' => 'send_invoice',
             'days_until_due' => 2,
             'metadata' => [
                 'entryID' => $entryID,
-            ]
+            ],
         ]);
 
-//   Add line items
+        //   Add line items
         $invoiceItem = $another->invoiceItems->create([
             'customer' => $customerId,
             'pricing' => [
                 'price' => $entry->stripe_price_id,
             ],
-            'description' => ' Ref: ' . $entryID,
+            'description' => ' Ref: '.$entryID,
             'invoice' => $invoice->id,
         ]);
 
@@ -139,20 +139,20 @@ class TrialNumberCheck extends Command
 
     private function handleUnconfirmed(Trial $trial)
     {
-//        $limit = $trial->entryLimit;
-////        $numEntries =
-//
-//        $spaces = $limit - $numEntries;
-//        if($spaces <= 0) {
-//
-//            $unconfirmed = Entry::where('trial_id', $trial->id)
-//                ->where('status', 0)
-//                ->count();
-//
-//            if($unconfirmed > 0) {
-////              Change status to reserve, email notification
-//            }
-//
-//            echo "Entry limit $limit\nNum Entries: $numEntries\nUnconfirmed: $unconfirmed\n\n";
+        //        $limit = $trial->entryLimit;
+        // //        $numEntries =
+        //
+        //        $spaces = $limit - $numEntries;
+        //        if($spaces <= 0) {
+        //
+        //            $unconfirmed = Entry::where('trial_id', $trial->id)
+        //                ->where('status', 0)
+        //                ->count();
+        //
+        //            if($unconfirmed > 0) {
+        // //              Change status to reserve, email notification
+        //            }
+        //
+        //            echo "Entry limit $limit\nNum Entries: $numEntries\nUnconfirmed: $unconfirmed\n\n";
     }
 }

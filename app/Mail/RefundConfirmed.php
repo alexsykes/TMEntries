@@ -16,7 +16,7 @@ class RefundConfirmed extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public Object  $entry, public $reason)
+    public function __construct(public object $entry)
     {
         //
     }
@@ -40,7 +40,6 @@ class RefundConfirmed extends Mailable
             view: 'mails.refund_confirmed',
             with: [
                 'entry' => $this->entry,
-                'reason' => $this->reason,
             ],
         );
     }

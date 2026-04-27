@@ -15,7 +15,6 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
-
 class RegisteredUserController extends Controller
 {
     /**
@@ -27,12 +26,12 @@ class RegisteredUserController extends Controller
     {
 
         $request->validate([
-                'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-                'password' => ['required', 'confirmed', Password::defaults()],
-                'agree' => ['required', 'accepted'],
-                'g-recaptcha-response' => ['required', new ReCaptchaV3('registerUser')],
-            ]
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Password::defaults()],
+            'agree' => ['required', 'accepted'],
+            'g-recaptcha-response' => ['required', new ReCaptchaV3('registerUser')],
+        ]
         );
         $user = User::create([
             'name' => $request->name,
@@ -52,7 +51,8 @@ class RegisteredUserController extends Controller
     public function create(): View
     {
         $disclaimerUrl = Storage::url('Disclaimer.pdf');
-//        dd($disclaimerUrl);
+
+        //        dd($disclaimerUrl);
         return view('auth.register', compact('disclaimerUrl'));
     }
 }

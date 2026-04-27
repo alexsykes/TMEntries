@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
-//use App\Mail\TMLogin;
+// use App\Mail\TMLogin;
 use App\Mail\TestMail;
 use App\Models\Club;
 use App\Models\Clubmail;
 use App\Models\MailDistribution;
 use App\Models\Mailshot;
 use Auth;
+use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -19,20 +21,22 @@ class ClubmailController extends Controller
 
     public function edit($id)
     {
-//        $mail = Mail::findOrFail($id);
+        //        $mail = Mail::findOrFail($id);
         $mail = DB::table('clubmails')
             ->where('id', $id)
             ->first();
+
         return view('mail.edit', compact('mail'));
     }
 
     public function preview($id)
     {
-//        $mail = Mail::findOrFail($id);
+        //        $mail = Mail::findOrFail($id);
         $mail = DB::table('clubmails')
             ->where('id', $id)
             ->first();
-//        dd($mail);
+
+        //        dd($mail);
         return view('mail.preview', ['mail' => $mail]);
     }
 
@@ -54,29 +58,30 @@ class ClubmailController extends Controller
         $attributes['isLibrary'] = true;
         $attributes['created_by'] = Auth::user()->id;
 
-
-//        $mail = Clubmail::create($attributes);
+        //        $mail = Clubmail::create($attributes);
 
         return redirect('/admin/mails');
     }
 
     public function composeUserEmail()
     {
-//        Check for ownership
+        //        Check for ownership
         $user = auth()->user();
         if ($user->isClubUser != 1) {
             abort(403);
         }
         $clubID = $user->club_id;
+
         return view('user.email');
     }
 
     public function editUserEmail($id)
     {
-//        $mail = Mail::findOrFail($id);
+        //        $mail = Mail::findOrFail($id);
         $mail = DB::table('clubmails')
             ->where('id', $id)
             ->first();
+
         return view('user.edit_mail', ['mail' => $mail]);
     }
 
@@ -92,18 +97,18 @@ class ClubmailController extends Controller
             'summary' => ['required', 'min:3', 'max:255'],
         ]);
 
-//        File handler
+        //        File handler
         if ($request->attachment) {
-            $names = array();
-            $types = array();
-            $fileNames = array();
+            $names = [];
+            $types = [];
+            $fileNames = [];
             foreach ($request->attachment as $attachment) {
 
                 $originalName = $attachment->getClientOriginalName();
                 $mimeType = $attachment->getClientMimeType();
                 $extension = $attachment->getClientOriginalExtension();
 
-//              Save file under unique id
+                //              Save file under unique id
                 $fileName = uniqid() . '.' . $extension;
 
                 $attachment->move(public_path('attachments'), $fileName);
@@ -112,7 +117,7 @@ class ClubmailController extends Controller
                 array_push($names, $originalName);
                 array_push($fileNames, $fileName);
             }
-//  Add file data to attributes as CSV data
+            //  Add file data to attributes as CSV data
             $attributes['originalName'] = implode('|', $names);
             $attributes['mimeType'] = implode('|', $types);
             $attributes['fileName'] = implode('|', $fileNames);
@@ -122,13 +127,14 @@ class ClubmailController extends Controller
         $attributes['isLibrary'] = false;
         $attributes['club_id'] = $clubID;
         $attributes['created_by'] = Auth::user()->id;
-        $attributes['created_at'] = date("Y-m-d H:i:s");
-        $attributes['updated_at'] = date("Y-m-d H:i:s");
+        $attributes['created_at'] = date('Y-m-d H:i:s');
+        $attributes['updated_at'] = date('Y-m-d H:i:s');
 
         $attributes['reply_to_address'] = $request->input('reply_to_address');
         $attributes['reply_to_name'] = $request->input('reply_to_name');
 
         $mail = Clubmail::create($attributes);
+
         return redirect('/club/mails/');
     }
 
@@ -136,9 +142,9 @@ class ClubmailController extends Controller
     {
         $action = $request->input('action');
 
-        $originalNames = array();
-        $fileNames = array();
-        $mimeTypes = array();
+        $originalNames = [];
+        $fileNames = [];
+        $mimeTypes = [];
 
         $attributes = $request->validate([
             'mail_id' => 'required',
@@ -152,7 +158,7 @@ class ClubmailController extends Controller
             ->where('id', $request->mail_id)
             ->first();
 
-//        Get file data in case it doesn't change - may be empty
+        //        Get file data in case it doesn't change - may be empty
         $originalName = $mail->originalName;
         $mimeType = $mail->mimeType;
         $fileName = $mail->fileName;
@@ -174,7 +180,7 @@ class ClubmailController extends Controller
                 }
             }
             if ($request->fileToAdd) {
-//                dd($request->fileToAdd);
+                //                dd($request->fileToAdd);
                 $attachment = $request->file('fileToAdd');
 
                 $originalName = $attachment->getClientOriginalName();
@@ -184,18 +190,16 @@ class ClubmailController extends Controller
                 $fileName = uniqid() . '.' . $extension;
                 $attachment->move(public_path('attachments'), $fileName);
 
-
                 array_push($originalNames, $originalName);
                 array_push($fileNames, $fileName);
                 array_push($mimeTypes, $mimeType);
-
 
             }
             $originalName = implode('|', $originalNames);
             $fileName = implode('|', $fileNames);
             $mimeType = implode('|', $mimeTypes);
 
-//            dump($originalName, $fileName, $mimeType);
+            //            dump($originalName, $fileName, $mimeType);
             $mail = DB::table('clubmails')->where('id', $request->mail_id)
                 ->update(['updated_at' => now(),
                     'category' => $request->category,
@@ -213,6 +217,7 @@ class ClubmailController extends Controller
         } elseif ($action == 'saveAsNew') {
 
         }
+
         return redirect('/club/mails');
     }
 
@@ -225,7 +230,6 @@ class ClubmailController extends Controller
             'bodyText' => 'required',
             'summary' => ['required', 'min:5', 'max:255'],
         ]);
-
 
         $mail = DB::table('clubmails')->where('id', $request->id)
             ->update(['updated_at' => now(),
@@ -247,8 +251,6 @@ class ClubmailController extends Controller
 
     public function storeAddressList(Request $request)
     {
-
-
     }
 
     public function previewUsermail($id)
@@ -257,12 +259,13 @@ class ClubmailController extends Controller
         $mail = DB::table('clubmails')
             ->where('id', $id)
             ->first();
+
         return view('mail.preview', compact('user', 'mail'));
     }
 
     public function sendTestmail(Request $request)
     {
-//        dd($request->all());
+        //        dd($request->all());
 
         $user = Auth::user();
         $success = Mail::to('alex@alexsykes.net')
@@ -280,27 +283,35 @@ class ClubmailController extends Controller
 
         $subject = $mailshot->subject;
         $bodyText = $mailshot->bodyText;
-        $mail = new TestMail($mailshot);
 
-        $delay = 1;
-        $addresses = explode(', ', $mailshot->distribution);
+        // Example timestamp
+        $send_at = new DateTime;
 
-        foreach ($addresses as $address) {
-//            info("Address: {$address}");
-            Mail::to($address)->later(now()->addSeconds($delay++), new TestMail($mailshot));
-//            Mail::to($address)->send(new TestMail($mailshot));
-            info("Email sent to {$address}");
+        if (is_null($mailshot->send_at)) {
+            $sendAt = new DateTime;
+            $mailshot->sent_at = now();
+            $mailshot->sent = true;
+        } else {
+            $sendAt = new Carbon($mailshot->send_at);
         }
 
-        $mailshot->sent_at = now();
-        $mailshot->sent = true;
+        $addresses = explode(', ', $mailshot->distribution);
+        $delay = 10;
+//        for($i = 0; $i < 100; $i++) {
+        $mailIDs = array();
+        foreach ($addresses as $address) {
+            $mail = Mail::to($address)->later($sendAt, new TestMail($mailshot));
+            array_push($mailIDs, $mail);
+        }
+        $mail_ids = implode(',', $mailIDs);
+        $mailshot->job_ids = $mail_ids;
         $mailshot->save();
         return redirect('/club/mails');
     }
 
     public function sendMail($id)
     {
-//        $mail = Mail::findOrFail($id);
+        //        $mail = Mail::findOrFail($id);
         $mail = DB::table('clubmails')
             ->where('id', $id)
             ->first();
@@ -318,18 +329,20 @@ class ClubmailController extends Controller
             ->where('club_id', $clubID)
             ->orderBy('name')
             ->get();
-//        dd($distributions);
+
+        //        dd($distributions);
         return view('clubs.sendmail', compact('mail', 'clubTrials', 'distributions'));
     }
 
-//     Get mailing list of users
+    //     Get mailing list of users
     public function prepare(Request $request)
     {
         $userID = Auth::user()->id;
         $clubID = Auth::user()->club_id;
         $mail_id = $request->mail_id;
         $distribution = $request->distribution;
-        $distributionList = array();
+        $distributionList = [];
+        $sendAt = $request->send_at;
 
         $mail = DB::table('clubmails')->where('id', $mail_id)->first();
 
@@ -338,12 +351,12 @@ class ClubmailController extends Controller
         ]);
 
         switch ($distribution) {
-            case "Test":
+            case 'Test':
                 array_push($distributionList, $request->testAddress);
                 break;
-            case "Trial Entrants":
+            case 'Trial Entrants':
                 $trialID = $request->trial_id;
-//              Get email addresses from Stripe payments
+                //              Get email addresses from Stripe payments
                 $pastEntrants = DB::table('entries')
                     ->where('trial_id', $trialID)
                     ->whereNotNull('email')
@@ -351,12 +364,12 @@ class ClubmailController extends Controller
                     ->distinct()
                     ->get();
 
-//              Add email addresses to distribution list
+                //              Add email addresses to distribution list
                 foreach ($pastEntrants as $pastEntrant) {
-                    array_push($distributionList, $pastEntrant->email);
+                    array_push($distributionList, strtolower($pastEntrant->email));
                 }
 
-//              Also get entrant (logged-in user) email address
+                //              Also get entrant (logged-in user) email address
                 $pastUsers = DB::table('entries')
                     ->select('users.email')
                     ->distinct()
@@ -366,24 +379,27 @@ class ClubmailController extends Controller
                     ->get();
 
                 foreach ($pastUsers as $pastUser) {
-                    array_push($distributionList, $pastUser->email);
+                    array_push($distributionList, strtolower($pastUser->email));
                 }
 
+                $distributionList = array_unique($distributionList);
                 break;
 
-            case "Past Entrants":
+            case 'Past Entrants':
                 $clubID = Auth::user()->club_id;
                 $club = Club::findOrFail($clubID);
                 $clubName = $club->name;
                 $clubTrials = DB::table('trials')->where('club', $clubName)
+                    ->where('id', '>', 50)
                     ->select('id')
                     ->get();
 
-                $clubTrialIDs = array();
+                $clubTrialIDs = [];
+
                 foreach ($clubTrials as $clubTrial) {
                     array_push($clubTrialIDs, $clubTrial->id);
                 }
-//  Get email addresses from Stripe users
+                //  Get email addresses from Stripe users
                 $pastEntrants = DB::table('entries')
                     ->whereIn('trial_id', $clubTrialIDs)
                     ->whereNotNull('email')
@@ -391,9 +407,9 @@ class ClubmailController extends Controller
                     ->distinct()
                     ->get();
 
-//              Get email addresses from user table
+                //              Get email addresses from user table
                 foreach ($pastEntrants as $pastEntrant) {
-                    array_push($distributionList, $pastEntrant->email);
+                    array_push($distributionList, strtolower($pastEntrant->email));
                 }
 
                 $pastUsers = DB::table('entries')
@@ -405,22 +421,24 @@ class ClubmailController extends Controller
                     ->get();
 
                 foreach ($pastUsers as $pastUser) {
-                    array_push($distributionList, $pastUser->email);
+                    array_push($distributionList, strtolower($pastUser->email));
                 }
+
+                $distributionList = array_unique($distributionList);
                 break;
-            case "All Users":
+            case 'All Users':
                 $allUsers = DB::table('users')
                     ->select('email')
                     ->distinct()
                     ->where('users.receive_emails', true)
                     ->get();
                 foreach ($allUsers as $user) {
-                    array_push($distributionList, $user->email);
+                    array_push($distributionList, strtolower($user->email));
                 }
                 break;
             default:
 
-            case "Distribution List":
+            case 'Distribution List':
                 $distribution_id = $request->distribution_id;
                 $mail_distribution = MailDistribution::findOrFail($distribution_id);
 
@@ -437,6 +455,7 @@ class ClubmailController extends Controller
         $attributes['club_id'] = $mail->club_id;
         $attributes['mail_id'] = $mail->id;
         $attributes['sent_by'] = $userID;
+        $attributes['send_at'] = $sendAt;
 
         $attributes['reply_to_address'] = $mail->reply_to_address;
         $attributes['reply_to_name'] = $mail->reply_to_name;
@@ -446,6 +465,7 @@ class ClubmailController extends Controller
         $attributes['fileName'] = $mail->fileName;
 
         $mailshot = Mailshot::create($attributes);
+
         return view('clubs.prepare', compact('mailshot'));
     }
 
@@ -454,6 +474,24 @@ class ClubmailController extends Controller
         DB::table('clubmails')
             ->where('id', $id)
             ->update(['published' => false]);
+
+        return redirect('/club/mails');
+    }
+
+    public function cancelMailshot(Request $request)
+    {
+        $id = $request->id;
+        $mailshot = Mailshot::findOrFail($id);
+        $sendAt = date_create($mailshot->send_at);
+        $ts = date_timestamp_get($sendAt);
+
+        $jobIDs = $mailshot->job_ids;
+        $jobIDArray = explode(',', $jobIDs);
+        $deletedJobs = DB::table('jobs')
+            ->whereIn('jobs.id', $jobIDArray)
+            ->delete();
+
+        $mailshot->delete();
 
         return redirect('/club/mails');
     }

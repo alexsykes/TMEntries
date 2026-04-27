@@ -24,10 +24,10 @@ class OnEntryWithdrawn
      */
     public function handle(EntryWithdrawn $event): void
     {
-//        info("OnEntryWithdrawn");
+        //        info("OnEntryWithdrawn");
         $entryID = $event->entryID;
 
-//      Get trial details
+        //      Get trial details
         $entry = Entry::findOrFail($entryID);
         $trialID = $entry->trial_id;
         $trial = Trial::findOrFail($trialID);
@@ -38,12 +38,12 @@ class OnEntryWithdrawn
             ->whereIn('status', [1, 4, 7, 8, 9])
             ->count();
 
-//  Check for vacancy created
+        //  Check for vacancy created
         info("Trial limit: $entryLimit \n TrialID: $trialID \n Trial hasLmit: $hasLimit \n NumEntries: $numEntries \n");
         if ($hasLimit && $entryLimit > $numEntries) {
             $vacancies = $entryLimit - $numEntries;
 
-//            Get reserve entry
+            //            Get reserve entry
             $entriesToOffer = Entry::where('trial_id', $trialID)
                 ->where('status', 5)
                 ->limit($vacancies)
@@ -52,7 +52,7 @@ class OnEntryWithdrawn
             foreach ($entriesToOffer as $entry) {
                 $entryID = $entry->id;
 
-//                Change entry status to under offer
+                //                Change entry status to under offer
                 $entry->status = 4;
                 info("Entry Withdrawn: place to offer: $entryID");
                 $userID = $entry->created_by;
@@ -60,17 +60,17 @@ class OnEntryWithdrawn
                 $email = $user->email;
                 $username = $user->name;
 
-//                TODO remove comment
+                //                TODO remove comment
                 $entry->update();
 
-//              Get product reference for invoice
+                //              Get product reference for invoice
                 $productID = $entry->stripe_product_id;
-//                $priceID = Price::where('stripe_product_id', $productID)
-//                    ->select('stripe_price_id')
-//                    ->orderBy('id', 'desc')
-//                    ->first();
+                //                $priceID = Price::where('stripe_product_id', $productID)
+                //                    ->select('stripe_price_id')
+                //                    ->orderBy('id', 'desc')
+                //                    ->first();
 
-//              Prepare invoice
+                //              Prepare invoice
                 $this->invoice($entry, $email, $username);
             }
         }
@@ -97,21 +97,21 @@ class OnEntryWithdrawn
         // Create an Invoice
         $invoice = $another->invoices->create([
             'customer' => $customerId,
-            'description' => $trialClub . ' - ' . $trialName,
+            'description' => $trialClub.' - '.$trialName,
             'collection_method' => 'send_invoice',
             'days_until_due' => 3,
             'metadata' => [
                 'entryID' => $entryID,
-            ]
+            ],
         ]);
 
-//   Add line items
+        //   Add line items
         $invoiceItem = $another->invoiceItems->create([
             'customer' => $customerId,
             'pricing' => [
                 'price' => $entry->stripe_price_id,
             ],
-            'description' => ' Ref: ' . $entryID,
+            'description' => ' Ref: '.$entryID,
             'invoice' => $invoice->id,
         ]);
 

@@ -12,7 +12,7 @@ class IsAdminUser
     /**
      * Handle an incoming request.
      *
-     * @param Closure(Request): (Response) $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -20,12 +20,14 @@ class IsAdminUser
             $user = Auth::user();
             $isAdminUser = $user->isAdminUser;
             if ($isAdminUser) {
-                info("AdminUser requested");
+                info('AdminUser requested');
+
                 return $next($request);
             } else {
                 return redirect('/');
             }
         }
+
         return redirect('/');
     }
 }

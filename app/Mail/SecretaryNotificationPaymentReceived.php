@@ -8,7 +8,6 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Collection;
 
 class SecretaryNotificationPaymentReceived extends Mailable
 {
@@ -17,10 +16,7 @@ class SecretaryNotificationPaymentReceived extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public String $riders, public String $msg)
-    {
-
-    }
+    public function __construct(public string $riders, public string $msg) {}
 
     /**
      * Get the message envelope.
