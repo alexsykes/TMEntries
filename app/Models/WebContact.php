@@ -17,6 +17,7 @@ class WebContact extends Model
         'action',
         'action_by',
         'ip_address',
+        'token',
     ];
 
     protected function casts(): array
