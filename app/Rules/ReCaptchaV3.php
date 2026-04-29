@@ -13,6 +13,7 @@ class ReCaptchaV3 implements ValidationRule
         private ?string $action = null,
         private ?float  $minScore = null)
     {
+        $this->minScore = 0.1;
     }
 
     /**
@@ -43,14 +44,15 @@ class ReCaptchaV3 implements ValidationRule
             // When this fails it means the browser didn't send a correct code. This means it's very likely a bot we should block
             if ($body['success'] !== true) {
                 $fail('Your form submission failed the Google reCAPTCHA verification, please try again.');
-                Log::info('Recaptcha fail');
+                Log::info('Recaptcha fail  IP: ' . request()->ip());
 
                 return;
             }
 
             // Tests pass so proceed
             if ($body['success'] == true) {
-                Log::info('Recaptcha Success');
+                $score = $body['score'];
+                Log::info('Google reCAPTCHA score: ' . $score);
             }
 
             // When this fails it means the action didn't match the one set in the button's data-action.

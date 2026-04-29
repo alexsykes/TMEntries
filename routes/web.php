@@ -270,9 +270,10 @@ Route::get('/pdf/results/{id}', [UtilityController::class, 'getResultsPDF']);
 Route::get('/contact', [WebContactController::class, 'contactForm']);
 Route::post('/contact/submit', [WebContactController::class, 'store']);
 Route::get('/webcontacts', [WebContactController::class, 'index']);
-Route::get('/webcontact/{id}', [WebContactController::class, 'show']);
+Route::get('/webcontact/show/{id}', [WebContactController::class, 'show']);
 Route::patch('/webcontact/update', [WebContactController::class, 'update']);
-
+Route::get('/webcontact/{id}/edit/{token}', [WebContactController::class, 'adminEdit']);
+Route::get('/webcontact/{id}/spam/{token}', [WebContactController::class, 'adminSpam']);
 
 // MIDDLEWARE
 Route::middleware('auth')->group(function () {

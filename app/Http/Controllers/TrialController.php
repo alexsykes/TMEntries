@@ -17,6 +17,22 @@ use Stripe\StripeClient;
 class TrialController extends Controller
 {
     //
+
+    /* Paid status
+    0 - New entry within limit, not paid
+    1 - Confirmed entry
+    2 - Withdrawn, having paid, waiting for refund
+    3 - Refunded entries
+    4 - Reserve - invoiced, awaiting payment
+    5 - Reserve - not paid
+    6 - Removed
+    7 - Manual entry - unpaid
+    8 - Manual entry - paid
+    9 - Manual entry - FoC
+    10 -
+    11 - Reminder sent
+*/
+
     public function details($trial_id)
     {
 
@@ -143,6 +159,26 @@ class TrialController extends Controller
 
 
         // Start of new
+//        $newSales = DB::table('entries')->where('trial_id', $id)
+//            ->whereIn('status', [1, 2, 3])
+//        ->select('extras')
+//        ->get();
+//
+//        $allItems = array();
+//         foreach ($newSales as $newSale) {
+//             $sale = $newSale->extras;
+//             $saleArray = json_decode($sale, true);
+//             foreach ($saleArray as $saleItem) {
+//                 array_push($allItems, $saleItem);
+//             }
+//         }
+//
+//         $productIDs = array_unique(array_column($allItems, 'priceID'));
+//         dump($productIDs);
+//         dd(array_column( $allItems, 'priceID'));
+//
+//exit;
+//        End of new
 
 
         $entryData = DB::table('entries')
@@ -166,7 +202,6 @@ class TrialController extends Controller
             ->orderBy('entries.name', 'ASC')
             ->get();
 
-//        End of new
 
         return view('trials.info', ['entries' => $entries, 'trial' => $trial, 'venue' => $venue, 'sales' => $productSales, 'numRiders' => $numRiders, 'entryCounts' => $entryCounts, 'entryPurchases' => $entryPurchases]);
     }

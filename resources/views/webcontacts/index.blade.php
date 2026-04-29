@@ -26,7 +26,7 @@
                             <td>{{ $message->email }}</td>
                             <td>{{ $message->message }}</td>
                             <td>{{ $message->ip_address }}</td>
-                            <td><a href="/webcontact/{{$message->id}}">View</a></td>
+                            <td><a href="/webcontact/show/{{$message->id}}">View</a></td>
                         </tr>
                         @endforeach
             </table>
