@@ -29,8 +29,11 @@ class WebContactController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:254'],
             'message' => ['required'],
+            'type' => ['required'],
         ]);
 
+        $messageArray =array($data['type'], $data['message']);
+        $data['message'] = json_encode($messageArray);
         $ip_address = $request->ip();
         $data['ip_address'] = $ip_address;
         $data['token'] = bin2hex(random_bytes(16));
@@ -62,9 +65,10 @@ class WebContactController extends Controller
         return response()->json();
     }
 
-    public function contactForm()
+    public function contactForm(Request $request)
     {
-        return view('contact.contact-form');
+        $type = $request->type;
+        return view('contact.contact-form', compact('type'));
     }
 
     public function adminEdit(Request $request)

@@ -58,6 +58,12 @@ class ProductController extends Controller
         }
         $attrs['hasQuantity'] = $hasQuantity;
 
+        $required = true;
+        if (!is_null($request->required)) {
+            $required = false;
+        }
+        $attrs['required'] = $required;
+
         $isYouth = false;
         if (!is_null($request->isYouth)) {
             $isYouth = $request->isYouth;
@@ -80,6 +86,7 @@ class ProductController extends Controller
                     //            'statement_descriptor' => $trial->name,
                     'metadata' => [
                         'category' => $attrs['product_category'],
+                        'required' => $attrs['required'],
                         'trialid' => $attrs['trial_id'],
                         'club_id' => $attrs['club_id'],
                         'amount' => $attrs['price'],
@@ -104,6 +111,7 @@ class ProductController extends Controller
                 'metadata' => [
                     'category' => $attrs['product_category'],
                     'trialid' => $attrs['trial_id'],
+                    'required' => $attrs['required'],
                     'club_id' => $attrs['club_id'],
                     'amount' => $attrs['price'],
                     'isYouth' => $attrs['isYouth'],

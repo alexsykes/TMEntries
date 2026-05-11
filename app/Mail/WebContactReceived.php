@@ -15,12 +15,14 @@ class WebContactReceived extends Mailable
 {
     use Queueable, SerializesModels;
 
+    private mixed $message;
+
     /**
      * Create a new message instance.
      */
     public function __construct(public WebContact $webContact)
     {
-        //
+
     }
 
     /**
@@ -40,7 +42,8 @@ class WebContactReceived extends Mailable
     {
         return new Content(
             view: 'mails.web_contact_received',
-            with: ['webContact' => $this->webContact],
+            with: ['webContact' => $this->webContact,
+                ],
         );
     }
 

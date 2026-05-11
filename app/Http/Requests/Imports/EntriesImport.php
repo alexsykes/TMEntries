@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Imports;
+namespace App\Http\Requests\Imports;
 
 use App\Http\Controllers\UtilityController;
 use App\Models\Entry;
@@ -31,7 +31,7 @@ class EntriesImport implements ToModel, WithHeadingRow
         $xlDate = $row['date_of_birth'];
         $UNIX_DATE = ($xlDate - 25569) * 86400;
         $dob = (gmdate('Y-m-d', $UNIX_DATE));
-        $rawName = $row['first_name'].' '.$row['surname'];
+        $rawName = $row['first_name'] . ' ' . $row['surname'];
 
         $utilityController = new UtilityController;
         $name = $utilityController->nameize($rawName);

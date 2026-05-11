@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\EntriesImport;
+use App\Http\Requests\Imports\EntriesImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 

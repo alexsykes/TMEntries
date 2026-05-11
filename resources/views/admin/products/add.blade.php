@@ -102,6 +102,16 @@
 
                 <x-form-field>
                     <div class="flex justify-normal col-span-3">
+                        <div class="font-semibold text text-blue-700">Optional
+                        </div>
+                        <div class="pl-2">
+                            <input name="required" type="checkbox" value="1"/>
+                        </div>
+                    </div>
+                </x-form-field>
+
+                <x-form-field>
+                    <div class="flex justify-normal col-span-3">
                         <div class="font-semibold text text-blue-700">Has Quantity
                         </div>
                         <div class="pl-2">

@@ -1,7 +1,15 @@
 <x-automail>
+    @php
+
+        $array = json_decode((string) $webContact->message);
+        $message = $array[1];
+        $type = $array[0];
+ @endphp
+
+
     <div class="">
-        <div>Your message was:</div>
-        <p>Message: <i>{{$webContact->message}}</i></p>
+        <p>Type: <i>{{$type}}</i></p>
+        <p>Message: <i>{{$message}}</i></p>
         <p>Respond</p>
 
         <p>Go to message: <a href="{{config('app.url')}}/webcontact/{{$webContact->id}}/edit/{{$webContact->token}}">Click

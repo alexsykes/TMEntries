@@ -17,6 +17,7 @@ class EntryLimitReached
      */
     public function __construct(public int $trial_id, public int $entry_limit, public int $numEntries)
     {
+        Log::info("Entry Limit reached");
     }
 
     /**

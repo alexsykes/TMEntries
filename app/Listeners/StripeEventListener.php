@@ -165,6 +165,12 @@ function onProductCreated($productObject)
         $options = '';
     }
 
+    if (isset($metadata['required'])) {
+        $required = !$metadata['required'];
+    } else {
+        $required = $metadata['required'];
+    }
+
     $club_id = 0;
     if (isset($metadata['club_id'])) {
         $club_id = $metadata['club_id'];
@@ -186,6 +192,7 @@ function onProductCreated($productObject)
         'trial_id' => $trialid,
         'isYouth' => $youth,
         'club_id' => $club_id,
+        'required' => $required,
         'options' => $options,
         'purchases' => 0,
         'version' => 1,

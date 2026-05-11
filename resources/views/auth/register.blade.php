@@ -27,7 +27,7 @@
                     <div class="mt-2"><a class="underline  text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
                         {{ __('Already registered? Go to login') }}
                     </a></div>
-        <div class="pt-2 pb-2 font-semibold">Difficulties registering? Please let us know - <a href="mailto:monster@trialmonster.uk?Subject=Registration">click here</a> </div>
+        <div class="pt-2 pb-2 font-semibold">Difficulties registering? Please let us know - <a href="/contact/register">click here</a> </div>
         <div>
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input id="name" class="border block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />

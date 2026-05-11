@@ -267,7 +267,7 @@ Route::get('/createResultPDF/{id}', [UtilityController::class, 'createResultPDF'
 Route::patch('/riderNumber/update', [EntryController::class, 'updateRiderNumber'])->middleware(CheckClubUser::class);
 Route::get('/pdf/results/{id}', [UtilityController::class, 'getResultsPDF']);
 
-Route::get('/contact', [WebContactController::class, 'contactForm']);
+Route::get('/contact/{type}', [WebContactController::class, 'contactForm']);
 Route::post('/contact/submit', [WebContactController::class, 'store']);
 Route::get('/webcontacts', [WebContactController::class, 'index']);
 Route::get('/webcontact/show/{id}', [WebContactController::class, 'show']);

@@ -22,6 +22,7 @@
     <div class="w-full  lg:max-w-4xl max-w-[335px]">
         <form method="POST" name="contactForm" id="contactForm" action="/contact/submit">
             @csrf
+            <input type="hidden" name="type" value="{{$type}}">
             <div>
                 <label class="font-semibold mt-2 text-blue-700" for="name">Name:</label><br>
                 <input class="p-1 rounded-md    border-blue-700 border bg-white" type="text" id="name" name="name"
@@ -39,11 +40,11 @@
                           placeholder="Your message here…"></textarea><br>
             </div>
             {{--    <button type="submit" class="mt-2 rounded-md border border-blue-950 bg-blue-800 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Send</button>--}}
-{{--            <button class="g-recaptcha btn btn-primary btn-lg mt-2 rounded-md border border-blue-950 bg-blue-800 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"--}}
-{{--                    data-sitekey="{{ config('services.recaptcha_v3.siteKey') }}"--}}
-{{--                    data-callback="onSubmit"--}}
-{{--                    data-action="submitContact">Send--}}
-{{--            </button>--}}
+            {{--            <button class="g-recaptcha btn btn-primary btn-lg mt-2 rounded-md border border-blue-950 bg-blue-800 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"--}}
+            {{--                    data-sitekey="{{ config('services.recaptcha_v3.siteKey') }}"--}}
+            {{--                    data-callback="onSubmit"--}}
+            {{--                    data-action="submitContact">Send--}}
+            {{--            </button>--}}
             <button class="g-recaptcha btn btn-primary btn-lg mt-2 rounded-md border border-blue-950 bg-blue-800 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                     data-sitekey="{{ config('services.recaptcha_v3.siteKey') }}"
                     data-callback="onSubmit"
