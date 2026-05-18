@@ -283,6 +283,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/preferences.update', [ProfileController::class, 'updatePreferences'])->name('preferences.update');
 });
 
+Route::get('/error/{msg}', [ScoringController::class, 'error'])->middleware([CheckClubUser::class])->name('error.message');
+
 Route::post('/fetchScores', [ScoringController::class, 'fetchScores']);
 
 Route::get('getJob', function () {

@@ -292,8 +292,8 @@
                                 }
                             @endphp
 
+                            {{--                            Check box - single opt-in/out --}}
                             @if($item->numOptions == 1)
-
                                 <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
                                     - {{$price}}</x-form-label>
                                 <input name="prodIDs[]" type="hidden" value="product{{$productIndex}}">
@@ -304,6 +304,7 @@
                                 <x-form-error name="product{{$productIndex}}"/>
 
                             @else
+
                                 <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
                                     - {{$price}}</x-form-label>
                                 <div>Please select <span class="font-semibold">one</span></div>

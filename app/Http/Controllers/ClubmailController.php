@@ -322,7 +322,7 @@ class ClubmailController extends Controller
         $clubTrials = DB::table('trials')->where('club', $clubName)
             ->select(['name', 'id'])
             ->orderBy('date', 'desc')
-            ->limit(10)
+            ->limit(25)
             ->get();
 
         $distributions = DB::table('mail_distributions')

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Score;
 use App\Models\Trial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -13,16 +14,32 @@ class ScoringController extends Controller
     public function setup($trialID)
     {
         $trial = Trial::find($trialID);
-        if ($trial->isScoringSetup) {
 
-            //            dd($trial->isScoringSetup);
-            return redirect("/scores/grid/{$trial->id}");
-        }
+        $numScores = Score::where('trial_id', $trialID)->count();
+
         $numSections = $trial->numSections;
         $numLaps = $trial->numLaps;
         $numColumns = $trial->numColumns;
         $numRows = $trial->numRows;
 
+        $numSlots = $numRows * $numColumns * $numLaps * $numSections;
+        $numRiders = $numRows * $numColumns;
+
+
+        if ($numScores == $numSlots) {
+            info("Scoring is already setup");
+            return redirect("/scores/grid/{$trial->id}");
+        } elseif ($numScores != 0) {
+            $msg = "There is an error in the scoring setup. Please seek assistance";
+            return redirect("/error/{$msg}");
+        } else {
+            info("Setting up scoring");
+        }
+
+
+        if ($trial->isScoringSetup) {
+            return redirect("/scores/grid/{$trial->id}");
+        }
         return view('scoring.setup', compact('trial', 'numSections', 'numLaps', 'numColumns', 'numRows'));
     }
 
@@ -34,16 +51,37 @@ class ScoringController extends Controller
             return redirect("/scores/grid/{$trial->id}");
         }
 
-        $trial->numSections = $request->numSections;
-        $trial->numLaps = $request->numLaps;
-        $trial->numColumns = $request->numColumns;
-        $trial->numRows = $request->numRows;
+        $numScores = Score::where('trial_id', $request->trialID)->count();
+
+        $numSections = $request->numSections;
+        $numLaps = $request->numLaps;
+        $numColumns = $request->numColumns;
+        $numRows = $request->numRows;
+
+        $numSlots = $numRows * $numColumns * $numLaps * $numSections;
+        $numRiders = $numRows * $numColumns;
+
+
+        if ($numScores == $numSlots) {
+            info("Scoring is already setup");
+            return redirect("/scores/grid/{$trial->id}");
+        } elseif ($numScores != 0) {
+            info("There is an error in the scoring setup. Please seek assistance");
+            return redirect("/scores/grid/{$trial->id}");
+        } else {
+            info("Setting up scoring");
+        }
+
+
+        $trial->numSections = $numSections;
+        $trial->numLaps = $numLaps;
+        $trial->numColumns = $numColumns;
+        $trial->numRows = $numRows;
 
         $trial->updated_at = now();
 
         $trial->save();
 
-        $numRiders = $trial->numRows * $trial->numColumns;
         //        Setup scoring grid
         for ($rider = 1; $rider <= $numRiders; $rider++) {
             for ($section = 1; $section <= $request->numSections; $section++) {
@@ -53,6 +91,7 @@ class ScoringController extends Controller
                         'rider' => $rider,
                         'section' => $section,
                         'lap' => $lap,
+                        'created_at' => now(),
                     ]);
                 }
             }
@@ -70,7 +109,7 @@ class ScoringController extends Controller
         $trial = Trial::find($trialID);
         $riderNumbers = $this->getRiderNumbers($trialID);
 
-        $scores = DB::select("SELECT rider, GROUP_CONCAT( IF(score IS NULL, '.',score) ORDER BY section, lap SEPARATOR '') AS scoreData FROM ".$db_prefix."scores WHERE trial_id = {$trialID} GROUP BY rider  ORDER BY rider");
+        $scores = DB::select("SELECT rider, GROUP_CONCAT( IF(score IS NULL, '.',score) ORDER BY section, lap SEPARATOR '') AS scoreData FROM " . $db_prefix . "scores WHERE trial_id = {$trialID} GROUP BY rider  ORDER BY rider");
 
         return view('scoring.grid', ['scores' => $scores, 'trial' => $trial, 'riderNumbers' => $riderNumbers]);
     }
@@ -97,7 +136,7 @@ class ScoringController extends Controller
         $db_prefix = Config::get('database.connections.mysql.prefix');
         $trial = Trial::find($trialid);
 
-        $scores = DB::select("SELECT rider, GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM ".$db_prefix."scores WHERE trial_id = {$trialid} AND section = {$section}  GROUP BY rider  ORDER BY rider	;");
+        $scores = DB::select("SELECT rider, GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM " . $db_prefix . "scores WHERE trial_id = {$trialid} AND section = {$section}  GROUP BY rider  ORDER BY rider	;");
 
         //        dd($scores);
         return view('scoring.section_score_grid', ['scores' => $scores, 'trial' => $trial, 'section' => $section]);
@@ -108,7 +147,7 @@ class ScoringController extends Controller
         $db_prefix = Config::get('database.connections.mysql.prefix');
         $trial = Trial::find($trialID);
         $numLaps = $trial->numLaps;
-        $scores = DB::select("SELECT  GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM ".$db_prefix."scores WHERE trial_id = {$trialID} AND section = {$section}  AND  rider	= {$rider}  GROUP BY rider  ORDER BY rider;");
+        $scores = DB::select("SELECT  GROUP_CONCAT(id ORDER BY lap ASC)AS ids, GROUP_CONCAT(score ORDER BY section, lap SEPARATOR '') AS scores FROM " . $db_prefix . "scores WHERE trial_id = {$trialID} AND section = {$section}  AND  rider	= {$rider}  GROUP BY rider  ORDER BY rider;");
 
         return view('scoring.editRiderSectionScore', ['scores' => $scores, 'rider' => $rider, 'section' => $section, 'numLaps' => $numLaps, 'trialID' => $trialID]);
     }
@@ -202,7 +241,7 @@ class ScoringController extends Controller
         $nonStarters = $this->getNonStarters($trialID, $allMissed);
 
         //        Get rider scores
-        $riderScores = Db::select("SELECT e.ridingNumber, GROUP_CONCAT(score ORDER BY s.section, lap SEPARATOR '') AS sectionScores, GROUP_CONCAT(score ORDER BY lap, s.section SEPARATOR '') AS sequentialScores FROM ".$db_prefix.'entries e JOIN '.$db_prefix."scores s ON e.ridingNumber = s.rider AND e.trial_id = s.trial_id WHERE e.trial_id = $trialID GROUP BY ridingNumber");
+        $riderScores = Db::select("SELECT e.ridingNumber, GROUP_CONCAT(score ORDER BY s.section, lap SEPARATOR '') AS sectionScores, GROUP_CONCAT(score ORDER BY lap, s.section SEPARATOR '') AS sequentialScores FROM " . $db_prefix . 'entries e JOIN ' . $db_prefix . "scores s ON e.ridingNumber = s.rider AND e.trial_id = s.trial_id WHERE e.trial_id = $trialID GROUP BY ridingNumber");
 
         //        then transfer all scores to entries
         foreach ($riderScores as $riderScore) {
@@ -301,5 +340,11 @@ class ScoringController extends Controller
             ->get('score');
 
         return $scores;
+    }
+
+    public function error($msg)
+    {
+        info("Error: " . $msg);
+        return view('scoring.error', ['msg' => $msg]);
     }
 }
