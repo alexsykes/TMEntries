@@ -18,11 +18,12 @@
         */
         $statusArray = array('Unconfirmed Entry - to pay', 'Confirmed Entry', 'Refund Pending', 'Refunded Entry');
 
-    $status = array('Awaiting payment', 'Confirmed Entry','Awaiting Refund', 'Refunded', 'Reserve - awaiting payment', 'Reserve', 'Removed', 'Manual Entry - to pay', 'Manual Entry - paid', 'Manual Entry - FoC' );
+    $status = array('Awaiting payment', 'Confirmed Entry','Awaiting Refund', 'Refunded', 'Reserve - awaiting payment', 'Reserve', 'Removed', 'Manual Entry - to pay', 'Manual Entry - paid', 'Manual Entry - FoC', 'Confirmed (was Reserve)' );
     @endphp
 
     <div class="space-y-4">
-        <div class="px-4 py-0 pb-2 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+        <div
+            class="px-4 py-0 pb-2 mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
             <table class="text-sm">
                 @foreach($entriesArray as $entryArray)
                     <tr class="flex-auto odd:bg-white  even:bg-gray-50  border-b ">

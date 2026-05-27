@@ -120,6 +120,33 @@
         </form>
     @endif
 
+    @if(sizeof($offers) > 0)
+        <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-green-600">Reserves - you have been offered a plece. Please check your emails and pay the invoice
+            </div>
+
+            <table class="w-full">
+                @foreach($offers as $entry)
+                    @php
+                        $entryID = $entry->id ;
+                        array_push($entryIDs, $entryID);
+                    @endphp
+                    <tr class="odd:bg-white  even:bg-gray-50  border-b">
+                        <td class="pl-2">{{$entryID}}</td>
+                        <td class="pl-2">{{$entry->name}}</td>
+                        <td class="pl-2 hidden sm:table-cell">{{$entry->course}}</td>
+                        <td class="pl-2 hidden sm:table-cell">{{$entry->class}}</td>
+                        <td class="pl-2 hidden md:table-cell">{{$entry->make}} {{$entry->size}}</td>
+                        <td class="pl-2"><a href="/entries/edit/{{$entryID}}"><i class="fa-solid fa-pen-to-square"></i></a>
+                        </td>
+                        <td class="pl-2"><a href="/entries/delete/{{$entryID}}"><i
+                                    class="fa-solid fa-ban text-orange-700"></i></a></td>
+                    </tr>
+                @endforeach
+            </table>
+        </div>
+    @endif
+
     @if(sizeof($reserves) > 0)
         <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Reserves - you will
@@ -141,7 +168,7 @@
                         <td class="pl-2"><a href="/entries/edit/{{$entryID}}"><i class="fa-solid fa-pen-to-square"></i></a>
                         </td>
                         <td class="pl-2"><a href="/entries/delete/{{$entryID}}"><i
-                                        class="fa-solid fa-ban text-orange-700"></i></a></td>
+                                    class="fa-solid fa-ban text-orange-700"></i></a></td>
                     </tr>
                 @endforeach
             </table>

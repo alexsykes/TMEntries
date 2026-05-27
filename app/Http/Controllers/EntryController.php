@@ -82,9 +82,14 @@ class EntryController extends Controller
         $reserves = Entry::all()
             ->where('created_by', $user_id)
             ->where('trial_id', $trial_id)
-            ->whereIn('status', [4, 5]);
+            ->where('status', 5);
 
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'options' => $allOptions, 'membership' => $membership, 'merchandise' => $merchandise, 'optionalItems' => $optionalItems]);
+        $offers = Entry::all()
+            ->where('created_by', $user_id)
+            ->where('trial_id', $trial_id)
+            ->where('status', 4);
+
+        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'offers' => $offers, 'options' => $allOptions, 'membership' => $membership, 'merchandise' => $merchandise, 'optionalItems' => $optionalItems]);
     }
 
     public function getMembership($club_id)
@@ -389,7 +394,6 @@ class EntryController extends Controller
 
     public function withdraw(Request $request)
     {
-
         $id = $request->id;
         $token = $request->token;
         $entry = Entry::where('id', $id)
@@ -424,7 +428,6 @@ class EntryController extends Controller
             //    Mark as refund requested
             //    Email user
         }
-
         return redirect('/');
     }
 
@@ -646,19 +649,20 @@ class EntryController extends Controller
             $this->sendReserveEmail($entry, $trial);
         }
 
-        $entryID = $entry->id;
-        $attr['entryID'] = $entryID;
-        $entries = Entry::all()
-            ->where('trial_id', $trial_id)
-            ->where('status', 0)
-            ->where('created_by', $attributes['created_by']);
-
-        $reserves = Entry::all()
-            ->where('trial_id', $trial_id)
-            ->whereIn('status', [4, 5])
-            ->where('created_by', $attributes['created_by']);
+//        $entryID = $entry->id;
+//        $attr['entryID'] = $entryID;
+//        $entries = Entry::all()
+//            ->where('trial_id', $trial_id)
+//            ->where('status', 0)
+//            ->where('created_by', $attributes['created_by']);
+//
+//        $reserves = Entry::all()
+//            ->where('trial_id', $trial_id)
+//            ->whereIn('status', [4, 5])
+//            ->where('created_by', $attributes['created_by']);
 //dd($reserves, $entries, $trial, $membership, $merchandise, $trial_id);
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership, 'merchandise' => $merchandise, 'trial_id' => $trial_id]);
+        return redirect('/entries/register/' . $trial_id);
+//        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'membership' => $membership, 'merchandise' => $merchandise, 'trial_id' => $trial_id]);
     }
 
     public function sendReserveEmail(Entry $entry, Trial $trial)

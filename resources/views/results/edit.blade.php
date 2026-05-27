@@ -1,42 +1,44 @@
 <x-club>
     <x-slot:heading>Editing result for EntryID: {{$entry->id}}</x-slot:heading>
     @php
-        $numSections = $entry->numSections;
-        $numLaps = $entry->numLaps;
-        $sectionScores = $entry->sectionScores;
-        $types = array("2 stroke", "4 stroke", "e-bike");
 
-        $allCourses = array();
-        $courses = $entry->courselist;
-        $customCourses = $entry->customCourses;
+        $today = date("Y-m-d");
+    $numSections = $entry->numSections;
+    $numLaps = $entry->numLaps;
+    $sectionScores = $entry->sectionScores;
+    $types = array("2 stroke", "4 stroke", "e-bike");
 
-        $allClasses = array();
-        $classes = $entry->classlist;
-        $customClasses = $entry->customClasses;
+    $allCourses = array();
+    $courses = $entry->courselist;
+    $customCourses = $entry->customCourses;
 
-        if($courses !='') {
-        array_push($allCourses, $courses);
-        }
+    $allClasses = array();
+    $classes = $entry->classlist;
+    $customClasses = $entry->customClasses;
 
-        if($customCourses !='') {
-        array_push($allCourses, $customCourses);
-        }
+    if($courses !='') {
+    array_push($allCourses, $courses);
+    }
 
-        if($classes !='') {
-        array_push($allClasses, $classes);
-        }
+    if($customCourses !='') {
+    array_push($allCourses, $customCourses);
+    }
 
-        if($customClasses !='') {
-        array_push($allClasses, $customClasses);
-        }
+    if($classes !='') {
+    array_push($allClasses, $classes);
+    }
 
-        $classlist = str_replace(',',',',implode(',', $allClasses));
-        $courselist   = str_replace(',',',',implode(',', $allCourses));
-        $courseOptions = explode(',', $courselist);
-        $classOptions = explode(',', $classlist);
+    if($customClasses !='') {
+    array_push($allClasses, $customClasses);
+    }
 
-        $sectionScores = str_split($sectionScores, $numLaps);
-        //        dump($sectionScores);
+    $classlist = str_replace(',',',',implode(',', $allClasses));
+    $courselist   = str_replace(',',',',implode(',', $allCourses));
+    $courseOptions = explode(',', $courselist);
+    $classOptions = explode(',', $classlist);
+
+    $sectionScores = str_split($sectionScores, $numLaps);
+    //        dump($sectionScores);
     @endphp
     <form action="/results/update" method="POST">
         @method('PATCH')
@@ -44,8 +46,10 @@
         <input type="hidden" name="numLaps" value="{{$entry->numLaps}}">
         @csrf
         <div class="space-y-12">
-            <div class="mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
-                <div class="flex justify-between  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl font-semibold  text-white bg-violet-600">
+            <div
+                class="mt-0 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+                <div
+                    class="flex justify-between  w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl font-semibold  text-white bg-violet-600">
                     <div>Rider {{$entry->ridingNumber}}</div>
                     <div><a href="/entry/changeNumber/{{$entry->id}}">Change Riding Number</a></div>
                 </div>
@@ -58,6 +62,19 @@
                             <x-form-error name="name"/>
                         </div>
                         @error('name')
+                        <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
+                        @enderror
+                    </x-form-field>
+
+                    <x-form-field>
+                        <x-form-label for="name">Date of birth</x-form-label>
+                        <div class="mt-2 col-span-2">
+                            <x-form-input name="dob" type="date" id="dob"
+                                          max="{{$today}}"
+                                          value="{{$entry->dob}}" required/>
+                            <x-form-error name="dob"/>
+                        </div>
+                        @error('dob')
                         <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                         @enderror
                     </x-form-field>
@@ -79,7 +96,7 @@
                         <x-form-label for="size">Capacity</x-form-label>
                         <div class="mt-2 col-span-2">
                             <x-form-input name="size" type="text" id="size"
-                                          placeholder="size" value="{{$entry->size}}" />
+                                          placeholder="size" value="{{$entry->size}}"/>
                             <x-form-error name="size"/>
                         </div>
                         @error('size')
@@ -90,12 +107,14 @@
                     <x-form-field>
                         <x-form-label class="pb-2" for="course">Type</x-form-label>
 
-                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
+                        <div
+                            class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
                             <div class="pb-2 pt-2    sm:col-span-2">
                                 <select class="ml-2 bg-white  space-x-4 border-none" name="type" id="type" required>
                                     <option value="">Select your engine type</option>
                                     @foreach($types as $type)
-                                        <option value="{{$type}}" {{$type==$entry->type ? "selected" : ""}}>{{$type}}</option>
+                                        <option
+                                            value="{{$type}}" {{$type==$entry->type ? "selected" : ""}}>{{$type}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -105,13 +124,15 @@
                     <x-form-field>
 
                         <x-form-label class="pb-2" for="course">Course</x-form-label>
-                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
+                        <div
+                            class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
                             <div class="pb-2 pt-2    sm:col-span-2">
                                 <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course"
                                         required>
                                     <option value="">Select your course</option>
                                     @foreach($courseOptions as $course)
-                                        <option value="{{$course}}" {{$course==$entry->course ? "selected" : ""}}>{{$course}}</option>
+                                        <option
+                                            value="{{$course}}" {{$course==$entry->course ? "selected" : ""}}>{{$course}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -121,13 +142,15 @@
                     <x-form-field>
                         <x-form-label class="pb-2" for="class">Class</x-form-label>
 
-                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
+                        <div
+                            class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
                             <div class="pb-2 pt-2 bg-white sm:col-span-2">
                                 <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class"
                                         required>
                                     <option value="">Select your class</option>
                                     @foreach($classOptions as $class)
-                                        <option value="{{$class}}" {{$class==$entry->class ? "selected" : ""}}>{{$class}}</option>
+                                        <option
+                                            value="{{$class}}" {{$class==$entry->class ? "selected" : ""}}>{{$class}}</option>
                                     @endforeach
                                 </select>
                             </div>

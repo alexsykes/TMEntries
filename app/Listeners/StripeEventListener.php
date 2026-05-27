@@ -8,6 +8,7 @@ use App\Events\TrialFull;
 use App\Mail\CancellationRefundConfirmed;
 use App\Mail\EntryOffer;
 use App\Mail\InvoiceOverdue;
+use App\Mail\InvoicePaid;
 use App\Mail\MembershipPaid;
 use App\Mail\MembershipReceived;
 use App\Mail\PaymentReceived;
@@ -49,10 +50,11 @@ function onInvoiceSent($invoiceObject)
     $url = $invoiceObject['hosted_invoice_url'];
     $pdf = $invoiceObject['invoice_pdf'];
     $entryID = $invoiceObject['metadata']['entryID'];
-    $pi = $invoiceObject['payment_intent'];
+//    $pi = $invoiceObject['payment_intent'];
 
     $entry = Entry::where('id', $entryID)->first();
-    $entry->stripe_payment_intent = $pi;
+    $entry->stripe_payment_intent = $invoiceObject['id'];
+    $entry->status = 4;
     $entry->updated_at = now();
     $entry->save();
 
@@ -86,23 +88,29 @@ function onInvoicePaid($invoiceObject)
 {
     $entryID = $invoiceObject['metadata']['entryID'];
     $email = $invoiceObject['customer_email'];
+//    $pi = $invoiceObject['payment']['payment_intent'];
 
     $entry = Entry::where('id', $entryID)->first();
-    $entry->status = 1;
+    $entry->status = 10;
+    $entry->email = $email;
+//    $entry->stripe_payment_intent = $pi;
+//    $entry->token = bin2hex(random_bytes(16));
     $entry->updated_at = now();
     $entry->save();
 
     //  Get entries for confirmation email
-    $entries = DB::table('entries')
-        ->join('trials', 'entries.trial_id', '=', 'trials.id')
-        ->where('entries.id', $entryID)
-        ->get(['entries.*', 'trials.name as trial', 'trials.date as date']);
+//    $entries = DB::table('entries')
+//        ->join('trials', 'entries.trial_id', '=', 'trials.id')
+//        ->where('entries.id', $entryID)
+//        ->get(['entries.*', 'trials.name as trial', 'trials.date as date']);
 
     //  Send confirmation email with bcc: to admin
     $bcc = 'monster@trialmonster.uk';
+
+//    var_dump($entryID);
     Mail::to($email)
         ->bcc($bcc)
-        ->send(new PaymentReceived($entries));
+        ->send(new InvoicePaid($entryID));
     //    Mail::to($email, $name)->send(new EntryOffer($entryData));
 
 }
@@ -259,6 +267,9 @@ function onProductUpdated($productObject)
 function onCheckoutSessionCompleted($sessionObject)
 {
     //    Get secret key
+//
+//    echo "Checkout session completed";
+//    return;
     $stripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
     // and data from session
     $metadata = $sessionObject['metadata'];
@@ -767,6 +778,7 @@ class StripeEventListener
 
             case 'checkout.session.completed':
                 $object = $event->payload['data']['object'];
+//                echo "Call Checkout Session Completed\n";
                 onCheckoutSessionCompleted($object);
                 break;
 
@@ -779,6 +791,11 @@ class StripeEventListener
             case 'invoice.paid':
                 $object = $event->payload['data']['object'];
                 onInvoicePaid($object);
+
+                break;
+            case 'invoice.payment_succeeded':
+                $object = $event->payload['data']['object'];
+                $this->onInvoicePaymentSucceeded($object);
 
                 break;
 
@@ -815,7 +832,12 @@ class StripeEventListener
                 onPaymentIntentCreated($object);
                 break;
             default:
-                //                // info('Received unknown event type ' . $eventType);
+                info('Received unknown event type ' . $eventType);
         }
+    }
+
+    private function onInvoicePaymentSucceeded(mixed $object)
+    {
+        echo "Invoice Payment Succeeded\n";
     }
 }

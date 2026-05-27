@@ -63,13 +63,6 @@ class OnEntryWithdrawn
                 //                TODO remove comment
                 $entry->update();
 
-                //              Get product reference for invoice
-                $productID = $entry->stripe_product_id;
-                //                $priceID = Price::where('stripe_product_id', $productID)
-                //                    ->select('stripe_price_id')
-                //                    ->orderBy('id', 'desc')
-                //                    ->first();
-
                 //              Prepare invoice
                 $this->invoice($entry, $email, $username);
             }
@@ -79,14 +72,14 @@ class OnEntryWithdrawn
 
     public function invoice($entry, $email, $username)
     {
-        $another = new StripeClient(Config::get('stripe.stripe_secret_key'));
+        $newStripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $trialID = $entry->trial_id;
         $trial = Trial::findOrFail($trialID);
         $trialName = $trial->name;
         $trialClub = $trial->club;
 
-        $customer = $another->customers->create([
+        $customer = $newStripe->customers->create([
             'email' => $email,
             'name' => $username,
         ]);
@@ -95,9 +88,13 @@ class OnEntryWithdrawn
 
         $entryID = $entry->id;
         // Create an Invoice
-        $invoice = $another->invoices->create([
+        $invoice = $newStripe->invoices->create([
             'customer' => $customerId,
-            'description' => $trialClub.' - '.$trialName,
+//            'custom_fields' => [
+//                'TrialID' => $trialID,
+//                'EntryID' => $entryID,
+//            ],
+            'description' => $trialClub . ' - ' . $trialName,
             'collection_method' => 'send_invoice',
             'days_until_due' => 3,
             'metadata' => [
@@ -105,18 +102,22 @@ class OnEntryWithdrawn
             ],
         ]);
 
+        $invoiceId = $invoice->id;
+
+        info("Invoice with ID: $invoice->id");
+
         //   Add line items
-        $invoiceItem = $another->invoiceItems->create([
+        $invoiceItem = $newStripe->invoiceItems->create([
             'customer' => $customerId,
             'pricing' => [
                 'price' => $entry->stripe_price_id,
             ],
-            'description' => ' Ref: '.$entryID,
+            'description' => ' Ref: ' . $entryID,
             'invoice' => $invoice->id,
+
         ]);
-
-        info('Invoice - $entryID');
-
-        $invoice->sendInvoice();
+        
+        $newStripe->invoices->finalizeInvoice($invoiceId);
+        $newStripe->invoices->sendInvoice($invoiceId);
     }
 }

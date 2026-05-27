@@ -228,6 +228,7 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
         $entry->type = request('type');
         $entry->size = request('size');
         $entry->name = request('name');
+        $entry->dob = request('dob');
 
         $entry->cleans = substr_count($scoreString, '0', 0);
         $entry->ones = substr_count($scoreString, '1', 0);
@@ -334,17 +335,17 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
         $courseArray = explode(',', $courselist);
         $courselist = implode("','", $courseArray);
 
-        $query = "SELECT id AS resultID, 
+        $query = "SELECT id AS resultID,
     RANK() OVER (
 	PARTITION BY FIELD(course,'$courselist')
 	ORDER BY FIELD(course,'$courselist'), resultStatus ASC, total, cleans DESC, ones DESC, twos DESC, threes DESC, sequentialScores
 	) AS pos,
-	id AS id, ridingNumber  AS rider, 
-	course AS course, 
-	name, 
-	class AS class, CONCAT(make,' ',size) AS machine, 
-	total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id 
-	FROM " . $db_prefix . "entries 
+	id AS id, ridingNumber  AS rider,
+	course AS course,
+	name,
+	class AS class, CONCAT(make,' ',size) AS machine,
+	total, cleans, ones, twos, threes, fives, missed, resultStatus, sectionScores, sequentialScores, trial_id
+	FROM " . $db_prefix . "entries
 	WHERE trial_id = $id AND resultStatus < 2";
 
         $results = DB::select($query);

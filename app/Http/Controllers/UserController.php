@@ -224,7 +224,7 @@ class UserController extends Controller
                 //      Get extra input field names
 //                $prodIDs = $request->prodIDs;
 
-                if(!is_null($request->prodIDs)) {
+                if (!is_null($request->prodIDs)) {
                     foreach ($request->prodIDs as $prodID) {
                         if (!is_null($request->$prodID)) {
                             $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
@@ -273,6 +273,7 @@ class UserController extends Controller
 
     public function userWithdraw($id)
     {
+
         $userID = auth()->user()->id;
         $entry = Entry::findorfail($id);
 
@@ -280,6 +281,7 @@ class UserController extends Controller
             abort(403);
         }
 
+        info("Status: " . $entry->status);
         if ($entry->status == 1) {
 
             //        Get payment details
@@ -291,16 +293,18 @@ class UserController extends Controller
             $entry->status = 2;
             $entry->save();
 
+
             //        dd($id, $entry->stripe_payment_intent);
             //                    Request request
             require '../vendor/autoload.php';
             require '../vendor/stripe/stripe-php/lib/StripeClient.php';
             $stripe = new StripeClient(config('stripe.stripe_secret_key'));
 
+//             TODO reverse amount comment
             $stripe->refunds->create([
                 'payment_intent' => $pi,
-                'amount' => $cost - 300,
-                //                'amount' => 1,
+//                'amount' => $cost - 300,
+                'amount' => 1,
                 'metadata' => [
                     'entry_id' => $entry->id,
                     'reason' => 'user_request',
@@ -314,7 +318,6 @@ class UserController extends Controller
         }
 
         EntryWithdrawn::dispatch($id);
-
         return redirect('user/entries');
     }
 
