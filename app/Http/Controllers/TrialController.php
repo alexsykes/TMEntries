@@ -53,7 +53,7 @@ class TrialController extends Controller
         $series = Series::where('id', $seriesID)->first();
         $numEntries = Entry::all()
             ->where('trial_id', $trial_id)
-            ->whereIn('status', [1, 4, 5, 7, 8, 9])
+            ->whereIn('status', [1, 4, 5, 7, 8, 9, 10])
             ->count();
 
         $venue = $trial->venue();
@@ -123,7 +123,7 @@ class TrialController extends Controller
         $entryCounts = DB::table('entries')
             ->select(DB::raw('course, count(*) as count'))
             ->where('trial_id', $id)
-            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9, 10])
             ->groupBy('course')
             ->orderBy('course')
             ->get();
@@ -137,7 +137,7 @@ class TrialController extends Controller
 
         $numRiders = DB::table('entries')
             ->where('trial_id', $id)
-            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9])
+            ->whereIn('status', [0, 1, 4, 5, 7, 8, 9, 10])
             ->count();
 
         $productSales = DB::table('products')
@@ -734,12 +734,12 @@ class TrialController extends Controller
         $trial = Trial::findOrFail($id);
 
         $entries = Entry::where('trial_id', $id)
-            ->whereIn('status', [1, 7, 8, 9])
+            ->whereIn('status', [1, 7, 8, 9, 10])
             ->get()
             ->sortBy('name');
 
         $unconfirmed = Entry::where('trial_id', $id)
-            ->whereIn('status', [0, 10])
+            ->whereIn('status', [0])
             ->select('name')
             ->get();
 
@@ -755,7 +755,7 @@ class TrialController extends Controller
             ->sortBy('id');
 
         $sectionList = Entry::where('trial_id', $id)
-            ->whereIn('status', [1, 7, 8, 9])
+            ->whereIn('status', [1, 7, 8, 9, 10])
 //            ->select('name')
             ->get()
             ->sortBy('startsAt');

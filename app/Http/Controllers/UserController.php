@@ -57,12 +57,13 @@ class UserController extends Controller
         $entries = DB::table('entries')
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
             ->where('entries.created_by', $userID)
-            ->whereIn('entries.status', [1, 2, 3, 4, 5, 6, 7, 8, 9])
+            ->whereIn('entries.status', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
             ->whereIn('entries.trial_id', $futureTrialsArray)
             ->orderBy('entries.name', 'asc')
             ->select('entries.id', 'entries.status', 'entries.name', 'entries.class', 'entries.course', 'trials.name as trial', 'trials.isEntryLocked')
             ->get();
 
+//        dd($entries);
         return view('user.entry_list', compact('entries', 'toPays', 'todaysEntries'));
     }
 

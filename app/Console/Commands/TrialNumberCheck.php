@@ -44,7 +44,7 @@ class TrialNumberCheck extends Command
             //            Check for entry limit
             if ($entryLimit > 0) {
                 $numEntries = Entry::where('trial_id', $trial->id)
-                    ->whereIn('status', [1, 4, 7, 8, 9])
+                    ->whereIn('status', [1, 4, 7, 8, 9, 10])
                     ->count();
 
                 $unconfirmed = Entry::where('trial_id', $trial->id)
@@ -76,7 +76,7 @@ class TrialNumberCheck extends Command
             ->get();
 
         foreach ($reserves as $entry) {
-            echo date('h:i')." Entry ID: $entry->id status changed to 4\n";
+            echo date('h:i') . " Entry ID: $entry->id status changed to 4\n";
 
             $entryID = $entry->id;
             $entry = Entry::where('id', $entryID)->first();
@@ -111,7 +111,7 @@ class TrialNumberCheck extends Command
         // Create an Invoice
         $invoice = $another->invoices->create([
             'customer' => $customerId,
-            'description' => $trialClub.' - '.$trialName,
+            'description' => $trialClub . ' - ' . $trialName,
             'collection_method' => 'send_invoice',
             'days_until_due' => 2,
             'metadata' => [
@@ -125,7 +125,7 @@ class TrialNumberCheck extends Command
             'pricing' => [
                 'price' => $entry->stripe_price_id,
             ],
-            'description' => ' Ref: '.$entryID,
+            'description' => ' Ref: ' . $entryID,
             'invoice' => $invoice->id,
         ]);
 

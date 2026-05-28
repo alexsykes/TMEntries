@@ -118,7 +118,7 @@ class ScoringController extends Controller
     {
         $riderNumbers = DB::table('entries')
             ->where('trial_id', $id)
-            ->whereIn('status', [1, 7, 8, 9])
+            ->whereIn('status', [1, 7, 8, 9, 10])
             ->get('ridingNumber');
 
         $riderNumberArray = [];
@@ -294,7 +294,7 @@ class ScoringController extends Controller
     {
         $riders = DB::table('entries')
             ->where('trial_id', $id)
-            ->whereIn('status', [1, 7, 8, 9])
+            ->whereIn('status', [1, 7, 8, 9, 10])
             ->where('name', '!=', '')
             ->where('sectionScores', $allMissed)
             ->get('name');

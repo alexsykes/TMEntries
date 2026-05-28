@@ -35,7 +35,7 @@ class OnEntryWithdrawn
         $hasLimit = $trial->hasEntryLimit;
 
         $numEntries = Entry::where('trial_id', $trialID)
-            ->whereIn('status', [1, 4, 7, 8, 9])
+            ->whereIn('status', [1, 4, 7, 8, 9, 10])
             ->count();
 
         //  Check for vacancy created
@@ -116,7 +116,7 @@ class OnEntryWithdrawn
             'invoice' => $invoice->id,
 
         ]);
-        
+
         $newStripe->invoices->finalizeInvoice($invoiceId);
         $newStripe->invoices->sendInvoice($invoiceId);
     }

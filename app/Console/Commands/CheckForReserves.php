@@ -67,7 +67,7 @@ class CheckForReserves extends Command
             if ($numReserves > 0) {
                 $entries = DB::table('entries')
                     ->where('trial_id', $trialID)
-                    ->whereIn('status', [1, 4, 7, 8, 9])
+                    ->whereIn('status', [1, 4, 7, 8, 9, 10])
                     ->get();
 
                 $numEntries = count($entries);
@@ -125,7 +125,7 @@ class CheckForReserves extends Command
         // Create an Invoice
         $invoice = $another->invoices->create([
             'customer' => $customerId,
-            'description' => $trialClub.' - '.$trialName,
+            'description' => $trialClub . ' - ' . $trialName,
             'collection_method' => 'send_invoice',
             'days_until_due' => 2,
             'metadata' => [
@@ -139,7 +139,7 @@ class CheckForReserves extends Command
             'pricing' => [
                 'price' => $entry->stripe_price_id,
             ],
-            'description' => ' Ref: '.$entryID,
+            'description' => ' Ref: ' . $entryID,
             'invoice' => $invoice->id,
         ]);
 

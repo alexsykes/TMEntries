@@ -326,7 +326,7 @@ class EntryController extends Controller
             //        Check for full entry list
             $entryLimit = $trial->entryLimit;
             $numEntries = Entry::where('trial_id', $trialID)
-                ->whereIn('status', [1, 4, 7, 8, 9])
+                ->whereIn('status', [1, 4, 7, 8, 9, 10])
                 ->count();
             Info("NumEntries: $numEntries");
             //        Check for number of entries left
@@ -406,13 +406,6 @@ class EntryController extends Controller
             $price = Price::where('stripe_price_id', $entry->stripe_price_id)->first();
             $cost = $price->stripe_price;
 
-            //            $entry->status = 2; // Mark as withdrawn, having paid, waiting for refund
-            //            $entry->token = $token = bin2hex(random_bytes(16));
-//            $entry->save();
-
-            //        Request request
-            //            require('../vendor/autoload.php');
-            //            require('../vendor/stripe/stripe-php/lib/StripeClient.php');
             $stripe = new StripeClient(config('stripe.stripe_secret_key'));
 
             $stripe->refunds->create([
@@ -425,8 +418,6 @@ class EntryController extends Controller
             ]);
 
             info("Stripe refund requested by customer: $entry->id");
-            //    Mark as refund requested
-            //    Email user
         }
         return redirect('/');
     }
@@ -472,7 +463,6 @@ class EntryController extends Controller
 
     public function useredit(Request $request)
     {
-        //        dd($request->all());
         $token = $request->token;
         $id = $request->id;
 
@@ -520,7 +510,6 @@ class EntryController extends Controller
 
     public function store(Request $request)
     {
-
 //        prodIDs -> array of stripe_price_id of items on offer
 //        product{n} stripe_price_id selected
 //        membership -> stripe_price_id if membership option selected
@@ -549,7 +538,7 @@ class EntryController extends Controller
             //        Check for full entry list
             $entryLimit = $trial->entryLimit;
             $numEntries = Entry::where('trial_id', $trial_id)
-                ->whereIn('status', [1, 4, 7, 8, 9])
+                ->whereIn('status', [1, 4, 7, 8, 9, 10])
                 ->count();
             Info("EntryController: line 444: NumEntries: $numEntries");
             //        Check for number of entries left

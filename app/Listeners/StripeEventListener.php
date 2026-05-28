@@ -432,7 +432,7 @@ function onCheckoutSessionCompleted($sessionObject)
             //        Check for full entry list
             $entryLimit = $trial->entryLimit;
             $numEntries = Entry::where('trial_id', $trialID)
-                ->whereIn('status', [1, 4, 7, 8, 9])
+                ->whereIn('status', [1, 4, 7, 8, 9, 10])
                 ->count();
             Info("NumEntries: $numEntries");
             //        Check for number of entries left

@@ -1,7 +1,7 @@
 <x-main>
     @php
 //    dd($toPays);
-        $statusOptions = array(    'Payment due', 'Confirmed (Payment received)', 'Withdrawn - paid awaiting refund', 'Refunded', 'Invoiced - awaiting payment', 'Reserve', 'Cancelled', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
+        $statusOptions = array(    'Payment due', 'Confirmed (Payment received)', 'Withdrawn - paid awaiting refund', 'Refunded', 'Invoiced - awaiting payment', 'Reserve', 'Cancelled', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC', 'Confirmed - was Reserve');
         $entryIDs = array();
 $email = Auth::user()->email;
 $noEditArray = array(2,3,4);
