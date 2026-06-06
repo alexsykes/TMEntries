@@ -1,6 +1,6 @@
 <x-main>
     @php
-        $statusOptions = array(    'Unconfirmed - will be confirmed when payment is completed', 'Confirmed', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC');
+        $statusOptions = array(    'Unconfirmed - will be confirmed when payment is completed', 'Confirmed', 'Withdrawn - paid awaiting refund', 'Refunded', 'Accepted - awaiting payment', 'Reserve', 'Removed', 'Manual entry - to pay', 'Manual entry - paid', 'Manual entry - FoC', 'Confirmed (was Reserve)');
 
         $allCourses = array();
         $courses = $entry->courselist;

@@ -76,9 +76,13 @@ class UserController extends Controller
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
             ->where('entries.id', $id)
             ->where('entries.created_by', $userID)
-            ->whereIn('entries.status', [0, 1, 4, 5])
+            ->whereIn('entries.status', [0, 1, 4, 5, 10])
             ->get(['entries.*', 'trials.name as trial_name', 'trials.club as club', 'trials.classlist', 'trials.courselist', 'trials.customClasses', 'trials.customCourses', 'trials.isEntryLocked', 'trials.date as trialdate'])
             ->first();
+
+        if ($entry == null) {
+            abort(404);
+        }
 
         $trial = Trial::findorfail($entry->trial_id);
         $club_id = $trial->club_id;
@@ -95,9 +99,6 @@ class UserController extends Controller
         $merchandise = $this->getMerchandise($club_id, $trial->id);
         //        dd($membership);
 
-        if ($entry == null) {
-            abort(404);
-        }
 
         return view('user.edit_entry', ['options' => $options, 'entry' => $entry, 'membership' => $membership, 'merchandise' => $merchandise]);
     }
@@ -282,7 +283,6 @@ class UserController extends Controller
             abort(403);
         }
 
-        info("Status: " . $entry->status);
         if ($entry->status == 1) {
 
             //        Get payment details
@@ -304,8 +304,8 @@ class UserController extends Controller
 //             TODO reverse amount comment
             $stripe->refunds->create([
                 'payment_intent' => $pi,
-//                'amount' => $cost - 300,
-                'amount' => 1,
+                'amount' => $cost - 300,
+//                'amount' => 1,
                 'metadata' => [
                     'entry_id' => $entry->id,
                     'reason' => 'user_request',
@@ -313,8 +313,8 @@ class UserController extends Controller
                 'reason' => 'requested_by_customer'
             ]);
         } elseif ($entry->status == 0) {
-            $entry->updated_at = now();
             $entry->status = 6;
+            $entry->updated_at = now();
             $entry->save();
         }
 

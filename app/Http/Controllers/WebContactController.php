@@ -32,7 +32,7 @@ class WebContactController extends Controller
             'type' => ['required'],
         ]);
 
-        $messageArray =array($data['type'], $data['message']);
+        $messageArray = array($data['type'], $data['message']);
         $data['message'] = json_encode($messageArray);
         $ip_address = $request->ip();
         $data['ip_address'] = $ip_address;

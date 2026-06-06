@@ -19,7 +19,7 @@ class ProductController extends Controller
 
     public function add()
     {
-        $categories = array('Entry fee', 'Membership','Merchandise', 'Other');
+        $categories = array('Entry fee', 'Membership', 'Merchandise', 'Other');
         $clubs = DB::table('clubs')->select('id', 'name')
             ->orderBy('name')
             ->get();
@@ -82,7 +82,7 @@ class ProductController extends Controller
 
                 $stripe->products->create([
                     'name' => $attrs['product_name'],
-                    'description' => $attrs['product_description']." (".$option.")",
+                    'description' => $attrs['product_description'] . " (" . $option . ")",
                     //            'statement_descriptor' => $trial->name,
                     'metadata' => [
                         'category' => $attrs['product_category'],

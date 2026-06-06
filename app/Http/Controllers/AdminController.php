@@ -359,14 +359,14 @@ class AdminController extends Controller
 
         switch ($task) {
             case 'refund':
-                $pis = DB::select("SELECT stripe_payment_intent AS pi, 
-       email,  
-       GROUP_CONCAT(e.name SEPARATOR ', ') AS names, 
-       GROUP_CONCAT(e.id SEPARATOR ',') AS entryIDs, 
-       SUM(p.stripe_price) AS value 
+                $pis = DB::select("SELECT stripe_payment_intent AS pi,
+       email,
+       GROUP_CONCAT(e.name SEPARATOR ', ') AS names,
+       GROUP_CONCAT(e.id SEPARATOR ',') AS entryIDs,
+       SUM(p.stripe_price) AS value
 FROM `tme_entries` e
 JOIN tme_prices p ON e.`stripe_price_id` = p.`stripe_price_id`
-WHERE e.`trial_id` = $trialID AND e.status = 1 
+WHERE e.`trial_id` = $trialID AND e.status = 1
 GROUP BY `stripe_payment_intent`, `email`");
 
                 foreach ($pis as $pi) {

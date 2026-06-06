@@ -209,7 +209,7 @@ Route::get('/results/getResultsPDF/{id}', [ResultController::class, 'getResultsP
 
 // CLUB Routes
 Route::get('/clubs/list', [ClubController::class, 'list']);
-Route::get('/clubs/membershipForm/{id}', [ClubController::class, 'membershipForm']);
+Route::get('/clubs/membershipForm/{id}', [ClubController::class, 'membershiForm']);
 Route::post('/club/member/add', [ClubController::class, 'addMember']);
 Route::get('/club/member/approve', [ClubController::class, 'memberApprove'])->middleware(['auth', 'verified']);
 Route::post('/club/member/approve', [ClubController::class, 'memberApprovalUpdate'])->middleware(['auth', 'verified']);
@@ -286,21 +286,11 @@ Route::middleware('auth')->group(function () {
 Route::get('/error/{msg}', [ScoringController::class, 'error'])->middleware([CheckClubUser::class])->name('error.message');
 
 Route::post('/fetchScores', [ScoringController::class, 'fetchScores']);
-
-Route::get('getJob', function () {
-
-//    $job = DB::table('jobs')->first();
-//    $payload = $job->payload;
-//    $splod = explode(',', $payload);
-//    $command = $splod[10];
-//    dump($command);
-//    $unser = unserialize($command, ['allowed_classes' => true]);
-//    dd($unser);
-//    $command = $payload['command'];
-
-//    dd($unser);
-//    info("getJob");
-});
+//Route::get('/withdrawTest', function () {
+//    EntryWithdrawn::dispatch(9008)
+//        ->middleware([CheckClubUser::class]);
+//
+//});
 
 //Route::get('/phpmyinfo', function () {
 //    phpinfo();

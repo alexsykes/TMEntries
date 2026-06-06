@@ -215,7 +215,7 @@ class ClubController extends Controller
     public function membershipForm(Request $request, $id)
     {
         $oldValues = $request->old();
-        $club = Club::find($id);
+        $club = Club::findOrFail($id);
 
         return view('clubs.membership', ['club_id' => $id, 'oldValues' => $oldValues, 'club' => $club]);
     }

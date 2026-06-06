@@ -1,11 +1,11 @@
 <x-main>
     <script>
-        function toggle(checked) {
-            let x = document.getElementById("dateInput");
+        function toggleOtherClub(checked, div) {
+            let x = document.getElementById(div);
             if (checked) {
-                x.style.display = "inline-block";
-            } else {
                 x.style.display = "none";
+            } else {
+                x.style.display = "block";
             }
         }
 
@@ -81,7 +81,8 @@
     {{ $message }}
     @enderror
     @if(sizeof($entries) > 0)
-        <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+        <div
+            class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Unconfirmed Entries -
                 your entry is not confirmed until payment is completed
             </div>
@@ -101,7 +102,7 @@
                         <td class="pl-2"><a href="/entries/edit/{{$entryID}}"><i class="fa-solid fa-pen-to-square"></i></a>
                         </td>
                         <td class="pl-2"><a href="/entries/delete/{{$entryID}}"><i
-                                        class="fa-solid fa-ban text-orange-700"></i></a></td>
+                                    class="fa-solid fa-ban text-orange-700"></i></a></td>
                     </tr>
                 @endforeach
                 @php
@@ -121,8 +122,10 @@
     @endif
 
     @if(sizeof($offers) > 0)
-        <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-green-600">Reserves - you have been offered a plece. Please check your emails and pay the invoice
+        <div
+            class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+            <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-green-600">Reserves - you have
+                been offered a plece. Please check your emails and pay the invoice
             </div>
 
             <table class="w-full">
@@ -148,7 +151,8 @@
     @endif
 
     @if(sizeof($reserves) > 0)
-        <div class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
+        <div
+            class=" mt-4 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
             <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-red-600">Reserves - you will
                 receive an email notification if a space becomes available.
             </div>
@@ -182,7 +186,8 @@
         <input type="hidden" id="trial_id" name="trial_id" value="{{$trial_id}}">
         <input type="hidden" id="created_by" name="created_by" value="{{$userID}}">
         <div class="space-y-12">
-            <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+            <div
+                class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add an
                     Entry
                 </div>
@@ -200,6 +205,32 @@
                         @error('name')
                         <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p>
                         @enderror
+                    </x-form-field>
+
+
+                    <x-form-field>
+                        <x-form-label class="pb-2" for="class">Club membership</x-form-label>
+
+                        <div class="">
+                            <caption>I am a current member of {{ $clubName }}</caption>
+                            <input class="ml-2" type="checkbox" name="isClubMember"
+                                   onchange="toggleOtherClub(checked, 'otherClubDiv')" value="{{ $clubID }}">
+                        </div>
+
+                        <div id="otherClubDiv" class="mt-2">
+                            <div>
+                                <caption>I am a current member of</caption>
+                            </div>
+                            <div>
+                                <x-form-input class="" type="text" name="otherClub" value=""
+                                              placeholder="Club name - leave blank if no club"/>
+                            </div>
+                        </div>
+                        {{--                           <div>--}}
+                        {{--                               <caption>I am not a member of a club</caption>--}}
+                        {{--                            <input class="ml-2" type="checkbox" name="noClub" value="0">--}}
+                        {{--                        </div>--}}
+
                     </x-form-field>
 
                     <x-form-field>
@@ -249,7 +280,8 @@
                     <x-form-field>
                         <x-form-label class="pb-2" for="type">Type</x-form-label>
 
-                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
+                        <div
+                            class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
                             <div class="pb-2 pt-2    sm:col-span-2">
                                 <select class="ml-2 bg-white  space-x-4 border-none" name="type" id="type" required>
                                     <option value="">Select your engine type</option>
@@ -264,7 +296,8 @@
                     <x-form-field>
 
                         <x-form-label class="pb-2" for="course">Course</x-form-label>
-                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
+                        <div
+                            class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
                             <div class="pb-2 pt-2    sm:col-span-2">
                                 <select class="ml-2 bg-white  space-x-4 border-none" name="course" id="course"
                                         required>
@@ -280,7 +313,8 @@
                     <x-form-field>
                         <x-form-label class="pb-2" for="class">Class</x-form-label>
 
-                        <div class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
+                        <div
+                            class="flex max-w-80  items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 drop-shadow-lg outline-blue-700 ">
                             <div class="pb-2 pt-2 bg-white sm:col-span-2">
                                 <select class="ml-2  bg-white  space-x-4 border-none" name="class" id="class"
                                         required>
@@ -293,13 +327,13 @@
                         </div>
                     </x-form-field>
 
-
                 </div>
             </div>
         </div>
         {{-- Check for merchandise--}}
         @if(sizeof($merchandise) > 0)
-            <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+            <div
+                class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add Extras
                 </div>
                 <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
@@ -326,7 +360,7 @@
                                 <input name="prodIDs[]" type="hidden" value="product{{$productIndex}}">
                                 <input name="product{{$productIndex}}" type="checkbox" value="{{$item->priceIDs}}"
                                        id="extra1"
-                                        {{old('extra1') != null ? 'checked' :''}}
+                                    {{old('extra1') != null ? 'checked' :''}}
                                 />
                                 <x-form-error name="product{{$productIndex}}"/>
 
@@ -347,7 +381,7 @@
                                     @endphp
                                     <input name="product{{$productIndex}}" type="radio" id="extra{{$index}}" required
                                            value="{{$priceIDs[$index]}}"
-                                            {{ (old('extra') == $option) ? ' checked' : '' }}
+                                        {{ (old('extra') == $option) ? ' checked' : '' }}
                                     >
                                     <label class="pl-1 pr-4" for="extra">{{$option}}</label>
 
@@ -360,7 +394,8 @@
         @endif
 
         @if($hasMembership)
-            <div class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+            <div
+                class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add Membership
                 </div>
                 <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">

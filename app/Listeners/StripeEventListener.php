@@ -53,7 +53,7 @@ function onInvoiceSent($invoiceObject)
 //    $pi = $invoiceObject['payment_intent'];
 
     $entry = Entry::where('id', $entryID)->first();
-    $entry->stripe_payment_intent = $invoiceObject['id'];
+    $entry->stripe_invoice_id = $invoiceObject['id'];
     $entry->status = 4;
     $entry->updated_at = now();
     $entry->save();
@@ -72,8 +72,8 @@ function onInvoiceSent($invoiceObject)
     $entryData['url'] = $url;
     $entryData['pdf'] = $pdf;
 
+    info("Sending invoice to: $email");
     Mail::to($email, $name)->send(new EntryOffer($entryData));
-
 }
 
 function onInvoiceOverdue($invoiceObject)
@@ -93,25 +93,16 @@ function onInvoicePaid($invoiceObject)
     $entry = Entry::where('id', $entryID)->first();
     $entry->status = 10;
     $entry->email = $email;
-//    $entry->stripe_payment_intent = $pi;
-//    $entry->token = bin2hex(random_bytes(16));
     $entry->updated_at = now();
     $entry->save();
 
-    //  Get entries for confirmation email
-//    $entries = DB::table('entries')
-//        ->join('trials', 'entries.trial_id', '=', 'trials.id')
-//        ->where('entries.id', $entryID)
-//        ->get(['entries.*', 'trials.name as trial', 'trials.date as date']);
 
     //  Send confirmation email with bcc: to admin
     $bcc = 'monster@trialmonster.uk';
 
-//    var_dump($entryID);
     Mail::to($email)
         ->bcc($bcc)
         ->send(new InvoicePaid($entryID));
-    //    Mail::to($email, $name)->send(new EntryOffer($entryData));
 
 }
 
@@ -793,9 +784,9 @@ class StripeEventListener
                 onInvoicePaid($object);
 
                 break;
-            case 'invoice.payment_succeeded':
+            case 'invoice_payment.paid':
                 $object = $event->payload['data']['object'];
-                $this->onInvoicePaymentSucceeded($object);
+                $this->onInvoicePaymentPaid($object);
 
                 break;
 
@@ -836,8 +827,15 @@ class StripeEventListener
         }
     }
 
-    private function onInvoicePaymentSucceeded(mixed $object)
+    private function onInvoicePaymentPaid(mixed $object)
     {
-        echo "Invoice Payment Succeeded\n";
+        echo "Invoice_Payment Paid\n";
+        $invoiceID = $object['invoice'];
+        $paymentIntent = $object['payment']['payment_intent'];
+
+        info("PI $paymentIntent, $invoiceID");
+        Entry::where('stripe_invoice_id', '=', $invoiceID)
+            ->update(['stripe_payment_intent' => $paymentIntent, 'updated_at' => now()]);
+
     }
 }

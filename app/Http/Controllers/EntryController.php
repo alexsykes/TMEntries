@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\TrialFull;
 use App\Mail\EntryChanged;
 use App\Mail\ReserveAdded;
+use App\Models\Club;
 use App\Models\Entry;
 use App\Models\Price;
 use App\Models\Trial;
@@ -69,6 +70,9 @@ class EntryController extends Controller
         $trial = Trial::findorfail($trial_id);
         $club_id = $trial->club_id;
 
+        $club = Club::findorfail($club_id);
+        $clubName = $club->name;
+
         $membership = $this->getMembership($club_id);
         $allOptions = $this->getOptions($club_id, $trial_id);
         $optionalItems = $this->getOptionalItems($club_id, $trial_id);
@@ -89,7 +93,7 @@ class EntryController extends Controller
             ->where('trial_id', $trial_id)
             ->where('status', 4);
 
-        return view('entries.register', ['entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'offers' => $offers, 'options' => $allOptions, 'membership' => $membership, 'merchandise' => $merchandise, 'optionalItems' => $optionalItems]);
+        return view('entries.register', ['clubName' => $clubName, 'clubID' => $club_id, 'entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'offers' => $offers, 'options' => $allOptions, 'membership' => $membership, 'merchandise' => $merchandise, 'optionalItems' => $optionalItems]);
     }
 
     public function getMembership($club_id)
@@ -510,6 +514,7 @@ class EntryController extends Controller
 
     public function store(Request $request)
     {
+//        dd($request->all());
 //        prodIDs -> array of stripe_price_id of items on offer
 //        product{n} stripe_price_id selected
 //        membership -> stripe_price_id if membership option selected
@@ -622,6 +627,14 @@ class EntryController extends Controller
                     $checkbox = ['priceID' => $request->$prodID, 'qty' => 1];
                     array_push($extraArray, $checkbox);
                 }
+            }
+        }
+
+        if (!is_null($request->isClubMember)) {
+            $attributes['isClubMember'] = true;
+        } else {
+            if (!is_null($request->otherClub)) {
+                $attributes['otherClub'] = $request->otherClub;
             }
         }
 
@@ -771,6 +784,7 @@ class EntryController extends Controller
 
         //      Get entry list
         $trialDetails = DB::table('trials')->where('id', $id)->first();
+        $club_id = $trialDetails->club_id;
         $venueID = $trialDetails->venueID;
         $venue = DB::table('venues')->where('id', $venueID)->first();
         $venueName = $venue->name;
@@ -778,6 +792,10 @@ class EntryController extends Controller
         $rawDate = new DateTime($trialDetails->date);
         $date = date_format($rawDate, 'jS M, Y');
         $club = $trialDetails->club;
+        $clubName = DB::table('clubs')
+            ->where('id', $club_id)
+            ->pluck('shortName')
+            ->first();
 
         $startList = DB::table('entries')
             ->where('trial_id', $trialDetails->id)
@@ -826,6 +844,8 @@ class EntryController extends Controller
                 $nameIndent = 20;
                 $idIndent = 132;
                 $idWidth = 19;
+                $clubIndent = 155;
+                $clubWidth = 20;
                 $classIndent = 177;
                 $parentIndent = 85;
                 $numberWidth = 3;
@@ -895,9 +915,14 @@ class EntryController extends Controller
         $lineNumber = 1;
         if (count($startList) > 0) {
             foreach ($startList as $entry) {
-                //            if($trialDetails-> == 5) {
-                //                $number = $rrCodes[$entry[0]];
-                //            } else {
+                $isClubMember = $entry->isClubMember;
+
+                if ($isClubMember == 1) {
+                    $entryClubName = $clubName;
+                } else {
+                    $entryClubName = $entry->otherClub;
+                }
+
                 $number = $entry->ridingNumber;
                 //            }
                 if ($entry->isYouth == 1) {
@@ -907,7 +932,7 @@ class EntryController extends Controller
                 }
                 $name = ucwords(strtolower($name), " \t\r\n\f\v'");
                 $status = $entry->status;
-                if ($status == 0 or $status == 4 or $status == 5 or $status == 7 or $status == 10) {
+                if ($status == 0 or $status == 4 or $status == 5 or $status == 7) {
                     $name = 'To pay - ' . $name;
                 }
                 $id = $entry->licence;
@@ -938,6 +963,14 @@ class EntryController extends Controller
                         MYPDF::setX($idIndent);
                         MYPDF::Cell($idWidth, $rowHeight, $id, 0, 0, 'R', false, null, 0, false, 'C' . 'M');
                     }
+                    // Club cell
+//                    info($entry->name . ': ' . $entryClubName);
+//                    if ($id != 0) {
+                        MYPDF::setX($clubIndent);
+                        MYPDF::Cell($clubWidth, $rowHeight, $entryClubName, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+//                    }
+
+
                     // Class cell
                     MYPDF::setX($classIndent);
                     MYPDF::Cell(17, $rowHeight, $class, 0, 1, 'L', false, null, 1, 0, 'C' . 'M');

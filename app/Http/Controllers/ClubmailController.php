@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-// use App\Mail\TMLogin;
 use App\Mail\TestMail;
 use App\Models\Club;
 use App\Models\Clubmail;

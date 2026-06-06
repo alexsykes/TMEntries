@@ -13,7 +13,7 @@ class SeriesController extends Controller
     public function list()
     {
         $user = auth()->user();
-        if (! $user->isClubUser) {
+        if (!$user->isClubUser) {
             abort(403);
         }
 

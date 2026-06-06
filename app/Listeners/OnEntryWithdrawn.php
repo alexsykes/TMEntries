@@ -7,6 +7,7 @@ use App\Models\Entry;
 use App\Models\Trial;
 use App\Models\User;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Stripe\StripeClient;
 
 class OnEntryWithdrawn
@@ -72,6 +73,95 @@ class OnEntryWithdrawn
 
     public function invoice($entry, $email, $username)
     {
+//        New stuff
+//        dd($entry);
+
+
+//        Ends
+
+        $newStripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
+
+        $trialID = $entry->trial_id;
+        $trial = Trial::findOrFail($trialID);
+        $trialName = $trial->name;
+        $trialClub = $trial->club;
+
+        $customer = $newStripe->customers->create([
+            'email' => $email,
+            'name' => $username,
+        ]);
+
+        $customerId = $customer->id;
+
+        $entryID = $entry->id;
+        // Create an Invoice
+
+//         TODO uncomment
+        $invoice = $newStripe->invoices->create([
+            'customer' => $customerId,
+            'description' => $trialClub . ' - ' . $trialName,
+            'collection_method' => 'send_invoice',
+            'days_until_due' => 3,
+            'metadata' => [
+                'entryID' => $entryID,
+            ],
+        ]);
+
+        $invoiceId = $invoice->id;
+
+        info("Invoice with ID: $invoice->id");
+
+        //   Add line items
+//         Firstly entry fee
+        $invoiceItem = $newStripe->invoiceItems->create([
+            'customer' => $customerId,
+            'pricing' => [
+                'price' => $entry->stripe_price_id,
+            ],
+            'description' => 'Entry fee Ref: ' . $entryID,
+            'invoice' => $invoice->id,
+        ]);
+
+//        Then, any extras
+        if (!is_null($entry->extras)) {
+            $extras = json_decode($entry->extras);
+
+            foreach ($extras as $extra) {
+                $priceID = $extra->priceID;
+                $qty = $extra->qty;
+                info("PriceID: " . $priceID);
+
+                $product = DB::table('products')
+                    ->leftJoin('prices', 'products.stripe_product_id', '=', 'prices.stripe_product_id')
+                    ->where('prices.stripe_price_id', $priceID)
+                    ->select('products.stripe_product_description')
+                    ->first();
+                info(json_encode($product));
+
+                $invoiceItem = $newStripe->invoiceItems->create([
+                    'customer' => $customerId,
+                    'pricing' => [
+                        'price' => $priceID,
+                    ],
+                    'description' => $product->stripe_product_description,
+                    'invoice' => $invoice->id,
+                ]);
+
+            }
+        }
+
+        $newStripe->invoices->finalizeInvoice($invoiceId);
+        $newStripe->invoices->sendInvoice($invoiceId);
+    }
+
+    public function invoice_orig($entry, $email, $username)
+    {
+//        New stuff
+//        dd($entry);
+
+
+//        Ends
+
         $newStripe = new StripeClient(Config::get('stripe.stripe_secret_key'));
 
         $trialID = $entry->trial_id;
@@ -107,6 +197,7 @@ class OnEntryWithdrawn
         info("Invoice with ID: $invoice->id");
 
         //   Add line items
+//         Firstly entry fee
         $invoiceItem = $newStripe->invoiceItems->create([
             'customer' => $customerId,
             'pricing' => [
@@ -114,10 +205,33 @@ class OnEntryWithdrawn
             ],
             'description' => ' Ref: ' . $entryID,
             'invoice' => $invoice->id,
-
         ]);
 
-        $newStripe->invoices->finalizeInvoice($invoiceId);
-        $newStripe->invoices->sendInvoice($invoiceId);
+//        Then, any extras
+
+        if (!is_null($entry->extras)) {
+            $extras = json_decode($entry->extras);
+
+            foreach ($extras as $extra) {
+                $priceID = $extra->priceID;
+                $qty = $extra->qty;
+
+                $newStripe->invoices->addLines(
+                    $invoiceId,
+                    [
+                        'lines' => [
+                            'pricing' => [
+                                'price' => $priceID,
+                                'quantity' => $qty,
+                            ]
+                        ]
+                    ],
+
+                );
+            }
+        }
+//
+//        $newStripe->invoices->finalizeInvoice($invoiceId);
+//        $newStripe->invoices->sendInvoice($invoiceId);
     }
 }

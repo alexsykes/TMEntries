@@ -92,7 +92,7 @@ class TrialController extends Controller
                 $entryFeeItem['product_name'] = $entryFee->product_name;
                 $entryFeeItem['stripe_price'] = $entryFee->stripe_price;
                 $entryFeeItem['count'] = $productCount->count;
-                $entryFeeItem['value'] = $productCount->count * $entryFee->stripe_price /100;
+                $entryFeeItem['value'] = $productCount->count * $entryFee->stripe_price / 100;
                 array_push($entryFeeData, $entryFeeItem);
             }
         }
@@ -777,15 +777,11 @@ class TrialController extends Controller
     {
 
         $duplicates = Entry::where('trial_id', $id)
-//            ->whereIn('status', [0, 1, 7, 8, 9 ])
             ->where('ridingNumber', '!=', 0)
             ->groupBy('ridingNumber')
             ->havingRaw('COUNT(ridingNumber) > 1')
             ->get('ridingNumber');
 
-        //        $entries = Entry::where('trial_id', $id)
-        //            ->get()
-        //            ->sortBy('status');
 
         $entries = DB::table('entries')
             ->where('trial_id', $id)

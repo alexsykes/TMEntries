@@ -200,7 +200,7 @@ class StripePaymentController extends Controller
             array_push($lineItems, $line);
         }
 
-        if(sizeof($lineItems) > 0) {
+        if (sizeof($lineItems) > 0) {
             $requestArray = [
                 'success_url' => $redirectUrl,
                 'cancel_url' => $cancelUrl,
