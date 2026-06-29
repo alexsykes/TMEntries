@@ -260,8 +260,6 @@ EOD;
             return redirect()->back();
         }
     }
-
-
 }
 
 class MYPDFG extends PDF

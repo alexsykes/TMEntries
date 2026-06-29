@@ -182,6 +182,7 @@ id AS id, ridingNumber AS rider, course AS course, name, class AS class, CONCAT(
 
     public function edit($id)
     {
+//        dump($id);
         $entry = DB::table('entries')
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
             ->where('entries.id', $id)

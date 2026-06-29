@@ -28,9 +28,10 @@ class OnRefundCreated
 
         $object = $refund->object;
         $metadata = $refund->metadata;
-
-//        info("Object: " . json_encode($object));
-//        info("metadata: " . json_encode($metadata));
+        if (is_null($object['reason'])) {
+            info("Manual refund requested");
+            exit();
+        }
 
 
         $bcc = 'monster@trialmonster.uk';

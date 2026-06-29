@@ -35,6 +35,8 @@
         $offset = DateInterval::createFromDateString('6 years');
         $maxDob = $trial_date->sub($offset)->format("Y-m-d");
 
+        dd($clubName);
+
     $allCourses = array();
     $courses = $trial->courselist;
     $customCourses = $trial->customCourses;
@@ -226,11 +228,6 @@
                                               placeholder="Club name - leave blank if no club"/>
                             </div>
                         </div>
-                        {{--                           <div>--}}
-                        {{--                               <caption>I am not a member of a club</caption>--}}
-                        {{--                            <input class="ml-2" type="checkbox" name="noClub" value="0">--}}
-                        {{--                        </div>--}}
-
                     </x-form-field>
 
                     <x-form-field>
@@ -245,6 +242,7 @@
                     <div id="dateInput" class=" col-span-full">
                         <x-form-field>
                             <x-form-label for="dob">Date of Birth</x-form-label>
+                            <div>Can't change the year? <a href="/help/calendar" >Click here</a></div>
                             <div class="mt-2  max-w-40 col-span-full">
                                 <x-form-input type="date" max="{{$maxDob}}" required name="dob" id="dob"
                                               :value="old('dob')"/>

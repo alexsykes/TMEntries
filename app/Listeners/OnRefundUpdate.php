@@ -27,6 +27,12 @@ class OnRefundUpdate
     {
         $object = $event->object;
         $bcc = 'monster@trialmonster.uk';
+
+        if (is_null($object['reason'])) {
+            info("Manual refund updated");
+            exit();
+        }
+
         $reason = $object['metadata']['reason'];
         $reason = 'user_request';
 

@@ -110,7 +110,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'monster@trialmonster.uk'),
-        'name' => env('MAIL_FROM_NAME', 'TrialMonster Admin'),
+        'name' => env('MAIL_FROM_NAME', 'TM Dev'),
     ],
 
 ];

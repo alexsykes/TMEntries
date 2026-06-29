@@ -330,7 +330,7 @@ class EntryController extends Controller
             //        Check for full entry list
             $entryLimit = $trial->entryLimit;
             $numEntries = Entry::where('trial_id', $trialID)
-                ->whereIn('status', [1, 4, 7, 8, 9, 10])
+                ->whereIn('status', [1, 4, 7, 8, 9])
                 ->count();
             Info("NumEntries: $numEntries");
             //        Check for number of entries left
@@ -922,7 +922,7 @@ class EntryController extends Controller
                 } else {
                     $entryClubName = $entry->otherClub;
                 }
-
+                $entryClubName = substr($entryClubName, 0, 15);
                 $number = $entry->ridingNumber;
                 //            }
                 if ($entry->isYouth == 1) {
@@ -966,8 +966,8 @@ class EntryController extends Controller
                     // Club cell
 //                    info($entry->name . ': ' . $entryClubName);
 //                    if ($id != 0) {
-                        MYPDF::setX($clubIndent);
-                        MYPDF::Cell($clubWidth, $rowHeight, $entryClubName, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
+                    MYPDF::setX($clubIndent);
+                    MYPDF::Cell($clubWidth, $rowHeight, $entryClubName, 0, 0, 'L', false, null, 1, false, 'C' . 'M');
 //                    }
 
 

@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\ClubmailController;
 use App\Http\Controllers\EntryController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -209,7 +210,7 @@ Route::get('/results/getResultsPDF/{id}', [ResultController::class, 'getResultsP
 
 // CLUB Routes
 Route::get('/clubs/list', [ClubController::class, 'list']);
-Route::get('/clubs/membershipForm/{id}', [ClubController::class, 'membershiForm']);
+Route::get('/clubs/membershipForm/{id}', [ClubController::class, 'membershipForm']);
 Route::post('/club/member/add', [ClubController::class, 'addMember']);
 Route::get('/club/member/approve', [ClubController::class, 'memberApprove'])->middleware(['auth', 'verified']);
 Route::post('/club/member/approve', [ClubController::class, 'memberApprovalUpdate'])->middleware(['auth', 'verified']);
@@ -284,6 +285,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/error/{msg}', [ScoringController::class, 'error'])->middleware([CheckClubUser::class])->name('error.message');
+
+// Help
+Route::get('/help/calendar', [HelpController::class, 'calendar']);
 
 Route::post('/fetchScores', [ScoringController::class, 'fetchScores']);
 //Route::get('/withdrawTest', function () {
