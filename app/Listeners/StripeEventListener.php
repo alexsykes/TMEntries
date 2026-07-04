@@ -164,11 +164,12 @@ function onProductCreated($productObject)
         $options = '';
     }
 
-    if (isset($metadata['required'])) {
-        $required = !$metadata['required'];
-    } else {
-        $required = $metadata['required'];
-    }
+    $required = false;
+//    if (isset($metadata['required'])) {
+//        $required = !$metadata['required'];
+//    } else {
+//        $required = $metadata['required'];
+//    }
 
     $club_id = 0;
     if (isset($metadata['club_id'])) {
@@ -747,43 +748,12 @@ class StripeEventListener
         $eventType = $event->payload['type'];
         //        // info("event type: $eventType");
         switch ($eventType) {
-            case 'refund.created':
-                $object = $event->payload['data']['object'];
-                RefundCreated::dispatch($object, $object['metadata']);
-//                onRefundCreated($object);
-                break;
-
-            case 'refund.updated':
-                $object = $event->payload['data']['object'];
-                $status = $object['status'];
-
-                if ($status == 'succeeded') {
-                    RefundUpdated::dispatch($object, $object['metadata']);
-                }
-                break;
-
-            case 'refund.failed':
-                $object = $event->payload['data']['object'];
-                onRefundFailed($object);
-                break;
-
             case 'checkout.session.completed':
                 $object = $event->payload['data']['object'];
 //                echo "Call Checkout Session Completed\n";
                 onCheckoutSessionCompleted($object);
                 break;
 
-            case 'invoice.sent':
-                $object = $event->payload['data']['object'];
-                onInvoiceSent($object);
-
-                break;
-
-            case 'invoice.paid':
-                $object = $event->payload['data']['object'];
-                onInvoicePaid($object);
-
-                break;
             case 'invoice_payment.paid':
                 $object = $event->payload['data']['object'];
                 $this->onInvoicePaymentPaid($object);
@@ -795,32 +765,70 @@ class StripeEventListener
                 onInvoiceOverdue($object);
                 break;
 
-            case 'product.updated':
+            case 'invoice.paid':
                 $object = $event->payload['data']['object'];
-                onProductUpdated($object);
+                onInvoicePaid($object);
+
                 break;
-            case 'product.created':
+
+            case 'invoice.sent':
                 $object = $event->payload['data']['object'];
-                onProductCreated($object);
+                onInvoiceSent($object);
+
                 break;
-            case 'price.updated':
+
+            case 'payment_intent.created':
                 $object = $event->payload['data']['object'];
-                onPriceUpdated($object);
+                onPaymentIntentCreated($object);
                 break;
-            case 'price.created':
-                $object = $event->payload['data']['object'];
-                onPriceCreated($object);
-                break;
-            case 'invoice.created':
-//                onInvoiceCreated($event);
-                break;
+
             case 'payment_intent.succeeded':
                 //                onInvoiceCreated($event);
                 onPaymentIntentSucceeded();
                 break;
-            case 'payment_intent.created':
+
+            case 'price.created':
                 $object = $event->payload['data']['object'];
-                onPaymentIntentCreated($object);
+                onPriceCreated($object);
+                break;
+
+            case 'price.updated':
+                $object = $event->payload['data']['object'];
+                onPriceUpdated($object);
+                break;
+
+            case 'product.created':
+                $object = $event->payload['data']['object'];
+                onProductCreated($object);
+                break;
+
+            case 'product.updated':
+                $object = $event->payload['data']['object'];
+                onProductUpdated($object);
+                break;
+
+            case 'refund.created':
+                $object = $event->payload['data']['object'];
+                RefundCreated::dispatch($object, $object['metadata']);
+//                onRefundCreated($object);
+                break;
+
+            case 'refund.failed':
+                $object = $event->payload['data']['object'];
+                onRefundFailed($object);
+                break;
+
+            case 'refund.updated':
+                $object = $event->payload['data']['object'];
+                $status = $object['status'];
+
+                if ($status == 'succeeded') {
+                    RefundUpdated::dispatch($object, $object['metadata']);
+                }
+                break;
+
+            case 'invoice.created':
+//                onInvoiceCreated($event);
                 break;
             default:
                 info('Received unknown event type ' . $eventType);

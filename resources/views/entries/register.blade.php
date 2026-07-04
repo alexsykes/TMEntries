@@ -35,7 +35,7 @@
         $offset = DateInterval::createFromDateString('6 years');
         $maxDob = $trial_date->sub($offset)->format("Y-m-d");
 
-        dd($clubName);
+//        dd($clubName);
 
     $allCourses = array();
     $courses = $trial->courselist;
@@ -242,7 +242,7 @@
                     <div id="dateInput" class=" col-span-full">
                         <x-form-field>
                             <x-form-label for="dob">Date of Birth</x-form-label>
-                            <div>Can't change the year? <a href="/help/calendar" >Click here</a></div>
+                            <div>Can't change the year? <a href="/help/calendar">Click here</a></div>
                             <div class="mt-2  max-w-40 col-span-full">
                                 <x-form-input type="date" max="{{$maxDob}}" required name="dob" id="dob"
                                               :value="old('dob')"/>

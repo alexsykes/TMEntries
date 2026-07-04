@@ -25,7 +25,7 @@ class ScoringController extends Controller
         $numSlots = $numRows * $numColumns * $numLaps * $numSections;
         $numRiders = $numRows * $numColumns;
 
-
+//dd($numLaps, $numColumns, $numRows, $numSlots, $numRiders, $numScores);
         if ($numScores == $numSlots) {
             info("Scoring is already setup");
             return redirect("/scores/grid/{$trial->id}");

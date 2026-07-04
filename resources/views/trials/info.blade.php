@@ -108,7 +108,7 @@ $numSalesItems = sizeof($sales);
                     @endphp
 
             <div class="flex justify-between text-sm w-full pl-4 pr-4">
-                <div class="table-cell w-1/4">{{$entry->name}}</div>
+                <div class="pl-2 table-cell w-1/4">{{$entry->name}} </div>
                 <div class="table-cell w-3/4">@php echo $purchases; @endphp</div>
             </div>
         @endforeach

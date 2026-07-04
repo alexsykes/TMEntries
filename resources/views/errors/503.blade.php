@@ -1,20 +1,25 @@
-<x-error_page>
-    <x-slot:heading>Oops! What happened here…</x-slot:heading>
-    <div class=" w-full bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">
-        <div class="text-center p-4 text-xl font-semibold text-violet-700">Maintenance Mode</div>
+{{--<x-error_page>--}}
+{{--    <x-slot:heading>Oops! What happened here…</x-slot:heading>--}}
+{{--    <div class=" w-full bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 pb-2">--}}
+{{--        <div class="text-center p-4 text-xl font-semibold text-violet-700">Maintenance Mode</div>--}}
 
-        <div class="flex justify-between p-4 text-center">
-<div></div>
-            <div class="text-gray-500">
-                <img src="{{URL::asset('images/wip.jpg')}}" alt="Work in Progress">
-            </div>
-            <div></div>
-        </div>
+{{--        <div class="flex justify-between p-4 text-center">--}}
+{{--<div></div>--}}
+{{--            <div class="text-gray-500">--}}
+{{--                <img src="{{URL::asset('images/wip.jpg')}}" alt="Work in Progress">--}}
+{{--            </div>--}}
+{{--            <div></div>--}}
+{{--        </div>--}}
 
-        <div class="p-4 text-center font-semibold text-violet-500">{{config('app.name')}} is currently having its forks straightened.<br>
-            Please call back later.
-        </div>
-        <div class="p-0 pt-0 text-center text-red-500"><a
-                    href="mailto:monster@trialmonster.uk?subject=Web%20Enquiry">Urgent enquiries - please click here</a></div>
-    </div>
-</x-error_page>
+{{--        <div class="p-4 text-center font-semibold text-violet-500">{{config('app.name')}} is currently having its forks straightened.<br>--}}
+{{--            Please call back later.--}}
+{{--        </div>--}}
+{{--        <div class="p-0 pt-0 text-center text-red-500"><a--}}
+{{--                    href="mailto:monster@trialmonster.uk?subject=Web%20Enquiry">Urgent enquiries - please click here</a></div>--}}
+{{--    </div>--}}
+{{--</x-error_page>--}}
+@extends('errors::minimal')
+
+@section('title', __('Service Unavailable'))
+@section('code', '503')
+@section('message', __('Apologies - Scheduled maintenance is currently underway. This should be completed by 10am this morning. Please try again later'))
