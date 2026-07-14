@@ -121,6 +121,7 @@ function onPriceCreated($priceObject)
 
 function onPriceUpdated($priceObject)
 {
+
     $stripe_price_id = $priceObject['id'];
     $amount = $priceObject['unit_amount'];
     $stripe_product_id = $priceObject['product'];
