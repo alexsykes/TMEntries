@@ -13,7 +13,7 @@
             7 - Manual entry - unpaid
             8 - Manual entry - paid
             9 - Manual entry - FoC
-            10 -
+            10 - Now entered
             11 - Reminder sent
         */
         $statusArray = array('Unconfirmed Entry - to pay', 'Confirmed Entry', 'Refund Pending', 'Refunded Entry');

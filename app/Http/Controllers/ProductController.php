@@ -58,11 +58,11 @@ class ProductController extends Controller
         }
         $attrs['hasQuantity'] = $hasQuantity;
 
-        $required = true;
-        if (!is_null($request->required)) {
-            $required = false;
+        $attrs['required'] = true;
+        if (!is_null($request->optional)) {
+            $attrs['required'] = false;
         }
-        $attrs['required'] = $required;
+
 
         $isYouth = false;
         if (!is_null($request->isYouth)) {
@@ -99,7 +99,6 @@ class ProductController extends Controller
                         'unit_amount' => $attrs['price'],
                     ],
                 ]);
-
             }
         } else {
             $stripe_secret_key = config('cashier.secret');

@@ -105,7 +105,7 @@
                         <div class="font-semibold text text-blue-700">Optional
                         </div>
                         <div class="pl-2">
-                            <input name="required" type="checkbox" value="1"/>
+                            <input name="optional" type="checkbox" value="1"/>
                         </div>
                     </div>
                 </x-form-field>

@@ -78,7 +78,7 @@ class UserController extends Controller
 //    From My Entries page
     public function editEntry($id)
     {
-        info("UserController/editEntry EntryID: $id");
+        info("UserController::editEntry EntryID: $id");
         $userID = auth()->user()->id;
         $entry = DB::table('entries')
             ->join('trials', 'entries.trial_id', '=', 'trials.id')
@@ -95,7 +95,6 @@ class UserController extends Controller
         $trial = Trial::findorfail($entry->trial_id);
         $club_id = $trial->club_id;
         $options = $this->getOptions($club_id, $entry->trial_id);
-        //
 
         $membership = DB::table('products')
             ->where('products.club_id', $club_id)
@@ -105,8 +104,6 @@ class UserController extends Controller
             ->first(['products.product_name AS name', 'prices.stripe_price_id', 'prices.stripe_price AS price']);
 
         $merchandise = $this->getMerchandise($club_id, $trial->id);
-        //        dd($membership);
-
 
         return view('user.edit_entry', ['options' => $options, 'entry' => $entry, 'membership' => $membership, 'merchandise' => $merchandise]);
     }
@@ -137,12 +134,12 @@ class UserController extends Controller
     private function getMerchandise($club_id, $trial_id)
     {
         $merchandise = DB::table('products')
-            ->selectRaw('product_name,hasQuantity, COUNT(product_name) as numOptions, GROUP_CONCAT(options) options, GROUP_CONCAT(tme_products.stripe_product_id)  productIDs,GROUP_CONCAT(tme_prices.stripe_price_id)  priceIDs, GROUP_CONCAT(tme_prices.stripe_price) as price')
+            ->selectRaw('required, product_name,hasQuantity, COUNT(product_name) as numOptions, GROUP_CONCAT(options) options, GROUP_CONCAT(tme_products.stripe_product_id)  productIDs,GROUP_CONCAT(tme_prices.stripe_price_id)  priceIDs, GROUP_CONCAT(tme_prices.stripe_price) as price')
             ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
             ->where('products.club_id', $club_id)
             ->where('products.trial_id', $trial_id)
             ->where('products.product_category', 'merchandise')
-            ->groupBy('products.product_name', 'products.hasQuantity')
+            ->groupBy('products.product_name', 'products.hasQuantity', 'products.required')
             ->orderBy('products.product_name')
             ->get();
 

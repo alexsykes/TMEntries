@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\EntryFeeChanged;
 use App\Models\Club;
 use App\Models\Entry;
 use App\Models\Series;
@@ -33,6 +34,8 @@ class TrialController extends Controller
     11 - Reminder sent
 */
 
+
+// TODO - Prevent crash when Other venue selected
     public function details($trial_id)
     {
 
@@ -202,7 +205,7 @@ class TrialController extends Controller
             ->orderBy('entries.name', 'ASC')
             ->get();
 
-
+//        dd($entryPurchases);
         return view('trials.info', ['entries' => $entries, 'trial' => $trial, 'venue' => $venue, 'sales' => $productSales, 'numRiders' => $numRiders, 'entryCounts' => $entryCounts, 'entryPurchases' => $entryPurchases]);
     }
 
@@ -630,6 +633,15 @@ class TrialController extends Controller
 
             $trial = Trial::findorfail($trialid);
             $trial->update($attrs);
+            $changes = $trial->getChanges();
+
+            if (array_key_exists('youthEntryFee', $changes)) {
+                EntryFeeChanged::dispatch($trialid, 'youthEntryFee', $changes['youthEntryFee']);
+            }
+
+            if (array_key_exists('adultEntryFee', $changes)) {
+                EntryFeeChanged::dispatch($trialid, 'adultEntryFee', $changes['adultEntryFee']);
+            }
         }
 
         return redirect('/clubaccess');

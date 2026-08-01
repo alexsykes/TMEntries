@@ -121,7 +121,6 @@ function onPriceCreated($priceObject)
 
 function onPriceUpdated($priceObject)
 {
-
     $stripe_price_id = $priceObject['id'];
     $amount = $priceObject['unit_amount'];
     $stripe_product_id = $priceObject['product'];
@@ -165,7 +164,7 @@ function onProductCreated($productObject)
         $options = '';
     }
 
-    $required = false;
+    $required = $metadata['required'] == 'true' ? 1 : 0;
 //    if (isset($metadata['required'])) {
 //        $required = !$metadata['required'];
 //    } else {
@@ -337,7 +336,9 @@ function onCheckoutSessionCompleted($sessionObject)
 //    Compose additional message if additional items purchsed
     $itemList = '';
     if ($containsExtras) {
-        info('Contains Extras');
+//        info('Contains Extras');
+
+//        info(json_encode($purchaseData));
 
         $itemList = '<div>Your payment also included the following purchase(s):</div>';
         $items = '';
@@ -354,6 +355,7 @@ function onCheckoutSessionCompleted($sessionObject)
         info("Doesn't contain Extras");
     }
 
+
 //    Add purchases to purchase table
 //    Get extras from Entry table
     $entryData = DB::table('entries')
@@ -365,7 +367,7 @@ function onCheckoutSessionCompleted($sessionObject)
     foreach ($entryData as $entry) {
         $id = $entry->id;
         $items = json_decode($entry->extras);
-
+        info("ID: $id" . $entry->extras);
         foreach ($items as $item) {
             $quantity = $item->qty;
             $stripe_price_id = $item->priceID;
@@ -380,6 +382,7 @@ function onCheckoutSessionCompleted($sessionObject)
         }
     }
 
+//    exit;
     // Update entry status
     $entries = DB::table('entries')
         ->whereIn('id', $entryIDArray)
@@ -769,7 +772,6 @@ class StripeEventListener
             case 'invoice.paid':
                 $object = $event->payload['data']['object'];
                 onInvoicePaid($object);
-
                 break;
 
             case 'invoice.sent':

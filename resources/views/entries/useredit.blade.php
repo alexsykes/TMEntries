@@ -130,16 +130,16 @@
             <div class="flex pl-0 pr-0 justify-between" id="buttons">
                 <div class="">
                     <a href="/"
-                       class="rounded-md bg-white px-3 py-2 text-sm font-light  text-blue-600 border border-blue-800 drop-shadow-xl hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
+                       class="rounded-md bg-white px-3 py-2 text-sm font-light  text-blue-600 border border-blue-800 drop-shadow-xl hover:bg-blue-900 hover:text-white focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-900">Cancel</a>
 
                     <button type="submit"
-                            class="rounded-md ml-4 bg-blue-600 px-3 py-2 text-sm font-light  border border-white text-white drop-shadow-xl hover:bg-blue-500 focus-visible:outline focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                            class="rounded-md ml-4 bg-blue-600 px-3 py-2 text-sm font-light  border border-white text-white drop-shadow-xl hover:bg-blue-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600">
                         Update
                     </button>
                 </div>
                 <div>
                     <a href="/entry/withdrawConfirm/{{$entry->id}}"
-                       class="rounded-md  bg-red-600 px-3 py-2 text-sm font-light  border border-white text-white drop-shadow-xl hover:bg-red-500 focus-visible:outline focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                       class="rounded-md  bg-red-600 px-3 py-2 text-sm font-light  border border-white text-white drop-shadow-xl hover:bg-red-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-red-600">
                         Withdraw
                     </a>
                 </div>

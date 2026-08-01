@@ -1,11 +1,16 @@
 <x-main>
+    {{--    @dump($merchandise)--}}
     <script>
         function toggleOtherClub(checked, div) {
             let x = document.getElementById(div);
+            let y = document.getElementById('membershipCheckbox');
+
             if (checked) {
                 x.style.display = "none";
+                y.style.display = "none";
             } else {
                 x.style.display = "block";
+                y.style.display = "block";
             }
         }
 
@@ -184,7 +189,7 @@
 
     <form autocomplete="off" action="/entries/store" method="POST">
         @csrf
-        <input autocomplete="false" name="hidden" type="text" class="hidden">
+        {{--        <input autocomplete="false" name="hidden" type="text" class="hidden"> Not sure how this got here --}}
         <input type="hidden" id="trial_id" name="trial_id" value="{{$trial_id}}">
         <input type="hidden" id="created_by" name="created_by" value="{{$userID}}">
         <div class="space-y-12">
@@ -336,13 +341,16 @@
                 </div>
                 <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
                     @foreach($merchandise as $item)
-                        {{--@dump($merchandise)--}}
+                        {{-- Loop through merchandise items --}}
                         @php
-                            $productIndex = $loop->index;
+                            // Get optional/required
+                           $required = $item->required == 0 ? "" : " required ";
+                           $productIndex = $loop->index;
                         @endphp
                         <x-form-field>
                             @php
                                 $priceArray = explode(',', $item->price);
+    //                                    Get price - assumes all item prices identical
                                 $price = $priceArray[0]/100;
                                 if($price == 0) {
                                     $price = "Free of Charge";
@@ -351,35 +359,55 @@
                                 }
                             @endphp
 
-                            {{--                            Check box - single opt-in/out --}}
+                            {{-- Single option--}}
                             @if($item->numOptions == 1)
+
                                 <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
                                     - {{$price}}</x-form-label>
+                                @if($required === " required ")
+                                    <div>Please check this box</div>
+                                @else
+                                    <div class="font-semibold">Optional</div>
+                                @endif
                                 <input name="prodIDs[]" type="hidden" value="product{{$productIndex}}">
                                 <input name="product{{$productIndex}}" type="checkbox" value="{{$item->priceIDs}}"
                                        id="extra1"
                                     {{old('extra1') != null ? 'checked' :''}}
+                                    {{ $required }}
                                 />
                                 <x-form-error name="product{{$productIndex}}"/>
 
                             @else
-
+                                {{-- Products with multiple options --}}
                                 <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
                                     - {{$price}}</x-form-label>
-                                <div>Please select <span class="font-semibold">one</span></div>
+                                @if($required === " required ")
+                                    <div>Please select <span class="font-semibold">one</span></div>
+                                @else
+                                    <div class="font-semibold">Optional</div>
+                                @endif
                                 @php
                                     $options = explode(',',$item->options);
                                     $productIDs = explode(',', $item->productIDs);
                                     $priceIDs = explode(',', $item->priceIDs);
                                 @endphp
-                                <input name="prodIDs[]" type="hidden" value="product{{$productIndex}}">
+                                <input name="prodIDs[]" type="hidden"
+                                       value="product{{$productIndex}}">                                        @if($required === "")
+                                    <input name="product{{$productIndex}}" type="radio" id="extra0" checked
+                                           value=""
+                                    >
+                                    <label class="pl-1 pr-4" for="extra">None</label>
+                                @endif
                                 @foreach($options as $option)
                                     @php
                                         $index = $loop->index;
                                     @endphp
-                                    <input name="product{{$productIndex}}" type="radio" id="extra{{$index}}" required
+                                    <input name="product{{$productIndex}}" type="radio" id="extra{{$index}}"
+                                           {{ $required }}
                                            value="{{$priceIDs[$index]}}"
                                         {{ (old('extra') == $option) ? ' checked' : '' }}
+
+                                        {{ $required }}
                                     >
                                     <label class="pl-1 pr-4" for="extra">{{$option}}</label>
 
@@ -392,8 +420,8 @@
         @endif
 
         @if($hasMembership)
-            <div
-                class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
+            <div id="membershipCheckbox"
+                 class=" mt-6 bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300">
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-blue-600">Add Membership
                 </div>
                 <div class=" px-2 py-2 pb-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">

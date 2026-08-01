@@ -22,4 +22,4 @@
 
 @section('title', __('Service Unavailable'))
 @section('code', '503')
-@section('message', __('Apologies - Scheduled maintenance is currently underway. This should be completed by 10am Tuesday morning. Please try again later'))
+@section('message', __('Apologies - Scheduled maintenance is currently underway. This should be completed by 10am this morning. Please try again later'))

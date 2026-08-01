@@ -64,6 +64,7 @@ class EntryController extends Controller
 
     public function register(Request $request)
     {
+//        dd($request->all());
         $trial_id = $request->trialid;
         $user_id = Auth::user()->id;
 
@@ -99,6 +100,7 @@ class EntryController extends Controller
         return view('entries.register', ['clubName' => $clubName, 'clubID' => $club_id, 'entries' => $entries, 'trial' => $trial, 'reserves' => $reserves, 'offers' => $offers, 'options' => $allOptions, 'membership' => $membership, 'merchandise' => $merchandise, 'optionalItems' => $optionalItems]);
     }
 
+//    Get most recent membership product
     public function getMembership($club_id)
     {
         $membership = DB::table('products')
@@ -157,12 +159,12 @@ class EntryController extends Controller
     private function getMerchandise($club_id, $trial_id)
     {
         $merchandise = DB::table('products')
-            ->selectRaw('product_name,hasQuantity, COUNT(product_name) as numOptions, GROUP_CONCAT(options) options, GROUP_CONCAT(tme_products.stripe_product_id)  productIDs,GROUP_CONCAT(tme_prices.stripe_price_id)  priceIDs, GROUP_CONCAT(tme_prices.stripe_price) as price')
+            ->selectRaw('product_name,hasQuantity,required, COUNT(product_name) as numOptions, GROUP_CONCAT(options) options, GROUP_CONCAT(tme_products.stripe_product_id)  productIDs,GROUP_CONCAT(tme_prices.stripe_price_id)  priceIDs, GROUP_CONCAT(tme_prices.stripe_price) as price')
             ->leftJoin('prices', 'prices.stripe_product_id', '=', 'products.stripe_product_id')
             ->where('products.club_id', $club_id)
             ->where('products.trial_id', $trial_id)
             ->where('products.product_category', 'merchandise')
-            ->groupBy('products.product_name', 'products.hasQuantity')
+            ->groupBy('products.product_name', 'products.hasQuantity', 'products.required')
             ->orderBy('products.product_name')
             ->get();
 
@@ -304,6 +306,7 @@ class EntryController extends Controller
             'status' => 'required',
         ]);
 
+        info("EntryController::adminEntryUpdate $entryID updated");
         $entry = Entry::find($entryID);
         //        dd($entry);
         $entry->name = $request->name;
@@ -529,7 +532,7 @@ class EntryController extends Controller
 
     public function store(Request $request)
     {
-//        dd($request->all());
+//        dump($request->all());
 //        prodIDs -> array of stripe_price_id of items on offer
 //        product{n} stripe_price_id selected
 //        membership -> stripe_price_id if membership option selected
@@ -542,9 +545,9 @@ class EntryController extends Controller
         $club = Club::findorfail($club_id);
         $clubName = $club->name;
 //      Get extra input field names
-//        $prodIDs = $request->prodIDs;
 
-//        dd($prodIDs);
+
+//      Get additional items
         $membership = $this->getMembership($club_id);
         $merchandise = $this->getMerchandise($club_id, $trial_id);
 
@@ -610,11 +613,11 @@ class EntryController extends Controller
 
         if ($ageInYears < 18) {
             $attributes['isYouth'] = 1;
-            $attributes['stripe_price_id'] = $prices['youthPriceID'];
+//            $attributes['stripe_price_id'] = $prices['youthPriceID'];
             $attributes['stripe_product_id'] = $prices['youthProductID'];
         } else {
             $attributes['isYouth'] = 0;
-            $attributes['stripe_price_id'] = $prices['adultPriceID'];
+//            $attributes['stripe_price_id'] = $prices['adultPriceID'];
             $attributes['stripe_product_id'] = $prices['adultProductID'];
         }
 
@@ -685,8 +688,6 @@ class EntryController extends Controller
             ->where('trial_id', $trial_id)
             ->where('status', 4)
             ->where('created_by', $attributes['created_by']);
-
-
 
 
 //dd($reserves, $entries, $trial, $membership, $merchandise, $trial_id);

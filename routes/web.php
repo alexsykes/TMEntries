@@ -99,7 +99,7 @@ Route::patch('/entries/update', [EntryController::class, 'updateEntry']);
 
 Route::get('/entries/create/{trialid}', [EntryController::class, 'create'])->name('entries.create');
 Route::post('/entries/store', [EntryController::class, 'store']);
-Route::post('/entry/store', [EntryController::class, 'store']);
+Route::post('/entry/store', [EntryController::class, 'store']); // TODO Check Usage
 Route::post('/entries/saveRidingNumbers', [EntryController::class, 'saveRidingNumbers']);
 Route::get('/admin/entries/showRidingGroups/{id}', [EntryController::class, 'showRidingGroups']);
 Route::post('/admin/entries/storeMultiple', [EntryController::class, 'storeMultiple'])->middleware(['auth', 'verified']);

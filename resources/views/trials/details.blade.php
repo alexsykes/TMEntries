@@ -282,7 +282,7 @@
             Matters: Secretary of the Meeting.
         </div>
         <div class="ml-4 mr-4 pt-2  text-black text-left "><span
-                    class="font-semibold">ENTRIES: </span>Adult entry fee: £{{$trial->adultEntryFee}}<br>Youth entry
+                    class="font-semibold">ENTRIES: </span>Adult entry fee: £{{$trial->adultEntryFee}}<br>Youth (Under 18 on date of trial) entry
             fee: £{{$trial->youthEntryFee}}<br>
             <?php echo $entryOptionsHTML;
             if ($trial->hasOpeningDate) {
