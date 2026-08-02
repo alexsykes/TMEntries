@@ -92,6 +92,8 @@ Route::get('/entries/edit/{entry}', [EntryController::class, 'edit'])->middlewar
 Route::get('/entries/delete/{id}', [EntryController::class, 'delete'])->middleware('auth', 'verified')->name('entries.delete');
 
 Route::get('entries/user_details/{id}', [EntryController::class, 'getUserDetails']);
+Route::get('/entries/addMissingEntry/{id}', [EntryController::class, 'addMissingEntry'])->middleware(['auth', 'verified']);
+Route::post('/entries/addMissingEntry', [EntryController::class, 'storeMissingEntry'])->middleware(['auth', 'verified']);
 
 Route::get('/entry/useredit', [EntryController::class, 'useredit']);
 

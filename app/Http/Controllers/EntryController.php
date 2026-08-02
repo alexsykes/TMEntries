@@ -20,6 +20,7 @@ use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use PDF;
@@ -1479,6 +1480,100 @@ class EntryController extends Controller
         $entry->save();
 
         return redirect('/results/display/' . $trialid);
+    }
+
+    public function addMissingEntry($id)
+    {
+        $trial = Trial::where('id', $id)
+            ->select(['customClasses', 'customCourses', 'name'])
+            ->first();
+
+        return view('entries.addMissingEntry', ['trial' => $trial, 'id' => $id]);
+    }
+
+    public function storeMissingEntry(Request $request)
+    {
+        $auth = Auth::user();
+
+        $db_prefix = Config::get('database.connections.mysql.prefix');
+        $created_by = $auth->id;
+        $trial_id = $request->trial_id;
+        $trial = Trial::findOrFail($trial_id);
+        $trial_date = date_create($trial->date);
+
+        $numLaps = $trial->numLaps;
+        $numSections = $trial->numSections;
+        $numPossibleScores = $numSections * $numLaps;
+        $cutoff = $numPossibleScores * 0.25;
+
+        $authority = $trial->authority;
+        if ($authority == 'ACU') {
+            $missedValue = 10;
+        } else {
+            $missedValue = 5;
+        }
+        $IPaddress = $request->ip();
+
+
+        $attributes = $request->validate([
+            'name' => ['required', 'min:5', 'max:255'],
+            'trial_id' => 'required',
+            'class' => 'required',
+            'course' => 'required',
+            'make' => 'required',
+            'type' => 'required',
+        ]);
+
+        $utilityController = new UtilityController;
+
+        $attributes['name'] = $utilityController->nameize($request->name);
+        $attributes['IPaddress'] = $IPaddress;
+        $attributes['size'] = $request->size;
+        $attributes['licence'] = $request->licence;
+        $attributes['ridingNumber'] = $request->number;
+        $attributes['created_by'] = $created_by;
+
+        $attributes['status'] = 7;
+
+        $ridingNumber = $request->number;
+//        $ridingNumber = 2;
+
+        $query = "SELECT GROUP_CONCAT(score ORDER BY day, section, lap SEPARATOR '') AS sectionScores, GROUP_CONCAT(score ORDER BY day, lap, section SEPARATOR '') AS sequentialScores FROM tme_scores WHERE `trial_id` = $trial_id AND rider = $ridingNumber GROUP BY rider";
+
+        $ridingScores = DB::select($query);
+
+        $sectionScores = $ridingScores[0]->sectionScores;
+        $sequentialScores = $ridingScores[0]->sequentialScores;
+        $attributes['sectionScores'] = $sectionScores;
+        $attributes['sequentialScores'] = $sequentialScores;
+
+        $attributes['cleans'] = substr_count($sectionScores, '0', 0);
+        $ones = substr_count($sectionScores, '1', 0);
+        $twos = substr_count($sectionScores, '2', 0);
+        $threes = substr_count($sectionScores, '3', 0);
+        $fives = substr_count($sectionScores, '5', 0);
+        $missed = substr_count($sectionScores, 'x', 0);
+        $total = $ones + 2 * ($twos) + 3 * ($threes) + 5 * ($fives) + $missedValue * ($missed);
+
+        $attributes['total'] = $total;
+        $attributes['ones'] = $ones;
+        $attributes['twos'] = $twos;
+        $attributes['threes'] = $threes;
+        $attributes['fives'] = $fives;
+        $attributes['missed'] = $missed;
+
+        $resultStatus = 0;
+        if ($missed > $cutoff) {
+            $resultStatus = 1;
+        }
+        if ($missed == $numPossibleScores) {
+            $resultStatus = 2;
+        }
+        $attributes['resultStatus'] = $resultStatus;
+
+//        Do not create entry until all fields populated
+        $entry = Entry::create($attributes);
+        return redirect('/results/display/' . $trial_id);
     }
 
     private function getFreebies(mixed $club_id, mixed $trial_id)

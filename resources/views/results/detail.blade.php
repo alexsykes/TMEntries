@@ -32,8 +32,14 @@
     @endphp
 
     <div class="text-black mb-2 sm:hidden">Scores display will be improved by turning your phone on its side.</div>
+    <div class="flex justify-between">
     <div class="text-red-600 mb-2 ml-2 font-semibold "><a href="{{$download_link}}"><span><i
                         class="fa-solid fa-star"></i></span>New - Result download in traditional format - click here</a>
+    </div>
+    @if($canEdit)
+        <a href="/entries/addMissingEntry/{{ $trial->id }}"
+           class="rounded-md bg-blue-700 px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Add Missing Entry</a>
+    @endif
     </div>
     <div class="tab pl-8">
         <button class="tablinks border border-black border-b-0 rounded-t-lg   hover:bg-blue-500 p-1" id="defaultOpen"
