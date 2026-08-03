@@ -208,7 +208,7 @@ if($customClasses != "") {
 
                                     {{-- Single option--}}
                                     @if($item->numOptions == 1)
-                                        @dump($required)
+{{--                                        @dump($required)--}}
                                         <x-form-label for="product{{$productIndex}}">{{$item->product_name}}
                                             - {{$price}}</x-form-label>
                                         @if($required === " required ")

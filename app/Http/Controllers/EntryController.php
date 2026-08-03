@@ -719,18 +719,6 @@ class EntryController extends Controller
         return redirect('entries/register/' . session('trial_id'));
     }
 
-    public function adminEntries(Request $request)
-    {
-        $email = session('email');
-        $trial_id = $request->input('trial_id');
-        $trial = Trial::findOrFail($trial_id);
-        $phone = session('phone');
-        $entries = Entry::all()->where('email', $email)->where('trial_id', $trial_id)->where('phone', $phone)->where('paid', 0);
-
-        //        dd($entries);
-        return view('entries.adminEntries', ['entries' => $entries, 'trial_id' => $trial_id, 'email' => $email, 'phone' => $phone, 'trial' => $trial]);
-    }
-
     public function adminEdit($id)
     {
         $entry = Entry::findOrFail($id);
