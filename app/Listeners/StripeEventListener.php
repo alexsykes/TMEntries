@@ -164,12 +164,13 @@ function onProductCreated($productObject)
         $options = '';
     }
 
-    $required = $metadata['required'] == 'true' ? 1 : 0;
-//    if (isset($metadata['required'])) {
-//        $required = !$metadata['required'];
-//    } else {
+//    $required = $metadata['required'] == 'true' ? 1 : 0;
+    if (isset($metadata['required'])) {
 //        $required = $metadata['required'];
-//    }
+        $required = $metadata['required'] == 'true' ? true : false;
+    } else {
+        $required = false;
+    }
 
     $club_id = 0;
     if (isset($metadata['club_id'])) {

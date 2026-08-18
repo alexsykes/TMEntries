@@ -5,8 +5,15 @@
 
         @if(in_array(5, $clubIDs))
             <div class="text-red-500"><b>Yorkshire Classic Trials ONLY - If you have paid your membership and have not
-                    aleady submitted your full contact details for 2026, you are requested to complete the online
+                    aleady submitted your full contact details for the current year, you are requested to complete the online
                     registration form - <a href="https://trialmonster.uk/clubs/membershipForm/5">click here</a></b>
+            </div>
+        @endif
+
+        @if(in_array(2, $clubIDs))
+            <div class="text-red-500"><b>Darwen Trials Club ONLY - If you have paid your membership and have not
+                    aleady submitted your full contact details for the current year, you are requested to complete the online
+                    registration form - <a href="https://trialmonster.uk/clubs/membershipForm/2">click here</a></b>
             </div>
         @endif
         <div class="mt-4">@php echo $msg; @endphp</div>

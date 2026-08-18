@@ -140,6 +140,9 @@ Route::patch('/scores/updateSectionScores', [ScoringController::class, 'updateSe
 Route::post('/scores/updateSectionScoreForRider', [ScoringController::class, 'updateSectionScoreForRider'])->middleware(CheckClubUser::class)->name('scores.updateSectionScoreForRider');
 Route::post('/scores/confirmPublish', [ScoringController::class, 'confirmPublish'])->middleware(CheckClubUser::class)->name('scores.confirmPublish');
 Route::post('/scores/publish', [ScoringController::class, 'publish'])->middleware(CheckClubUser::class)->name('scores.publish');
+Route::get('/scores/advanced/{id}', [ScoringController::class, 'advanced'])->middleware(CheckClubUser::class)->name('scores.advanced');
+Route::post('/scores/manage', [ScoringController::class, 'manage'])->middleware(CheckClubUser::class)->name('scores.manage');
+Route::post('/backup/request', [ScoringController::class, 'backupRequest'])->middleware(CheckClubUser::class)->name('backup.request');
 
 // USER Routes
 Route::post('/user/checkout', [UserController::class, 'checkout']);
@@ -243,6 +246,7 @@ Route::patch('/club/distribution/update', [ClubController::class, 'updateDistrib
 Route::get('/club/member/list/', [ClubController::class, 'memberList'])->middleware(['auth', 'verified']);
 Route::get('/club/member/detail/{id}', [ClubController::class, 'memberDetail'])->middleware(['auth', 'verified']);
 Route::post('/club/member/addManual', [ClubController::class, 'addManual'])->middleware(['auth', 'verified']);
+Route::post('/club/members/export', [ClubController::class, 'export'])->middleware(['auth', 'verified']);
 
 // SERIES Routes
 Route::get('/series/list', [SeriesController::class, 'list'])->middleware(CheckClubUser::class);

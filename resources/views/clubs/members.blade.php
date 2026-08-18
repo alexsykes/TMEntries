@@ -18,6 +18,16 @@
             $membershipCategorySelected = old('membership_category');
             $membershipTypeSelected = old('membership_type');
     @endphp
+    <form action="/club/members/export" method="post">
+        @csrf
+        <div id="buttons" class=" px-2 text-right">
+            <button
+                class="rounded-md ml-2 bg-violet-600 px-3 py-2 text-sm font-light  border border-violet-800 text-white drop-shadow-lg hover:bg-violet-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-600">
+                Export
+            </button>
+        </div>
+    </form>
+
     <x-slot:heading>Membership List for {{$club->name}}</x-slot:heading>
     <div id="tabButtons" class="tab pl-4">
         @foreach($categories as $category)
@@ -46,9 +56,11 @@
         @endphp
         <div id="{{$category}}Tab" style="display:none" class="tabcontent pt-0">
             <div class="mx-auto max-w-7xl sm: lg:">
-                <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
+                <div
+                    class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
 
-                    <div class="flex justify-between font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
+                    <div
+                        class="flex justify-between font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
                         <div class="">{{ucfirst($category)}}
                             members
                         </div>
@@ -85,12 +97,12 @@
                                         &nbsp;
                                     @else
                                         <a href="/club/membership/confirm/{{$rider->id}}"><i
-                                                    class="text-lg fa-solid fa-circle-check"></i></a>
+                                                class="text-lg fa-solid fa-circle-check"></i></a>
                                     @endif
                                 </td>
                                 <td class="pr-2">
                                     <a href="/club/membership/edit/{{$rider->id}}"><i
-                                                class="text-lg fa-solid fa-pen"></i>
+                                            class="text-lg fa-solid fa-pen"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -106,7 +118,8 @@
 
     <div id="allMembers" style="display: none;" class="tabcontent pt-0">
         <div class="mx-auto max-w-7xl sm: lg:">
-            <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
+            <div
+                class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
 
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">All members
                 </div>
@@ -140,7 +153,7 @@
                                     &nbsp;
                                 @else
                                     <a href="/club/membership/confirm/{{$rider->id}}"><i
-                                                class="text-lg fa-solid fa-circle-check"></i></a>
+                                            class="text-lg fa-solid fa-circle-check"></i></a>
                                 @endif
                             </td>
                             <td class="pr-2">
@@ -160,7 +173,8 @@
 
     <div id="manualAdd" style="display: none;" class="tabcontent pt-0">
         <div class="mx-auto max-w-7xl ">
-            <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
+            <div
+                class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
                 <div class="flex sm:grid-cols-2"></div>
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Member Detail
                 </div>
@@ -278,16 +292,16 @@
                                         <div>
                                             <input name="membership_type" type="radio"
                                                    value="{{$membershipType}}"
-                                                    @php
+                                                @php
 
-                                                        $checked = '';
-                                                            if(isset($membershipTypeSelected)) {
-                                                            if($membershipType == $membershipTypeSelected) {
-                                                                $checked = ' checked ';
-                                                            }
-                                                            }
-                                                    @endphp
-                                                    {{$checked}}
+                                                    $checked = '';
+                                                        if(isset($membershipTypeSelected)) {
+                                                        if($membershipType == $membershipTypeSelected) {
+                                                            $checked = ' checked ';
+                                                        }
+                                                        }
+                                                @endphp
+                                                {{$checked}}
                                             />
                                             <label class="pl-4 pr-0" for="membership_type">{{$membershipType}}
                                             </label>
@@ -311,16 +325,16 @@
                                             <input name="membership_category" type="radio"
                                                    value="{{strtolower($membershipCategory)}}"
 
-                                                    @php
+                                                @php
 
-                                                        $checked = '';
-                                                            if(isset($membershipCategorySelected)) {
-                                                            if(strtolower($membershipCategory) == $membershipCategorySelected) {
-                                                                $checked = ' checked ';
-                                                            }
-                                                            }
-                                                    @endphp
-                                                    {{$checked}}
+                                                    $checked = '';
+                                                        if(isset($membershipCategorySelected)) {
+                                                        if(strtolower($membershipCategory) == $membershipCategorySelected) {
+                                                            $checked = ' checked ';
+                                                        }
+                                                        }
+                                                @endphp
+                                                {{$checked}}
                                             />
                                             <label class="pl-4 pr-0" for="membership_category">{{$membershipCategory}}
                                             </label>
@@ -397,8 +411,7 @@
                             <x-form-field>
                                 <div class="flex ml-2 mt-2 col-span-full">
                                     <x-form-label for="confirmed">Mark as Paid</x-form-label>
-                                    <input class="ml-2" type="checkbox" name="confirmed" id="confirmed" value="1"
-                                           class="confirmed"/>
+                                    <input class="ml-2" type="checkbox" name="confirmed" id="confirmed" value="1"/>
                                 </div>
                             </x-form-field>
                         </div>
@@ -412,12 +425,12 @@
                                         <div>
                                             <input name="social[]" type="checkbox"
                                                    value="{{$social}}"
-                                                    @php
-                                                        if(isset($socialSelected)) {
-                                                        $selected = in_array($social, $socialSelected) ? ' checked ' : '';
-                                                        echo $selected;
-                                                        }
-                                                    @endphp
+                                                @php
+                                                    if(isset($socialSelected)) {
+                                                    $selected = in_array($social, $socialSelected) ? ' checked ' : '';
+                                                    echo $selected;
+                                                    }
+                                                @endphp
                                             />
                                             <label class="pl-4 pr-0" for="social">{{$social}}
                                             </label>

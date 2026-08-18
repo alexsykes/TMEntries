@@ -1,12 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-
+//   https://github.com/ifsnop/mysqldump-php
+use App\Mail\BackupRequested;
 use App\Models\Score;
 use App\Models\Trial;
+use Exception;
+use Ifsnop\Mysqldump as IMysqldump;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class ScoringController extends Controller
 {
@@ -346,5 +350,153 @@ class ScoringController extends Controller
     {
         info("Error: " . $msg);
         return view('scoring.error', ['msg' => $msg]);
+    }
+
+    public function advanced(string $id)
+    {
+        $trial = Trial::findOrFail($id);
+
+        return view('scoring.advanced', ['trial' => $trial]);
+    }
+
+    public function manage(Request $request)
+    {
+        $trial = Trial::findOrFail($request->trialID);
+        $action = $request->action;
+//        dump($request->all());
+        switch ($action) {
+            case 'cancelSectionAll' :
+//              Get section number
+                $section = $request->sectionNumber;
+                if (!is_null($section)) {
+
+                    info("Cancelling section $section for all riders");
+
+//          Define SQL
+                    $scores = Score::where('trial_id', $trial->id)
+                        ->where('section', $section)
+                        ->update(['score' => 'o']);
+                }
+                $trial->update(['isResultPublished' => 0, 'isScoringLocked' => 0, 'isLocked' => 0, 'updated_at' => now(), 'isEntryLocked' => 0]);
+
+
+                break;
+
+            case 'cancelSectionCourse' :
+                $course = $request->sectionCourse;
+                $section = $request->sectionNumber;
+
+                if (!is_null($section) && !is_null($course)) {
+                    info("Cancelling section $section for $course");
+
+//              Get rider numbers
+                    $riders = DB::table('entries')
+                        ->where('trial_id', $trial->id)
+                        ->where('course', $course)
+                        ->pluck('ridingNumber');
+
+//              Update scores
+                    $scores = Score::where('trial_id', $trial->id)
+                        ->where('section', $section)
+                        ->whereIn('rider', $riders)
+                        ->update(['score' => 'o']);
+                }
+                $trial->update(['isResultPublished' => 0, 'isScoringLocked' => 0, 'isLocked' => 0, 'updated_at' => now(), 'isEntryLocked' => 0]);
+                break;
+            case 'reduceLapsAll' :
+                $newNumLaps = $request->numLapsAll;
+                info("Reducing laps to $newNumLaps for all courses");
+                $scores = Score::where('trial_id', $trial->id)
+                    ->where('lap', '>', $newNumLaps)
+                    ->update(['score' => 'o']);
+
+                $trial->update(['isResultPublished' => 0, 'isScoringLocked' => 0, 'isLocked' => 0, 'updated_at' => now(), 'isEntryLocked' => 0]);
+                break;
+
+            case 'reduceLapsCourse' :
+                $newNumLaps = $request->numLapsCourse;
+                $course = $request->course;
+
+
+//              Get rider numbers
+                $riders = DB::table('entries')
+                    ->where('trial_id', $trial->id)
+                    ->where('course', $course)
+                    ->pluck('ridingNumber');
+
+//              Update scores
+                $scores = Score::where('trial_id', $trial->id)
+                    ->where('lap', '>', $newNumLaps)
+                    ->whereIn('rider', $riders)
+                    ->update(['score' => 'o']);
+                $trial->update(['isResultPublished' => 0, 'isScoringLocked' => 0, 'isLocked' => 0, 'updated_at' => now(), 'isEntryLocked' => 0]);
+
+                break;
+            default :
+                break;
+        }
+        return redirect('/scores/grid/' . $trial->id);
+    }
+
+    public function backupRequest(Request $request)
+    {
+        $exportDir = 'downloads/';
+        $trialID = $request->trialID;
+        $trial = Trial::findOrFail($trialID);
+        $email = $trial->email;
+
+        $dbname = config('database.connections.mysql.database');
+        $pass = config('database.connections.mysql.password');
+        $host = config('database.connections.mysql.host');
+        $dbuser = config('database.connections.mysql.username');
+
+        $tablesToExport = ['tme_entries', 'tme_scores', 'tme_trials'];
+
+        //            dd($tablesToExport);
+        try {
+            $dump = new IMysqldump\Mysqldump("mysql:host=$host;dbname=$dbname", $dbuser, $pass, dumpSettings: ['include-tables' => $tablesToExport]);
+
+            $dump->setTableWheres(array(
+                'tme_entries' => 'trial_id = ' . $trialID,
+                'tme_scores' => 'trial_id = ' . $trialID,
+                'tme_trials' => 'id = ' . $trialID,
+
+            ));
+
+//            $dump['no-create-info'] = true;
+            $dumpSettings['no-create-db'] = true;
+
+            $filename = $trialID . '_Backup.sql';
+            $dump->start($exportDir . $filename);
+            info('Success');
+        } catch (Exception $e) {
+            info('mysqldump-php error: ' . $e->getMessage());
+        }
+
+////      Get entry data
+//        $entries = DB::table('entries')
+//            ->where('trial_id', $trialID)
+//            ->get()
+//            ->toJson();
+//
+//        $filename = $trialID . '_entries.json';
+//        $success = file_put_contents($exportDir . $filename, $entries);
+//        info("Backup requested - $success");
+//
+////      Get score data
+//        $scores = DB::table('scores')
+//            ->where('trial_id', $trialID)
+//            ->get()
+//            ->toJson();
+//        $filename = $trialID . '_scores.json';
+//        $success = file_put_contents($exportDir . $filename, $scores);
+
+//      Email to user
+        info("Backup requested - $email");
+
+        Mail::to($email)->send(new BackupRequested($trialID));
+
+        return redirect('/scores/advanced/' . $trialID);
+//        dump($scores);
     }
 }

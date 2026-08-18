@@ -37,8 +37,10 @@
                         class="fa-solid fa-star"></i></span>New - Result download in traditional format - click here</a>
     </div>
     @if($canEdit)
-        <a href="/entries/addMissingEntry/{{ $trial->id }}"
-           class="rounded-md bg-blue-700 px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Add Missing Entry</a>
+            <a href="/entries/addMissingEntry/{{ $trial->id }}"
+               class="rounded-md bg-blue-700 px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Add Missing Entry</a>
+            <a href="/scores/advanced/{{ $trial->id }}"
+               class="rounded-md bg-red-600 px-3 py-2 text-sm  drop-shadow-lg text-white shadow-sm hover:bg-white hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Advanced</a>
     @endif
     </div>
     <div class="tab pl-8">

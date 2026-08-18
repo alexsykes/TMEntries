@@ -12,7 +12,11 @@ use App\Models\Trial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ClubController extends Controller
 {
@@ -853,5 +857,71 @@ class ClubController extends Controller
 
         info("Updating memberID: $id");
         return redirect('/');
+    }
+
+
+    public function export_()
+    {
+
+        Storage::disk('local')->put('example.txt', 'Contents');
+        return Storage::download('example.txt');
+    }
+
+    public function export()
+    {
+        $spreadsheet = new Spreadsheet();
+//
+//        $members = ClubMember::where('club_id', Auth::user()->club_id)
+//            ->orderBy('lastname')
+//            ->orderBy('firstname')
+//            ->select(['firstname', 'lastname', 'email', 'phone', 'membership_type', 'membership_category', 'dob', 'address', 'postcode', 'emergency_contact', 'emergency_number', 'amca_reg', 'acu_reg', 'heritage_number', 'social'])
+//            ->get()
+//            ->toArray();
+//
+//        $spreadsheet->getActiveSheet()->setCellValue([1, 1], 'heritage_number');
+//        $spreadsheet->getActiveSheet()->setCellValue([2, 1], 'firstname');
+//        $spreadsheet->getActiveSheet()->setCellValue([3, 1], 'lastname');
+//        $spreadsheet->getActiveSheet()->setCellValue([4, 1], 'email');
+//        $spreadsheet->getActiveSheet()->setCellValue([5, 1], 'phone');
+//        $spreadsheet->getActiveSheet()->setCellValue([7, 1], 'membership_type');
+//        $spreadsheet->getActiveSheet()->setCellValue([8, 1], 'membership_category');
+//        $spreadsheet->getActiveSheet()->setCellValue([9, 1], 'dob');
+//        $spreadsheet->getActiveSheet()->setCellValue([10, 1], 'address');
+//        $spreadsheet->getActiveSheet()->setCellValue([11, 1], 'postcode');
+//        $spreadsheet->getActiveSheet()->setCellValue([12, 1], 'emergency_contact');
+//        $spreadsheet->getActiveSheet()->setCellValue([13, 1], 'emergency_number');
+//        $spreadsheet->getActiveSheet()->setCellValue([14, 1], 'amca_reg');
+//        $spreadsheet->getActiveSheet()->setCellValue([15, 1], 'acu_reg');
+//        $spreadsheet->getActiveSheet()->setCellValue([16, 1], 'social');
+//
+//
+//        for ($i = 0; $i < count($members); $i++) {
+//            $spreadsheet->getActiveSheet()->setCellValue([1, $i + 2], $members[$i]['heritage_number']);
+//            $spreadsheet->getActiveSheet()->setCellValue([2, $i + 2], $members[$i]['firstname']);
+//            $spreadsheet->getActiveSheet()->setCellValue([3, $i + 2], $members[$i]['lastname']);
+//            $spreadsheet->getActiveSheet()->setCellValue([4, $i + 2], $members[$i]['email']);
+//            $spreadsheet->getActiveSheet()->setCellValue([5, $i + 2], $members[$i]['phone']);
+//            $spreadsheet->getActiveSheet()->setCellValue([7, $i + 2], $members[$i]['membership_type']);
+//            $spreadsheet->getActiveSheet()->setCellValue([8, $i + 2], $members[$i]['membership_category']);
+//            $spreadsheet->getActiveSheet()->setCellValue([9, $i + 2], $members[$i]['dob']);
+//            $spreadsheet->getActiveSheet()->setCellValue([10, $i + 2], $members[$i]['address']);
+//            $spreadsheet->getActiveSheet()->setCellValue([11, $i + 2], $members[$i]['postcode']);
+//            $spreadsheet->getActiveSheet()->setCellValue([12, $i + 2], $members[$i]['emergency_contact']);
+//            $spreadsheet->getActiveSheet()->setCellValue([13, $i + 2], $members[$i]['emergency_number']);
+//            $spreadsheet->getActiveSheet()->setCellValue([14, $i + 2], $members[$i]['amca_reg']);
+//            $spreadsheet->getActiveSheet()->setCellValue([15, $i + 2], $members[$i]['acu_reg']);
+//            $spreadsheet->getActiveSheet()->setCellValue([16, $i + 2], $members[$i]['social']);
+//        }
+        $writer = new Xlsx($spreadsheet);
+//
+//        $writer->save('storage/app/private/new12345.xlsx');
+////        echo asset('storage/files/new1.xlsx');
+//        $url = Storage::url('files/new1.xlsx');
+//
+        Storage::disk('local')->put('example.txt', 'Contents');
+//        echo $url;
+//        return Storage::download('files/new.xlsx');
+        return Storage::download('example.txt');
+//        return Storage::download('new12345.xlsx'); // -> storage/private
     }
 }

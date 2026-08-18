@@ -43,9 +43,11 @@
 
     <div id="riders" style="" class="tabcontent pt-0">
         <div class="mx-auto max-w-7xl sm: lg:">
-            <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
+            <div
+                class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
 
-                <div class="flex justify-between font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
+                <div
+                    class="flex justify-between font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">
                     <div class="">Competition
                         members
                     </div>
@@ -91,7 +93,8 @@
 
     <div id="observers" style="display: none;" class="tabcontent pt-0">
         <div class="mx-auto max-w-7xl sm: lg:">
-            <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
+            <div
+                class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
 
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Observers
                 </div>
@@ -131,7 +134,8 @@
 
     <div id="lifers" style="display: none;" class="tabcontent pt-0">
         <div class="mx-auto max-w-7xl sm: lg:">
-            <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
+            <div
+                class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
 
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Life members
                 </div>
@@ -171,7 +175,8 @@
 
     <div id="allMembers" style="display: none;" class="tabcontent pt-0">
         <div class="mx-auto max-w-7xl sm: lg:">
-            <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
+            <div
+                class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
 
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">All members
                 </div>
@@ -212,7 +217,8 @@
 
     <div id="manualAdd" style="display: none;" class="tabcontent pt-0">
         <div class="mx-auto max-w-7xl ">
-            <div class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
+            <div
+                class=" bg-white border-1 border-gray-400 rounded-xl  outline outline-1 -outline-offset-1 drop-shadow-lg outline-gray-300 ">
                 <div class="flex sm:grid-cols-2"></div>
                 <div class="font-bold w-full pt-2 pb-2 pl-4 pr-4 rounded-t-xl  text-white bg-violet-600">Member Detail
                 </div>
@@ -317,16 +323,16 @@
                                         <div>
                                             <input name="membership_type" type="radio"
                                                    value="{{$membershipType}}"
-                                                    @php
+                                                @php
 
-                                                        $checked = '';
-                                                            if(isset($membershipTypeSelected)) {
-                                                            if($membershipType == $membershipTypeSelected) {
-                                                                $checked = ' checked ';
-                                                            }
-                                                            }
-                                                    @endphp
-                                                    {{$checked}}
+                                                    $checked = '';
+                                                        if(isset($membershipTypeSelected)) {
+                                                        if($membershipType == $membershipTypeSelected) {
+                                                            $checked = ' checked ';
+                                                        }
+                                                        }
+                                                @endphp
+                                                {{$checked}}
                                             />
                                             <label class="pl-4 pr-0" for="membership_type">{{$membershipType}}
                                             </label>
@@ -350,16 +356,16 @@
                                             <input name="membership_category" type="radio"
                                                    value="{{strtolower($membershipCategory)}}"
 
-                                                    @php
+                                                @php
 
-                                                        $checked = '';
-                                                            if(isset($membershipCategorySelected)) {
-                                                            if(strtolower($membershipCategory) == $membershipCategorySelected) {
-                                                                $checked = ' checked ';
-                                                            }
-                                                            }
-                                                    @endphp
-                                                    {{$checked}}
+                                                    $checked = '';
+                                                        if(isset($membershipCategorySelected)) {
+                                                        if(strtolower($membershipCategory) == $membershipCategorySelected) {
+                                                            $checked = ' checked ';
+                                                        }
+                                                        }
+                                                @endphp
+                                                {{$checked}}
                                             />
                                             <label class="pl-4 pr-0" for="membership_category">{{$membershipCategory}}
                                             </label>
@@ -407,8 +413,7 @@
                             <x-form-field>
                                 <div class="flex ml-2 mt-2 col-span-full">
                                     <x-form-label for="confirmed">Mark as Paid</x-form-label>
-                                    <input class="ml-2" type="checkbox" name="confirmed" id="confirmed" value="1"
-                                           class="confirmed"/>
+                                    <input class="ml-2" type="checkbox" name="confirmed" id="confirmed" value="1"/>
                                 </div>
                             </x-form-field>
                         </div>
@@ -422,12 +427,12 @@
                                         <div>
                                             <input name="social[]" type="checkbox"
                                                    value="{{$social}}"
-                                                    @php
-                                                        if(isset($socialSelected)) {
-                                                        $selected = in_array($social, $socialSelected) ? ' checked ' : '';
-                                                        echo $selected;
-                                                        }
-                                                    @endphp
+                                                @php
+                                                    if(isset($socialSelected)) {
+                                                    $selected = in_array($social, $socialSelected) ? ' checked ' : '';
+                                                    echo $selected;
+                                                    }
+                                                @endphp
                                             />
                                             <label class="pl-4 pr-0" for="social">{{$social}}
                                             </label>

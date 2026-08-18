@@ -52,6 +52,7 @@ class RegisteredUserController extends Controller
     {
         $disclaimerUrl = Storage::url('Disclaimer.pdf');
 
+
         //        dd($disclaimerUrl);
         return view('auth.register', compact('disclaimerUrl'));
     }

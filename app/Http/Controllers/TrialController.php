@@ -8,6 +8,7 @@ use App\Models\Entry;
 use App\Models\Series;
 use App\Models\Trial;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -336,9 +337,9 @@ class TrialController extends Controller
      *
      * @return RedirectResponse
      */
-    public function save()
+    public function save(Request $request)
     {
-        //        dump(request('entryMethod'));
+//                dump($request->all());
         $user = Auth::user();
 
         $isClubAdmin = $user->isClubUser;
@@ -678,6 +679,7 @@ class TrialController extends Controller
                 'trialname' => $trial->name,
                 'amount' => $youthEntryFee,
                 'isYouth' => true,
+                'required' => false,
             ],
             'default_price_data' => ['currency' => 'gbp',
                 'unit_amount' => 100 * $youthEntryFee,
@@ -696,6 +698,7 @@ class TrialController extends Controller
                 'trialname' => $trial->name,
                 'amount' => $adultEntryFee,
                 'isYouth' => false,
+                'required' => false,
             ],
             'default_price_data' => ['currency' => 'gbp',
                 'unit_amount' => 100 * $adultEntryFee,
@@ -723,21 +726,18 @@ class TrialController extends Controller
     public function addTrialScoring($id)
     {
         $trial = Trial::findOrFail($id);
-
         return view('trials/add_trial_scoring', ['trial' => $trial]);
     }
 
     public function addTrialRegs($id)
     {
         $trial = Trial::findOrFail($id);
-
         return view('trials/add_trial_regulations', ['trial' => $trial]);
     }
 
     public function addTrialFees($id)
     {
         $trial = Trial::findOrFail($id);
-
         return view('trials/add_trial_fees', ['trial' => $trial]);
     }
 
@@ -901,10 +901,8 @@ class TrialController extends Controller
 
         //        dd($attrs);
         $trial = Trial::create($attrs);
-        //        $trialid = $trial->id;
 
         $this->addStripeProducts($trial, $attrs['youthEntryFee'], $attrs['adultEntryFee']);
-        //        dd($trialid);
 
         info("new trial created by $userid");
 
