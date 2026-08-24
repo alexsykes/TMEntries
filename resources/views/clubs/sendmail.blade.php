@@ -26,7 +26,7 @@
     </script>
     @php
         $sendWhenArray = array("Now", "Schedule");
-        $distributionArray = array("Test", "Trial Entrants", "Past Entrants", "Distribution List");
+        $distributionArray = array("Test", "Trial Entrants", "Past Entrants", "Distribution List", "All current members");
         $attachmentRealNames = $mail->originalName;
         $attachmentFileNames = $mail->fileName;
 

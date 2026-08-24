@@ -183,7 +183,7 @@ class ClubController extends Controller
                 $mailData[$category] = $mails;
             }
         }
-
+//dd($mailData);
         $mailshotData = DB::table('mailshots')
             ->where('club_id', $clubID)
             ->whereFuture('send_at')
@@ -316,7 +316,6 @@ class ClubController extends Controller
         $user = Auth::user();
         $id = $user->club_id;
         $userID = $user->id;
-
         $club = DB::table('clubs')
             ->where('id', $id)
             ->first();

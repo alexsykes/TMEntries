@@ -435,6 +435,20 @@ class ClubmailController extends Controller
                     array_push($distributionList, strtolower($user->email));
                 }
                 break;
+
+
+            case 'All current members':
+                $allCurrentMembers = DB::table('club_members')
+                    ->select('email')
+                    ->distinct()
+//                    ->where('users.receive_emails', true)
+                    ->where('club_id', $clubID)
+                    ->orderBy('email')
+                    ->get();
+                foreach ($allCurrentMembers as $user) {
+                    array_push($distributionList, strtolower($user->email));
+                }
+                break;
             default:
 
             case 'Distribution List':
